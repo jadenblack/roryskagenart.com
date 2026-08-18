@@ -1,0 +1,6 @@
+{
+  "name": "Rory Skagen Art Portfolio Archive",
+  "description": "High-performance gallery and file-based markdown content archive system for Rory Skagen's artwork.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

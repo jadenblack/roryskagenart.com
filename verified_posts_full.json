@@ -1,0 +1,1992 @@
+[
+  {
+    "title": "Gianondor",
+    "slug": "gianondor",
+    "date": "2019-07-12",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": null,
+    "cloudAsset": null
+  },
+  {
+    "title": "Empopatya",
+    "slug": "empopatya",
+    "date": "2019-07-12",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "empopatya.jpg",
+    "cloudAsset": {
+      "publicId": "empopatya",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/empopatya.jpg",
+      "width": 2100,
+      "height": 1474
+    }
+  },
+  {
+    "title": "Gaurdon",
+    "slug": "gaurdon",
+    "date": "2019-07-12",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "33in x 4ft",
+    "assignedImage": "gaurdon.jpg",
+    "cloudAsset": {
+      "publicId": "gaurdon",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/gaurdon.jpg",
+      "width": 2100,
+      "height": 1444
+    }
+  },
+  {
+    "title": "Gondoleu",
+    "slug": "gondoleu",
+    "date": "2019-07-12",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "gondeoleu.jpg",
+    "cloudAsset": {
+      "publicId": "gondeoleu",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/gondeoleu.jpg",
+      "width": 2100,
+      "height": 1476
+    }
+  },
+  {
+    "title": "Jobar",
+    "slug": "jobar",
+    "date": "2019-07-12",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "33in x 4ft",
+    "assignedImage": "jobar.jpg",
+    "cloudAsset": {
+      "publicId": "jobar",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076998/jobar.jpg",
+      "width": 2100,
+      "height": 1454
+    }
+  },
+  {
+    "title": "Kondowari",
+    "slug": "kondowari",
+    "date": "2019-07-12",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "kondowari.jpg",
+    "cloudAsset": {
+      "publicId": "kondowari",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/kondowari.jpg",
+      "width": 2100,
+      "height": 1444
+    }
+  },
+  {
+    "title": "Meiwaku",
+    "slug": "meiwaku",
+    "date": "2019-07-12",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "33in x 4ft",
+    "assignedImage": "meiwaku.jpg",
+    "cloudAsset": {
+      "publicId": "meiwaku",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077001/meiwaku.jpg",
+      "width": 2100,
+      "height": 1443
+    }
+  },
+  {
+    "title": "Odoroita Sakana",
+    "slug": "odoroita-sakana",
+    "date": "2019-07-12",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3ft x 4ft",
+    "assignedImage": "OdoritaSakana.jpg",
+    "cloudAsset": {
+      "publicId": "OdoritaSakana",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077003/OdoritaSakana.jpg",
+      "width": 2100,
+      "height": 1571
+    }
+  },
+  {
+    "title": "Osore",
+    "slug": "osore",
+    "date": "2019-07-12",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "33in x 4ft",
+    "assignedImage": "osore.jpg",
+    "cloudAsset": {
+      "publicId": "osore",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/osore.jpg",
+      "width": 2100,
+      "height": 1445
+    }
+  },
+  {
+    "title": "Austin 2019",
+    "slug": "austin-2019",
+    "date": "2019-07-11",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "austin2019-copy.jpg",
+    "cloudAsset": {
+      "publicId": "austin2019-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/austin2019-copy.jpg",
+      "width": 2100,
+      "height": 1467
+    }
+  },
+  {
+    "title": "Kemuri",
+    "slug": "kemuri",
+    "date": "2019-07-11",
+    "status": "Archived",
+    "medium": "-",
+    "dimensions": "-",
+    "assignedImage": "kemuri.jpg",
+    "cloudAsset": {
+      "publicId": "kemuri",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/kemuri.jpg",
+      "width": 2100,
+      "height": 1472
+    }
+  },
+  {
+    "title": "The Persistence of Cats",
+    "slug": "the-persistence-of-cats",
+    "date": "2019-07-11",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "33in x 4ft",
+    "assignedImage": "2019cats-copy.jpg",
+    "cloudAsset": {
+      "publicId": "2019cats-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/2019cats-copy.jpg",
+      "width": 2100,
+      "height": 1440
+    }
+  },
+  {
+    "title": "Today",
+    "slug": "today",
+    "date": "2019-07-11",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "2019today-copy.jpg",
+    "cloudAsset": {
+      "publicId": "2019today-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/2019today-copy.jpg",
+      "width": 2697,
+      "height": 3851
+    }
+  },
+  {
+    "title": "Cyborg - Robots and Aliens",
+    "slug": "cyborg-robots-and-aliens",
+    "date": "2019-07-10",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "3ft x 5ft",
+    "assignedImage": "starwars-Recovered-copy.jpg",
+    "cloudAsset": {
+      "publicId": "starwars-Recovered-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/starwars-Recovered-copy.jpg",
+      "width": 1050,
+      "height": 734
+    }
+  },
+  {
+    "title": "The Martian 2",
+    "slug": "the-martian-2",
+    "date": "2019-07-10",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "3ft x 5ft",
+    "assignedImage": "themartian1-copy.jpg",
+    "cloudAsset": {
+      "publicId": "themartian1-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/themartian1-copy.jpg",
+      "width": 2100,
+      "height": 1519
+    }
+  },
+  {
+    "title": "The Martian",
+    "slug": "the-martian",
+    "date": "2019-07-10",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "3ft x 5ft",
+    "assignedImage": "themartian1-copy.jpg",
+    "cloudAsset": {
+      "publicId": "themartian1-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/themartian1-copy.jpg",
+      "width": 2100,
+      "height": 1519
+    }
+  },
+  {
+    "title": "The Carters",
+    "slug": "the-carters",
+    "date": "2018-03-14",
+    "status": "Archived",
+    "medium": "-",
+    "dimensions": "-",
+    "assignedImage": "thecarters.jpg",
+    "cloudAsset": {
+      "publicId": "thecarters",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077008/thecarters.jpg",
+      "width": 2100,
+      "height": 1261
+    }
+  },
+  {
+    "title": "An Insincere Call",
+    "slug": "an-insincere-call",
+    "date": "2017-06-07",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3ft x 4ft",
+    "assignedImage": "stormyweather-copy-1.jpg",
+    "cloudAsset": {
+      "publicId": "stormyweather-copy-1",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/stormyweather-copy-1.jpg",
+      "width": 1050,
+      "height": 789
+    }
+  },
+  {
+    "title": "Arachforun",
+    "slug": "arachforun",
+    "date": "2017-06-07",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "starwars-Recovered-copy.jpg",
+    "cloudAsset": {
+      "publicId": "starwars-Recovered-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/starwars-Recovered-copy.jpg",
+      "width": 1050,
+      "height": 734
+    }
+  },
+  {
+    "title": "Gleesnod and Collasaur",
+    "slug": "gleesnod-and-collasaur",
+    "date": "2017-06-07",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "octodino-Recovered-copy-1.jpg",
+    "cloudAsset": {
+      "publicId": "octodino-Recovered-copy-1",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077003/octodino-Recovered-copy-1.jpg",
+      "width": 1050,
+      "height": 733
+    }
+  },
+  {
+    "title": "Gnarldred",
+    "slug": "gnarldred",
+    "date": "2017-06-07",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "-",
+    "assignedImage": "austin-Recovered-copy.jpg",
+    "cloudAsset": {
+      "publicId": "austin-Recovered-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/austin-Recovered-copy.jpg",
+      "width": 1050,
+      "height": 735
+    }
+  },
+  {
+    "title": "Kelzon 5",
+    "slug": "kelzon-5",
+    "date": "2017-06-07",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "robot-copy-1.jpg",
+    "cloudAsset": {
+      "publicId": "robot-copy-1",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/robot-copy-1.jpg",
+      "width": 1050,
+      "height": 734
+    }
+  },
+  {
+    "title": "Scaramouche",
+    "slug": "scaramouche",
+    "date": "2017-06-07",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3ft x 4ft",
+    "assignedImage": "Scaramouche-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Scaramouche-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077005/Scaramouche-copy.jpg",
+      "width": 1050,
+      "height": 788
+    }
+  },
+  {
+    "title": "The Broken Record",
+    "slug": "the-broken-record",
+    "date": "2017-06-07",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3ft x 4ft",
+    "assignedImage": "brokenrecord-copy-1.jpg",
+    "cloudAsset": null
+  },
+  {
+    "title": "The Greeting Card Machine",
+    "slug": "the-greeting-card-machine",
+    "date": "2017-06-07",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3ft x 5ft",
+    "assignedImage": "GreetingsfromAustin.jpg",
+    "cloudAsset": {
+      "publicId": "GreetingsfromAustin",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/GreetingsfromAustin.jpg",
+      "width": 576,
+      "height": 376
+    }
+  },
+  {
+    "title": "78704",
+    "slug": "78704",
+    "date": "2015-06-04",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "78704.jpg",
+    "cloudAsset": {
+      "publicId": "78704",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/78704.jpg",
+      "width": 576,
+      "height": 402
+    }
+  },
+  {
+    "title": "Austin Postcard",
+    "slug": "austin-postcard",
+    "date": "2015-06-04",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "austinpostcard.jpg",
+    "cloudAsset": {
+      "publicId": "austinpostcard",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/austinpostcard.jpg",
+      "width": 576,
+      "height": 403
+    }
+  },
+  {
+    "title": "Greetings from Austin",
+    "slug": "greetings-from-austin",
+    "date": "2015-06-04",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "GreetingsfromAustin.jpg",
+    "cloudAsset": {
+      "publicId": "GreetingsfromAustin",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/GreetingsfromAustin.jpg",
+      "width": 576,
+      "height": 376
+    }
+  },
+  {
+    "title": "Greetings from Texas",
+    "slug": "greetings-from-texas",
+    "date": "2015-06-04",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "GreetingsfromAustin.jpg",
+    "cloudAsset": {
+      "publicId": "GreetingsfromAustin",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/GreetingsfromAustin.jpg",
+      "width": 576,
+      "height": 376
+    }
+  },
+  {
+    "title": "Jigoku",
+    "slug": "jigoku",
+    "date": "2015-06-04",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "jigoku.jpg",
+    "cloudAsset": {
+      "publicId": "jigoku",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076998/jigoku.jpg",
+      "width": 576,
+      "height": 402
+    }
+  },
+  {
+    "title": "Kirunam",
+    "slug": "kirunam",
+    "date": "2015-06-04",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "kirunan.jpg",
+    "cloudAsset": {
+      "publicId": "kirunan",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/kirunan.jpg",
+      "width": 576,
+      "height": 403
+    }
+  },
+  {
+    "title": "Misakimo",
+    "slug": "misakimo",
+    "date": "2015-06-04",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "misakamo.jpg",
+    "cloudAsset": {
+      "publicId": "misakamo",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077001/misakamo.jpg",
+      "width": 576,
+      "height": 403
+    }
+  },
+  {
+    "title": "Terrordon",
+    "slug": "terrordon",
+    "date": "2015-06-04",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "terrordon.jpg",
+    "cloudAsset": {
+      "publicId": "terrordon",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077007/terrordon.jpg",
+      "width": 576,
+      "height": 403
+    }
+  },
+  {
+    "title": "Utaho",
+    "slug": "utaho",
+    "date": "2015-06-04",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "utaho.jpg",
+    "cloudAsset": {
+      "publicId": "utaho",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/utaho.jpg",
+      "width": 576,
+      "height": 403
+    }
+  },
+  {
+    "title": "Cry Sing Lon",
+    "slug": "cry-sing-lon",
+    "date": "2015-06-03",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "rothmonster-copy.jpg",
+    "cloudAsset": {
+      "publicId": "rothmonster-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077005/rothmonster-copy.jpg",
+      "width": 1050,
+      "height": 735
+    }
+  },
+  {
+    "title": "Austin Camouflage",
+    "slug": "austin-camouflage",
+    "date": "2015-01-29",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "22in x 5ft",
+    "assignedImage": "d.jpg",
+    "cloudAsset": {
+      "publicId": "d",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/d.jpg",
+      "width": 585,
+      "height": 175
+    }
+  },
+  {
+    "title": "Austin Carnival",
+    "slug": "austin-carnival",
+    "date": "2015-01-29",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "austin.jpg",
+    "cloudAsset": {
+      "publicId": "austin",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/austin.jpg",
+      "width": 922,
+      "height": 644
+    }
+  },
+  {
+    "title": "Beat Bop",
+    "slug": "beat-bop",
+    "date": "2015-01-29",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "19in x 5ft",
+    "assignedImage": "beatbop.jpg",
+    "cloudAsset": {
+      "publicId": "beatbop",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/beatbop.jpg",
+      "width": 1152,
+      "height": 346
+    }
+  },
+  {
+    "title": "Jumbo Portions",
+    "slug": "jumbo-portions",
+    "date": "2015-01-29",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "jumbop.jpg",
+    "cloudAsset": {
+      "publicId": "jumbop",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076998/jumbop.jpg",
+      "width": 1248,
+      "height": 936
+    }
+  },
+  {
+    "title": "Marcia Ball",
+    "slug": "marcia-ball",
+    "date": "2015-01-29",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "f.jpg",
+    "cloudAsset": {
+      "publicId": "f",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/f.jpg",
+      "width": 902,
+      "height": 902
+    }
+  },
+  {
+    "title": "Pollack Jr.",
+    "slug": "pollack-jr",
+    "date": "2015-01-29",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "3ft x 4ft",
+    "assignedImage": "pollockjr.jpg",
+    "cloudAsset": {
+      "publicId": "pollockjr",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/pollockjr.jpg",
+      "width": 922,
+      "height": 687
+    }
+  },
+  {
+    "title": "The Balloon Cats",
+    "slug": "the-balloon-cats-2",
+    "date": "2015-01-29",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "e1.jpg",
+    "cloudAsset": null
+  },
+  {
+    "title": "The Teapot Ride",
+    "slug": "the-teapot-ride",
+    "date": "2015-01-29",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "a1.jpg",
+    "cloudAsset": {
+      "publicId": "a1",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/a1.jpg",
+      "width": 922,
+      "height": 692
+    }
+  },
+  {
+    "title": "Women and Ladders",
+    "slug": "women-and-ladders",
+    "date": "2015-01-29",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "Abstract001-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Abstract001-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/Abstract001-copy.jpg",
+      "width": 870,
+      "height": 696
+    }
+  },
+  {
+    "title": "Rothko Jr.",
+    "slug": "rothko-jr",
+    "date": "2015-01-28",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 3ft",
+    "assignedImage": "pollockjr.jpg",
+    "cloudAsset": {
+      "publicId": "pollockjr",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/pollockjr.jpg",
+      "width": 922,
+      "height": 687
+    }
+  },
+  {
+    "title": "Hatari Angani",
+    "slug": "hatari-angani",
+    "date": "2011-09-16",
+    "status": "Archived",
+    "medium": "-",
+    "dimensions": "-",
+    "assignedImage": null,
+    "cloudAsset": null
+  },
+  {
+    "title": "Mao Mao Ting",
+    "slug": "mao-mao-ting",
+    "date": "2011-09-16",
+    "status": "Archived",
+    "medium": "-",
+    "dimensions": "-",
+    "assignedImage": null,
+    "cloudAsset": null
+  },
+  {
+    "title": "Maakclops",
+    "slug": "maakclops",
+    "date": "2011-09-16",
+    "status": "Archived",
+    "medium": "-",
+    "dimensions": "-",
+    "assignedImage": null,
+    "cloudAsset": null
+  },
+  {
+    "title": "Ocamehocta",
+    "slug": "ocamehocta",
+    "date": "2011-09-16",
+    "status": "Archived",
+    "medium": "-",
+    "dimensions": "-",
+    "assignedImage": null,
+    "cloudAsset": null
+  },
+  {
+    "title": "Nangon and Sadas",
+    "slug": "nangon-and-sadas",
+    "date": "2011-08-16",
+    "status": "Archived",
+    "medium": "-",
+    "dimensions": "-",
+    "assignedImage": null,
+    "cloudAsset": null
+  },
+  {
+    "title": "End of Austin",
+    "slug": "the-end-of-austin",
+    "date": "2011-01-29",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "6ft x 4ft",
+    "assignedImage": "b.jpg",
+    "cloudAsset": {
+      "publicId": "b",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/b.jpg",
+      "width": 580,
+      "height": 870
+    }
+  },
+  {
+    "title": "Adventures in Illustration",
+    "slug": "adventures-in-illustration",
+    "date": "2011-01-28",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "adventures-in-illustration-copy.jpg",
+    "cloudAsset": {
+      "publicId": "adventures-in-illustration-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/adventures-in-illustration-copy.jpg",
+      "width": 576,
+      "height": 402
+    }
+  },
+  {
+    "title": "Heartbreak Forest",
+    "slug": "heartbreak-forest",
+    "date": "2011-01-28",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "18in x 5ft",
+    "assignedImage": "heartbreak-forest-copy.jpg",
+    "cloudAsset": {
+      "publicId": "heartbreak-forest-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/heartbreak-forest-copy.jpg",
+      "width": 576,
+      "height": 158
+    }
+  },
+  {
+    "title": "Mid-flight Connection",
+    "slug": "mid-flight-connection",
+    "date": "2011-01-28",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ftx4ft",
+    "assignedImage": "midflight-connection-copy.jpg",
+    "cloudAsset": {
+      "publicId": "midflight-connection-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077001/midflight-connection-copy.jpg",
+      "width": 576,
+      "height": 579
+    }
+  },
+  {
+    "title": "Quo Quan Dang",
+    "slug": "quo-quan-dang",
+    "date": "2011-01-28",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "k.jpg",
+    "cloudAsset": {
+      "publicId": "k",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/k.jpg",
+      "width": 931,
+      "height": 651
+    }
+  },
+  {
+    "title": "The Cat Bird Seat",
+    "slug": "the-cat-bird-seat",
+    "date": "2011-01-28",
+    "status": "Archived",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 3ft",
+    "assignedImage": "the-catbird-seat-copy.jpg",
+    "cloudAsset": {
+      "publicId": "the-catbird-seat-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077008/the-catbird-seat-copy.jpg",
+      "width": 576,
+      "height": 760
+    }
+  },
+  {
+    "title": "The Narrative",
+    "slug": "the-narrative",
+    "date": "2011-01-28",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "5ft x 4ft",
+    "assignedImage": "the-narrative.jpg",
+    "cloudAsset": {
+      "publicId": "the-narrative",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/the-narrative.jpg",
+      "width": 432,
+      "height": 603
+    }
+  },
+  {
+    "title": "The Northern Friend",
+    "slug": "the-northern-friend",
+    "date": "2011-01-28",
+    "status": "Archived",
+    "medium": "-",
+    "dimensions": "-",
+    "assignedImage": "northernfriend-copy.jpg",
+    "cloudAsset": {
+      "publicId": "northernfriend-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077003/northernfriend-copy.jpg",
+      "width": 576,
+      "height": 744
+    }
+  },
+  {
+    "title": "A Trip to Boozeville",
+    "slug": "a-trip-to-boozeville",
+    "date": "2011-01-27",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "a-trip-to-boozeville-copy.jpg",
+    "cloudAsset": {
+      "publicId": "a-trip-to-boozeville-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/a-trip-to-boozeville-copy.jpg",
+      "width": 672,
+      "height": 244
+    }
+  },
+  {
+    "title": "Agave Patch",
+    "slug": "agave-patch",
+    "date": "2011-01-27",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "20in x 28in",
+    "assignedImage": "Agave-Patch-Mescal-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Agave-Patch-Mescal-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/Agave-Patch-Mescal-copy.jpg",
+      "width": 576,
+      "height": 360
+    }
+  },
+  {
+    "title": "Beaver Holiday",
+    "slug": "beaver-holiday",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "Beaver-Holiday-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Beaver-Holiday-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/Beaver-Holiday-copy.jpg",
+      "width": 576,
+      "height": 710
+    }
+  },
+  {
+    "title": "Blind Monkey",
+    "slug": "blind-monkey",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "28in x 20in",
+    "assignedImage": "blind-monkey-copy.jpg",
+    "cloudAsset": {
+      "publicId": "blind-monkey-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/blind-monkey-copy.jpg",
+      "width": 427,
+      "height": 576
+    }
+  },
+  {
+    "title": "Cave Dance",
+    "slug": "cave-dance",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "cave-dance-copy.jpg",
+    "cloudAsset": {
+      "publicId": "cave-dance-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076992/cave-dance-copy.jpg",
+      "width": 1152,
+      "height": 418
+    }
+  },
+  {
+    "title": "Chemico",
+    "slug": "chemico",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "CHEMICO-copy.jpg",
+    "cloudAsset": {
+      "publicId": "CHEMICO-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076992/CHEMICO-copy.jpg",
+      "width": 576,
+      "height": 468
+    }
+  },
+  {
+    "title": "Closing Night",
+    "slug": "closing-night",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "closing-night-copy.jpg",
+    "cloudAsset": {
+      "publicId": "closing-night-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/closing-night-copy.jpg",
+      "width": 1152,
+      "height": 418
+    }
+  },
+  {
+    "title": "Clown Snacks",
+    "slug": "clown-snacks",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "5ft x 3.5ft",
+    "assignedImage": "clownwframe-copy.jpg",
+    "cloudAsset": {
+      "publicId": "clownwframe-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/clownwframe-copy.jpg",
+      "width": 480,
+      "height": 653
+    }
+  },
+  {
+    "title": "Cocoa Bear Cereal",
+    "slug": "cocoa-bear-cereal",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "5ft x 3.5ft",
+    "assignedImage": "cocoabear-copy.jpg",
+    "cloudAsset": {
+      "publicId": "cocoabear-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/cocoabear-copy.jpg",
+      "width": 480,
+      "height": 689
+    }
+  },
+  {
+    "title": "Cornflower",
+    "slug": "cornflower",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "30in x 39in",
+    "assignedImage": "cornflower-12.jpg",
+    "cloudAsset": {
+      "publicId": "cornflower-12",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/cornflower-12.jpg",
+      "width": 624,
+      "height": 790
+    }
+  },
+  {
+    "title": "Dairy Gossip",
+    "slug": "dairy-gossip",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "14in x 24in",
+    "assignedImage": "dairygossip-.jpg",
+    "cloudAsset": {
+      "publicId": "dairygossip-",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/dairygossip-.jpg",
+      "width": 576,
+      "height": 288
+    }
+  },
+  {
+    "title": "Drebbles",
+    "slug": "drebbles",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "5ft x 3.5ft",
+    "assignedImage": "drebbles-copy.jpg",
+    "cloudAsset": {
+      "publicId": "drebbles-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/drebbles-copy.jpg",
+      "width": 480,
+      "height": 689
+    }
+  },
+  {
+    "title": "El Pajaro de los Dulces Magicos",
+    "slug": "el-pajaro-de-los-dulces-magicos",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "el-pajaro-de-los-dulces-magicos-copy.jpg",
+    "cloudAsset": {
+      "publicId": "el-pajaro-de-los-dulces-magicos-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/el-pajaro-de-los-dulces-magicos-copy.jpg",
+      "width": 650,
+      "height": 528
+    }
+  },
+  {
+    "title": "Greasy Todd",
+    "slug": "greasy-todd",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "5ft x 3.5ft",
+    "assignedImage": "greasytodd-copy.jpg",
+    "cloudAsset": {
+      "publicId": "greasytodd-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/greasytodd-copy.jpg",
+      "width": 480,
+      "height": 686
+    }
+  },
+  {
+    "title": "Harvest Orange",
+    "slug": "harvest-orange",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "5ft x 3.5ft",
+    "assignedImage": "harvestorange-copy.jpg",
+    "cloudAsset": {
+      "publicId": "harvestorange-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/harvestorange-copy.jpg",
+      "width": 480,
+      "height": 816
+    }
+  },
+  {
+    "title": "Heavenly Ham",
+    "slug": "heavenly-ham",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "5ft x 3.5ft",
+    "assignedImage": "heavenlyham-copy.jpg",
+    "cloudAsset": {
+      "publicId": "heavenlyham-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/heavenlyham-copy.jpg",
+      "width": 360,
+      "height": 520
+    }
+  },
+  {
+    "title": "Hell Party",
+    "slug": "hell-party",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "Hell-Party-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Hell-Party-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/Hell-Party-copy.jpg",
+      "width": 1152,
+      "height": 417
+    }
+  },
+  {
+    "title": "Invasion of the Drunks",
+    "slug": "invasion-of-the-drunks",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "invasion-of-the-drunks-copy.jpg",
+    "cloudAsset": {
+      "publicId": "invasion-of-the-drunks-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/invasion-of-the-drunks-copy.jpg",
+      "width": 1152,
+      "height": 416
+    }
+  },
+  {
+    "title": "ISSY",
+    "slug": "issy",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "Issy-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Issy-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/Issy-copy.jpg",
+      "width": 576,
+      "height": 710
+    }
+  },
+  {
+    "title": "Jungle Bust",
+    "slug": "jungle-bust",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "30in x 39in",
+    "assignedImage": "Jungle-bust-el-5-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Jungle-bust-el-5-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/Jungle-bust-el-5-copy.jpg",
+      "width": 624,
+      "height": 780
+    }
+  },
+  {
+    "title": "Jungle Tempo",
+    "slug": "jungle-tempo",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "boyhood-explorers-6.jpg",
+    "cloudAsset": {
+      "publicId": "boyhood-explorers-6",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076991/boyhood-explorers-6.jpg",
+      "width": 768,
+      "height": 624
+    }
+  },
+  {
+    "title": "Boyhood Explorers",
+    "slug": "boyhood-explorers",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "boyhood-explorers-6.jpg",
+    "cloudAsset": {
+      "publicId": "boyhood-explorers-6",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076991/boyhood-explorers-6.jpg",
+      "width": 768,
+      "height": 624
+    }
+  },
+  {
+    "title": "Killagor",
+    "slug": "killagor",
+    "date": "2011-01-27",
+    "status": "Archived",
+    "medium": "Enamel",
+    "dimensions": "5ft x 12ft",
+    "assignedImage": "mouth-copy.jpg",
+    "cloudAsset": {
+      "publicId": "mouth-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077002/mouth-copy.jpg",
+      "width": 1152,
+      "height": 480
+    }
+  },
+  {
+    "title": "Long Beach Short Stop",
+    "slug": "long-beach-short-stop",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "long-beach-short-stop-6.jpg",
+    "cloudAsset": {
+      "publicId": "long-beach-short-stop-6",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/long-beach-short-stop-6.jpg",
+      "width": 650,
+      "height": 528
+    }
+  },
+  {
+    "title": "Marooned",
+    "slug": "marooned",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "marooned-copy.jpg",
+    "cloudAsset": {
+      "publicId": "marooned-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/marooned-copy.jpg",
+      "width": 1152,
+      "height": 418
+    }
+  },
+  {
+    "title": "Marshmallow Pops",
+    "slug": "marshmallow-pops",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "5ft x 3.5ft",
+    "assignedImage": "marshmallowpops-copy.jpg",
+    "cloudAsset": {
+      "publicId": "marshmallowpops-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/marshmallowpops-copy.jpg",
+      "width": 480,
+      "height": 694
+    }
+  },
+  {
+    "title": "Mogul Cigarettes",
+    "slug": "mogul-cigarettes",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "21.5in x 14.5in",
+    "assignedImage": "mogul-cigarettes-copy.jpg",
+    "cloudAsset": {
+      "publicId": "mogul-cigarettes-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077001/mogul-cigarettes-copy.jpg",
+      "width": 576,
+      "height": 838
+    }
+  },
+  {
+    "title": "Monkey Sunset",
+    "slug": "monkey-sunset",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "20in x 17in",
+    "assignedImage": "Monkey-Sunset-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Monkey-Sunset-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077001/Monkey-Sunset-copy.jpg",
+      "width": 576,
+      "height": 709
+    }
+  },
+  {
+    "title": "Old Salt",
+    "slug": "old-salt",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Enamel",
+    "dimensions": "5ft x 3.5ft",
+    "assignedImage": "oldsalt-copy.jpg",
+    "cloudAsset": {
+      "publicId": "oldsalt-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077003/oldsalt-copy.jpg",
+      "width": 480,
+      "height": 668
+    }
+  },
+  {
+    "title": "Raintree County",
+    "slug": "raintree-county",
+    "date": "2011-01-27",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "5ft x 7ft",
+    "assignedImage": "raintree-wallpaper-6.5-x-8.jpg",
+    "cloudAsset": {
+      "publicId": "raintree-wallpaper-6.5-x-8",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/raintree-wallpaper-6.5-x-8.jpg",
+      "width": 768,
+      "height": 558
+    }
+  },
+  {
+    "title": "Random House",
+    "slug": "random-house",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "random-house-6.jpg",
+    "cloudAsset": {
+      "publicId": "random-house-6",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/random-house-6.jpg",
+      "width": 624,
+      "height": 768
+    }
+  },
+  {
+    "title": "Silent Flute",
+    "slug": "silent-flute",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "25in x 14in",
+    "assignedImage": "image-wp-flutesnake-copy.jpg",
+    "cloudAsset": {
+      "publicId": "image-wp-flutesnake-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/image-wp-flutesnake-copy.jpg",
+      "width": 480,
+      "height": 800
+    }
+  },
+  {
+    "title": "Southern Belle",
+    "slug": "southern-belle",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "30in x 39in",
+    "assignedImage": "southern-belle-copy.jpg",
+    "cloudAsset": {
+      "publicId": "southern-belle-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077005/southern-belle-copy.jpg",
+      "width": 624,
+      "height": 800
+    }
+  },
+  {
+    "title": "Square Eggs",
+    "slug": "square-eggs",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": null,
+    "cloudAsset": null
+  },
+  {
+    "title": "Steamy\" the Flavor Genie",
+    "slug": "steamy-the-flavor-genie",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "Steamy-the-flavor-genie-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Steamy-the-flavor-genie-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/Steamy-the-flavor-genie-copy.jpg",
+      "width": 576,
+      "height": 470
+    }
+  },
+  {
+    "title": "Strange Delights",
+    "slug": "strange-delights",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "strange-delight-6.jpg",
+    "cloudAsset": {
+      "publicId": "strange-delight-6",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/strange-delight-6.jpg",
+      "width": 768,
+      "height": 624
+    }
+  },
+  {
+    "title": "Takodon",
+    "slug": "takodon",
+    "date": "2011-01-27",
+    "status": "Archived",
+    "medium": "Enamel",
+    "dimensions": "5ft x 12ft",
+    "assignedImage": "eye-copy.jpg",
+    "cloudAsset": {
+      "publicId": "eye-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/eye-copy.jpg",
+      "width": 1152,
+      "height": 479
+    }
+  },
+  {
+    "title": "Tales of a Chinese Sailor",
+    "slug": "tales-of-a-chinese-sailor",
+    "date": "2011-01-27",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 3ft",
+    "assignedImage": "l.jpg",
+    "cloudAsset": {
+      "publicId": "l",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
+      "width": 877,
+      "height": 1167
+    }
+  },
+  {
+    "title": "The 18,000th Hole",
+    "slug": "the-18000th-whole",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "the-180000-hole-copy.jpg",
+    "cloudAsset": {
+      "publicId": "the-180000-hole-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077007/the-180000-hole-copy.jpg",
+      "width": 1152,
+      "height": 414
+    }
+  },
+  {
+    "title": "The Aquarium",
+    "slug": "the-aquarium",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "the-aquarium-copy.jpg",
+    "cloudAsset": {
+      "publicId": "the-aquarium-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077007/the-aquarium-copy.jpg",
+      "width": 1152,
+      "height": 419
+    }
+  },
+  {
+    "title": "The Blue Elephant Lounge",
+    "slug": "the-blue-elephant-lounge",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "The-blue-elephant-lounge-.jpg",
+    "cloudAsset": {
+      "publicId": "The-blue-elephant-lounge-",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077008/The-blue-elephant-lounge-.jpg",
+      "width": 1152,
+      "height": 417
+    }
+  },
+  {
+    "title": "The Blue Hour",
+    "slug": "the-blue-hour",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "Untitled-1-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Untitled-1-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/Untitled-1-copy.jpg",
+      "width": 1152,
+      "height": 419
+    }
+  },
+  {
+    "title": "The Brimstone Club",
+    "slug": "the-brimstone-club",
+    "date": "2011-01-27",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "brimstone-club-.jpg",
+    "cloudAsset": {
+      "publicId": "brimstone-club-",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076991/brimstone-club-.jpg",
+      "width": 1152,
+      "height": 417
+    }
+  },
+  {
+    "title": "The Butter and Egg Man",
+    "slug": "the-butter-and-egg-man",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "30in x 39in",
+    "assignedImage": "Butter-and-Egg-Man-6.5-x-8.jpg",
+    "cloudAsset": {
+      "publicId": "Butter-and-Egg-Man-6.5-x-8",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076992/Butter-and-Egg-Man-6.5-x-8.jpg",
+      "width": 624,
+      "height": 790
+    }
+  },
+  {
+    "title": "The Copper State",
+    "slug": "the-copper-state",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "the-copper-state-6.jpg",
+    "cloudAsset": {
+      "publicId": "the-copper-state-6",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077008/the-copper-state-6.jpg",
+      "width": 650,
+      "height": 528
+    }
+  },
+  {
+    "title": "The Drunkenville Carnival",
+    "slug": "the-drunkenville-carnival",
+    "date": "2011-01-27",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "invasion-of-the-drunks-copy.jpg",
+    "cloudAsset": {
+      "publicId": "invasion-of-the-drunks-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/invasion-of-the-drunks-copy.jpg",
+      "width": 1152,
+      "height": 416
+    }
+  },
+  {
+    "title": "The Film Student",
+    "slug": "the-film-student",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "film-student-copy.jpg",
+    "cloudAsset": {
+      "publicId": "film-student-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/film-student-copy.jpg",
+      "width": 528,
+      "height": 528
+    }
+  },
+  {
+    "title": "The Great All Stars",
+    "slug": "the-great-all-stars",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "16in x 24in",
+    "assignedImage": "THE-GREAT-ALL-STARS-copy.jpg",
+    "cloudAsset": {
+      "publicId": "THE-GREAT-ALL-STARS-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/THE-GREAT-ALL-STARS-copy.jpg",
+      "width": 576,
+      "height": 468
+    }
+  },
+  {
+    "title": "The Hell that is Monkey Island",
+    "slug": "the-hell-that-is-monkey-island",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "THE-HELL-THAT-IS-MONK11C8D-copy.jpg",
+    "cloudAsset": {
+      "publicId": "THE-HELL-THAT-IS-MONK11C8D-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/THE-HELL-THAT-IS-MONK11C8D-copy.jpg",
+      "width": 576,
+      "height": 482
+    }
+  },
+  {
+    "title": "The Hunger Artist",
+    "slug": "the-hunger-artist",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "final-image-three-ideas-hunger-artist-copy.jpg",
+    "cloudAsset": {
+      "publicId": "final-image-three-ideas-hunger-artist-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/final-image-three-ideas-hunger-artist-copy.jpg",
+      "width": 650,
+      "height": 528
+    }
+  },
+  {
+    "title": "The Hunting Accident",
+    "slug": "the-hunting-accident",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "the-hunting-accident-13-x-16-copy.jpg",
+    "cloudAsset": {
+      "publicId": "the-hunting-accident-13-x-16-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/the-hunting-accident-13-x-16-copy.jpg",
+      "width": 624,
+      "height": 768
+    }
+  },
+  {
+    "title": "The Midwood Seamstress",
+    "slug": "the-midwood-seamstress",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": null,
+    "cloudAsset": null
+  },
+  {
+    "title": "The Niece of Murder She Wrote",
+    "slug": "the-niece-of-murder-she-wrote",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "the-niece-of-murder-she-wrote-copy.jpg",
+    "cloudAsset": {
+      "publicId": "the-niece-of-murder-she-wrote-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/the-niece-of-murder-she-wrote-copy.jpg",
+      "width": 650,
+      "height": 528
+    }
+  },
+  {
+    "title": "The Red Mood",
+    "slug": "the-red-mood",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "bar-copy.jpg",
+    "cloudAsset": {
+      "publicId": "bar-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/bar-copy.jpg",
+      "width": 1152,
+      "height": 420
+    }
+  },
+  {
+    "title": "The Sound of the WB",
+    "slug": "the-sound-of-the-wb",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 5ft",
+    "assignedImage": "sound-of-the-WB-copy.jpg",
+    "cloudAsset": {
+      "publicId": "sound-of-the-WB-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077005/sound-of-the-WB-copy.jpg",
+      "width": 670,
+      "height": 528
+    }
+  },
+  {
+    "title": "The Watering Hole",
+    "slug": "the-watering-hole",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "The-watering-hole-copy.jpg",
+    "cloudAsset": {
+      "publicId": "The-watering-hole-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/The-watering-hole-copy.jpg",
+      "width": 528,
+      "height": 528
+    }
+  },
+  {
+    "title": "Tonga Joy",
+    "slug": "tonga-joy",
+    "date": "2011-01-27",
+    "status": "Archived",
+    "medium": "Enamel",
+    "dimensions": "5ft x 12ft",
+    "assignedImage": "crab-copy.jpg",
+    "cloudAsset": {
+      "publicId": "crab-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/crab-copy.jpg",
+      "width": 1152,
+      "height": 477
+    }
+  },
+  {
+    "title": "Tuesday Charmer",
+    "slug": "tuesday-charmer",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "30in x 39in",
+    "assignedImage": "Tuesday-Charmer6.5-x8.jpg",
+    "cloudAsset": {
+      "publicId": "Tuesday-Charmer6.5-x8",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/Tuesday-Charmer6.5-x8.jpg",
+      "width": 624,
+      "height": 790
+    }
+  },
+  {
+    "title": "Tuffy and the Imaginary Flying Cat Head",
+    "slug": "tuffy-and-the-imaginary-flying-cat-head",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "Tuffy-and-the-imaginary-fly-cat-head-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Tuffy-and-the-imaginary-fly-cat-head-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/Tuffy-and-the-imaginary-fly-cat-head-copy.jpg",
+      "width": 528,
+      "height": 528
+    }
+  },
+  {
+    "title": "Wisdom Cofee",
+    "slug": "wisdom-cofee",
+    "date": "2011-01-27",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "22.5in x 13.5in",
+    "assignedImage": "wisdom-coffee-copy.jpg",
+    "cloudAsset": {
+      "publicId": "wisdom-coffee-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077011/wisdom-coffee-copy.jpg",
+      "width": 576,
+      "height": 919
+    }
+  },
+  {
+    "title": "Blue Nile",
+    "slug": "blue-nile",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "bluenilecropped-copy.jpg",
+    "cloudAsset": {
+      "publicId": "bluenilecropped-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076991/bluenilecropped-copy.jpg",
+      "width": 576,
+      "height": 556
+    }
+  },
+  {
+    "title": "Chivonyx and Ganzitodon",
+    "slug": "chivonyx-and-ganzitodon",
+    "date": "2011-01-26",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "3-eyes-perculator-he4599AA-copy.jpg",
+    "cloudAsset": {
+      "publicId": "3-eyes-perculator-he4599AA-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076988/3-eyes-perculator-he4599AA-copy.jpg",
+      "width": 576,
+      "height": 403
+    }
+  },
+  {
+    "title": "Dinosaur Land",
+    "slug": "dinosaur-land",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 6ft",
+    "assignedImage": "dinolandcropped-copy.jpg",
+    "cloudAsset": null
+  },
+  {
+    "title": "Frog Tea",
+    "slug": "frog-tea",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "-",
+    "assignedImage": "teacropped-copy.jpg",
+    "cloudAsset": {
+      "publicId": "teacropped-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077007/teacropped-copy.jpg",
+      "width": 576,
+      "height": 560
+    }
+  },
+  {
+    "title": "Junga Ray",
+    "slug": "junga-ray",
+    "date": "2011-01-26",
+    "status": "Archived",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "Cyclosquid-6353-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Cyclosquid-6353-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/Cyclosquid-6353-copy.jpg",
+      "width": 576,
+      "height": 404
+    }
+  },
+  {
+    "title": "Jungle Land",
+    "slug": "jungle-land",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "5ft x 5ft",
+    "assignedImage": "junglelandcropped-copy.jpg",
+    "cloudAsset": {
+      "publicId": "junglelandcropped-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/junglelandcropped-copy.jpg",
+      "width": 576,
+      "height": 587
+    }
+  },
+  {
+    "title": "Leisure Time",
+    "slug": "leisure-time",
+    "date": "2011-01-26",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "leisuretimecropped-copy.jpg",
+    "cloudAsset": null
+  },
+  {
+    "title": "Masons",
+    "slug": "masons",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "masonscropped-copy.jpg",
+    "cloudAsset": {
+      "publicId": "masonscropped-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/masonscropped-copy.jpg",
+      "width": 576,
+      "height": 584
+    }
+  },
+  {
+    "title": "Near Arrangement",
+    "slug": "near-arrangement",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 3ft",
+    "assignedImage": "near-arrangement-copy.jpg",
+    "cloudAsset": {
+      "publicId": "near-arrangement-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077002/near-arrangement-copy.jpg",
+      "width": 393,
+      "height": 528
+    }
+  },
+  {
+    "title": "Normal Gods",
+    "slug": "normal-gods",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 3ft",
+    "assignedImage": "normal-gods-copy.jpg",
+    "cloudAsset": {
+      "publicId": "normal-gods-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077002/normal-gods-copy.jpg",
+      "width": 394,
+      "height": 528
+    }
+  },
+  {
+    "title": "Quadroclops",
+    "slug": "quadroclops",
+    "date": "2011-01-26",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "Four-Eyes-6337-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Four-Eyes-6337-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/Four-Eyes-6337-copy.jpg",
+      "width": 672,
+      "height": 335
+    }
+  },
+  {
+    "title": "Regador 5",
+    "slug": "regador-5",
+    "date": "2011-01-26",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "Red-Eye-Mantasaurus-6348-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Red-Eye-Mantasaurus-6348-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/Red-Eye-Mantasaurus-6348-copy.jpg",
+      "width": 576,
+      "height": 405
+    }
+  },
+  {
+    "title": "Ring of Horns",
+    "slug": "ring-of-horns",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "buffalo-copy.jpg",
+    "cloudAsset": {
+      "publicId": "buffalo-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076992/buffalo-copy.jpg",
+      "width": 576,
+      "height": 579
+    }
+  },
+  {
+    "title": "The Cats of the Colloseum",
+    "slug": "the-cats-of-the-colloseum",
+    "date": "2011-01-26",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 3ft",
+    "assignedImage": "the-cats-of-the-colloseum-copy3.jpg",
+    "cloudAsset": {
+      "publicId": "the-cats-of-the-colloseum-copy3",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077008/the-cats-of-the-colloseum-copy3.jpg",
+      "width": 397,
+      "height": 528
+    }
+  },
+  {
+    "title": "The Dawn of the Dinosaur",
+    "slug": "the-dawn-of-the-dinosaur",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "dinolandcropped-copy.jpg",
+    "cloudAsset": null
+  },
+  {
+    "title": "The Production",
+    "slug": "the-production",
+    "date": "2011-01-26",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 3ft",
+    "assignedImage": "the-production-copy.jpg",
+    "cloudAsset": {
+      "publicId": "the-production-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/the-production-copy.jpg",
+      "width": 395,
+      "height": 528
+    }
+  },
+  {
+    "title": "Trimegadon",
+    "slug": "trimegadon",
+    "date": "2011-01-26",
+    "status": "Available",
+    "medium": "Enamel",
+    "dimensions": "3.5ft x 5ft",
+    "assignedImage": "Trisaurusmouth-6341-copy.jpg",
+    "cloudAsset": {
+      "publicId": "Trisaurusmouth-6341-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/Trisaurusmouth-6341-copy.jpg",
+      "width": 576,
+      "height": 399
+    }
+  },
+  {
+    "title": "Wise Bird",
+    "slug": "wise-bird",
+    "date": "2011-01-26",
+    "status": "Sold",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 4ft",
+    "assignedImage": "wisebirdcropped-copy.jpg",
+    "cloudAsset": {
+      "publicId": "wisebirdcropped-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077011/wisebirdcropped-copy.jpg",
+      "width": 576,
+      "height": 598
+    }
+  },
+  {
+    "title": "Rendezvous in Chinatown",
+    "slug": "2010",
+    "date": "2011-01-24",
+    "status": "Available",
+    "medium": "Acrylic",
+    "dimensions": "4ft x 3ft",
+    "assignedImage": "moo-goo-gai-pan-copy.jpg",
+    "cloudAsset": {
+      "publicId": "moo-goo-gai-pan-copy",
+      "url": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077002/moo-goo-gai-pan-copy.jpg",
+      "width": 393,
+      "height": 528
+    }
+  }
+]
