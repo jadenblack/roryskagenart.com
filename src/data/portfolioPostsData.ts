@@ -257,7 +257,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 33 × 48 inches (84 × 122 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
   {
-    "title": "Austin 2019",
+    "title": "Austin Skyline 2019",
     "slug": "austin-2019",
     "date": "2019-07-11",
     "status": "Available",
@@ -335,7 +335,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 33 × 48 inches (84 × 122 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
   {
-    "title": "Today",
+    "title": "Today (Atomic Sunrise)",
     "slug": "today",
     "date": "2019-07-11",
     "status": "Available",
@@ -360,7 +360,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
   {
-    "title": "Cyborg - Robots and Aliens",
+    "title": "Cyborg: Robots and Aliens",
     "slug": "cyborg-robots-and-aliens",
     "date": "2019-07-10",
     "status": "Available",
@@ -378,16 +378,16 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/acrylic-panel"
     ],
-    "image": "starwars-Recovered-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/starwars-Recovered-copy.jpg",
-    "cloudPublicId": "starwars-Recovered-copy",
+    "image": "robot-copy-1.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/robot-copy-1.jpg",
+    "cloudPublicId": "robot-copy-1",
     "cloudWidth": 1050,
     "cloudHeight": 734,
     "description": "Original masterwork by Rory Skagen created on 2019-07-10. Rendered in Acrylic (3ft x 5ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 60 inches (91 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
   {
-    "title": "The Martian 2",
+    "title": "The Martian II",
     "slug": "the-martian-2",
     "date": "2019-07-10",
     "status": "Available",
@@ -405,11 +405,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/acrylic-panel"
     ],
-    "image": "themartian1-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/themartian1-copy.jpg",
-    "cloudPublicId": "themartian1-copy",
+    "image": "themartian2-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/themartian2-copy.jpg",
+    "cloudPublicId": "themartian2-copy",
     "cloudWidth": 2100,
-    "cloudHeight": 1519,
+    "cloudHeight": 1526,
     "description": "Original masterwork by Rory Skagen created on 2019-07-10. Rendered in Acrylic (3ft x 5ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 60 inches (91 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -481,11 +481,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "stormyweather-copy-1.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/stormyweather-copy-1.jpg",
-    "cloudPublicId": "stormyweather-copy-1",
-    "cloudWidth": 1050,
-    "cloudHeight": 789,
+    "image": "sound-of-the-WB-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077005/sound-of-the-WB-copy.jpg",
+    "cloudPublicId": "sound-of-the-WB-copy",
+    "cloudWidth": 670,
+    "cloudHeight": 528,
     "description": "Original masterwork by Rory Skagen created on 2017-06-07. Rendered in Enamel (3ft x 4ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -510,7 +510,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/starwars-Recovered-copy.jpg",
     "cloudPublicId": "starwars-Recovered-copy",
     "cloudWidth": 1050,
-    "cloudHeight": 734,
+    "cloudHeight": 735,
     "description": "Original masterwork by Rory Skagen created on 2017-06-07. Rendered in Enamel (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -533,9 +533,9 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/enamel-sign"
     ],
-    "image": "octodino-Recovered-copy-1.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077003/octodino-Recovered-copy-1.jpg",
-    "cloudPublicId": "octodino-Recovered-copy-1",
+    "image": "octodino-Recovered-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077003/octodino-Recovered-copy.jpg",
+    "cloudPublicId": "octodino-Recovered-copy",
     "cloudWidth": 1050,
     "cloudHeight": 733,
     "description": "Original masterwork by Rory Skagen created on 2017-06-07. Rendered in Enamel (3.5ft x 5ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
@@ -558,16 +558,16 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "austin-Recovered-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/austin-Recovered-copy.jpg",
-    "cloudPublicId": "austin-Recovered-copy",
-    "cloudWidth": 1050,
-    "cloudHeight": 735,
+    "image": "Steamy-the-flavor-genie-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/Steamy-the-flavor-genie-copy.jpg",
+    "cloudPublicId": "Steamy-the-flavor-genie-copy",
+    "cloudWidth": 576,
+    "cloudHeight": 470,
     "description": "Original masterwork by Rory Skagen created on 2017-06-07. Rendered in Enamel (-) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "Kelzon 5",
+    "title": "Kelzon V",
     "slug": "kelzon-5",
     "date": "2017-06-07",
     "status": "Sold",
@@ -583,11 +583,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "robot-copy-1.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/robot-copy-1.jpg",
-    "cloudPublicId": "robot-copy-1",
-    "cloudWidth": 1050,
-    "cloudHeight": 734,
+    "image": "Jungle-bust-el-5-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/Jungle-bust-el-5-copy.jpg",
+    "cloudPublicId": "Jungle-bust-el-5-copy",
+    "cloudWidth": 624,
+    "cloudHeight": 780,
     "description": "Original masterwork by Rory Skagen created on 2017-06-07. Rendered in Enamel (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -633,7 +633,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "brokenrecord-copy-1.jpg",
+    "image": "brokenrecord-copy.jpg",
     "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076992/brokenrecord-copy.jpg",
     "cloudPublicId": "brokenrecord-copy",
     "cloudWidth": 504,
@@ -658,16 +658,16 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "GreetingsfromAustin.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/GreetingsfromAustin.jpg",
-    "cloudPublicId": "GreetingsfromAustin",
-    "cloudWidth": 576,
-    "cloudHeight": 376,
+    "image": "greetingcardmachine-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/greetingcardmachine-copy.jpg",
+    "cloudPublicId": "greetingcardmachine-copy",
+    "cloudWidth": 1050,
+    "cloudHeight": 791,
     "description": "Original masterwork by Rory Skagen created on 2017-06-07. Rendered in Enamel (3ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 60 inches (91 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
   {
-    "title": "78704",
+    "title": "Austin 78704 (South Austin Zip)",
     "slug": "78704",
     "date": "2015-06-04",
     "status": "Sold",
@@ -766,11 +766,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/landmarks",
       "art/enamel-sign"
     ],
-    "image": "GreetingsfromAustin.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/GreetingsfromAustin.jpg",
-    "cloudPublicId": "GreetingsfromAustin",
+    "image": "GreetingsfromTexas.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076996/GreetingsfromTexas.jpg",
+    "cloudPublicId": "GreetingsfromTexas",
     "cloudWidth": 576,
-    "cloudHeight": 376,
+    "cloudHeight": 403,
     "description": "Original masterwork by Rory Skagen created on 2015-06-04. Rendered in Enamel (3.5ft x 5ft) exploring themes of austin iconic & pop americana. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -818,11 +818,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "kirunan.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/kirunan.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "kirunan",
-    "cloudWidth": 576,
-    "cloudHeight": 403,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-06-04. Rendered in Enamel (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -843,11 +843,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "misakamo.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077001/misakamo.jpg",
+    "image": "k.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/k.jpg",
     "cloudPublicId": "misakamo",
-    "cloudWidth": 576,
-    "cloudHeight": 403,
+    "cloudWidth": 931,
+    "cloudHeight": 651,
     "description": "Original masterwork by Rory Skagen created on 2015-06-04. Rendered in Enamel (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -920,11 +920,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "rothmonster-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077005/rothmonster-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "rothmonster-copy",
-    "cloudWidth": 1050,
-    "cloudHeight": 735,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-06-03. Rendered in Enamel (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -947,11 +947,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/landmarks",
       "art/enamel-sign"
     ],
-    "image": "d.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/d.jpg",
+    "image": "l.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
     "cloudPublicId": "d",
-    "cloudWidth": 585,
-    "cloudHeight": 175,
+    "cloudWidth": 877,
+    "cloudHeight": 1167,
     "description": "Original masterwork by Rory Skagen created on 2015-01-29. Rendered in Enamel (22in x 5ft) exploring themes of austin iconic & pop americana. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 22 × 60 inches (56 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -974,11 +974,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/landmarks",
       "art/acrylic-panel"
     ],
-    "image": "austin.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/austin.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "austin",
-    "cloudWidth": 922,
-    "cloudHeight": 644,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-01-29. Rendered in Acrylic (3.5ft x 5ft) exploring themes of austin iconic & pop americana. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -1026,11 +1026,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "jumbop.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076998/jumbop.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "jumbop",
-    "cloudWidth": 1248,
-    "cloudHeight": 936,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-01-29. Rendered in Acrylic (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -1053,11 +1053,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/landmarks",
       "art/acrylic-panel"
     ],
-    "image": "f.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/f.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "f",
-    "cloudWidth": 902,
-    "cloudHeight": 902,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-01-29. Rendered in Acrylic (4ft x 4ft) exploring themes of austin iconic & pop americana. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 48 inches (122 × 122 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -1083,13 +1083,13 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "image": "pollockjr.jpg",
     "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/pollockjr.jpg",
     "cloudPublicId": "pollockjr",
-    "cloudWidth": 922,
-    "cloudHeight": 687,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-01-29. Rendered in Enamel (3ft x 4ft) exploring themes of modernist parody & fine art tribute. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "The Balloon Cats",
+    "title": "The Balloon Cats II",
     "slug": "the-balloon-cats-2",
     "date": "2015-01-29",
     "status": "Sold",
@@ -1107,11 +1107,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/fable",
       "art/acrylic-panel"
     ],
-    "image": "e1.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/e.jpg",
+    "image": "l.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
     "cloudPublicId": "e",
-    "cloudWidth": 923,
-    "cloudHeight": 643,
+    "cloudWidth": 877,
+    "cloudHeight": 1167,
     "description": "Original masterwork by Rory Skagen created on 2015-01-29. Rendered in Acrylic (3.5ft x 5ft) exploring themes of anthropomorphic & fable critters. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -1134,11 +1134,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/consumer-pop",
       "art/acrylic-panel"
     ],
-    "image": "a1.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/a1.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "a1",
-    "cloudWidth": 922,
-    "cloudHeight": 692,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-01-29. Rendered in Acrylic (3.5ft x 5ft) exploring themes of vintage advertising & commercial ephemera. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -1161,11 +1161,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/satire",
       "art/acrylic-panel"
     ],
-    "image": "Abstract001-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/Abstract001-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "Abstract001-copy",
-    "cloudWidth": 870,
-    "cloudHeight": 696,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-01-29. Rendered in Acrylic (3.5ft x 5ft) exploring themes of modernist parody & fine art tribute. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -1188,11 +1188,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/satire",
       "art/acrylic-panel"
     ],
-    "image": "pollockjr.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/pollockjr.jpg",
-    "cloudPublicId": "pollockjr",
-    "cloudWidth": 922,
-    "cloudHeight": 687,
+    "image": "rothmonster-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077005/rothmonster-copy.jpg",
+    "cloudPublicId": "rothmonster-copy",
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2015-01-28. Rendered in Acrylic (4ft x 3ft) exploring themes of modernist parody & fine art tribute. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 36 inches (122 × 91 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -1319,7 +1319,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Archived. Current Location: Permanent Archive Retrospective."
   },
   {
-    "title": "End of Austin",
+    "title": "The End of Austin",
     "slug": "the-end-of-austin",
     "date": "2011-01-29",
     "status": "Available",
@@ -1337,11 +1337,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/landmarks",
       "art/enamel-sign"
     ],
-    "image": "b.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/b.jpg",
+    "image": "f.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/f.jpg",
     "cloudPublicId": "b",
-    "cloudWidth": 580,
-    "cloudHeight": 870,
+    "cloudWidth": 902,
+    "cloudHeight": 902,
     "description": "Original masterwork by Rory Skagen created on 2011-01-29. Rendered in Enamel (6ft x 4ft) exploring themes of austin iconic & pop americana. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 72 × 48 inches (183 × 122 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -1396,7 +1396,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 18 × 60 inches (46 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "Mid-flight Connection",
+    "title": "Mid-Flight Connection",
     "slug": "mid-flight-connection",
     "date": "2011-01-28",
     "status": "Sold",
@@ -1437,11 +1437,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "k.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/k.jpg",
+    "image": "d.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/d.jpg",
     "cloudPublicId": "k",
-    "cloudWidth": 931,
-    "cloudHeight": 651,
+    "cloudWidth": 585,
+    "cloudHeight": 175,
     "description": "Original masterwork by Rory Skagen created on 2011-01-28. Rendered in Acrylic (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -1513,11 +1513,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "tags": [
       "art"
     ],
-    "image": "northernfriend-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077003/northernfriend-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "northernfriend-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 744,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-28. Rendered in signature mixed media (-) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Archived. Current Location: Permanent Archive Retrospective."
   },
@@ -1567,11 +1567,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/consumer-pop",
       "art/acrylic-panel"
     ],
-    "image": "Agave-Patch-Mescal-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/Agave-Patch-Mescal-copy.jpg",
+    "image": "e.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/e.jpg",
     "cloudPublicId": "Agave-Patch-Mescal-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 360,
+    "cloudWidth": 923,
+    "cloudHeight": 643,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (20in x 28in) exploring themes of vintage advertising & commercial ephemera. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 20 × 28 inches (51 × 71 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -1723,11 +1723,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/consumer-pop",
       "art/enamel-sign"
     ],
-    "image": "clownwframe-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/clownwframe-copy.jpg",
+    "image": "l.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
     "cloudPublicId": "clownwframe-copy",
-    "cloudWidth": 480,
-    "cloudHeight": 653,
+    "cloudWidth": 877,
+    "cloudHeight": 1167,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Enamel (5ft x 3.5ft) exploring themes of vintage advertising & commercial ephemera. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 60 × 42 inches (152 × 107 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -1750,11 +1750,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/fable",
       "art/enamel-sign"
     ],
-    "image": "cocoabear-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/cocoabear-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "cocoabear-copy",
-    "cloudWidth": 480,
-    "cloudHeight": 689,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Enamel (5ft x 3.5ft) exploring themes of anthropomorphic & fable critters. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 60 × 42 inches (152 × 107 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -1834,7 +1834,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 60 × 42 inches (152 × 107 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "El Pajaro de los Dulces Magicos",
+    "title": "El Pájaro de los Dulces Mágicos",
     "slug": "el-pajaro-de-los-dulces-magicos",
     "date": "2011-01-27",
     "status": "Sold",
@@ -1986,7 +1986,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "ISSY",
+    "title": "Issy: The Atomic Companion",
     "slug": "issy",
     "date": "2011-01-27",
     "status": "Sold",
@@ -2052,11 +2052,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "boyhood-explorers-6.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076991/boyhood-explorers-6.jpg",
-    "cloudPublicId": "boyhood-explorers-6",
-    "cloudWidth": 768,
-    "cloudHeight": 624,
+    "image": "Jungle-Tempo-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/Jungle-Tempo-copy.jpg",
+    "cloudPublicId": "Jungle-Tempo-copy",
+    "cloudWidth": 624,
+    "cloudHeight": 768,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 60 inches (122 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2102,11 +2102,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "mouth-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077002/mouth-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "mouth-copy",
-    "cloudWidth": 1152,
-    "cloudHeight": 480,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Enamel (5ft x 12ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 60 × 144 inches (152 × 366 cm). Physical Status: Archived. Current Location: Permanent Archive Retrospective."
   },
@@ -2283,11 +2283,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "raintree-wallpaper-6.5-x-8.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/raintree-wallpaper-6.5-x-8.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "raintree-wallpaper-6.5-x-8",
-    "cloudWidth": 768,
-    "cloudHeight": 558,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (5ft x 7ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 60 × 84 inches (152 × 213 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -2333,11 +2333,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "image-wp-flutesnake-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/image-wp-flutesnake-copy.jpg",
+    "image": "l.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
     "cloudPublicId": "image-wp-flutesnake-copy",
-    "cloudWidth": 480,
-    "cloudHeight": 800,
+    "cloudWidth": 877,
+    "cloudHeight": 1167,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (25in x 14in) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 25 × 14 inches (64 × 36 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2385,16 +2385,16 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/consumer-pop",
       "art/acrylic-panel"
     ],
-    "image": "",
-    "cloudinaryUrl": "",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "",
-    "cloudWidth": 576,
-    "cloudHeight": 432,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 5ft) exploring themes of vintage advertising & commercial ephemera. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 60 inches (122 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "Steamy\" the Flavor Genie",
+    "title": "Steamy the Flavor Genie",
     "slug": "steamy-the-flavor-genie",
     "date": "2011-01-27",
     "status": "Sold",
@@ -2437,11 +2437,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "strange-delight-6.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/strange-delight-6.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "strange-delight-6",
-    "cloudWidth": 768,
-    "cloudHeight": 624,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 60 inches (122 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2464,11 +2464,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/enamel-sign"
     ],
-    "image": "eye-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/eye-copy.jpg",
+    "image": "k.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/k.jpg",
     "cloudPublicId": "eye-copy",
-    "cloudWidth": 1152,
-    "cloudHeight": 479,
+    "cloudWidth": 931,
+    "cloudHeight": 651,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Enamel (5ft x 12ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 60 × 144 inches (152 × 366 cm). Physical Status: Archived. Current Location: Permanent Archive Retrospective."
   },
@@ -2489,11 +2489,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "l.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "l",
-    "cloudWidth": 877,
-    "cloudHeight": 1167,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 3ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 36 inches (122 × 91 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -2514,11 +2514,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "the-180000-hole-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077007/the-180000-hole-copy.jpg",
+    "image": "l.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
     "cloudPublicId": "the-180000-hole-copy",
-    "cloudWidth": 1152,
-    "cloudHeight": 414,
+    "cloudWidth": 877,
+    "cloudHeight": 1167,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (-) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2591,11 +2591,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "Untitled-1-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/Untitled-1-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "Untitled-1-copy",
-    "cloudWidth": 1152,
-    "cloudHeight": 419,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (-) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2616,11 +2616,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "brimstone-club-.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076991/brimstone-club-.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "brimstone-club-",
-    "cloudWidth": 1152,
-    "cloudHeight": 417,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (-) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -2643,11 +2643,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/consumer-pop",
       "art/acrylic-panel"
     ],
-    "image": "Butter-and-Egg-Man-6.5-x-8.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076992/Butter-and-Egg-Man-6.5-x-8.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "Butter-and-Egg-Man-6.5-x-8",
-    "cloudWidth": 624,
-    "cloudHeight": 790,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (30in x 39in) exploring themes of vintage advertising & commercial ephemera. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 30 × 39 inches (76 × 99 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2693,11 +2693,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "invasion-of-the-drunks-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076997/invasion-of-the-drunks-copy.jpg",
-    "cloudPublicId": "invasion-of-the-drunks-copy",
-    "cloudWidth": 1152,
-    "cloudHeight": 416,
+    "image": "The-Drunkeville-Carnival-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077008/The-Drunkeville-Carnival-copy.jpg",
+    "cloudPublicId": "The-Drunkeville-Carnival-copy",
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (-) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -2718,11 +2718,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "film-student-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/film-student-copy.jpg",
+    "image": "l.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
     "cloudPublicId": "film-student-copy",
-    "cloudWidth": 528,
-    "cloudHeight": 528,
+    "cloudWidth": 877,
+    "cloudHeight": 1167,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 4ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 48 inches (122 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2770,11 +2770,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/fable",
       "art/acrylic-panel"
     ],
-    "image": "THE-HELL-THAT-IS-MONK11C8D-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077009/THE-HELL-THAT-IS-MONK11C8D-copy.jpg",
+    "image": "l.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
     "cloudPublicId": "THE-HELL-THAT-IS-MONK11C8D-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 482,
+    "cloudWidth": 877,
+    "cloudHeight": 1167,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 5ft) exploring themes of anthropomorphic & fable critters. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 60 inches (122 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2795,11 +2795,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "final-image-three-ideas-hunger-artist-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/final-image-three-ideas-hunger-artist-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "final-image-three-ideas-hunger-artist-copy",
-    "cloudWidth": 650,
-    "cloudHeight": 528,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 60 inches (122 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2845,16 +2845,16 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "",
-    "cloudinaryUrl": "",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "",
-    "cloudWidth": 576,
-    "cloudHeight": 432,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 60 inches (122 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "The Niece of Murder She Wrote",
+    "title": "The Niece of 'Murder, She Wrote'",
     "slug": "the-niece-of-murder-she-wrote",
     "date": "2011-01-27",
     "status": "Sold",
@@ -2895,11 +2895,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "bar-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076990/bar-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "bar-copy",
-    "cloudWidth": 1152,
-    "cloudHeight": 420,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (-) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2920,11 +2920,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "sound-of-the-WB-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077005/sound-of-the-WB-copy.jpg",
+    "image": "f.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/f.jpg",
     "cloudPublicId": "sound-of-the-WB-copy",
-    "cloudWidth": 670,
-    "cloudHeight": 528,
+    "cloudWidth": 902,
+    "cloudHeight": 902,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 60 inches (122 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -2970,11 +2970,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "crab-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/crab-copy.jpg",
+    "image": "a.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076988/a.jpg",
     "cloudPublicId": "crab-copy",
-    "cloudWidth": 1152,
-    "cloudHeight": 477,
+    "cloudWidth": 923,
+    "cloudHeight": 688,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Enamel (5ft x 12ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 60 × 144 inches (152 × 366 cm). Physical Status: Archived. Current Location: Permanent Archive Retrospective."
   },
@@ -3022,16 +3022,16 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/fable",
       "art/acrylic-panel"
     ],
-    "image": "Tuffy-and-the-imaginary-fly-cat-head-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/Tuffy-and-the-imaginary-fly-cat-head-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "Tuffy-and-the-imaginary-fly-cat-head-copy",
-    "cloudWidth": 528,
-    "cloudHeight": 528,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (4ft x 4ft) exploring themes of anthropomorphic & fable critters. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 48 inches (122 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "Wisdom Cofee",
+    "title": "Wisdom Coffee",
     "slug": "wisdom-cofee",
     "date": "2011-01-27",
     "status": "Sold",
@@ -3047,11 +3047,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "wisdom-coffee-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077011/wisdom-coffee-copy.jpg",
+    "image": "f.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/f.jpg",
     "cloudPublicId": "wisdom-coffee-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 919,
+    "cloudWidth": 902,
+    "cloudHeight": 902,
     "description": "Original masterwork by Rory Skagen created on 2011-01-27. Rendered in Acrylic (22.5in x 13.5in) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 23 × 14 inches (58 × 36 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -3099,11 +3099,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/enamel-sign"
     ],
-    "image": "3-eyes-perculator-he4599AA-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076988/3-eyes-perculator-he4599AA-copy.jpg",
+    "image": "d.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/d.jpg",
     "cloudPublicId": "3-eyes-perculator-he4599AA-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 403,
+    "cloudWidth": 585,
+    "cloudHeight": 175,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Enamel (3.5ft x 5ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -3126,11 +3126,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/acrylic-panel"
     ],
-    "image": "dinolandcropped-copy.jpg",
+    "image": "dinolandcropped-copy1.jpg",
     "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/dinolandcropped-copy1.jpg",
     "cloudPublicId": "dinolandcropped-copy1",
-    "cloudWidth": 576,
-    "cloudHeight": 383,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Acrylic (4ft x 6ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 72 inches (122 × 183 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -3153,11 +3153,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/fable",
       "art/acrylic-panel"
     ],
-    "image": "teacropped-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077007/teacropped-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "teacropped-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 560,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Acrylic (-) exploring themes of anthropomorphic & fable critters. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 36 × 48 inches (91 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -3178,11 +3178,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "Cyclosquid-6353-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/Cyclosquid-6353-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "Cyclosquid-6353-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 404,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Enamel (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Archived. Current Location: Permanent Archive Retrospective."
   },
@@ -3203,11 +3203,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "junglelandcropped-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076999/junglelandcropped-copy.jpg",
+    "image": "l.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/l.jpg",
     "cloudPublicId": "junglelandcropped-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 587,
+    "cloudWidth": 877,
+    "cloudHeight": 1167,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Acrylic (5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 60 × 60 inches (152 × 152 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -3228,7 +3228,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "leisuretimecropped-copy.jpg",
+    "image": "leisuretimecropped-copy1.jpg",
     "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077000/leisuretimecropped-copy1.jpg",
     "cloudPublicId": "leisuretimecropped-copy1",
     "cloudWidth": 576,
@@ -3332,16 +3332,16 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/enamel-sign"
     ],
-    "image": "Four-Eyes-6337-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076995/Four-Eyes-6337-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "Four-Eyes-6337-copy",
-    "cloudWidth": 672,
-    "cloudHeight": 335,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Enamel (3.5ft x 5ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
   {
-    "title": "Regador 5",
+    "title": "Regador V",
     "slug": "regador-5",
     "date": "2011-01-26",
     "status": "Available",
@@ -3357,11 +3357,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/enamel-sign"
     ],
-    "image": "Red-Eye-Mantasaurus-6348-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/Red-Eye-Mantasaurus-6348-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "Red-Eye-Mantasaurus-6348-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 405,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Enamel (3.5ft x 5ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -3382,16 +3382,16 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "buffalo-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076992/buffalo-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "buffalo-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 579,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Acrylic (4ft x 4ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 48 inches (122 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "The Cats of the Colloseum",
+    "title": "The Cats of the Colosseum",
     "slug": "the-cats-of-the-colloseum",
     "date": "2011-01-26",
     "status": "Available",
@@ -3436,11 +3436,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/acrylic-panel"
     ],
-    "image": "dinolandcropped-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/dinolandcropped-copy1.jpg",
-    "cloudPublicId": "dinolandcropped-copy1",
-    "cloudWidth": 576,
-    "cloudHeight": 383,
+    "image": "dinolandtwocropped-copy.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076994/dinolandtwocropped-copy.jpg",
+    "cloudPublicId": "dinolandtwocropped-copy",
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Acrylic (4ft x 4ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 48 inches (122 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
@@ -3490,11 +3490,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art/creatures",
       "art/enamel-sign"
     ],
-    "image": "Trisaurusmouth-6341-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077010/Trisaurusmouth-6341-copy.jpg",
+    "image": "r.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077004/r.jpg",
     "cloudPublicId": "Trisaurusmouth-6341-copy",
-    "cloudWidth": 576,
-    "cloudHeight": 399,
+    "cloudWidth": 703,
+    "cloudHeight": 922,
     "description": "Original masterwork by Rory Skagen created on 2011-01-26. Rendered in Enamel (3.5ft x 5ft) exploring themes of kaiju & monster universe. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 42 × 60 inches (107 × 152 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   },
@@ -3526,7 +3526,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 48 inches (122 × 122 cm). Physical Status: Sold. Current Location: Private Collection."
   },
   {
-    "title": "Rendezvous in Chinatown",
+    "title": "2010: Rendezvous in Chinatown",
     "slug": "2010",
     "date": "2011-01-24",
     "status": "Available",
@@ -3542,11 +3542,11 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
       "art",
       "art/acrylic-panel"
     ],
-    "image": "moo-goo-gai-pan-copy.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787077002/moo-goo-gai-pan-copy.jpg",
+    "image": "2.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/xjilp2pq/image/upload/v1787076988/2.jpg",
     "cloudPublicId": "moo-goo-gai-pan-copy",
-    "cloudWidth": 393,
-    "cloudHeight": 528,
+    "cloudWidth": 922,
+    "cloudHeight": 642,
     "description": "Original masterwork by Rory Skagen created on 2011-01-24. Rendered in Acrylic (4ft x 3ft) exploring themes of pop surrealism & mid-century neo-retro. Features Skagen's distinctive saturated palette, hyper-graphic linework, and evocative mid-century Americana pop-surrealism.",
     "curatorNotes": "Part of the verified 285-record Rory Skagen Studio Master Catalog. Dimensions: 48 × 36 inches (122 × 91 cm). Physical Status: Available. Current Location: Rory Skagen Studio Archives, Austin, TX."
   }
@@ -3554,7 +3554,7 @@ export const PORTFOLIO_POSTS_REGISTRY: PortfolioEntryDef[] = [
 
 export function generateFullIndexMd(): string {
   const rows = PORTFOLIO_POSTS_REGISTRY.map((p) => {
-    const link = `[[posts/${p.slug}|${p.title}]]`;
+    const link = `[[${p.slug}|${p.title}]]`;
     const mediumScale = p.dimensions && p.dimensions !== '-' ? `${p.medium} (${p.dimensions})` : p.medium;
     return `| ${link} | ${p.date} | ${p.status} | ${mediumScale} |`;
   }).join('\n');

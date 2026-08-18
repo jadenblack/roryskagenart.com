@@ -13,6 +13,7 @@ import { MasterRegistryTable } from './components/MasterRegistryTable';
 import { DriveExplorer } from './components/DriveExplorer';
 import { PagesView } from './components/PagesView';
 import { ReadmeView } from './components/ReadmeView';
+import { TrashView } from './components/TrashView';
 import { CloudinaryManager } from './components/CloudinaryManager';
 import { DRIVE_ROOT_PATH } from './data/driveFileSystem';
 import { Sparkles, ArrowUp, Github, Heart } from 'lucide-react';
@@ -50,6 +51,8 @@ export default function App() {
         setSelectedPageSlug(slug);
       } else if (hash === 'registry' || hash === 'index') {
         setRoute('registry');
+      } else if (hash === 'trash') {
+        setRoute('trash');
       } else if (hash === 'explorer' || hash === 'files') {
         setRoute('explorer');
       } else if (hash === 'readme' || hash === 'docs') {
@@ -83,6 +86,9 @@ export default function App() {
     } else if (newRoute === 'registry') {
       window.location.hash = '#registry';
       setRoute('registry');
+    } else if (newRoute === 'trash') {
+      window.location.hash = '#trash';
+      setRoute('trash');
     } else if (newRoute === 'explorer') {
       window.location.hash = '#explorer';
       setRoute('explorer');
@@ -97,6 +103,7 @@ export default function App() {
   // Get reactive items from engine
   const allItems = GalleryAppEngineInstance.items;
   const filteredItems = GalleryAppEngineInstance.getFilteredItems();
+  const trashedItems = GalleryAppEngineInstance.getTrashedItems();
   const files = GalleryAppEngineInstance.files;
   const pages = GalleryAppEngineInstance.pages;
   const activeFilters = GalleryAppEngineInstance.activeFilters;
@@ -127,7 +134,7 @@ export default function App() {
   }, [files, engineVersion]);
 
   return (
-    <div className="min-h-screen bg-[#0c0c0e] text-[#f4f4f5] flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200">
+    <div id="root-container" className="min-h-screen bg-[#E5E4DF] text-zinc-900 dark:bg-[#0c0c0e] dark:text-[#f4f4f5] flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-900 dark:selection:text-amber-200 transition-colors">
       <div>
         {/* Navigation Bar */}
         <Navbar
@@ -135,12 +142,13 @@ export default function App() {
           onNavigate={(r) => navigateTo(r)}
           searchQuery={activeFilters.search}
           onSearchChange={(q) => GalleryAppEngineInstance.setFilter('search', q)}
-          totalWorks={allItems.length}
+          totalWorks={allItems.filter(i => !i.trashed).length}
+          trashedCount={trashedItems.length}
           onOpenCloudinary={() => setCloudinaryModalOpen(true)}
         />
 
-        {/* Main Content Area */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+        {/* Main Content Area with clear layout styling */}
+        <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 w-full flex-grow">
           {/* Route 1: Individual Artwork Focus View */}
           {route === 'artwork' && currentArtwork ? (
             <ArtworkFocusView
@@ -151,6 +159,12 @@ export default function App() {
               onNavigatePage={(slug) => navigateTo('pages', slug)}
               onEditInExplorer={(filePath) => navigateTo('explorer', filePath)}
               onOpenCloudinary={() => setCloudinaryModalOpen(true)}
+              onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
+              onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
+              onTrashArtwork={(slug) => {
+                GalleryAppEngineInstance.trashArtwork(slug);
+                navigateTo('registry');
+              }}
             />
           ) : null}
 
@@ -169,10 +183,33 @@ export default function App() {
           {/* Route 3: Master Registry Table (index.md) */}
           {route === 'registry' && (
             <MasterRegistryTable
-              items={allItems}
+              items={allItems.filter(i => !i.trashed)}
               rawIndexMd={indexMdContent}
               onSelectArtwork={(slug) => navigateTo('artwork', slug)}
               onEditIndexMd={() => navigateTo('explorer', 'index.md')}
+              onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
+              onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
+              onTrashArtwork={(slug) => GalleryAppEngineInstance.trashArtwork(slug)}
+              onNavigateToTrash={() => navigateTo('trash')}
+            />
+          )}
+
+          {/* Route 3.5: Dedicated Trash Management View */}
+          {route === 'trash' && (
+            <TrashView
+              trashedItems={trashedItems}
+              trashedArtworks={trashedItems}
+              onRestore={(slug) => GalleryAppEngineInstance.restoreArtwork(slug)}
+              onRestoreArtwork={(slug) => GalleryAppEngineInstance.restoreArtwork(slug)}
+              onPermanentDelete={(slug) => GalleryAppEngineInstance.permanentlyDeleteArtwork(slug)}
+              onPermanentlyDeleteArtwork={(slug) => GalleryAppEngineInstance.permanentlyDeleteArtwork(slug)}
+              onEmptyTrash={() => GalleryAppEngineInstance.emptyTrash()}
+              onRestoreAll={() => GalleryAppEngineInstance.restoreAllTrash()}
+              onRestoreAllTrash={() => GalleryAppEngineInstance.restoreAllTrash()}
+              onNavigateToRegistry={() => navigateTo('registry')}
+              onBackToRegistry={() => navigateTo('registry')}
+              onNavigateToGallery={() => navigateTo('gallery')}
+              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
             />
           )}
 
@@ -212,51 +249,52 @@ export default function App() {
         </main>
       </div>
 
-      {/* Luxury Gallery Footer */}
-      <footer className="bg-[#09090c] border-t border-zinc-800/80 mt-20 text-xs font-mono text-zinc-500 py-12">
+      {/* Luxury Studio Gallery Footer */}
+      <footer className="bg-[#DFDED9] dark:bg-[#09090c] border-t border-zinc-300 dark:border-zinc-800/80 mt-20 text-xs font-mono text-zinc-600 dark:text-zinc-500 py-12 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2 space-y-3">
-              <span className="font-display font-black text-lg text-zinc-200 tracking-wider">
+              <span className="font-display font-black text-lg text-zinc-950 dark:text-zinc-100 tracking-wider">
                 RORY SKAGEN STUDIO
               </span>
-              <p className="text-zinc-400 font-sans text-xs max-w-md leading-relaxed">
-                Fine art portfolio and centralized Google Drive archive engine celebrating four decades of iconic retro pop art, Austin landmarks, and neon roadside Americana.
+              <p className="text-zinc-700 dark:text-zinc-400 font-sans text-xs max-w-md leading-relaxed">
+                Official fine art gallery and studio portfolio celebrating four decades of iconic retro pop art, Austin landmarks, and neon roadside Americana. Original paintings and fine art commissions available.
               </p>
-              <p className="text-[11px] text-amber-400/80">
-                Root: <code className="text-zinc-300">{DRIVE_ROOT_PATH}</code>
+              <p className="text-[11px] text-amber-700 dark:text-amber-400/90 font-mono">
+                Studio Repository: <code className="text-zinc-900 dark:text-zinc-300">{DRIVE_ROOT_PATH}</code>
               </p>
             </div>
 
             <div className="space-y-2">
-              <span className="text-zinc-200 font-semibold text-xs block">Studio Navigation</span>
-              <ul className="space-y-1.5 text-xs text-zinc-400">
-                <li><button onClick={() => navigateTo('gallery')} className="hover:text-amber-300 transition-colors">Artwork Collection</button></li>
-                <li><button onClick={() => navigateTo('pages', 'about')} className="hover:text-amber-300 transition-colors">Biography &amp; Legacy</button></li>
-                <li><button onClick={() => navigateTo('pages', 'commissions')} className="hover:text-amber-300 transition-colors">Mural Commissions</button></li>
-                <li><button onClick={() => navigateTo('pages', 'exhibitions')} className="hover:text-amber-300 transition-colors">Exhibition History</button></li>
+              <span className="text-zinc-950 dark:text-zinc-200 font-bold text-xs block uppercase tracking-wider">Fine Art Collection</span>
+              <ul className="space-y-1.5 text-xs text-zinc-700 dark:text-zinc-400 font-sans">
+                <li><button onClick={() => navigateTo('gallery')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Available Artworks</button></li>
+                <li><button onClick={() => navigateTo('pages', 'about')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Biography &amp; Legacy</button></li>
+                <li><button onClick={() => navigateTo('pages', 'commissions')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Mural Commissions</button></li>
+                <li><button onClick={() => navigateTo('pages', 'exhibitions')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Exhibition History</button></li>
               </ul>
             </div>
 
             <div className="space-y-2">
-              <span className="text-zinc-200 font-semibold text-xs block">Archive Architecture</span>
-              <ul className="space-y-1.5 text-xs text-zinc-400">
-                <li><button onClick={() => navigateTo('registry')} className="hover:text-amber-300 transition-colors">Master Map (index.md)</button></li>
-                <li><button onClick={() => navigateTo('explorer')} className="hover:text-amber-300 transition-colors">Drive Explorer</button></li>
-                <li><button onClick={() => navigateTo('readme')} className="hover:text-amber-300 transition-colors">System Specs (readme.md)</button></li>
-                <li><button onClick={() => navigateTo('pages', 'contact')} className="hover:text-amber-300 transition-colors">Acquisitions &amp; Contact</button></li>
+              <span className="text-zinc-950 dark:text-zinc-200 font-bold text-xs block uppercase tracking-wider">Studio Architecture</span>
+              <ul className="space-y-1.5 text-xs text-zinc-700 dark:text-zinc-400 font-sans">
+                <li><button onClick={() => navigateTo('registry')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Master Catalog (index.md)</button></li>
+                <li><button onClick={() => navigateTo('trash')} className="hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer">Trash Vault ({trashedItems.length})</button></li>
+                <li><button onClick={() => navigateTo('explorer')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Drive Files &amp; Editor</button></li>
+                <li><button onClick={() => navigateTo('readme')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">System Specs (readme.md)</button></li>
+                <li><button onClick={() => navigateTo('pages', 'contact')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Acquisitions &amp; Contact</button></li>
               </ul>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-zinc-800/60 flex items-center justify-between flex-wrap gap-4 text-[11px] text-zinc-500">
+          <div className="pt-8 border-t border-zinc-300 dark:border-zinc-800/60 flex items-center justify-between flex-wrap gap-4 text-[11px] text-zinc-600 dark:text-zinc-500">
             <div>
-              &copy; {new Date().getFullYear()} Rory Skagen Studio. All rights reserved. Artwork and imagery registered under Rory Skagen Archive.
+              &copy; {new Date().getFullYear()} Rory Skagen Studio. All rights reserved. Artwork and original paintings presented for acquisition and exhibition.
             </div>
-            <div className="flex items-center gap-4">
-              <span>Austin, Texas</span>
+            <div className="flex items-center gap-4 font-mono">
+              <span className="text-zinc-800 dark:text-zinc-400">Austin, Texas</span>
               <span>•</span>
-              <span className="text-amber-400">Zero-Dependency State Architecture</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">Studio Active</span>
             </div>
           </div>
         </div>

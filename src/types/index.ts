@@ -1,4 +1,4 @@
-export type ArtworkStatus = 'Available' | 'Sold' | 'Archived' | 'Public Installation' | 'Private Collection' | 'Limited Edition';
+export type ArtworkStatus = 'Available' | 'Sold' | 'Archived' | 'Public Installation' | 'Private Collection' | 'Limited Edition' | 'Disabled' | 'Trashed';
 
 export interface ArtworkRecord {
   slug: string;
@@ -17,6 +17,10 @@ export interface ArtworkRecord {
   location?: string; // e.g. "Austin, TX (South 1st & Annie St)"
   surface?: string; // e.g. "Canvas", "Panel", "Illustration Board"
   type?: 'post' | 'page';
+  enabled?: boolean;
+  archived?: boolean;
+  trashed?: boolean;
+  trashedAt?: string;
   narrative: string; // Raw markdown body
   renderedHtml?: string; // Rendered with resolved wikilinks
   rawContent?: string; // Full markdown source with frontmatter
@@ -28,7 +32,7 @@ export interface ArtworkRecord {
 export interface DriveFile {
   path: string; // relative to rootPath, e.g. "posts/greetings-from-austin.md"
   name: string;
-  folder: 'root' | 'images' | 'pages' | 'posts';
+  folder: 'root' | 'images' | 'pages' | 'posts' | 'trash';
   extension: 'md' | 'svg' | 'jpg' | 'png' | 'json';
   content: string;
   size: string;

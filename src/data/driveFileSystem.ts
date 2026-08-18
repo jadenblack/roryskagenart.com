@@ -44,7 +44,7 @@ tags: [neon, roadside, retro]
 \`\`\`
 
 ## Hyperlink & Media Resolution Rules
-- **Internal Wiki Links:** Use \`[[posts/slug]]\` or \`[[slug]]\` or \`[[slug|Custom Label]]\` to automatically generate client-side SPA routing links.
+- **Internal Wiki Links:** Use \`[[slug}]]\` or \`[[slug]]\` or \`[[slug|Custom Label]]\` to automatically generate client-side SPA routing links.
 - **Page Links:** Use \`[[pages/about]]\` or \`[[pages/commissions]]\` to route to informational pages.
 - **Image Embeds:** Use standard markdown \`![Alt Text](images/slug.svg)\` to automatically pull from the \`images/\` folder.
 `;
@@ -125,7 +125,7 @@ Rory Skagen accepts a strictly limited number of private canvas commissions and 
 - **Pricing:** Inquire with dimensions and desired theme.
 
 ## 2. Public & Commercial Murals
-As seen in the iconic **[[posts/greetings-from-austin|Greetings from Austin Landmark]]**, Skagen's murals are engineered to withstand exterior elements using industrial UV-resistant acrylic silicates and elastomeric masonry primers.
+As seen in the iconic **[[greetings-from-austin|Greetings from Austin Landmark}]]**, Skagen's murals are engineered to withstand exterior elements using industrial UV-resistant acrylic silicates and elastomeric masonry primers.
 
 ### Process:
 1. **Initial Site Survey & Conceptual Brief**
@@ -201,8 +201,8 @@ Modeled after the nostalgic 1940s "Large Letter" linen postcards by Curt Teich &
 > — **Rory Skagen**
 
 ### Related Works
-- Explore the companion night study: [[posts/south-congress-twilight|South Congress Twilight Marquee]]
-- Discover the psychedelic roots in [[posts/armadillo-world-headquarters|Cosmic Armadillo Honky-Tonk]]
+- Explore the companion night study: [[south-congress-twilight|South Congress Twilight Marquee}]]
+- Discover the psychedelic roots in [[armadillo-world-headquarters|Cosmic Armadillo Honky-Tonk}]]
 - Learn about the artist's roots in the [[pages/about|Artist Biography]]
 `,
 
@@ -241,7 +241,7 @@ Skagen masterfully renders the intense glow of hot magenta and cyan gas-discharg
 > *"There's a sacred quietude to a 24-hour Texas roadside diner when the highway has gone still and only the neon star is humming."*
 
 ### Related Studies
-- Compare with [[posts/route-66-relic|Route 66 Neon Motel Shield]]
+- Compare with [[route-66-relic|Route 66 Neon Motel Shield}]]
 - View commission options in [[pages/commissions|Custom Art Services]]
 `,
 
@@ -276,7 +276,7 @@ Inspired by the 1950s space race craze that swept Texas, Skagen imagines a futur
 - **Accents:** Genuine palladium metal leaf on the chrome bumpers and tail-fin trim.
 - **Series:** Part of the artist's acclaimed *Atomic Pop* cycle.
 
-See also: [[posts/saturn-v-midcentury-voyage|Lone Star Orbit: Apollo Retro]]
+See also: [[saturn-v-midcentury-voyage|Lone Star Orbit: Apollo Retro}]]
 `,
 
   'armadillo-world-headquarters.md': `---
@@ -343,7 +343,7 @@ A sculptural painting executed on custom laser-cut aeronautical aluminum, captur
 - **Finish:** Industrial sign enamel treated with authentic multi-stage distressing and high-gloss automotive clear coat.
 - **Mounting:** Floats 1.5 inches off the wall with integrated aluminum french cleat system.
 
-Explore more from this series in [[posts/neon-lone-star-diner|Lone Star Diner at 2 AM]].
+Explore more from this series in [[neon-lone-star-diner|Lone Star Diner at 2 AM}]].
 `,
 
   'saturn-v-midcentury-voyage.md': `---
@@ -400,7 +400,7 @@ Looking north up Austin's vibrant South Congress Avenue as the twilight turns de
 ## Overview
 Captured during the golden hour on South Congress, this painting features the classic motel marquee, swaying palm fronds, and the iconic silhouette of the Texas Capitol.
 
-Companion piece to the world-famous [[posts/greetings-from-austin|Greetings from Austin Mural]].
+Companion piece to the world-famous [[greetings-from-austin|Greetings from Austin Mural}]].
 `,
 
   'vintage-fiesta-drive-in.md': `---

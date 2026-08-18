@@ -1,6 +1,6 @@
 {
-  "name": "Rory Skagen Art Portfolio Archive",
-  "description": "High-performance gallery and file-based markdown content archive system for Rory Skagen's artwork.",
+  "name": "Rory Skagen Studio — Fine Art Gallery",
+  "description": "Official marketing gallery and original fine art collection for Rory Skagen Studio, showcasing and selling original paintings, murals, and limited fine art works.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
