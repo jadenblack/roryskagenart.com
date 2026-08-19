@@ -47,6 +47,12 @@ tags: [neon, roadside, retro]
 - **Internal Wiki Links:** Use \`[[slug}]]\` or \`[[slug]]\` or \`[[slug|Custom Label]]\` to automatically generate client-side SPA routing links.
 - **Page Links:** Use \`[[pages/about]]\` or \`[[pages/commissions]]\` to route to informational pages.
 - **Image Embeds:** Use standard markdown \`![Alt Text](images/slug.svg)\` to automatically pull from the \`images/\` folder.
+
+## Studio Admin Authentication (Pure Native Node.js • Zero Dependencies)
+- **Password Hashing:** Native \`crypto.scryptSync\` with 16-byte random salts and constant-time \`crypto.timingSafeEqual\` comparison.
+- **Session Tokens:** 32-byte cryptographic random hex tokens mapped to active user IDs.
+- **Cookie Security:** HttpOnly, SameSite=Lax, and Secure flags with 7-day TTL.
+- **Dual Verification:** Native cookie parsing with fallback support for \`Authorization: Bearer <token>\`.
 `;
 
 export const INITIAL_PAGES: Record<string, string> = {

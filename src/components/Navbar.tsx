@@ -13,10 +13,14 @@ import {
   Trash2,
   Sun,
   Moon,
-  Sparkles
+  Sparkles,
+  Lock,
+  ShieldCheck,
+  UserCheck
 } from 'lucide-react';
 import { DRIVE_ROOT_PATH } from '../data/driveFileSystem';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   currentRoute: string;
@@ -26,6 +30,7 @@ interface NavbarProps {
   totalWorks: number;
   trashedCount?: number;
   onOpenCloudinary?: () => void;
+  onOpenAdminAuth?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -35,10 +40,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSearchChange,
   totalWorks,
   trashedCount = 0,
-  onOpenCloudinary
+  onOpenCloudinary,
+  onOpenAdminAuth
 }) => {
   const [copied, setCopied] = useState(false);
   const { theme, toggleTheme, isDark } = useTheme();
+  const { user, isAuthenticated } = useAuth();
 
   const copyPath = () => {
     navigator.clipboard.writeText(DRIVE_ROOT_PATH);
@@ -96,6 +103,27 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span>ORIGINAL WORKS: <strong className="text-zinc-900 dark:text-white font-mono font-bold">{totalWorks}</strong></span>
           <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">|</span>
           <span className="text-zinc-500 hidden sm:inline">Austin, Texas</span>
+          {onOpenAdminAuth && (
+            <>
+              <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">|</span>
+              <button
+                onClick={onOpenAdminAuth}
+                className={`flex items-center gap-1 transition-colors cursor-pointer font-medium ${
+                  isAuthenticated
+                    ? 'text-emerald-700 dark:text-emerald-400 font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
+                }`}
+                title={isAuthenticated ? 'Studio Admin Authenticated' : 'Admin Sign In'}
+              >
+                {isAuthenticated ? (
+                  <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                ) : (
+                  <Lock className="w-2.5 h-2.5 text-zinc-500" />
+                )}
+                <span>{isAuthenticated ? `ADMIN: ${user?.name?.toUpperCase() || 'ACTIVE'}` : 'STUDIO ADMIN'}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -146,6 +174,31 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
 
             <div className="h-6 w-px bg-zinc-300 dark:bg-zinc-800 mx-1"></div>
+
+            {/* Admin Key Button */}
+            {onOpenAdminAuth && (
+              <button
+                onClick={onOpenAdminAuth}
+                title={isAuthenticated ? 'Manage Studio Admin / Change Password' : 'Studio Admin Sign In'}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 border text-[9px] uppercase tracking-wider transition-colors cursor-pointer rounded-xs font-mono font-bold ${
+                  isAuthenticated
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950'
+                    : 'bg-[#EAE9E4] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
+                }`}
+              >
+                {isAuthenticated ? (
+                  <>
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span>Admin: {user?.name?.split(' ')[0] || 'Studio'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
+                    <span>Admin</span>
+                  </>
+                )}
+              </button>
+            )}
 
             {/* Theme Toggle Button */}
             <button

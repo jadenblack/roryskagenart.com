@@ -91,3 +91,23 @@ export interface CloudinaryStatus {
   message: string;
   error?: string;
 }
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'editor';
+  createdAt: string;
+  lastLoginAt?: string;
+}
+
+export interface AuthStatusInfo {
+  defaultAdminEmail: string;
+  defaultPasswordHint: string;
+  isDefaultPasswordActive: boolean;
+  totalAdmins: number;
+  activeSessions: number;
+  authenticated: boolean;
+  currentUser: AuthUser | null;
+}
+

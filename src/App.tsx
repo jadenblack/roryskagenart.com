@@ -15,6 +15,7 @@ import { PagesView } from './components/PagesView';
 import { ReadmeView } from './components/ReadmeView';
 import { TrashView } from './components/TrashView';
 import { CloudinaryManager } from './components/CloudinaryManager';
+import { AdminLoginModal } from './components/AdminLoginModal';
 import { DRIVE_ROOT_PATH } from './data/driveFileSystem';
 import { Sparkles, ArrowUp, Github, Heart } from 'lucide-react';
 
@@ -25,6 +26,7 @@ export default function App() {
   const [selectedPageSlug, setSelectedPageSlug] = useState<string>('about');
   const [explorerTargetFilePath, setExplorerTargetFilePath] = useState<string | undefined>(undefined);
   const [cloudinaryModalOpen, setCloudinaryModalOpen] = useState(false);
+  const [adminAuthModalOpen, setAdminAuthModalOpen] = useState(false);
 
   // Subscribe to engine state updates
   useEffect(() => {
@@ -145,6 +147,7 @@ export default function App() {
           totalWorks={allItems.filter(i => !i.trashed).length}
           trashedCount={trashedItems.length}
           onOpenCloudinary={() => setCloudinaryModalOpen(true)}
+          onOpenAdminAuth={() => setAdminAuthModalOpen(true)}
         />
 
         {/* Main Content Area with clear layout styling */}
@@ -282,6 +285,7 @@ export default function App() {
                 <li><button onClick={() => navigateTo('trash')} className="hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer">Trash Vault ({trashedItems.length})</button></li>
                 <li><button onClick={() => navigateTo('explorer')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Drive Files &amp; Editor</button></li>
                 <li><button onClick={() => navigateTo('readme')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">System Specs (readme.md)</button></li>
+                <li><button onClick={() => setAdminAuthModalOpen(true)} className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors cursor-pointer font-bold">Studio Admin Auth (scrypt)</button></li>
                 <li><button onClick={() => navigateTo('pages', 'contact')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Acquisitions &amp; Contact</button></li>
               </ul>
             </div>
@@ -309,6 +313,12 @@ export default function App() {
           setCloudinaryModalOpen(false);
           navigateTo('artwork', slug);
         }}
+      />
+
+      {/* Zero-Dependency Admin Authentication Modal */}
+      <AdminLoginModal
+        isOpen={adminAuthModalOpen}
+        onClose={() => setAdminAuthModalOpen(false)}
       />
     </div>
   );

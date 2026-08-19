@@ -1,6 +1,6 @@
 {
-  "name": "Rory Skagen Studio — Fine Art Gallery",
-  "description": "Official marketing gallery and original fine art collection for Rory Skagen Studio, showcasing and selling original paintings, murals, and limited fine art works.",
+  "name": "Rory Skagen Studio",
+  "description": "Official gallery and original art collection for Rory Skagen Studio",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

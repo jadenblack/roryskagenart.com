@@ -4,6 +4,7 @@ import multer from "multer";
 import type { UploadApiResponse, v2 as CloudinaryV2Type } from "cloudinary";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
+import { authService } from "./src/server/authService";
 
 dotenv.config();
 
@@ -322,6 +323,147 @@ app.delete("/api/cloudinary/resources/:publicId(*)", async (req, res) => {
     return res.status(500).json({
       error: error.message || "Failed to delete resource from Cloudinary",
     });
+  }
+});
+
+// -------------------------------------------------------------
+// Studio Native Admin Authentication Endpoints (Zero Dependencies)
+// -------------------------------------------------------------
+
+// 1. Check Public Auth Status & Configuration
+app.get("/api/auth/status", (req, res) => {
+  try {
+    const config = authService.getPublicAuthConfig();
+    const token = authService.parseSessionToken(req);
+    const sessionData = token ? authService.validateSession(token) : null;
+
+    res.json({
+      ...config,
+      currentUser: sessionData ? sessionData.user : null,
+      authenticated: !!sessionData,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to fetch auth status" });
+  }
+});
+
+// 2. Current Authenticated User Session
+app.get("/api/auth/me", (req, res) => {
+  try {
+    const token = authService.parseSessionToken(req);
+    if (!token) {
+      return res.json({ authenticated: false, user: null });
+    }
+
+    const sessionData = authService.validateSession(token);
+    if (!sessionData) {
+      authService.clearSessionCookie(res);
+      return res.json({ authenticated: false, user: null });
+    }
+
+    return res.json({
+      authenticated: true,
+      user: sessionData.user,
+      expiresAt: sessionData.session.expiresAt,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ authenticated: false, error: err.message });
+  }
+});
+
+// 3. User Login
+app.post("/api/auth/login", (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required." });
+    }
+
+    const user = authService.getUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
+
+    const isValid = authService.verifyPassword(password, user.passwordHash);
+    if (!isValid) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
+
+    // Generate random 32-byte session token
+    const session = authService.createSession(user.id, req);
+
+    // Set secure HttpOnly cookie
+    authService.setSessionCookie(res, session.token, session.expiresAt);
+
+    const safeUser = authService.toSafeUser(user);
+
+    return res.json({
+      success: true,
+      authenticated: true,
+      user: safeUser,
+      token: session.token,
+      expiresAt: session.expiresAt,
+    });
+  } catch (err: any) {
+    console.error("Login error:", err);
+    return res.status(500).json({ error: err.message || "Authentication failed." });
+  }
+});
+
+// 4. User Logout
+app.post("/api/auth/logout", (req, res) => {
+  try {
+    const token = authService.parseSessionToken(req);
+    if (token) {
+      authService.destroySession(token);
+    }
+    authService.clearSessionCookie(res);
+    return res.json({ success: true, message: "Logged out successfully." });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to log out." });
+  }
+});
+
+// 5. Change Password (Authenticated Admin only)
+app.post("/api/auth/change-password", (req, res) => {
+  try {
+    const token = authService.parseSessionToken(req);
+    if (!token) {
+      return res.status(401).json({ error: "Authentication required." });
+    }
+
+    const sessionData = authService.validateSession(token);
+    if (!sessionData) {
+      return res.status(401).json({ error: "Session expired or invalid. Please sign in again." });
+    }
+
+    const { currentPassword, newPassword } = req.body || {};
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: "Both current password and new password are required." });
+    }
+
+    if (typeof newPassword !== "string" || newPassword.length < 6) {
+      return res.status(400).json({ error: "New password must be at least 6 characters long." });
+    }
+
+    const fullUser = authService.getUserById(sessionData.user.id);
+    if (!fullUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const isCurrentValid = authService.verifyPassword(currentPassword, fullUser.passwordHash);
+    if (!isCurrentValid) {
+      return res.status(400).json({ error: "Current password does not match." });
+    }
+
+    authService.changeUserPassword(sessionData.user.id, newPassword);
+
+    return res.json({
+      success: true,
+      message: "Password changed successfully.",
+    });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to update password." });
   }
 });
 
