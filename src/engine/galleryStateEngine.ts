@@ -3,6 +3,11 @@ import { buildInitialVirtualFileSystem, DRIVE_ROOT_PATH } from '../data/driveFil
 import { getArtworkSvg } from '../data/artAssets';
 import { resolveCloudinaryUrl } from '../data/cloudinaryMap';
 
+const STORAGE_KEY_TRASHED = 'rory_studio_trashed_slugs_v2';
+const STORAGE_KEY_DELETED = 'rory_studio_deleted_slugs_v2';
+const STORAGE_KEY_OVERRIDES = 'rory_studio_artwork_overrides_v2';
+const STORAGE_KEY_FILES = 'rory_studio_virtual_files_v2';
+
 export class GalleryStateEngine {
   public rootPath: string = DRIVE_ROOT_PATH;
   public files: DriveFile[] = [];
@@ -15,14 +20,55 @@ export class GalleryStateEngine {
     series: 'all',
     sort: 'newest'
   };
+
+  private trashedSlugs: Set<string> = new Set();
+  private deletedSlugs: Set<string> = new Set();
+  private artworkOverrides: Record<string, Partial<ArtworkRecord>> = {};
+  private customVirtualFiles: Record<string, DriveFile> = {};
   private listeners: Set<() => void> = new Set();
 
   constructor() {
+    this.loadPersistence();
     this.files = buildInitialVirtualFileSystem();
     this.init();
   }
 
   public init(): void {
+    // 1. Merge custom virtual files into files list
+    for (const [path, customFile] of Object.entries(this.customVirtualFiles)) {
+      const idx = this.files.findIndex((f) => f.path === path);
+      if (idx >= 0) {
+        this.files[idx] = { ...customFile };
+      } else {
+        this.files.push({ ...customFile });
+      }
+    }
+
+    // 2. Remove permanently deleted files from virtual file system
+    this.files = this.files.filter((f) => {
+      const slugMatch = f.path.match(/^(?:posts|trash)\/([^\/]+)\.md$/i);
+      if (slugMatch) {
+        const slug = slugMatch[1].toLowerCase();
+        if (this.deletedSlugs.has(slug)) return false;
+      }
+      const imgMatch = f.path.match(/^images\/([^\/]+)\.(?:svg|png|jpg|jpeg|webp)$/i);
+      if (imgMatch) {
+        const slug = imgMatch[1].toLowerCase();
+        if (this.deletedSlugs.has(slug)) return false;
+      }
+      return true;
+    });
+
+    // 3. Move trashed files to trash/ folder if they are in trashedSlugs
+    for (const slug of this.trashedSlugs) {
+      const postFile = this.files.find((f) => f.path === `posts/${slug}.md`);
+      if (postFile) {
+        postFile.path = `trash/${slug}.md`;
+        postFile.folder = 'trash';
+      }
+    }
+
+    // 4. Load master registry and pages
     this.loadMasterRegistry();
     this.loadPages();
   }
@@ -34,6 +80,75 @@ export class GalleryStateEngine {
 
   private notify(): void {
     this.listeners.forEach((fn) => fn());
+  }
+
+  private savePersistence(): void {
+    try {
+      localStorage.setItem(STORAGE_KEY_TRASHED, JSON.stringify(Array.from(this.trashedSlugs)));
+      localStorage.setItem(STORAGE_KEY_DELETED, JSON.stringify(Array.from(this.deletedSlugs)));
+      localStorage.setItem(STORAGE_KEY_OVERRIDES, JSON.stringify(this.artworkOverrides));
+      localStorage.setItem(STORAGE_KEY_FILES, JSON.stringify(this.customVirtualFiles));
+    } catch (e) {
+      console.warn('Unable to persist gallery state to localStorage', e);
+    }
+  }
+
+  private loadPersistence(): void {
+    try {
+      const trashed = localStorage.getItem(STORAGE_KEY_TRASHED);
+      if (trashed) {
+        const parsed = JSON.parse(trashed);
+        if (Array.isArray(parsed)) {
+          this.trashedSlugs = new Set(parsed.map((s: string) => s.toLowerCase()));
+        }
+      }
+
+      const deleted = localStorage.getItem(STORAGE_KEY_DELETED);
+      if (deleted) {
+        const parsed = JSON.parse(deleted);
+        if (Array.isArray(parsed)) {
+          this.deletedSlugs = new Set(parsed.map((s: string) => s.toLowerCase()));
+        }
+      }
+
+      const overrides = localStorage.getItem(STORAGE_KEY_OVERRIDES);
+      if (overrides) {
+        const parsed = JSON.parse(overrides);
+        if (parsed && typeof parsed === 'object') {
+          this.artworkOverrides = parsed;
+        }
+      }
+
+      const files = localStorage.getItem(STORAGE_KEY_FILES);
+      if (files) {
+        const parsed = JSON.parse(files);
+        if (parsed && typeof parsed === 'object') {
+          this.customVirtualFiles = parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Unable to read gallery state from localStorage', e);
+    }
+  }
+
+  /**
+   * Reset all deletions, trashed items, and overrides back to original factory defaults
+   */
+  public resetToFactoryDefaults(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEY_TRASHED);
+      localStorage.removeItem(STORAGE_KEY_DELETED);
+      localStorage.removeItem(STORAGE_KEY_OVERRIDES);
+      localStorage.removeItem(STORAGE_KEY_FILES);
+    } catch {}
+
+    this.trashedSlugs.clear();
+    this.deletedSlugs.clear();
+    this.artworkOverrides = {};
+    this.customVirtualFiles = {};
+    this.files = buildInitialVirtualFileSystem();
+    this.init();
+    this.notify();
   }
 
   /**
@@ -54,6 +169,24 @@ export class GalleryStateEngine {
     for (const postFile of postFiles) {
       try {
         const record = this.parsePostMarkdown(postFile.content, postFile.path);
+        
+        // Skip permanently deleted slugs
+        if (this.deletedSlugs.has(record.slug.toLowerCase())) {
+          continue;
+        }
+
+        // Apply persistent trashed state
+        if (this.trashedSlugs.has(record.slug.toLowerCase())) {
+          record.trashed = true;
+          record.status = 'Trashed';
+        }
+
+        // Apply any saved overrides
+        const override = this.artworkOverrides[record.slug.toLowerCase()];
+        if (override) {
+          Object.assign(record, override);
+        }
+
         // Find corresponding index row if exists
         const matchedRow = parsedRows.find((r) => r.slug.toLowerCase() === record.slug.toLowerCase());
         if (matchedRow) {
@@ -72,12 +205,17 @@ export class GalleryStateEngine {
     // Also check if any rows in index.md don't have a post file yet, synthesize them without creating duplicates
     for (const row of parsedRows) {
       const normalizedRowSlug = row.slug.toLowerCase().replace(/^posts\//i, '').replace(/\.md$/i, '').trim();
+      if (this.deletedSlugs.has(normalizedRowSlug)) {
+        continue;
+      }
+
       const existing = records.find((r) => r.slug.toLowerCase() === normalizedRowSlug);
       if (existing) {
         if (!existing.tags || existing.tags.length === 0) {
           existing.tags = row.tags ? row.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
         }
       } else {
+        const isTrashed = this.trashedSlugs.has(normalizedRowSlug) || row.status === 'Trashed';
         const synthRecord: ArtworkRecord = {
           slug: normalizedRowSlug,
           title: row.title,
@@ -85,7 +223,7 @@ export class GalleryStateEngine {
           medium: row.medium,
           dimensions: row.dimensions,
           dimensions_cm: this.calculateCm(row.dimensions),
-          status: (row.status as ArtworkStatus) || 'Available',
+          status: isTrashed ? 'Trashed' : ((row.status as ArtworkStatus) || 'Available'),
           price: row.price,
           featured_image: row.imageFile,
           imageUrl: this.resolveImagePath(row.imageFile, normalizedRowSlug),
@@ -94,12 +232,18 @@ export class GalleryStateEngine {
           location: 'Rory Skagen Studio',
           enabled: row.status !== 'Disabled',
           archived: row.status === 'Archived',
-          trashed: row.status === 'Trashed',
+          trashed: isTrashed,
           narrative: `# ${row.title}\n\nOriginal masterwork by Rory Skagen exploring themes from the **${row.series}** cycle.\n\n![${row.title}](${row.imageFile})`,
-          filePath: `posts/${normalizedRowSlug}.md`,
+          filePath: isTrashed ? `trash/${normalizedRowSlug}.md` : `posts/${normalizedRowSlug}.md`,
           tags: row.tags ? row.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
           scaleCategory: this.inferScaleCategory(row.dimensions)
         };
+
+        const override = this.artworkOverrides[normalizedRowSlug];
+        if (override) {
+          Object.assign(synthRecord, override);
+        }
+
         synthRecord.renderedHtml = this.renderMarkdownWithWikiLinks(synthRecord.narrative);
         records.push(synthRecord);
       }
@@ -109,22 +253,30 @@ export class GalleryStateEngine {
     this.notify();
   }
 
+  /**
+   * Parse pages from pages/*.md
+   */
   public loadPages(): void {
     const pageFiles = this.files.filter((f) => f.folder === 'pages' && f.extension === 'md');
     this.pages = pageFiles.map((pf) => {
       const { metadata, body } = this.extractFrontmatter(pf.content);
+      const slug = pf.name.replace(/\.md$/, '');
+      const title = metadata.title || this.formatTitle(slug);
       return {
-        slug: metadata.slug || pf.name.replace('.md', ''),
-        title: metadata.title || pf.name.replace('.md', '').toUpperCase(),
-        subtitle: metadata.subtitle,
+        slug,
+        title,
+        route: `#page/${slug}`,
         filePath: pf.path,
-        rawMarkdown: pf.content
+        rawMarkdown: pf.content,
+        metaDescription: metadata.description || `Rory Skagen Studio - ${title}`,
+        metadata
       };
     });
+    this.notify();
   }
 
   /**
-   * Parse Markdown Table from index.md
+   * Parses Markdown Pipe Table inside index.md
    */
   public parseIndexMarkdown(content: string): MasterIndexRow[] {
     const lines = content.split('\n');
@@ -196,47 +348,43 @@ export class GalleryStateEngine {
             medium,
             dimensions,
             status,
-            price: status === 'Sold' ? 'Private Collection' : status === 'Archived' ? 'Archive Only' : 'Inquire',
+            price: status === 'Sold' ? 'Private Collection' : status === 'Archived' ? 'Storage' : 'Inquire',
             series: medium.toLowerCase().includes('enamel') ? 'Monsters & Kaiju' : 'Pop Surrealism & Folklore',
             imageFile: `images/${slug}.svg`,
-            tags: `${medium.toLowerCase()}, ${status.toLowerCase()}, ${year}`
+            tags: 'fine-art, vintage'
           });
         }
       }
     }
+
     return rows;
   }
 
   /**
-   * Cleans and normalizes slugs, stripping any 'posts/' prefix, wikilink brackets, or file extensions
+   * Helper to strip wikilinks syntax and paths from slugs
    */
-  public sanitizeSlug(rawSlug: string | undefined): string {
-    if (!rawSlug) return 'untitled';
-    let slug = rawSlug.trim();
-    const wikiMatch = slug.match(/\[\[(.*?)\]\]/);
+  public sanitizeSlug(raw: string): string {
+    if (!raw) return 'artwork';
+    let clean = raw.trim();
+    // Parse [[posts/slug|Title]] or [[slug]]
+    const wikiMatch = clean.match(/\[\[(.*?)\]\]/);
     if (wikiMatch) {
-      slug = wikiMatch[1].split('|')[0].trim();
+      clean = wikiMatch[1].split('|')[0].trim();
     }
-    slug = slug
-      .replace(/^\[\[+/, '')
-      .replace(/\]\]+$/, '')
+    return clean
       .replace(/^(?:posts|post|Posts|Post)[\/\\]+/i, '')
+      .replace(/^trash[\/\\]+/i, '')
       .replace(/\.md$/i, '')
-      .trim()
+      .replace(/[^a-zA-Z0-9-_]/g, '-')
       .toLowerCase();
-
-    return slug || 'untitled';
   }
 
   /**
-   * Cleans and sanitizes titles, extracting readable display text from any Obsidian wikilinks [[...]]
-   * and completely removing all "posts/", "post/", or bracket prefixes.
+   * Helper to strip wikilinks and normalize human-readable titles
    */
-  public sanitizeTitle(rawTitle: string | undefined, fallbackSlug: string): string {
-    if (!rawTitle) {
-      return this.sanitizeSlug(fallbackSlug).replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
-    }
-    let title = rawTitle.trim();
+  public sanitizeTitle(raw: string | undefined, fallbackSlug: string): string {
+    if (!raw) return this.formatTitle(fallbackSlug);
+    let title = raw.trim();
     // Parse [[posts/slug|Title]] or [[slug|Title]] or [[title]]
     const wikiMatch = title.match(/\[\[(.*?)\]\]/);
     if (wikiMatch) {
@@ -249,6 +397,7 @@ export class GalleryStateEngine {
       .replace(/^\[\[+/, '')
       .replace(/\]\]+$/, '')
       .replace(/^(?:posts|post|Posts|Post)[\/\\]+/i, '')
+      .replace(/^trash[\/\\]+/i, '')
       .replace(/\.md$/i, '')
       .trim();
 
@@ -285,11 +434,12 @@ export class GalleryStateEngine {
       }
     }
 
-    const status = (metadata.status as ArtworkStatus) || 'Available';
-    const isTrashed = metadata.trashed === true || status === 'Trashed' || filePath.startsWith('trash/');
+    const rawStatus = (metadata.status as ArtworkStatus) || 'Available';
+    const isTrashed = metadata.trashed === true || rawStatus === 'Trashed' || filePath.startsWith('trash/') || this.trashedSlugs.has(slug);
+    const status: ArtworkStatus = isTrashed ? 'Trashed' : rawStatus;
     const isArchived = metadata.archived === true || status === 'Archived';
     const isEnabled = metadata.enabled !== undefined ? Boolean(metadata.enabled) : status !== 'Disabled';
-    const trashedAt = metadata.trashedAt || undefined;
+    const trashedAt = metadata.trashedAt || (isTrashed ? new Date().toISOString() : undefined);
     const price = metadata.price || (status === 'Sold' ? 'Sold' : 'Inquire');
     const year = metadata.year || (metadata.date ? new Date(metadata.date).getFullYear() : 2019);
     const gallery_series = metadata.gallery_series || metadata.series || (metadata.medium && metadata.medium.toLowerCase().includes('enamel') ? 'Monsters & Kaiju' : 'Pop Surrealism & Folklore');
@@ -448,55 +598,36 @@ export class GalleryStateEngine {
       // Check if targeting index / root map
       if (cleanTarget === 'index' || cleanTarget === 'index.md') {
         const displayLabel = label || '← Return to Master Catalog Index';
-        return `<a href="#archive" class="wiki-link inline-flex items-center gap-1.5 text-amber-400 hover:text-amber-300 underline underline-offset-4 decoration-amber-500/40 hover:decoration-amber-300 font-medium transition-colors cursor-pointer" data-page="index"><span class="text-amber-500/80 text-sm">⟵</span> ${displayLabel}</a>`;
+        return `<a href="#registry" class="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 font-mono font-medium underline underline-offset-4 decoration-amber-500/40 hover:decoration-amber-400 transition-colors">${displayLabel}</a>`;
       }
 
-      // Check if targeting pages
-      if (
-        cleanTarget.startsWith('pages/') ||
-        cleanTarget === 'about' ||
-        cleanTarget === 'contact' ||
-        cleanTarget === 'commissions' ||
-        cleanTarget === 'exhibitions' ||
-        cleanTarget === 'readme'
-      ) {
-        const pageSlug = rawTarget.replace(/^pages\//i, '').replace(/\.md$/i, '');
+      // Check if targeting pages (e.g. pages/about, about)
+      if (cleanTarget.startsWith('pages/') || cleanTarget === 'about' || cleanTarget === 'contact' || cleanTarget === 'exhibitions' || cleanTarget === 'commissions') {
+        const pageSlug = cleanTarget.replace(/^pages\//, '').replace(/\.md$/, '');
         const displayLabel = label || this.formatTitle(pageSlug);
-        return `<a href="#page/${pageSlug}" class="wiki-link inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 underline underline-offset-4 decoration-amber-500/40 hover:decoration-amber-300 font-medium transition-colors cursor-pointer" data-page="${pageSlug}"><span class="text-amber-500/70 text-xs">◈</span> ${displayLabel}</a>`;
+        return `<a href="#page/${pageSlug}" class="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-4 decoration-emerald-500/40 hover:decoration-emerald-400 transition-colors">${displayLabel}</a>`;
       }
 
-      // Targeting posts or artworks (e.g. [[posts/slug]] or [[POSTS/slug]] or [[slug]])
-      const artworkSlug = rawTarget.replace(/^posts\//i, '').replace(/\.md$/i, '').trim();
-      const displayLabel = label || this.formatTitle(artworkSlug);
-      return `<a href="#artwork/${artworkSlug}" class="wiki-link inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 underline underline-offset-4 decoration-amber-500/40 hover:decoration-amber-300 font-medium transition-colors cursor-pointer" data-artwork="${artworkSlug}"><span class="text-amber-500/70 text-xs">★</span> ${displayLabel}</a>`;
+      // Check if targeting posts (e.g. posts/slug, slug)
+      const postSlug = cleanTarget.replace(/^posts\//, '').replace(/^trash\//, '').replace(/\.md$/, '');
+      const displayLabel = label || this.formatTitle(postSlug);
+      return `<a href="#artwork/${postSlug}" class="inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 font-medium underline underline-offset-4 decoration-sky-500/40 hover:decoration-sky-400 transition-colors group">
+        <span class="group-hover:translate-x-0.5 transition-transform inline-block">◈</span>
+        <span>${displayLabel}</span>
+      </a>`;
     });
 
-    // 3. Resolve standard markdown image tags ![Alt](images/path.ext)
-    result = result.replace(/!\[(.*?)\]\((.*?)\)/g, (_, alt, imgPath) => {
-      const cleanPath = imgPath.trim();
-      const slug = cleanPath.split('/').pop()?.split('.')[0] || 'art';
-      const resolvedSrc = this.resolveImagePath(cleanPath, slug);
-
-      return `<div class="my-8 rounded-xl overflow-hidden border border-zinc-800/80 bg-zinc-950/60 p-3 shadow-2xl backdrop-blur-sm">
-        <div class="relative group overflow-hidden rounded-lg bg-zinc-900 flex items-center justify-center min-h-[220px]">
-          <img src="${resolvedSrc}" alt="${alt}" class="w-full max-h-[500px] object-contain transition-transform duration-500 group-hover:scale-[1.02]" loading="lazy" />
-        </div>
-        ${alt ? `<p class="text-xs text-center text-zinc-400 mt-2.5 font-mono tracking-wide flex items-center justify-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500/60 inline-block"></span> ${alt}</p>` : ''}
-      </div>`;
-    });
-
-    // 4. Resolve standard markdown links [Label](url)
-    result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, href) => {
-      // If internal link to local or contact
-      if (href.includes('contact')) {
-        return `<a href="#page/contact" class="text-amber-400 hover:text-amber-300 underline underline-offset-4 decoration-amber-500/40 font-medium cursor-pointer">${label}</a>`;
+    // 3. Resolve standard Markdown links [Label](url)
+    result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-zinc-200 hover:text-white underline underline-offset-4 decoration-zinc-500 hover:decoration-zinc-300 transition-colors inline-flex items-center gap-0.5">${text} <span class="text-[10px] opacity-70">↗</span></a>`;
       }
-      return `<a href="${href}" target="_blank" rel="noreferrer" class="text-amber-400 hover:text-amber-300 underline underline-offset-4 decoration-amber-500/40 font-medium">${label}</a>`;
+      return match;
     });
 
-    // 5. Headings
-    result = result.replace(/^### (.*$)/gim, '<h3 class="text-xl font-display font-semibold text-zinc-100 mt-8 mb-3 tracking-wide">$1</h3>');
-    result = result.replace(/^## (.*$)/gim, '<h2 class="text-2xl font-display font-bold text-zinc-100 mt-10 mb-4 tracking-wide pb-2 border-b border-zinc-800/60">$1</h2>');
+    // Basic markdown formatting for headings, quotes, bold, list
+    result = result.replace(/^### (.*$)/gim, '<h3 class="text-lg font-display font-semibold text-zinc-200 mt-5 mb-2 tracking-wide">$1</h3>');
+    result = result.replace(/^## (.*$)/gim, '<h2 class="text-xl font-display font-bold text-zinc-100 mt-6 mb-3 tracking-wide border-b border-zinc-800/80 pb-1.5">$1</h2>');
     result = result.replace(/^# (.*$)/gim, '<h1 class="text-3xl font-display font-bold text-zinc-50 mt-6 mb-4 tracking-wide">$1</h1>');
 
     // Blockquotes
@@ -530,7 +661,7 @@ export class GalleryStateEngine {
         ) {
           return trimmed;
         }
-        return `<p class="text-zinc-300 leading-relaxed my-4 text-[15px] font-normal">${trimmed}</p>`;
+        return `<p class="text-zinc-700 dark:text-zinc-300 leading-relaxed my-4 text-[15px] font-normal">${trimmed}</p>`;
       })
       .join('\n');
 
@@ -584,8 +715,9 @@ export class GalleryStateEngine {
     if (existingImg) {
       existingImg.content = cloudinaryUrl;
       existingImg.lastModified = now;
+      this.customVirtualFiles[imagePath] = { ...existingImg };
     } else {
-      this.files.push({
+      const newImgFile: DriveFile = {
         path: imagePath,
         name: filename,
         folder: 'images',
@@ -593,24 +725,27 @@ export class GalleryStateEngine {
         content: cloudinaryUrl,
         size: 'CDN Asset',
         lastModified: now,
-      });
+      };
+      this.files.push(newImgFile);
+      this.customVirtualFiles[imagePath] = newImgFile;
     }
 
     // If assignToSlug provided, update the post's featured_image frontmatter
     if (assignToSlug) {
-      const postFile = this.files.find((f) => f.path === `posts/${assignToSlug}.md`);
+      const postFile = this.files.find((f) => f.path === `posts/${assignToSlug}.md` || f.path === `trash/${assignToSlug}.md`);
       if (postFile) {
-        // Replace featured_image line in YAML
         postFile.content = postFile.content.replace(
           /featured_image:\s*["']?([^"'\n]+)["']?/,
           `featured_image: "${cloudinaryUrl}"`
         );
         postFile.lastModified = now;
+        this.customVirtualFiles[postFile.path] = { ...postFile };
       }
     }
 
     this.loadMasterRegistry();
     this.syncIndexMdTable();
+    this.savePersistence();
     this.notify();
   }
 
@@ -719,7 +854,8 @@ export class GalleryStateEngine {
   // --- Artwork Lifecycle Actions (Enable/Disable, Archive, Trash, Delete) ---
 
   public toggleEnableArtwork(slug: string): void {
-    const item = this.items.find((i) => i.slug === slug);
+    const normSlug = slug.toLowerCase().replace(/^posts\//i, '').replace(/\.md$/i, '').trim();
+    const item = this.items.find((i) => i.slug.toLowerCase() === normSlug);
     if (!item) return;
 
     const newEnabled = item.enabled === false || item.status === 'Disabled';
@@ -729,20 +865,29 @@ export class GalleryStateEngine {
     item.enabled = newEnabled;
     item.status = newStatus;
 
+    this.artworkOverrides[normSlug] = {
+      ...(this.artworkOverrides[normSlug] || {}),
+      enabled: newEnabled,
+      status: newStatus
+    };
+
     // Update in virtual file
-    const postFile = this.files.find((f) => f.path === `posts/${slug}.md` || f.path === `trash/${slug}.md`);
+    const postFile = this.files.find((f) => f.path === `posts/${normSlug}.md` || f.path === `trash/${normSlug}.md`);
     if (postFile) {
       postFile.content = this.updateFrontmatterProperty(postFile.content, 'status', newStatus);
       postFile.content = this.updateFrontmatterProperty(postFile.content, 'enabled', newEnabled.toString());
       postFile.lastModified = 'Just now';
+      this.customVirtualFiles[postFile.path] = { ...postFile };
     }
 
     this.syncIndexMdTable();
+    this.savePersistence();
     this.notify();
   }
 
   public toggleArchiveArtwork(slug: string): void {
-    const item = this.items.find((i) => i.slug === slug);
+    const normSlug = slug.toLowerCase().replace(/^posts\//i, '').replace(/\.md$/i, '').trim();
+    const item = this.items.find((i) => i.slug.toLowerCase() === normSlug);
     if (!item) return;
 
     const isArchived = item.status === 'Archived' || item.archived === true;
@@ -752,92 +897,167 @@ export class GalleryStateEngine {
     item.archived = newArchived;
     item.status = newStatus;
 
-    const postFile = this.files.find((f) => f.path === `posts/${slug}.md` || f.path === `trash/${slug}.md`);
+    this.artworkOverrides[normSlug] = {
+      ...(this.artworkOverrides[normSlug] || {}),
+      archived: newArchived,
+      status: newStatus
+    };
+
+    const postFile = this.files.find((f) => f.path === `posts/${normSlug}.md` || f.path === `trash/${normSlug}.md`);
     if (postFile) {
       postFile.content = this.updateFrontmatterProperty(postFile.content, 'status', newStatus);
       postFile.content = this.updateFrontmatterProperty(postFile.content, 'archived', newArchived.toString());
       postFile.lastModified = 'Just now';
+      this.customVirtualFiles[postFile.path] = { ...postFile };
     }
 
     this.syncIndexMdTable();
+    this.savePersistence();
     this.notify();
   }
 
   public trashArtwork(slug: string): void {
-    const item = this.items.find((i) => i.slug === slug);
-    if (!item) return;
+    const normSlug = slug.toLowerCase().replace(/^(?:posts|trash)\//i, '').replace(/\.md$/i, '').trim();
+    this.trashedSlugs.add(normSlug);
+    this.deletedSlugs.delete(normSlug);
 
     const nowIso = new Date().toISOString();
-    item.trashed = true;
-    item.status = 'Trashed';
-    item.trashedAt = nowIso;
+    const item = this.items.find((i) => i.slug.toLowerCase() === normSlug);
+    if (item) {
+      item.trashed = true;
+      item.status = 'Trashed';
+      item.trashedAt = nowIso;
+      item.filePath = `trash/${normSlug}.md`;
+    }
+
+    this.artworkOverrides[normSlug] = {
+      ...(this.artworkOverrides[normSlug] || {}),
+      trashed: true,
+      status: 'Trashed',
+      trashedAt: nowIso
+    };
 
     // Move file to trash/ folder
-    const postFile = this.files.find((f) => f.path === `posts/${slug}.md`);
+    const postFile = this.files.find((f) => f.path === `posts/${normSlug}.md`);
     if (postFile) {
-      postFile.path = `trash/${slug}.md`;
+      postFile.path = `trash/${normSlug}.md`;
       postFile.folder = 'trash';
       postFile.content = this.updateFrontmatterProperty(postFile.content, 'status', 'Trashed');
       postFile.content = this.updateFrontmatterProperty(postFile.content, 'trashed', 'true');
       postFile.content = this.updateFrontmatterProperty(postFile.content, 'trashedAt', `"${nowIso}"`);
       postFile.lastModified = 'Just now';
+      this.customVirtualFiles[`trash/${normSlug}.md`] = { ...postFile };
+      delete this.customVirtualFiles[`posts/${normSlug}.md`];
     }
 
     this.syncIndexMdTable();
+    this.savePersistence();
     this.notify();
   }
 
   public restoreArtwork(slug: string): void {
-    const item = this.items.find((i) => i.slug === slug);
-    if (!item) return;
+    const normSlug = slug.toLowerCase().replace(/^(?:posts|trash)\//i, '').replace(/\.md$/i, '').trim();
+    this.trashedSlugs.delete(normSlug);
+    this.deletedSlugs.delete(normSlug);
 
-    item.trashed = false;
-    item.status = 'Available';
-    delete item.trashedAt;
+    const item = this.items.find((i) => i.slug.toLowerCase() === normSlug);
+    if (item) {
+      item.trashed = false;
+      item.status = 'Available';
+      delete item.trashedAt;
+      item.filePath = `posts/${normSlug}.md`;
+    }
+
+    if (this.artworkOverrides[normSlug]) {
+      this.artworkOverrides[normSlug].trashed = false;
+      this.artworkOverrides[normSlug].status = 'Available';
+      delete this.artworkOverrides[normSlug].trashedAt;
+    }
 
     // Move file back to posts/ folder
-    const trashFile = this.files.find((f) => f.path === `trash/${slug}.md` || f.path === `posts/${slug}.md`);
+    const trashFile = this.files.find((f) => f.path === `trash/${normSlug}.md` || f.path === `posts/${normSlug}.md`);
     if (trashFile) {
-      trashFile.path = `posts/${slug}.md`;
+      trashFile.path = `posts/${normSlug}.md`;
       trashFile.folder = 'posts';
       trashFile.content = this.updateFrontmatterProperty(trashFile.content, 'status', 'Available');
       trashFile.content = this.updateFrontmatterProperty(trashFile.content, 'trashed', 'false');
       trashFile.content = trashFile.content.replace(/trashedAt:\s*["']?[^"'\n]+["']?\n?/, '');
       trashFile.lastModified = 'Just now';
+      this.customVirtualFiles[`posts/${normSlug}.md`] = { ...trashFile };
+      delete this.customVirtualFiles[`trash/${normSlug}.md`];
     }
 
     this.syncIndexMdTable();
+    this.savePersistence();
     this.notify();
   }
 
   public permanentlyDeleteArtwork(slug: string): void {
+    const normSlug = slug.toLowerCase().replace(/^(?:posts|trash)\//i, '').replace(/\.md$/i, '').trim();
+    this.deletedSlugs.add(normSlug);
+    this.trashedSlugs.delete(normSlug);
+    delete this.artworkOverrides[normSlug];
+
+    delete this.customVirtualFiles[`posts/${normSlug}.md`];
+    delete this.customVirtualFiles[`trash/${normSlug}.md`];
+    delete this.customVirtualFiles[`images/${normSlug}.svg`];
+    delete this.customVirtualFiles[`images/${normSlug}.jpg`];
+    delete this.customVirtualFiles[`images/${normSlug}.png`];
+
     // Remove files from virtual filesystem
     this.files = this.files.filter(
       (f) =>
-        f.path !== `posts/${slug}.md` &&
-        f.path !== `trash/${slug}.md` &&
-        f.path !== `images/${slug}.svg`
+        f.path !== `posts/${normSlug}.md` &&
+        f.path !== `trash/${normSlug}.md` &&
+        f.path !== `images/${normSlug}.svg` &&
+        f.path !== `images/${normSlug}.jpg` &&
+        f.path !== `images/${normSlug}.png`
     );
 
     // Remove from items array
-    this.items = this.items.filter((i) => i.slug !== slug);
+    this.items = this.items.filter((i) => i.slug.toLowerCase() !== normSlug);
 
     this.syncIndexMdTable();
+    this.savePersistence();
     this.notify();
   }
 
   public emptyTrash(): void {
-    const trashedSlugs = this.items.filter((i) => i.trashed || i.status === 'Trashed').map((i) => i.slug);
+    const trashedSlugs = this.items.filter((i) => i.trashed || i.status === 'Trashed').map((i) => i.slug.toLowerCase());
+    for (const slug of trashedSlugs) {
+      this.deletedSlugs.add(slug);
+      this.trashedSlugs.delete(slug);
+      delete this.artworkOverrides[slug];
+      delete this.customVirtualFiles[`posts/${slug}.md`];
+      delete this.customVirtualFiles[`trash/${slug}.md`];
+      delete this.customVirtualFiles[`images/${slug}.svg`];
+      delete this.customVirtualFiles[`images/${slug}.jpg`];
+      delete this.customVirtualFiles[`images/${slug}.png`];
+    }
+
+    // Also include any slug that was in trashedSlugs set
+    for (const slug of Array.from(this.trashedSlugs)) {
+      this.deletedSlugs.add(slug);
+      this.trashedSlugs.delete(slug);
+    }
 
     this.files = this.files.filter(
       (f) =>
         f.folder !== 'trash' &&
-        !trashedSlugs.some((s) => f.path === `posts/${s}.md` || f.path === `trash/${s}.md` || f.path === `images/${s}.svg`)
+        !trashedSlugs.some(
+          (s) =>
+            f.path === `posts/${s}.md` ||
+            f.path === `trash/${s}.md` ||
+            f.path === `images/${s}.svg` ||
+            f.path === `images/${s}.jpg` ||
+            f.path === `images/${s}.png`
+        )
     );
 
     this.items = this.items.filter((i) => !i.trashed && i.status !== 'Trashed');
 
     this.syncIndexMdTable();
+    this.savePersistence();
     this.notify();
   }
 
@@ -877,11 +1097,12 @@ export class GalleryStateEngine {
       existing.content = content;
       existing.lastModified = now;
       existing.size = `${(content.length / 1024).toFixed(1)} KB`;
+      this.customVirtualFiles[path] = { ...existing };
     } else {
       const name = path.split('/').pop() || 'untitled.md';
       const folder = (path.includes('/') ? path.split('/')[0] : 'root') as any;
       const extension = (name.split('.').pop() || 'md') as any;
-      this.files.push({
+      const newFile: DriveFile = {
         path,
         name,
         folder,
@@ -889,12 +1110,15 @@ export class GalleryStateEngine {
         content,
         size: `${(content.length / 1024).toFixed(1)} KB`,
         lastModified: now
-      });
+      };
+      this.files.push(newFile);
+      this.customVirtualFiles[path] = newFile;
     }
 
     // Refresh database registry and pages
     this.loadMasterRegistry();
     this.loadPages();
+    this.savePersistence();
     this.notify();
   }
 
@@ -922,7 +1146,7 @@ tags: [${(record.tags || ['pop-art', 'texas']).join(', ')}]
 scaleCategory: "${record.scaleCategory || 'medium'}"
 ---
 
-${narrativeBody || `# ${record.title || 'Untitled Artwork'}\n\nNewly archived painting from the Rory Skagen Studio archive.`}
+${narrativeBody || `# ${record.title || 'Untitled Artwork'}\n\nOriginal painting from the Rory Skagen Studio catalog.`}
 `;
 
     const filePath = `posts/${slug}.md`;
@@ -931,7 +1155,7 @@ ${narrativeBody || `# ${record.title || 'Untitled Artwork'}\n\nNewly archived pa
     // Also add SVG asset
     const svgAssetPath = `images/${slug}.svg`;
     if (!this.files.some((f) => f.path === svgAssetPath)) {
-      this.files.push({
+      const newSvg: DriveFile = {
         path: svgAssetPath,
         name: `${slug}.svg`,
         folder: 'images',
@@ -939,33 +1163,36 @@ ${narrativeBody || `# ${record.title || 'Untitled Artwork'}\n\nNewly archived pa
         content: getArtworkSvg(slug),
         size: '2.5 KB',
         lastModified: 'Just now'
-      });
+      };
+      this.files.push(newSvg);
+      this.customVirtualFiles[svgAssetPath] = newSvg;
     }
 
     // Auto-update index.md table
     this.syncIndexMdTable();
+    this.savePersistence();
 
     return slug;
   }
 
   public deleteArtwork(slug: string): void {
-    this.files = this.files.filter((f) => f.path !== `posts/${slug}.md`);
-    this.syncIndexMdTable();
-    this.loadMasterRegistry();
+    this.permanentlyDeleteArtwork(slug);
   }
 
   public syncIndexMdTable(): void {
     const indexFile = this.files.find((f) => f.path === 'index.md');
     if (!indexFile) return;
 
-    let markdown = `# Master Art Archive Registry — roryskagen.com\n*Root Path: \`My Drive/Clients/roryskagen.com/website-content/\`*\n*Last Synced: ${new Date().toISOString().split('T')[0]}*\n\n| Slug | Title | Year | Medium | Dimensions | Status | Price | Series | Image File | Tags |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    let markdown = `# Master Art Gallery Registry — Rory Skagen Studio\n*Root Path: \`My Drive/Clients/roryskagen.com/website-content/\`*\n*Last Synced: ${new Date().toISOString().split('T')[0]}*\n\n| Slug | Title | Year | Medium | Dimensions | Status | Price | Series | Image File | Tags |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
 
     for (const item of this.items) {
+      if (item.trashed || item.status === 'Trashed') continue;
       const tagsStr = (item.tags || []).join(', ');
       markdown += `| ${item.slug} | ${item.title} | ${item.year} | ${item.medium} | ${item.dimensions} | ${item.status} | ${item.price} | ${item.gallery_series} | ${item.featured_image} | ${tagsStr} |\n`;
     }
 
     indexFile.content = markdown;
+    this.customVirtualFiles['index.md'] = { ...indexFile };
   }
 
   // --- Helper formatting utils ---

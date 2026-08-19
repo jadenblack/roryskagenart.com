@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
+    --bg-main: #ECEBE4;
+    --text-main: #18181b;
+  }
+
+  html.dark, body.dark {
     --bg-main: #0c0c0e;
     --text-main: #f4f4f5;
   }
 
-  html.light {
-    --bg-main: #E5E4DF;
+  html.light, body.light {
+    --bg-main: #ECEBE4;
     --text-main: #18181b;
   }
 
@@ -43,7 +50,7 @@
   border-radius: 2px;
 }
 
-html.light ::-webkit-scrollbar-thumb {
+html.light ::-webkit-scrollbar-thumb, body.light ::-webkit-scrollbar-thumb {
   background: #A1A1AA;
 }
 

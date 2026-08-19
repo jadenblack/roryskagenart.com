@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useLayoutEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark';
 
@@ -20,26 +20,39 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     try {
       const saved = localStorage.getItem('rory_studio_theme');
-      if (saved === 'light' || saved === 'dark') return saved;
+      if (saved === 'light' || saved === 'dark') {
+        return saved;
+      }
     } catch {
-      // Fallback if localStorage unavailable
+      // Fallback
     }
     return 'dark';
   });
 
-  useEffect(() => {
+  // Apply classes synchronously before paint
+  useLayoutEffect(() => {
     try {
       localStorage.setItem('rory_studio_theme', theme);
     } catch {}
 
     const root = document.documentElement;
+    const body = document.body;
+
     if (theme === 'dark') {
       root.classList.add('dark');
       root.classList.remove('light');
+      if (body) {
+        body.classList.add('dark');
+        body.classList.remove('light');
+      }
       root.style.colorScheme = 'dark';
     } else {
       root.classList.remove('dark');
       root.classList.add('light');
+      if (body) {
+        body.classList.remove('dark');
+        body.classList.add('light');
+      }
       root.style.colorScheme = 'light';
     }
   }, [theme]);

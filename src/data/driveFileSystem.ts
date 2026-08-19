@@ -8,9 +8,9 @@ export const DRIVE_ROOT_PATH = "My Drive/Clients/roryskagen.com/website-content/
 
 export const INITIAL_INDEX_MD = generateFullIndexMd();
 
-export const INITIAL_README_MD = `# Rory Skagen — File-Based Website Content Archive
+export const INITIAL_README_MD = `# Rory Skagen Studio — Fine Art Works & Catalog
 
-This directory structure powers the digital portfolio at **roryskagen.com**. The website is designed to read directly from this synchronized Google Drive repository.
+This directory structure powers the official marketing and fine art sales site for **Rory Skagen Studio** (roryskagen.com). The website is designed to read directly from this synchronized Google Drive repository.
 
 ## Directory Layout
 \`\`\`

@@ -349,7 +349,7 @@ export const CloudinaryManager: React.FC<CloudinaryManagerProps> = ({
                             <select
                               onChange={(e) => {
                                 if (e.target.value) {
-                                  handleSyncToArtwork(resource, e.target.value);
+                                  handleSyncToArtwork(res, e.target.value);
                                   e.target.value = '';
                                 }
                               }}
