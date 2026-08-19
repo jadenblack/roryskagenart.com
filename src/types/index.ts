@@ -1,4 +1,4 @@
-export type ArtworkStatus = 'Available' | 'Sold' | 'Archived' | 'Public Installation' | 'Private Collection' | 'Limited Edition' | 'Disabled' | 'Trashed';
+export type ArtworkStatus = 'Available' | 'Sold' | 'Archived' | 'Public Installation' | 'Private Collection' | 'Limited Edition' | 'Disabled' | 'Hidden' | 'Trashed';
 
 export interface ArtworkRecord {
   slug: string;

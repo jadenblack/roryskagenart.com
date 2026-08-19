@@ -51,6 +51,19 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
             Edition
           </span>
         );
+      case 'Hidden':
+      case 'Disabled':
+        return (
+          <span className="text-[9px] border border-purple-400 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 text-purple-800 dark:text-purple-300 uppercase font-mono font-bold shadow-xs">
+            Hidden
+          </span>
+        );
+      case 'Archived':
+        return (
+          <span className="text-[9px] border border-amber-400 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 text-amber-800 dark:text-amber-300 uppercase font-mono font-bold shadow-xs">
+            Storage
+          </span>
+        );
       case 'Sold':
       default:
         return (

@@ -56,7 +56,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  const isDisabled = artwork.status === 'Disabled' || artwork.enabled === false;
+  const isDisabled = artwork.status === 'Disabled' || artwork.status === 'Hidden' || artwork.enabled === false;
   const isStored = artwork.status === 'Archived' || artwork.archived === true;
   const isTrashed = artwork.status === 'Trashed' || artwork.trashed === true;
 
@@ -255,7 +255,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                         : 'bg-zinc-100 text-zinc-600 border-zinc-300 dark:bg-black/60 dark:text-zinc-500 dark:border-zinc-800'
                     }`}
                   >
-                    {isDisabled ? 'Disabled' : isStored ? 'Studio Storage' : artwork.status}
+                    {artwork.status === 'Hidden' ? 'Hidden' : isDisabled ? 'Disabled' : isStored ? 'Studio Storage' : artwork.status}
                   </span>
                 </div>
               </div>
@@ -274,7 +274,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                     }`}
                   >
                     {isDisabled ? <Power className="w-3 h-3 text-purple-600 dark:text-purple-400" /> : <EyeOff className="w-3 h-3 text-zinc-500" />}
-                    <span>{isDisabled ? 'Enable' : 'Hide Work'}</span>
+                    <span>{isDisabled ? 'Unhide Work' : 'Hide Work'}</span>
                   </button>
                 )}
 

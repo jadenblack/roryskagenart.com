@@ -106,7 +106,7 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
     if (statusFilter === 'available') return item.status === 'Available';
     if (statusFilter === 'sold') return item.status === 'Sold';
     if (statusFilter === 'archived') return item.status === 'Archived' || item.archived === true;
-    if (statusFilter === 'disabled') return item.status === 'Disabled' || item.enabled === false;
+    if (statusFilter === 'disabled' || statusFilter === 'hidden') return item.status === 'Hidden' || item.status === 'Disabled' || item.enabled === false;
 
     return true;
   });
@@ -114,7 +114,7 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
   const availableCount = activeItems.filter((i) => i.status === 'Available').length;
   const soldCount = activeItems.filter((i) => i.status === 'Sold').length;
   const archivedCount = activeItems.filter((i) => i.status === 'Archived' || i.archived === true).length;
-  const disabledCount = activeItems.filter((i) => i.status === 'Disabled' || i.enabled === false).length;
+  const hiddenCount = activeItems.filter((i) => i.status === 'Hidden' || i.status === 'Disabled' || i.enabled === false).length;
 
   const filteredMedia = MEDIA_ASSETS_LOG.filter((asset) => {
     const q = searchTerm.toLowerCase();
@@ -266,12 +266,12 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
                   Storage ({archivedCount})
                 </button>
                 <button
-                  onClick={() => setStatusFilter('disabled')}
+                  onClick={() => setStatusFilter('hidden')}
                   className={`px-2 py-1 uppercase text-[9px] cursor-pointer rounded-xs ${
-                    statusFilter === 'disabled' ? 'bg-purple-100 text-purple-900 dark:bg-purple-950/60 dark:text-purple-300' : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-300'
+                    statusFilter === 'hidden' || statusFilter === 'disabled' ? 'bg-purple-100 text-purple-900 dark:bg-purple-950/60 dark:text-purple-300' : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-300'
                   }`}
                 >
-                  Hidden ({disabledCount})
+                  Hidden ({hiddenCount})
                 </button>
               </div>
             )}

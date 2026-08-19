@@ -2,6 +2,11 @@ import { ArtworkRecord, ArtworkStatus, DriveFile, FilterState, MasterIndexRow, P
 import { buildInitialVirtualFileSystem, DRIVE_ROOT_PATH } from '../data/driveFileSystem';
 import { getArtworkSvg } from '../data/artAssets';
 import { resolveCloudinaryUrl } from '../data/cloudinaryMap';
+import { PORTFOLIO_POSTS_REGISTRY } from '../data/portfolioPostsData';
+
+export const ORIGINAL_POSTS_SLUGS: Set<string> = new Set(
+  PORTFOLIO_POSTS_REGISTRY.map((p) => p.slug.toLowerCase())
+);
 
 const STORAGE_KEY_TRASHED = 'rory_studio_trashed_slugs_v2';
 const STORAGE_KEY_DELETED = 'rory_studio_deleted_slugs_v2';
@@ -44,7 +49,21 @@ export class GalleryStateEngine {
       }
     }
 
-    // 2. Remove permanently deleted files from virtual file system
+    // 2. Remove duplicate files across posts and trash
+    // If a file is in trash/ or trashedSlugs, remove any matching posts/ file
+    const trashFilenames = new Set([
+      ...this.files.filter((f) => f.folder === 'trash').map((f) => f.name.toLowerCase()),
+      ...Array.from(this.trashedSlugs).map((s) => `${s.toLowerCase()}.md`)
+    ]);
+
+    this.files = this.files.filter((f) => {
+      if (f.folder === 'posts' && trashFilenames.has(f.name.toLowerCase())) {
+        return false;
+      }
+      return true;
+    });
+
+    // 3. Remove permanently deleted files from virtual file system
     this.files = this.files.filter((f) => {
       const slugMatch = f.path.match(/^(?:posts|trash)\/([^\/]+)\.md$/i);
       if (slugMatch) {
@@ -59,7 +78,7 @@ export class GalleryStateEngine {
       return true;
     });
 
-    // 3. Move trashed files to trash/ folder if they are in trashedSlugs
+    // 4. Ensure files in trashedSlugs have path = trash/{slug}.md and folder = 'trash'
     for (const slug of this.trashedSlugs) {
       const postFile = this.files.find((f) => f.path === `posts/${slug}.md`);
       if (postFile) {
@@ -68,7 +87,7 @@ export class GalleryStateEngine {
       }
     }
 
-    // 4. Load master registry and pages
+    // 5. Load master registry and pages
     this.loadMasterRegistry();
     this.loadPages();
   }
@@ -164,31 +183,55 @@ export class GalleryStateEngine {
     // Find all posts in posts/ and trash/
     const postFiles = this.files.filter((f) => (f.folder === 'posts' || f.folder === 'trash') && f.extension === 'md');
     const records: ArtworkRecord[] = [];
+    const seenSlugs = new Set<string>();
 
     // Map through posts files as source of truth, enriched with index rows
     for (const postFile of postFiles) {
       try {
         const record = this.parsePostMarkdown(postFile.content, postFile.path);
+        const normSlug = record.slug.toLowerCase();
         
         // Skip permanently deleted slugs
-        if (this.deletedSlugs.has(record.slug.toLowerCase())) {
+        if (this.deletedSlugs.has(normSlug)) {
+          continue;
+        }
+
+        // Avoid duplicate slug entries
+        if (seenSlugs.has(normSlug)) {
+          const isCurrentlyTrashed = this.trashedSlugs.has(normSlug);
+          if (isCurrentlyTrashed && postFile.folder === 'trash') {
+            const existingIdx = records.findIndex((r) => r.slug.toLowerCase() === normSlug);
+            if (existingIdx >= 0) {
+              record.trashed = true;
+              record.status = 'Trashed';
+              record.imageUrl = this.resolveImagePath(record.featured_image, record.slug);
+              records[existingIdx] = record;
+            }
+          }
           continue;
         }
 
         // Apply persistent trashed state
-        if (this.trashedSlugs.has(record.slug.toLowerCase())) {
+        if (this.trashedSlugs.has(normSlug)) {
           record.trashed = true;
           record.status = 'Trashed';
         }
 
+        // Enforce Hidden status for any post not on the original list (unless explicitly overridden or trashed)
+        const isOriginal = ORIGINAL_POSTS_SLUGS.has(normSlug);
+        if (!isOriginal && record.status !== 'Trashed' && !this.artworkOverrides[normSlug]?.status) {
+          record.status = 'Hidden';
+          record.enabled = false;
+        }
+
         // Apply any saved overrides
-        const override = this.artworkOverrides[record.slug.toLowerCase()];
+        const override = this.artworkOverrides[normSlug];
         if (override) {
           Object.assign(record, override);
         }
 
         // Find corresponding index row if exists
-        const matchedRow = parsedRows.find((r) => r.slug.toLowerCase() === record.slug.toLowerCase());
+        const matchedRow = parsedRows.find((r) => r.slug.toLowerCase() === normSlug);
         if (matchedRow) {
           if (!record.tags || record.tags.length === 0) {
             record.tags = matchedRow.tags.split(',').map((t) => t.trim()).filter(Boolean);
@@ -196,6 +239,7 @@ export class GalleryStateEngine {
         }
         // Resolve image URL
         record.imageUrl = this.resolveImagePath(record.featured_image, record.slug);
+        seenSlugs.add(normSlug);
         records.push(record);
       } catch (err) {
         console.error(`Failed parsing ${postFile.path}`, err);
@@ -205,48 +249,49 @@ export class GalleryStateEngine {
     // Also check if any rows in index.md don't have a post file yet, synthesize them without creating duplicates
     for (const row of parsedRows) {
       const normalizedRowSlug = row.slug.toLowerCase().replace(/^posts\//i, '').replace(/\.md$/i, '').trim();
-      if (this.deletedSlugs.has(normalizedRowSlug)) {
+      if (this.deletedSlugs.has(normalizedRowSlug) || seenSlugs.has(normalizedRowSlug)) {
         continue;
       }
 
-      const existing = records.find((r) => r.slug.toLowerCase() === normalizedRowSlug);
-      if (existing) {
-        if (!existing.tags || existing.tags.length === 0) {
-          existing.tags = row.tags ? row.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
-        }
-      } else {
-        const isTrashed = this.trashedSlugs.has(normalizedRowSlug) || row.status === 'Trashed';
-        const synthRecord: ArtworkRecord = {
-          slug: normalizedRowSlug,
-          title: row.title,
-          year: parseInt(row.year, 10) || 2024,
-          medium: row.medium,
-          dimensions: row.dimensions,
-          dimensions_cm: this.calculateCm(row.dimensions),
-          status: isTrashed ? 'Trashed' : ((row.status as ArtworkStatus) || 'Available'),
-          price: row.price,
-          featured_image: row.imageFile,
-          imageUrl: this.resolveImagePath(row.imageFile, normalizedRowSlug),
-          gallery_series: row.series || 'Texas Folklore',
-          edition: 'Original Artwork',
-          location: 'Rory Skagen Studio',
-          enabled: row.status !== 'Disabled',
-          archived: row.status === 'Archived',
-          trashed: isTrashed,
-          narrative: `# ${row.title}\n\nOriginal masterwork by Rory Skagen exploring themes from the **${row.series}** cycle.\n\n![${row.title}](${row.imageFile})`,
-          filePath: isTrashed ? `trash/${normalizedRowSlug}.md` : `posts/${normalizedRowSlug}.md`,
-          tags: row.tags ? row.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
-          scaleCategory: this.inferScaleCategory(row.dimensions)
-        };
+      const isOriginal = ORIGINAL_POSTS_SLUGS.has(normalizedRowSlug);
+      const isTrashed = this.trashedSlugs.has(normalizedRowSlug) || row.status === 'Trashed';
+      let rowStatus: ArtworkStatus = isTrashed
+        ? 'Trashed'
+        : !isOriginal
+        ? 'Hidden'
+        : ((row.status as ArtworkStatus) || 'Available');
 
-        const override = this.artworkOverrides[normalizedRowSlug];
-        if (override) {
-          Object.assign(synthRecord, override);
-        }
+      const synthRecord: ArtworkRecord = {
+        slug: normalizedRowSlug,
+        title: row.title,
+        year: parseInt(row.year, 10) || 2024,
+        medium: row.medium,
+        dimensions: row.dimensions,
+        dimensions_cm: this.calculateCm(row.dimensions),
+        status: rowStatus,
+        price: row.price,
+        featured_image: row.imageFile,
+        imageUrl: this.resolveImagePath(row.imageFile, normalizedRowSlug),
+        gallery_series: row.series || 'Texas Folklore',
+        edition: 'Original Artwork',
+        location: 'Rory Skagen Studio',
+        enabled: rowStatus !== 'Disabled' && rowStatus !== 'Hidden',
+        archived: rowStatus === 'Archived',
+        trashed: isTrashed,
+        narrative: `# ${row.title}\n\nOriginal masterwork by Rory Skagen exploring themes from the **${row.series}** cycle.\n\n![${row.title}](${row.imageFile})`,
+        filePath: isTrashed ? `trash/${normalizedRowSlug}.md` : `posts/${normalizedRowSlug}.md`,
+        tags: row.tags ? row.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
+        scaleCategory: this.inferScaleCategory(row.dimensions)
+      };
 
-        synthRecord.renderedHtml = this.renderMarkdownWithWikiLinks(synthRecord.narrative);
-        records.push(synthRecord);
+      const override = this.artworkOverrides[normalizedRowSlug];
+      if (override) {
+        Object.assign(synthRecord, override);
       }
+
+      synthRecord.renderedHtml = this.renderMarkdownWithWikiLinks(synthRecord.narrative);
+      seenSlugs.add(normalizedRowSlug);
+      records.push(synthRecord);
     }
 
     this.items = records;
@@ -434,11 +479,16 @@ export class GalleryStateEngine {
       }
     }
 
-    const rawStatus = (metadata.status as ArtworkStatus) || 'Available';
-    const isTrashed = metadata.trashed === true || rawStatus === 'Trashed' || filePath.startsWith('trash/') || this.trashedSlugs.has(slug);
-    const status: ArtworkStatus = isTrashed ? 'Trashed' : rawStatus;
+    const normSlug = slug.toLowerCase();
+    const isOriginal = ORIGINAL_POSTS_SLUGS.has(normSlug);
+    const rawStatus = (metadata.status as ArtworkStatus) || (isOriginal ? 'Available' : 'Hidden');
+    const isTrashed = metadata.trashed === true || rawStatus === 'Trashed' || filePath.startsWith('trash/') || this.trashedSlugs.has(normSlug);
+    let status: ArtworkStatus = isTrashed ? 'Trashed' : rawStatus;
+    if (!isTrashed && !isOriginal && !metadata.status) {
+      status = 'Hidden';
+    }
     const isArchived = metadata.archived === true || status === 'Archived';
-    const isEnabled = metadata.enabled !== undefined ? Boolean(metadata.enabled) : status !== 'Disabled';
+    const isEnabled = metadata.enabled !== undefined ? Boolean(metadata.enabled) : (status !== 'Disabled' && status !== 'Hidden');
     const trashedAt = metadata.trashedAt || (isTrashed ? new Date().toISOString() : undefined);
     const price = metadata.price || (status === 'Sold' ? 'Sold' : 'Inquire');
     const year = metadata.year || (metadata.date ? new Date(metadata.date).getFullYear() : 2019);
@@ -755,10 +805,18 @@ export class GalleryStateEngine {
   public getFilteredItems(): ArtworkRecord[] {
     const { search, status, medium, series, sort } = this.activeFilters;
     
-    // By default, hide trashed items unless status filter is explicitly 'trashed' or 'all-with-trash'
-    let result = status.toLowerCase() === 'trashed'
-      ? this.items.filter((item) => item.trashed || item.status === 'Trashed')
-      : this.items.filter((item) => !item.trashed && item.status !== 'Trashed');
+    // By default, hide trashed, disabled, and hidden items from public gallery browsing unless explicitly filtered
+    let result: ArtworkRecord[];
+    if (status.toLowerCase() === 'trashed') {
+      result = this.items.filter((item) => item.trashed || item.status === 'Trashed');
+    } else if (status.toLowerCase() === 'hidden' || status.toLowerCase() === 'disabled') {
+      result = this.items.filter((item) => !item.trashed && (item.status === 'Hidden' || item.status === 'Disabled' || item.enabled === false));
+    } else if (status.toLowerCase() === 'all-with-hidden') {
+      result = this.items.filter((item) => !item.trashed && item.status !== 'Trashed');
+    } else {
+      // By default for 'all' or active statuses, exclude Hidden and Disabled items from public display
+      result = this.items.filter((item) => !item.trashed && item.status !== 'Trashed' && item.status !== 'Hidden' && item.status !== 'Disabled' && item.enabled !== false);
+    }
 
     // Search filter (title, slug, medium, tags, narrative)
     if (search.trim()) {
@@ -778,13 +836,11 @@ export class GalleryStateEngine {
     }
 
     // Status filter
-    if (status !== 'all' && status.toLowerCase() !== 'trashed') {
-      if (status.toLowerCase() === 'disabled') {
-        result = result.filter((item) => item.status === 'Disabled' || item.enabled === false);
-      } else if (status.toLowerCase() === 'archived') {
+    if (status !== 'all' && status.toLowerCase() !== 'trashed' && status.toLowerCase() !== 'hidden' && status.toLowerCase() !== 'disabled' && status.toLowerCase() !== 'all-with-hidden') {
+      if (status.toLowerCase() === 'archived') {
         result = result.filter((item) => item.status === 'Archived' || item.archived === true);
       } else if (status.toLowerCase() === 'enabled' || status.toLowerCase() === 'active') {
-        result = result.filter((item) => item.enabled !== false && item.status !== 'Disabled');
+        result = result.filter((item) => item.enabled !== false && item.status !== 'Disabled' && item.status !== 'Hidden');
       } else {
         result = result.filter((item) => item.status.toLowerCase() === status.toLowerCase());
       }
@@ -858,8 +914,8 @@ export class GalleryStateEngine {
     const item = this.items.find((i) => i.slug.toLowerCase() === normSlug);
     if (!item) return;
 
-    const newEnabled = item.enabled === false || item.status === 'Disabled';
-    const newStatus: ArtworkStatus = newEnabled ? 'Available' : 'Disabled';
+    const newEnabled = item.enabled === false || item.status === 'Disabled' || item.status === 'Hidden';
+    const newStatus: ArtworkStatus = newEnabled ? 'Available' : 'Hidden';
 
     // Update item
     item.enabled = newEnabled;
