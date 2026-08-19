@@ -7,6 +7,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { GalleryAppEngineInstance } from './engine/galleryStateEngine';
 import { ArtworkRecord, DriveFile, FilterState, PageDocument } from './types';
 import { Navbar } from './components/Navbar';
+import { HomeLandingView } from './components/HomeLandingView';
+import { AuthGateView } from './components/AuthGateView';
 import { GalleryGrid } from './components/GalleryGrid';
 import { ArtworkFocusView } from './components/ArtworkFocusView';
 import { MasterRegistryTable } from './components/MasterRegistryTable';
@@ -17,11 +19,13 @@ import { TrashView } from './components/TrashView';
 import { CloudinaryManager } from './components/CloudinaryManager';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { DRIVE_ROOT_PATH } from './data/driveFileSystem';
-import { Sparkles, ArrowUp, Github, Heart } from 'lucide-react';
+import { useAuth } from './context/AuthContext';
+import { Sparkles, ArrowUp, Github, Heart, Lock, ShieldCheck } from 'lucide-react';
 
 export default function App() {
+  const { isAuthenticated, user } = useAuth();
   const [engineVersion, setEngineVersion] = useState(0);
-  const [route, setRoute] = useState<string>('gallery');
+  const [route, setRoute] = useState<string>('home');
   const [selectedArtworkSlug, setSelectedArtworkSlug] = useState<string | null>(null);
   const [selectedPageSlug, setSelectedPageSlug] = useState<string>('about');
   const [explorerTargetFilePath, setExplorerTargetFilePath] = useState<string | undefined>(undefined);
@@ -40,7 +44,10 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#\/?/, '');
-      if (!hash || hash === 'gallery') {
+      if (!hash || hash === 'home') {
+        setRoute('home');
+        setSelectedArtworkSlug(null);
+      } else if (hash === 'gallery') {
         setRoute('gallery');
         setSelectedArtworkSlug(null);
       } else if (hash.startsWith('artwork/')) {
@@ -72,7 +79,11 @@ export default function App() {
 
   // Sync route changes to window.location.hash
   const navigateTo = (newRoute: string, param?: string) => {
-    if (newRoute === 'gallery') {
+    if (newRoute === 'home') {
+      window.location.hash = '#home';
+      setRoute('home');
+      setSelectedArtworkSlug(null);
+    } else if (newRoute === 'gallery') {
       window.location.hash = '#gallery';
       setRoute('gallery');
       setSelectedArtworkSlug(null);
@@ -100,6 +111,27 @@ export default function App() {
       setRoute('readme');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Helper to get friendly page title for auth gate
+  const getPageTitle = (r: string): string => {
+    switch (r) {
+      case 'gallery':
+      case 'artwork':
+        return 'Fine Art Works & Collection';
+      case 'registry':
+        return 'Master Catalog Index';
+      case 'trash':
+        return 'Trash & Archive Vault';
+      case 'explorer':
+        return 'Virtual Drive & File Editor';
+      case 'pages':
+        return 'Studio Pages & Biography';
+      case 'readme':
+        return 'Studio System Guidelines';
+      default:
+        return 'Studio Workspace';
+    }
   };
 
   // Get reactive items from engine
@@ -152,102 +184,123 @@ export default function App() {
 
         {/* Main Content Area with clear layout styling */}
         <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 w-full flex-grow">
-          {/* Route 1: Individual Artwork Focus View */}
-          {route === 'artwork' && currentArtwork ? (
-            <ArtworkFocusView
-              artwork={currentArtwork}
-              allArtworks={allItems}
-              onBack={() => navigateTo('gallery')}
-              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-              onNavigatePage={(slug) => navigateTo('pages', slug)}
-              onEditInExplorer={(filePath) => navigateTo('explorer', filePath)}
-              onOpenCloudinary={() => setCloudinaryModalOpen(true)}
-              onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
-              onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
-              onTrashArtwork={(slug) => {
-                GalleryAppEngineInstance.trashArtwork(slug);
-                navigateTo('registry');
-              }}
-            />
-          ) : null}
-
-          {/* Route 2: Gallery Grid (Default) */}
-          {route === 'gallery' && (
-            <GalleryGrid
-              items={filteredItems}
-              allItems={allItems}
-              filters={activeFilters}
-              onFilterChange={(key, val) => GalleryAppEngineInstance.setFilter(key, val)}
-              onResetFilters={() => GalleryAppEngineInstance.resetFilters()}
-              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+          {/* Route 0: Public Placeholder Home Page (Accessible by all) */}
+          {route === 'home' && (
+            <HomeLandingView
+              onNavigate={(r, p) => navigateTo(r, p)}
+              onOpenAdminAuth={() => setAdminAuthModalOpen(true)}
+              featuredArtworks={allItems.filter(i => !i.trashed)}
+              totalWorks={allItems.filter(i => !i.trashed).length}
             />
           )}
 
-          {/* Route 3: Master Registry Table (index.md) */}
-          {route === 'registry' && (
-            <MasterRegistryTable
-              items={allItems.filter(i => !i.trashed)}
-              rawIndexMd={indexMdContent}
-              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-              onEditIndexMd={() => navigateTo('explorer', 'index.md')}
-              onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
-              onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
-              onTrashArtwork={(slug) => GalleryAppEngineInstance.trashArtwork(slug)}
-              onNavigateToTrash={() => navigateTo('trash')}
+          {/* Protected Routes Gate: If route is not home and user is unauthenticated, show AuthGateView */}
+          {route !== 'home' && !isAuthenticated ? (
+            <AuthGateView
+              pageName={getPageTitle(route)}
+              onOpenAdminAuth={() => setAdminAuthModalOpen(true)}
+              onBackToHome={() => navigateTo('home')}
             />
-          )}
+          ) : (
+            <>
+              {/* Route 1: Individual Artwork Focus View (Protected) */}
+              {route === 'artwork' && currentArtwork && (
+                <ArtworkFocusView
+                  artwork={currentArtwork}
+                  allArtworks={allItems}
+                  onBack={() => navigateTo('gallery')}
+                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+                  onNavigatePage={(slug) => navigateTo('pages', slug)}
+                  onEditInExplorer={(filePath) => navigateTo('explorer', filePath)}
+                  onOpenCloudinary={() => setCloudinaryModalOpen(true)}
+                  onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
+                  onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
+                  onTrashArtwork={(slug) => {
+                    GalleryAppEngineInstance.trashArtwork(slug);
+                    navigateTo('registry');
+                  }}
+                />
+              )}
 
-          {/* Route 3.5: Dedicated Trash Management View */}
-          {route === 'trash' && (
-            <TrashView
-              trashedItems={trashedItems}
-              trashedArtworks={trashedItems}
-              onRestore={(slug) => GalleryAppEngineInstance.restoreArtwork(slug)}
-              onRestoreArtwork={(slug) => GalleryAppEngineInstance.restoreArtwork(slug)}
-              onPermanentDelete={(slug) => GalleryAppEngineInstance.permanentlyDeleteArtwork(slug)}
-              onPermanentlyDeleteArtwork={(slug) => GalleryAppEngineInstance.permanentlyDeleteArtwork(slug)}
-              onEmptyTrash={() => GalleryAppEngineInstance.emptyTrash()}
-              onRestoreAll={() => GalleryAppEngineInstance.restoreAllTrash()}
-              onRestoreAllTrash={() => GalleryAppEngineInstance.restoreAllTrash()}
-              onNavigateToRegistry={() => navigateTo('registry')}
-              onBackToRegistry={() => navigateTo('registry')}
-              onNavigateToGallery={() => navigateTo('gallery')}
-              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-            />
-          )}
+              {/* Route 2: Gallery Grid (Protected) */}
+              {route === 'gallery' && (
+                <GalleryGrid
+                  items={filteredItems}
+                  allItems={allItems}
+                  filters={activeFilters}
+                  onFilterChange={(key, val) => GalleryAppEngineInstance.setFilter(key, val)}
+                  onResetFilters={() => GalleryAppEngineInstance.resetFilters()}
+                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+                />
+              )}
 
-          {/* Route 4: Virtual Drive File Explorer */}
-          {route === 'explorer' && (
-            <DriveExplorer
-              files={files}
-              initialSelectedPath={explorerTargetFilePath}
-              onSaveFile={(path, content) => GalleryAppEngineInstance.saveFile(path, content)}
-              onCreateArtwork={(record, narrative) => {
-                const slug = GalleryAppEngineInstance.createNewArtwork(record, narrative);
-                navigateTo('artwork', slug);
-              }}
-              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-              onOpenCloudinary={() => setCloudinaryModalOpen(true)}
-            />
-          )}
+              {/* Route 3: Master Registry Table (index.md) (Protected) */}
+              {route === 'registry' && (
+                <MasterRegistryTable
+                  items={allItems.filter(i => !i.trashed)}
+                  rawIndexMd={indexMdContent}
+                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+                  onEditIndexMd={() => navigateTo('explorer', 'index.md')}
+                  onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
+                  onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
+                  onTrashArtwork={(slug) => GalleryAppEngineInstance.trashArtwork(slug)}
+                  onNavigateToTrash={() => navigateTo('trash')}
+                />
+              )}
 
-          {/* Route 5: Pages (About, Contact, Exhibitions, Commissions) */}
-          {route === 'pages' && (
-            <PagesView
-              pages={pages}
-              activePageSlug={selectedPageSlug}
-              onSelectPage={(slug) => navigateTo('pages', slug)}
-              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-              renderedHtmlMap={renderedPagesHtml}
-            />
-          )}
+              {/* Route 3.5: Dedicated Trash Management View (Protected) */}
+              {route === 'trash' && (
+                <TrashView
+                  trashedItems={trashedItems}
+                  trashedArtworks={trashedItems}
+                  onRestore={(slug) => GalleryAppEngineInstance.restoreArtwork(slug)}
+                  onRestoreArtwork={(slug) => GalleryAppEngineInstance.restoreArtwork(slug)}
+                  onPermanentDelete={(slug) => GalleryAppEngineInstance.permanentlyDeleteArtwork(slug)}
+                  onPermanentlyDeleteArtwork={(slug) => GalleryAppEngineInstance.permanentlyDeleteArtwork(slug)}
+                  onEmptyTrash={() => GalleryAppEngineInstance.emptyTrash()}
+                  onRestoreAll={() => GalleryAppEngineInstance.restoreAllTrash()}
+                  onRestoreAllTrash={() => GalleryAppEngineInstance.restoreAllTrash()}
+                  onNavigateToRegistry={() => navigateTo('registry')}
+                  onBackToRegistry={() => navigateTo('registry')}
+                  onNavigateToGallery={() => navigateTo('gallery')}
+                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+                />
+              )}
 
-          {/* Route 6: System Guidelines (readme.md) */}
-          {route === 'readme' && (
-            <ReadmeView
-              readmeContent={readmeContent}
-              onOpenExplorer={() => navigateTo('explorer', 'readme.md')}
-            />
+              {/* Route 4: Virtual Drive File Explorer (Protected) */}
+              {route === 'explorer' && (
+                <DriveExplorer
+                  files={files}
+                  initialSelectedPath={explorerTargetFilePath}
+                  onSaveFile={(path, content) => GalleryAppEngineInstance.saveFile(path, content)}
+                  onCreateArtwork={(record, narrative) => {
+                    const slug = GalleryAppEngineInstance.createNewArtwork(record, narrative);
+                    navigateTo('artwork', slug);
+                  }}
+                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+                  onOpenCloudinary={() => setCloudinaryModalOpen(true)}
+                />
+              )}
+
+              {/* Route 5: Pages (About, Contact, Exhibitions, Commissions) (Protected) */}
+              {route === 'pages' && (
+                <PagesView
+                  pages={pages}
+                  activePageSlug={selectedPageSlug}
+                  onSelectPage={(slug) => navigateTo('pages', slug)}
+                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+                  renderedHtmlMap={renderedPagesHtml}
+                />
+              )}
+
+              {/* Route 6: System Guidelines (readme.md) (Protected) */}
+              {route === 'readme' && (
+                <ReadmeView
+                  readmeContent={readmeContent}
+                  onOpenExplorer={() => navigateTo('explorer', 'readme.md')}
+                />
+              )}
+            </>
           )}
         </main>
       </div>
@@ -261,7 +314,7 @@ export default function App() {
                 RORY SKAGEN STUDIO
               </span>
               <p className="text-zinc-700 dark:text-zinc-400 font-sans text-xs max-w-md leading-relaxed">
-                Official fine art gallery and studio portfolio celebrating four decades of iconic retro pop art, Austin landmarks, and neon roadside Americana. Original paintings and fine art commissions available.
+                Official fine art studio and gallery celebrating four decades of iconic retro pop art, Austin landmarks, and neon roadside Americana. Original paintings and fine art commissions available.
               </p>
               <p className="text-[11px] text-amber-700 dark:text-amber-400/90 font-mono">
                 Studio Repository: <code className="text-zinc-900 dark:text-zinc-300">{DRIVE_ROOT_PATH}</code>
@@ -269,24 +322,23 @@ export default function App() {
             </div>
 
             <div className="space-y-2">
-              <span className="text-zinc-950 dark:text-zinc-200 font-bold text-xs block uppercase tracking-wider">Fine Art Collection</span>
+              <span className="text-zinc-950 dark:text-zinc-200 font-bold text-xs block uppercase tracking-wider">Public &amp; Portfolio</span>
               <ul className="space-y-1.5 text-xs text-zinc-700 dark:text-zinc-400 font-sans">
-                <li><button onClick={() => navigateTo('gallery')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Available Artworks</button></li>
-                <li><button onClick={() => navigateTo('pages', 'about')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Biography &amp; Legacy</button></li>
-                <li><button onClick={() => navigateTo('pages', 'commissions')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Mural Commissions</button></li>
-                <li><button onClick={() => navigateTo('pages', 'exhibitions')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Exhibition History</button></li>
+                <li><button onClick={() => navigateTo('home')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Studio Home Page</button></li>
+                <li><button onClick={() => navigateTo('gallery')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Available Artworks</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
+                <li><button onClick={() => navigateTo('pages', 'about')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Biography &amp; Legacy</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
+                <li><button onClick={() => navigateTo('pages', 'commissions')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Mural Commissions</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
               </ul>
             </div>
 
             <div className="space-y-2">
-              <span className="text-zinc-950 dark:text-zinc-200 font-bold text-xs block uppercase tracking-wider">Studio Architecture</span>
+              <span className="text-zinc-950 dark:text-zinc-200 font-bold text-xs block uppercase tracking-wider">Studio Portal (Protected)</span>
               <ul className="space-y-1.5 text-xs text-zinc-700 dark:text-zinc-400 font-sans">
-                <li><button onClick={() => navigateTo('registry')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Master Catalog (index.md)</button></li>
-                <li><button onClick={() => navigateTo('trash')} className="hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer">Trash Vault ({trashedItems.length})</button></li>
-                <li><button onClick={() => navigateTo('explorer')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Drive Files &amp; Editor</button></li>
-                <li><button onClick={() => navigateTo('readme')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">System Specs (readme.md)</button></li>
-                <li><button onClick={() => setAdminAuthModalOpen(true)} className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors cursor-pointer font-bold">Studio Admin Auth (scrypt)</button></li>
-                <li><button onClick={() => navigateTo('pages', 'contact')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Acquisitions &amp; Contact</button></li>
+                <li><button onClick={() => navigateTo('registry')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Master Catalog (index.md)</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
+                <li><button onClick={() => navigateTo('trash')} className="hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer flex items-center gap-1"><span>Trash Vault ({trashedItems.length})</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
+                <li><button onClick={() => navigateTo('explorer')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Drive Files &amp; Editor</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
+                <li><button onClick={() => navigateTo('readme')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>System Specs (readme.md)</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
+                <li><button onClick={() => setAdminAuthModalOpen(true)} className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors cursor-pointer font-bold text-emerald-800 dark:text-emerald-300">{isAuthenticated ? 'Studio Admin Active' : 'Studio Portal Sign In'}</button></li>
               </ul>
             </div>
           </div>
@@ -298,15 +350,17 @@ export default function App() {
             <div className="flex items-center gap-4 font-mono">
               <span className="text-zinc-800 dark:text-zinc-400">Austin, Texas</span>
               <span>•</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-bold">Studio Active</span>
+              <span className={isAuthenticated ? "text-emerald-700 dark:text-emerald-400 font-bold" : "text-amber-700 dark:text-amber-400 font-bold"}>
+                {isAuthenticated ? 'Studio Session Active' : 'Public Preview'}
+              </span>
             </div>
           </div>
         </div>
       </footer>
 
-      {/* Cloudinary Integration Modal */}
+      {/* Cloudinary Integration Modal (Protected) */}
       <CloudinaryManager
-        isOpen={cloudinaryModalOpen}
+        isOpen={cloudinaryModalOpen && isAuthenticated}
         onClose={() => setCloudinaryModalOpen(false)}
         artworks={allItems}
         onSelectArtwork={(slug) => {
@@ -323,3 +377,4 @@ export default function App() {
     </div>
   );
 }
+

@@ -45,12 +45,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { user, isAuthenticated } = useAuth();
 
   const navItems = [
-    { id: 'gallery', label: 'Fine Art Works' },
-    { id: 'registry', label: 'Master Catalog' },
-    { id: 'trash', label: 'Trash', badge: trashedCount > 0 ? trashedCount : undefined },
-    { id: 'explorer', label: 'Catalog Files' },
-    { id: 'pages', label: 'About & Inquire' },
-    { id: 'readme', label: 'Specs' },
+    { id: 'home', label: 'Home', isPublic: true },
+    { id: 'gallery', label: 'Fine Art Works', isPublic: false },
+    { id: 'registry', label: 'Master Catalog', isPublic: false },
+    { id: 'trash', label: 'Trash', badge: trashedCount > 0 ? trashedCount : undefined, isPublic: false },
+    { id: 'explorer', label: 'Catalog Files', isPublic: false },
+    { id: 'pages', label: 'About & Inquire', isPublic: false },
+    { id: 'readme', label: 'Specs', isPublic: false },
   ];
 
   return (
@@ -61,7 +62,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 bg-emerald-500 dark:bg-emerald-400 rounded-full animate-pulse"></span>
             <span className="tracking-widest uppercase text-zinc-700 dark:text-zinc-400 font-bold">
-              STUDIO CATALOG: <span className="text-emerald-700 dark:text-emerald-400">ACTIVE &amp; AVAILABLE</span>
+              STUDIO CATALOG: <span className="text-emerald-700 dark:text-emerald-400">{isAuthenticated ? 'PORTAL ACTIVE' : 'PREVIEW MODE'}</span>
             </span>
           </div>
           <span className="text-zinc-300 dark:text-zinc-700">|</span>
@@ -74,11 +75,18 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-400 flex-shrink-0 tracking-widest uppercase">
           {onOpenCloudinary && (
             <button
-              onClick={onOpenCloudinary}
+              onClick={() => {
+                if (isAuthenticated) {
+                  onOpenCloudinary();
+                } else if (onOpenAdminAuth) {
+                  onOpenAdminAuth();
+                }
+              }}
               className="flex items-center gap-1 text-zinc-700 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer font-medium"
             >
               <Cloud className="w-3 h-3 text-sky-600 dark:text-sky-400" />
               <span>CLOUDINARY CDN</span>
+              {!isAuthenticated && <Lock className="w-2 h-2 text-zinc-400" />}
             </button>
           )}
           <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">|</span>
@@ -102,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ) : (
                   <Lock className="w-2.5 h-2.5 text-zinc-500" />
                 )}
-                <span>{isAuthenticated ? `ADMIN: ${user?.name?.toUpperCase() || 'ACTIVE'}` : 'STUDIO ADMIN'}</span>
+                <span>{isAuthenticated ? `ADMIN: ${user?.name?.toUpperCase() || 'ACTIVE'}` : 'STUDIO SIGN IN'}</span>
               </button>
             </>
           )}
@@ -114,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-15">
           {/* Logo / Studio Brand Title */}
           <button
-            onClick={() => onNavigate('gallery')}
+            onClick={() => onNavigate('home')}
             className="flex items-center gap-3 text-left group cursor-pointer focus:outline-none"
           >
             <div className="w-3.5 h-3.5 bg-zinc-900 dark:bg-white transition-transform group-hover:rotate-45"></div>
@@ -133,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {navItems.map((item) => {
               const isActive =
                 currentRoute === item.id ||
-                (item.id === 'gallery' && (currentRoute === '' || currentRoute.startsWith('artwork/')));
+                (item.id === 'gallery' && currentRoute.startsWith('artwork/'));
               return (
                 <button
                   key={item.id}
@@ -146,6 +154,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   {isActive && <span className="w-1 h-1 bg-zinc-950 dark:bg-white inline-block"></span>}
                   <span>{item.label}</span>
+                  {!item.isPublic && !isAuthenticated && (
+                    <Lock className="w-2.5 h-2.5 text-zinc-400 dark:text-zinc-500" />
+                  )}
                   {item.badge !== undefined && (
                     <span className="px-1.5 py-0.2 bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-800 text-[8px] font-bold">
                       {item.badge}
@@ -161,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {onOpenAdminAuth && (
               <button
                 onClick={onOpenAdminAuth}
-                title={isAuthenticated ? 'Manage Studio Admin / Change Password' : 'Studio Admin Sign In'}
+                title={isAuthenticated ? 'Manage Studio Admin / Account' : 'Studio Admin Sign In'}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 border text-[9px] uppercase tracking-wider transition-colors cursor-pointer rounded-xs font-mono font-bold ${
                   isAuthenticated
                     ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950'
@@ -176,7 +187,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ) : (
                   <>
                     <Lock className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
-                    <span>Admin</span>
+                    <span>Portal Sign In</span>
                   </>
                 )}
               </button>
@@ -201,32 +212,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            {/* Sleek Search Input */}
-            <div className="flex items-center gap-2 bg-[#EAE9E4] dark:bg-zinc-900 px-3 py-1.5 rounded-xs border border-zinc-300 dark:border-zinc-800 focus-within:border-zinc-500 dark:focus-within:border-zinc-500 transition-colors">
-              <span className="opacity-50 text-xs text-zinc-500 dark:text-zinc-400">/</span>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="search_artworks..."
-                className="bg-transparent outline-none w-28 lg:w-36 text-[10px] font-mono text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => onSearchChange('')}
-                  className="text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white text-[10px]"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            {/* Quick Action Button */}
+            {/* Quick Action / Inquiry Button */}
             <button
-              onClick={() => onNavigate('pages')}
+              onClick={() => onNavigate('home')}
               className="py-1.5 px-3.5 bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-[9px] uppercase font-bold tracking-[0.18em] transition-colors rounded-xs cursor-pointer shadow-xs"
             >
-              Acquire / Inquire
+              Studio
             </button>
           </div>
         </div>
@@ -236,7 +227,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {navItems.map((item) => {
             const isActive =
               currentRoute === item.id ||
-              (item.id === 'gallery' && (currentRoute === '' || currentRoute.startsWith('artwork/')));
+              (item.id === 'gallery' && currentRoute.startsWith('artwork/'));
             return (
               <button
                 key={item.id}
@@ -248,6 +239,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <span>{item.label}</span>
+                {!item.isPublic && !isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}
               </button>
             );
           })}
@@ -256,7 +248,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={toggleTheme}
             className="flex items-center gap-1 px-2 py-1 uppercase tracking-wider whitespace-nowrap text-zinc-800 dark:text-zinc-200"
           >
-            {isDark ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5" />}
+            {isDark ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-zinc-800" />}
           </button>
         </div>
       </div>

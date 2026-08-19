@@ -41,10 +41,49 @@ const AUTH_DB_FILE = path.join(process.cwd(), "data", "auth_store.json");
 const SESSION_TTL_DAYS = 7;
 const RESET_TOKEN_TTL_MINUTES = 15;
 
-// Default Admin Credentials (can be customized via environment or changed after first login)
+// Default Admin Credentials (configured via environment secrets, UI changes persist to .env and .env.local)
 const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@roryskagen.com").toLowerCase().trim();
-const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_INITIAL_PASSWORD || "StudioAdmin2026!";
-const DEFAULT_ADMIN_NAME = "Rory Skagen";
+const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_INITIAL_PASSWORD || process.env.ADMIN_SECRET || "StudioAdmin2026!";
+const DEFAULT_ADMIN_NAME = process.env.ADMIN_NAME || "Rory Skagen";
+
+/**
+ * Persist default user changes directly into .env and .env.local
+ */
+export function syncEnvFiles(updates: Record<string, string>): void {
+  const envFilePaths = [
+    path.join(process.cwd(), ".env"),
+    path.join(process.cwd(), ".env.local"),
+  ];
+
+  for (const envPath of envFilePaths) {
+    try {
+      let content = "";
+      if (fs.existsSync(envPath)) {
+        content = fs.readFileSync(envPath, "utf-8");
+      }
+
+      for (const [key, value] of Object.entries(updates)) {
+        // Also update runtime process.env
+        process.env[key] = value;
+
+        const regex = new RegExp(`^${key}=.*$`, "m");
+        if (regex.test(content)) {
+          content = content.replace(regex, `${key}=${value}`);
+        } else {
+          if (content.length > 0 && !content.endsWith("\n")) {
+            content += "\n";
+          }
+          content += `${key}=${value}\n`;
+        }
+      }
+
+      fs.writeFileSync(envPath, content, "utf-8");
+      console.log(`[AuthService] Synced ${path.basename(envPath)} (${Object.keys(updates).join(", ")})`);
+    } catch (err) {
+      console.warn(`[AuthService] Notice: Could not sync ${path.basename(envPath)}:`, err);
+    }
+  }
+}
 
 class AuthService {
   private db: AuthDatabaseSchema = {
@@ -91,7 +130,7 @@ class AuthService {
   /**
    * Persist in-memory state to disk safely
    */
-  private saveToDisk(): void {
+  public saveToDisk(): void {
     try {
       const dir = path.dirname(AUTH_DB_FILE);
       if (!fs.existsSync(dir)) {
@@ -107,10 +146,11 @@ class AuthService {
   }
 
   /**
-   * Ensure at least one admin account exists on startup
+   * Ensure default admin account exists and has a valid password hash matching DEFAULT_ADMIN_PASSWORD
    */
-  private ensureDefaultAdmin(): void {
-    if (this.db.users.length === 0) {
+  public ensureDefaultAdmin(): User {
+    let admin = this.getUserByEmail(DEFAULT_ADMIN_EMAIL);
+    if (!admin) {
       const passwordHash = this.hashPassword(DEFAULT_ADMIN_PASSWORD);
       const adminUser: User = {
         id: crypto.randomBytes(8).toString("hex"),
@@ -120,10 +160,26 @@ class AuthService {
         passwordHash,
         createdAt: new Date().toISOString(),
       };
-      this.db.users.push(adminUser);
+      this.db.users.unshift(adminUser);
       this.saveToDisk();
       console.log(`[AuthService] Seeded default admin account: ${DEFAULT_ADMIN_EMAIL}`);
+      return adminUser;
+    } else {
+      // Ensure the default password works reliably
+      if (!this.verifyPassword(DEFAULT_ADMIN_PASSWORD, admin.passwordHash)) {
+        console.log(`[AuthService] Re-syncing default admin password hash for ${DEFAULT_ADMIN_EMAIL}`);
+        admin.passwordHash = this.hashPassword(DEFAULT_ADMIN_PASSWORD);
+        this.saveToDisk();
+      }
+      return admin;
     }
+  }
+
+  public getDefaultCredentials() {
+    return {
+      email: DEFAULT_ADMIN_EMAIL,
+      password: DEFAULT_ADMIN_PASSWORD,
+    };
   }
 
   // -------------------------------------------------------------
@@ -218,6 +274,15 @@ class AuthService {
     this.db.users.push(newUser);
     this.saveToDisk();
     console.log(`[AuthService] Created new user: ${newUser.email} (${newUser.role})`);
+
+    // Sync environment files when default admin user is created/updated
+    if (newUser.role === "admin") {
+      syncEnvFiles({
+        ADMIN_EMAIL: newUser.email,
+        ADMIN_INITIAL_PASSWORD: params.password,
+      });
+    }
+
     return this.toSafeUser(newUser);
   }
 
@@ -227,6 +292,14 @@ class AuthService {
 
     user.passwordHash = this.hashPassword(newPlainPassword);
     this.saveToDisk();
+
+    // Persist updated password to .env and .env.local
+    if (user.role === "admin") {
+      syncEnvFiles({
+        ADMIN_INITIAL_PASSWORD: newPlainPassword,
+      });
+    }
+
     return true;
   }
 
@@ -325,6 +398,13 @@ class AuthService {
 
     this.saveToDisk();
     console.log(`[AuthService] Successfully reset password for ${normEmail}`);
+
+    // Persist updated password to .env and .env.local
+    if (user.role === "admin") {
+      syncEnvFiles({
+        ADMIN_INITIAL_PASSWORD: params.newPassword,
+      });
+    }
 
     return {
       success: true,
@@ -494,8 +574,7 @@ class AuthService {
   public getPublicAuthConfig() {
     return {
       defaultAdminEmail: DEFAULT_ADMIN_EMAIL,
-      defaultPasswordHint: "StudioAdmin2026!",
-      isDefaultPasswordActive: this.db.users.length > 0 && this.verifyPassword("StudioAdmin2026!", this.db.users[0].passwordHash),
+      defaultAdminPassword: DEFAULT_ADMIN_PASSWORD,
       totalAdmins: this.db.users.length,
       activeSessions: this.db.sessions.length,
     };

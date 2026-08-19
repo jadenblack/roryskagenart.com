@@ -102,12 +102,12 @@ export interface AuthUser {
 }
 
 export interface AuthStatusInfo {
-  defaultAdminEmail: string;
-  defaultPasswordHint: string;
-  isDefaultPasswordActive: boolean;
+  defaultAdminEmail?: string;
+  defaultPasswordHint?: string;
+  isDefaultPasswordActive?: boolean;
   totalAdmins: number;
   activeSessions: number;
-  authenticated: boolean;
-  currentUser: AuthUser | null;
+  authenticated?: boolean;
+  currentUser?: AuthUser | null;
 }
 

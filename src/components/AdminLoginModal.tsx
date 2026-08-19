@@ -81,12 +81,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
 
   if (!isOpen) return null;
 
-  const handleFillDefaults = () => {
-    setLoginEmail(statusInfo?.defaultAdminEmail || 'admin@roryskagen.com');
-    setLoginPassword(statusInfo?.defaultPasswordHint || 'StudioAdmin2026!');
-    setLoginError(null);
-  };
-
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
@@ -406,22 +400,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                     </div>
                   )}
 
-                  {/* Seed hint box */}
-                  <div className="p-3 bg-[#F2F1EC] dark:bg-black/60 border border-zinc-300 dark:border-zinc-800 text-xs font-mono space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold uppercase text-[10px] text-zinc-600 dark:text-zinc-400">Default Admin Credentials:</span>
-                      <button
-                        type="button"
-                        onClick={handleFillDefaults}
-                        className="text-[10px] text-emerald-700 dark:text-emerald-400 hover:underline uppercase font-bold cursor-pointer"
-                      >
-                        Auto-Fill
-                      </button>
-                    </div>
-                    <div className="text-[11px] text-zinc-700 dark:text-zinc-300 flex items-center justify-between flex-wrap gap-1">
-                      <span>Email: <code className="bg-white dark:bg-zinc-900 px-1 py-0.5 border border-zinc-200 dark:border-zinc-800 font-bold">{statusInfo?.defaultAdminEmail || 'admin@roryskagen.com'}</code></span>
-                      <span>Password: <code className="bg-white dark:bg-zinc-900 px-1 py-0.5 border border-zinc-200 dark:border-zinc-800 font-bold">{statusInfo?.defaultPasswordHint || 'StudioAdmin2026!'}</code></span>
-                    </div>
+                  {/* Security Notice */}
+                  <div className="p-3 bg-[#F2F1EC] dark:bg-zinc-900/60 border border-zinc-300 dark:border-zinc-800 text-xs font-mono flex items-center gap-2.5 text-zinc-600 dark:text-zinc-400">
+                    <ShieldCheck className="w-4 h-4 text-zinc-500 shrink-0" />
+                    <span>Enter your administrator credentials to manage studio archives and settings.</span>
                   </div>
 
                   <div className="space-y-1">
