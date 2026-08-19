@@ -5,17 +5,18 @@ import {
   ShieldCheck, 
   KeyRound, 
   User, 
+  UserPlus,
   LogOut, 
   CheckCircle2, 
   AlertCircle, 
   Eye, 
   EyeOff, 
   X, 
-  Cpu, 
-  Cookie, 
-  Hash, 
   RefreshCw,
-  Sparkles
+  Mail,
+  ArrowRight,
+  Sparkles,
+  HelpCircle
 } from 'lucide-react';
 
 interface AdminLoginModalProps {
@@ -23,19 +24,54 @@ interface AdminLoginModalProps {
   onClose: () => void;
 }
 
-export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose }) => {
-  const { user, isAuthenticated, isLoading, statusInfo, login, logout, changePassword } = useAuth();
+type AuthModalTab = 'login' | 'register' | 'forgot-password' | 'change-password';
 
-  const [activeTab, setActiveTab] = useState<'login' | 'change-password' | 'architecture'>('login');
+export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose }) => {
+  const { 
+    user, 
+    isAuthenticated, 
+    statusInfo, 
+    login, 
+    register, 
+    requestPasswordReset, 
+    resetPassword, 
+    logout, 
+    changePassword 
+  } = useAuth();
+
+  const [activeTab, setActiveTab] = useState<AuthModalTab>('login');
   
   // Login form state
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
 
-  // Change password form state
+  // Register / Create Account form state
+  const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [regConfirmPassword, setRegConfirmPassword] = useState('');
+  const [regRole, setRegRole] = useState<'admin' | 'editor'>('admin');
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [regError, setRegError] = useState<string | null>(null);
+  const [regSuccess, setRegSuccess] = useState(false);
+  const [regLoading, setRegLoading] = useState(false);
+
+  // Password reset form state
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetStep, setResetStep] = useState<'request' | 'confirm'>('request');
+  const [resetCode, setResetCode] = useState('');
+  const [newResetPassword, setNewResetPassword] = useState('');
+  const [confirmResetPassword, setConfirmResetPassword] = useState('');
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [resetGeneratedCode, setResetGeneratedCode] = useState<string | null>(null);
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetSuccessMessage, setResetSuccessMessage] = useState<string | null>(null);
+  const [resetLoading, setResetLoading] = useState(false);
+
+  // Change password form state (authenticated)
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -46,8 +82,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
   if (!isOpen) return null;
 
   const handleFillDefaults = () => {
-    setEmail(statusInfo?.defaultAdminEmail || 'admin@roryskagen.com');
-    setPassword(statusInfo?.defaultPasswordHint || 'StudioAdmin2026!');
+    setLoginEmail(statusInfo?.defaultAdminEmail || 'admin@roryskagen.com');
+    setLoginPassword(statusInfo?.defaultPasswordHint || 'StudioAdmin2026!');
     setLoginError(null);
   };
 
@@ -56,18 +92,100 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
     setLoginError(null);
     setLoginLoading(true);
 
-    const res = await login(email, password);
+    const res = await login(loginEmail, loginPassword);
     setLoginLoading(false);
 
     if (res.success) {
-      setPassword('');
+      setLoginPassword('');
       setLoginError(null);
-      // Auto close after brief moment or stay open
       setTimeout(() => {
         onClose();
-      }, 600);
+      }, 500);
     } else {
       setLoginError(res.error || 'Failed to authenticate');
+    }
+  };
+
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegError(null);
+    setRegSuccess(false);
+
+    if (regPassword !== regConfirmPassword) {
+      setRegError('Passwords do not match.');
+      return;
+    }
+
+    if (regPassword.length < 6) {
+      setRegError('Password must be at least 6 characters.');
+      return;
+    }
+
+    setRegLoading(true);
+    const res = await register(regName, regEmail, regPassword, regRole);
+    setRegLoading(false);
+
+    if (res.success) {
+      setRegSuccess(true);
+      setTimeout(() => {
+        onClose();
+      }, 700);
+    } else {
+      setRegError(res.error || 'Failed to create account.');
+    }
+  };
+
+  const handleRequestResetCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError(null);
+    setResetSuccessMessage(null);
+    setResetLoading(true);
+
+    const res = await requestPasswordReset(resetEmail);
+    setResetLoading(false);
+
+    if (res.success) {
+      setResetGeneratedCode(res.resetCode || null);
+      if (res.resetCode) {
+        setResetCode(res.resetCode);
+      }
+      setResetSuccessMessage(res.message || 'Verification code generated.');
+      setResetStep('confirm');
+    } else {
+      setResetError(res.error || 'Failed to request password reset code.');
+    }
+  };
+
+  const handleConfirmResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError(null);
+    setResetSuccessMessage(null);
+
+    if (newResetPassword !== confirmResetPassword) {
+      setResetError('New passwords do not match.');
+      return;
+    }
+
+    if (newResetPassword.length < 6) {
+      setResetError('New password must be at least 6 characters long.');
+      return;
+    }
+
+    setResetLoading(true);
+    const res = await resetPassword(resetEmail, resetCode, newResetPassword);
+    setResetLoading(false);
+
+    if (res.success) {
+      setResetSuccessMessage('Password successfully updated! You can now sign in.');
+      setLoginEmail(resetEmail);
+      setLoginPassword(newResetPassword);
+      setTimeout(() => {
+        setActiveTab('login');
+        setResetStep('request');
+        setResetGeneratedCode(null);
+      }, 1800);
+    } else {
+      setResetError(res.error || 'Failed to reset password.');
     }
   };
 
@@ -120,7 +238,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                 Studio Admin Authentication
               </h3>
               <p className="text-[10px] text-zinc-500 font-mono">
-                Pure Native Node.js Security • Zero Dependencies
+                Native Node.js Security • Account &amp; Key Management
               </p>
             </div>
           </div>
@@ -133,47 +251,90 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
           </button>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Tab Navigation (ARCHITECTURE tab removed as requested) */}
         <div className="flex border-b border-zinc-200 dark:border-zinc-800 bg-[#ECEBE6] dark:bg-zinc-950 text-xs font-mono">
-          <button
-            onClick={() => setActiveTab('login')}
-            className={`flex-1 py-2.5 px-4 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-              activeTab === 'login'
-                ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-            }`}
-          >
-            {isAuthenticated ? 'Admin Profile' : 'Sign In'}
-          </button>
-          
-          {isAuthenticated && (
-            <button
-              onClick={() => setActiveTab('change-password')}
-              className={`flex-1 py-2.5 px-4 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                activeTab === 'change-password'
-                  ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              Change Key
-            </button>
-          )}
+          {!isAuthenticated ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setActiveTab('login')}
+                className={`flex-1 py-2.5 px-3 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                  activeTab === 'login'
+                    ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                Sign In
+              </button>
 
-          <button
-            onClick={() => setActiveTab('architecture')}
-            className={`flex-1 py-2.5 px-4 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-              activeTab === 'architecture'
-                ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-            }`}
-          >
-            Architecture
-          </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('register')}
+                className={`flex-1 py-2.5 px-3 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                  activeTab === 'register'
+                    ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                Create Account
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('forgot-password')}
+                className={`flex-1 py-2.5 px-3 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                  activeTab === 'forgot-password'
+                    ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                Reset Key
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setActiveTab('login')}
+                className={`flex-1 py-2.5 px-4 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                  activeTab === 'login'
+                    ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                Admin Profile
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('change-password')}
+                className={`flex-1 py-2.5 px-4 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                  activeTab === 'change-password'
+                    ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                Change Password
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('register')}
+                className={`flex-1 py-2.5 px-4 text-center font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                  activeTab === 'register'
+                    ? 'bg-white dark:bg-[#111111] text-zinc-950 dark:text-white border-b-2 border-zinc-950 dark:border-white'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                New User
+              </button>
+            </>
+          )}
         </div>
 
         {/* Modal Body Content */}
         <div className="p-6 space-y-5">
-          {/* TAB 1: LOGIN / USER PROFILE */}
+          {/* TAB 1: LOGIN / AUTHENTICATED PROFILE */}
           {activeTab === 'login' && (
             <div>
               {isAuthenticated && user ? (
@@ -186,7 +347,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                         Active Studio Admin Session
                       </h4>
                       <p className="text-xs text-emerald-800 dark:text-emerald-300">
-                        Authenticated as <strong>{user.name}</strong> ({user.email}). You have verified administrative privileges to manage artwork status, execute storage actions, and synchronize assets.
+                        Authenticated as <strong>{user.name}</strong> ({user.email}). You have verified privileges to manage artwork status, execute storage actions, and synchronize assets.
                       </p>
                     </div>
                   </div>
@@ -207,12 +368,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                       </span>
                     </div>
                     <div className="flex justify-between py-1 border-b border-zinc-200 dark:border-zinc-800/60">
-                      <span className="text-zinc-500 uppercase">Session Storage:</span>
-                      <span className="text-emerald-700 dark:text-emerald-400 font-bold">HttpOnly Secure Cookie + Memory Map</span>
-                    </div>
-                    <div className="flex justify-between py-1">
-                      <span className="text-zinc-500 uppercase">Hashing:</span>
-                      <span className="text-zinc-700 dark:text-zinc-300">scrypt (16-byte salt, 64-byte key)</span>
+                      <span className="text-zinc-500 uppercase">Session Security:</span>
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold">HttpOnly Secure Cookie + scrypt KDF</span>
                     </div>
                   </div>
 
@@ -252,16 +409,16 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                   {/* Seed hint box */}
                   <div className="p-3 bg-[#F2F1EC] dark:bg-black/60 border border-zinc-300 dark:border-zinc-800 text-xs font-mono space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold uppercase text-[10px] text-zinc-600 dark:text-zinc-400">Studio Admin Seed Credentials:</span>
+                      <span className="font-bold uppercase text-[10px] text-zinc-600 dark:text-zinc-400">Default Admin Credentials:</span>
                       <button
                         type="button"
                         onClick={handleFillDefaults}
                         className="text-[10px] text-emerald-700 dark:text-emerald-400 hover:underline uppercase font-bold cursor-pointer"
                       >
-                        Auto-Fill Form
+                        Auto-Fill
                       </button>
                     </div>
-                    <div className="text-[11px] text-zinc-700 dark:text-zinc-300 flex items-center justify-between">
+                    <div className="text-[11px] text-zinc-700 dark:text-zinc-300 flex items-center justify-between flex-wrap gap-1">
                       <span>Email: <code className="bg-white dark:bg-zinc-900 px-1 py-0.5 border border-zinc-200 dark:border-zinc-800 font-bold">{statusInfo?.defaultAdminEmail || 'admin@roryskagen.com'}</code></span>
                       <span>Password: <code className="bg-white dark:bg-zinc-900 px-1 py-0.5 border border-zinc-200 dark:border-zinc-800 font-bold">{statusInfo?.defaultPasswordHint || 'StudioAdmin2026!'}</code></span>
                     </div>
@@ -275,8 +432,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                       <input
                         type="email"
                         required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
                         placeholder="admin@roryskagen.com"
                         className="w-full px-3 py-2 text-xs font-mono border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100 transition-colors"
                       />
@@ -285,25 +442,37 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 font-bold">
-                      Password:
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                        Password:
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setResetEmail(loginEmail);
+                          setActiveTab('forgot-password');
+                        }}
+                        className="text-[10px] font-mono text-zinc-500 hover:text-black dark:hover:text-white uppercase underline cursor-pointer"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
                     <div className="relative">
                       <input
-                        type={showPassword ? 'text' : 'password'}
+                        type={showLoginPassword ? 'text' : 'password'}
                         required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="••••••••••••"
                         className="w-full px-3 py-2 pr-9 text-xs font-mono border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100 transition-colors"
                       />
                       <button
                         type="button"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
                         className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer"
-                        title={showPassword ? 'Hide password' : 'Show password'}
+                        title={showLoginPassword ? 'Hide password' : 'Show password'}
                       >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
@@ -311,10 +480,11 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                   <div className="pt-2 flex items-center justify-between">
                     <button
                       type="button"
-                      onClick={onClose}
-                      className="px-4 py-2 text-xs font-mono uppercase tracking-wider font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white cursor-pointer"
+                      onClick={() => setActiveTab('register')}
+                      className="text-xs font-mono text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer flex items-center gap-1"
                     >
-                      Cancel
+                      <UserPlus className="w-3.5 h-3.5" />
+                      <span>Create Account</span>
                     </button>
                     <button
                       type="submit"
@@ -330,7 +500,306 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
             </div>
           )}
 
-          {/* TAB 2: CHANGE PASSWORD */}
+          {/* TAB 2: CREATE ACCOUNT / REGISTER */}
+          {activeTab === 'register' && (
+            <form onSubmit={handleRegisterSubmit} className="space-y-4">
+              {regError && (
+                <div className="p-3 bg-red-50 dark:bg-red-950/50 border border-red-300 dark:border-red-800/80 flex items-start gap-2 text-xs text-red-800 dark:text-red-300">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{regError}</span>
+                </div>
+              )}
+
+              {regSuccess && (
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800/80 flex items-start gap-2 text-xs text-emerald-800 dark:text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>Account successfully created! Signing you in...</span>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <label className="block text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                  Full Name / Display Name:
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    value={regName}
+                    onChange={(e) => setRegName(e.target.value)}
+                    placeholder="e.g. Rory Skagen or Studio Assistant"
+                    className="w-full px-3 py-2 text-xs font-mono border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100"
+                  />
+                  <User className="w-4 h-4 text-zinc-400 absolute right-2.5 top-2.5 pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                  Email Address:
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    required
+                    value={regEmail}
+                    onChange={(e) => setRegEmail(e.target.value)}
+                    placeholder="e.g. archivist@roryskagen.com"
+                    className="w-full px-3 py-2 text-xs font-mono border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100"
+                  />
+                  <Mail className="w-4 h-4 text-zinc-400 absolute right-2.5 top-2.5 pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                    Password:
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showRegPassword ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      value={regPassword}
+                      onChange={(e) => setRegPassword(e.target.value)}
+                      placeholder="Min 6 characters"
+                      className="w-full px-3 py-2 pr-9 text-xs font-mono border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowRegPassword(!showRegPassword)}
+                      className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer"
+                    >
+                      {showRegPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                    Confirm Password:
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={regConfirmPassword}
+                    onChange={(e) => setRegConfirmPassword(e.target.value)}
+                    placeholder="Repeat password"
+                    className="w-full px-3 py-2 text-xs font-mono border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                  User Role:
+                </label>
+                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <label className={`border p-2 cursor-pointer flex items-center gap-2 ${
+                    regRole === 'admin' 
+                      ? 'border-zinc-950 dark:border-white bg-zinc-100 dark:bg-zinc-900 font-bold' 
+                      : 'border-zinc-300 dark:border-zinc-800'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="role"
+                      value="admin"
+                      checked={regRole === 'admin'}
+                      onChange={() => setRegRole('admin')}
+                      className="accent-zinc-900 dark:accent-zinc-100"
+                    />
+                    <span>Administrator</span>
+                  </label>
+                  <label className={`border p-2 cursor-pointer flex items-center gap-2 ${
+                    regRole === 'editor' 
+                      ? 'border-zinc-950 dark:border-white bg-zinc-100 dark:bg-zinc-900 font-bold' 
+                      : 'border-zinc-300 dark:border-zinc-800'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="role"
+                      value="editor"
+                      checked={regRole === 'editor'}
+                      onChange={() => setRegRole('editor')}
+                      className="accent-zinc-900 dark:accent-zinc-100"
+                    />
+                    <span>Editor / Curator</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('login')}
+                  className="text-xs font-mono text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
+                >
+                  Already have an account? Sign In
+                </button>
+                <button
+                  type="submit"
+                  disabled={regLoading}
+                  className="px-5 py-2 text-xs font-mono uppercase tracking-wider font-bold bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  {regLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <UserPlus className="w-3.5 h-3.5" />}
+                  <span>{regLoading ? 'Registering...' : 'Create Account'}</span>
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* TAB 3: PASSWORD RESET (2-Step Verification) */}
+          {activeTab === 'forgot-password' && (
+            <div className="space-y-4 font-mono text-xs">
+              {resetError && (
+                <div className="p-3 bg-red-50 dark:bg-red-950/50 border border-red-300 dark:border-red-800/80 flex items-start gap-2 text-red-800 dark:text-red-300">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{resetError}</span>
+                </div>
+              )}
+
+              {resetSuccessMessage && (
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800/80 flex items-start gap-2 text-emerald-800 dark:text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{resetSuccessMessage}</span>
+                </div>
+              )}
+
+              {resetGeneratedCode && resetStep === 'confirm' && (
+                <div className="p-3 bg-[#FAF8F2] dark:bg-zinc-900 border border-amber-300 dark:border-amber-700/60 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-amber-900 dark:text-amber-300 font-bold uppercase text-[10px]">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Password Reset Verification Code</span>
+                  </div>
+                  <div className="flex items-center justify-between bg-white dark:bg-black p-2 border border-zinc-200 dark:border-zinc-800">
+                    <span className="text-zinc-600 dark:text-zinc-400 text-[11px]">Verification Code (15 min TTL):</span>
+                    <span className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-400 tracking-widest">{resetGeneratedCode}</span>
+                  </div>
+                  <p className="text-[10px] text-zinc-500">
+                    Auto-populated into the verification form below for instant recovery.
+                  </p>
+                </div>
+              )}
+
+              {resetStep === 'request' ? (
+                /* Step 1: Request Reset Code */
+                <form onSubmit={handleRequestResetCode} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="block uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                      Account Email Address:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        required
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        placeholder="e.g. admin@roryskagen.com"
+                        className="w-full px-3 py-2 text-xs border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100"
+                      />
+                      <Mail className="w-4 h-4 text-zinc-400 absolute right-2.5 top-2.5 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('login')}
+                      className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
+                    >
+                      Back to Sign In
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={resetLoading}
+                      className="px-5 py-2 uppercase tracking-wider font-bold bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
+                    >
+                      {resetLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5" />}
+                      <span>{resetLoading ? 'Generating...' : 'Get Reset Code'}</span>
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* Step 2: Confirm Reset Code & Set New Password */
+                <form onSubmit={handleConfirmResetPassword} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="block uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                      6-Digit Verification Code:
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={resetCode}
+                      onChange={(e) => setResetCode(e.target.value)}
+                      placeholder="e.g. 849201"
+                      className="w-full px-3 py-2 text-xs font-mono font-bold tracking-wider border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                      New Password:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showResetPassword ? 'text' : 'password'}
+                        required
+                        minLength={6}
+                        value={newResetPassword}
+                        onChange={(e) => setNewResetPassword(e.target.value)}
+                        placeholder="Enter new password (min 6 chars)"
+                        className="w-full px-3 py-2 pr-9 text-xs border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowResetPassword(!showResetPassword)}
+                        className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer"
+                      >
+                        {showResetPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block uppercase text-zinc-700 dark:text-zinc-300 font-bold">
+                      Confirm New Password:
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={confirmResetPassword}
+                      onChange={(e) => setConfirmResetPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      className="w-full px-3 py-2 text-xs border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setResetStep('request')}
+                      className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
+                    >
+                      &larr; Request New Code
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={resetLoading}
+                      className="px-5 py-2 uppercase tracking-wider font-bold bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
+                    >
+                      {resetLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                      <span>{resetLoading ? 'Resetting...' : 'Reset & Save Key'}</span>
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
+
+          {/* TAB 4: CHANGE PASSWORD (when authenticated) */}
           {activeTab === 'change-password' && isAuthenticated && (
             <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
               {changeError && (
@@ -409,63 +878,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                 </button>
               </div>
             </form>
-          )}
-
-          {/* TAB 3: ARCHITECTURE & ZERO-DEPENDENCY SPEC */}
-          {activeTab === 'architecture' && (
-            <div className="space-y-3 font-mono text-xs">
-              <div className="p-3 bg-[#F2F1EC] dark:bg-black/60 border border-zinc-300 dark:border-zinc-800 space-y-2">
-                <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-400 font-bold uppercase text-[11px]">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Pure Native Node.js Architecture</span>
-                </div>
-                <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed text-[11px]">
-                  This backend implements full OWASP-standard user admin authentication directly in Express without any external auth libraries or heavy npm dependencies.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-                <div className="p-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-zinc-950 dark:text-white uppercase">
-                    <Hash className="w-3.5 h-3.5 text-zinc-600" />
-                    <span>Password Hashing</span>
-                  </div>
-                  <p className="text-zinc-600 dark:text-zinc-400">
-                    Native <code className="bg-zinc-100 dark:bg-zinc-900 px-1 font-bold">crypto.scryptSync</code> with 16-byte random cryptographic salt and constant-time <code className="bg-zinc-100 dark:bg-zinc-900 px-1 font-bold">timingSafeEqual</code> comparison.
-                  </p>
-                </div>
-
-                <div className="p-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-zinc-950 dark:text-white uppercase">
-                    <Cookie className="w-3.5 h-3.5 text-zinc-600" />
-                    <span>Cookie Delivery</span>
-                  </div>
-                  <p className="text-zinc-600 dark:text-zinc-400">
-                    Session tokens written strictly via <code className="bg-zinc-100 dark:bg-zinc-900 px-1 font-bold">HttpOnly</code>, <code className="bg-zinc-100 dark:bg-zinc-900 px-1 font-bold">SameSite=Lax</code>, and <code className="bg-zinc-100 dark:bg-zinc-900 px-1 font-bold">Secure</code> cookies with 7-day TTL.
-                  </p>
-                </div>
-
-                <div className="p-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-zinc-950 dark:text-white uppercase">
-                    <Cpu className="w-3.5 h-3.5 text-zinc-600" />
-                    <span>Session Storage</span>
-                  </div>
-                  <p className="text-zinc-600 dark:text-zinc-400">
-                    High-entropy 32-byte session tokens mapped to user records in in-memory memory map persisted safely to <code className="bg-zinc-100 dark:bg-zinc-900 px-1 font-bold">data/auth_store.json</code>.
-                  </p>
-                </div>
-
-                <div className="p-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-zinc-950 dark:text-white uppercase">
-                    <KeyRound className="w-3.5 h-3.5 text-zinc-600" />
-                    <span>Dual Channel</span>
-                  </div>
-                  <p className="text-zinc-600 dark:text-zinc-400">
-                    Seamless fallback to <code className="bg-zinc-100 dark:bg-zinc-900 px-1 font-bold">Authorization: Bearer</code> headers for frictionless sandbox and iframe support.
-                  </p>
-                </div>
-              </div>
-            </div>
           )}
         </div>
       </div>

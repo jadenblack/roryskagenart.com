@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Palette, 
   FolderTree, 
@@ -6,9 +6,6 @@ import {
   FileText, 
   Info, 
   Search, 
-  Copy, 
-  Check, 
-  ExternalLink, 
   Cloud, 
   Trash2,
   Sun,
@@ -16,9 +13,10 @@ import {
   Sparkles,
   Lock,
   ShieldCheck,
-  UserCheck
+  UserCheck,
+  Archive
 } from 'lucide-react';
-import { DRIVE_ROOT_PATH } from '../data/driveFileSystem';
+import { STUDIO_ARCHIVE_LABEL } from '../data/driveFileSystem';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -43,21 +41,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCloudinary,
   onOpenAdminAuth
 }) => {
-  const [copied, setCopied] = useState(false);
   const { theme, toggleTheme, isDark } = useTheme();
   const { user, isAuthenticated } = useAuth();
-
-  const copyPath = () => {
-    navigator.clipboard.writeText(DRIVE_ROOT_PATH);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const navItems = [
     { id: 'gallery', label: 'Fine Art Works' },
     { id: 'registry', label: 'Master Catalog' },
     { id: 'trash', label: 'Trash', badge: trashedCount > 0 ? trashedCount : undefined },
-    { id: 'explorer', label: 'Drive Files' },
+    { id: 'explorer', label: 'Catalog Files' },
     { id: 'pages', label: 'About & Inquire' },
     { id: 'readme', label: 'Specs' },
   ];
@@ -74,19 +65,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </div>
           <span className="text-zinc-300 dark:text-zinc-700">|</span>
-          <button
-            onClick={copyPath}
-            title="Click to copy DRIVE_ROOT path"
-            className="text-zinc-700 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors flex items-center gap-1.5 truncate group cursor-pointer"
-          >
-            <span className="text-zinc-500 dark:text-zinc-600 hidden sm:inline font-medium">DRIVE_ROOT:</span>
-            <span className="truncate">&quot;{DRIVE_ROOT_PATH}&quot;</span>
-            {copied ? (
-              <span className="text-emerald-700 dark:text-emerald-400 font-bold ml-1">COPIED</span>
-            ) : (
-              <Copy className="w-2.5 h-2.5 text-zinc-500 dark:text-zinc-600 group-hover:text-zinc-900 dark:group-hover:text-zinc-300" />
-            )}
-          </button>
+          <div className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-400 font-medium">
+            <Archive className="w-3 h-3 text-zinc-500" />
+            <span className="uppercase tracking-wider font-bold text-zinc-800 dark:text-zinc-300">Studio Archive Store</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-400 flex-shrink-0 tracking-widest uppercase">

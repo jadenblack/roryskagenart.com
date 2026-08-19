@@ -7,6 +7,9 @@ interface AuthContextType {
   isLoading: boolean;
   statusInfo: AuthStatusInfo | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, password: string, role?: 'admin' | 'editor') => Promise<{ success: boolean; error?: string }>;
+  requestPasswordReset: (email: string) => Promise<{ success: boolean; resetCode?: string; message?: string; error?: string }>;
+  resetPassword: (email: string, resetCode: string, newPassword: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   logout: () => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
   refreshAuth: () => Promise<void>;
@@ -102,6 +105,92 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Register / Create Account handler
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    role: 'admin' | 'editor' = 'admin'
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), password, role }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return { success: false, error: data.error || 'Failed to create account.' };
+      }
+
+      if (data.token) {
+        sessionStorage.setItem(TOKEN_STORAGE_KEY, data.token);
+      }
+      setUser(data.user);
+      await refreshAuth();
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error during account registration.' };
+    }
+  };
+
+  // Request password reset code handler
+  const requestPasswordReset = async (
+    email: string
+  ): Promise<{ success: boolean; resetCode?: string; message?: string; error?: string }> => {
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return { success: false, error: data.error || 'Failed to request password reset code.' };
+      }
+
+      return {
+        success: true,
+        resetCode: data.resetCode,
+        message: data.message,
+      };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error during password reset request.' };
+    }
+  };
+
+  // Confirm password reset with verification code
+  const resetPassword = async (
+    email: string,
+    resetCode: string,
+    newPassword: string
+  ): Promise<{ success: boolean; error?: string; message?: string }> => {
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          resetCode: resetCode.trim(),
+          newPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return { success: false, error: data.error || 'Failed to reset password.' };
+      }
+
+      await refreshAuth();
+      return { success: true, message: data.message };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error during password reset.' };
+    }
+  };
+
   // Logout handler
   const logout = async () => {
     try {
@@ -153,6 +242,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         statusInfo,
         login,
+        register,
+        requestPasswordReset,
+        resetPassword,
         logout,
         changePassword,
         refreshAuth,

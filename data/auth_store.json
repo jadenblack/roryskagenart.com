@@ -1,0 +1,32 @@
+{
+  "users": [
+    {
+      "id": "80a842601d6f2c3d",
+      "email": "admin@roryskagen.com",
+      "name": "Rory Skagen",
+      "role": "admin",
+      "passwordHash": "16892aad9fa7d6f997f68f0e17ace145:4458f4c4ee77ad83a6ff6ea9d46d989b35ff806c21361e4add3bce54a48e52a4c7a92267ed93fbf395db3009d847099bbde7ef5561878f2c50ae56b5b06a8660",
+      "createdAt": "2026-08-19T21:34:30.632Z"
+    },
+    {
+      "id": "2c2954ba72d4f578",
+      "email": "curator@roryskagen.com",
+      "name": "Test Curator",
+      "role": "editor",
+      "passwordHash": "4301ca7e88e71766c7c27caf6d15bb72:53163c7e54d9d6d7fe3173095cc6bff46caf441ce2fc712181afe4ce671ab6c1c3aed58ba95bdf23bea70c4639997dd36d014ab9638c1f3001ec5e4aa0e4321d",
+      "createdAt": "2026-08-19T21:54:41.416Z",
+      "lastLoginAt": "2026-08-19T21:54:57.461Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "91ec66a5f3b0f86972c7aa291f92f0ec9b3ca3a0cb2ec2d68263b14466e8b3f9",
+      "userId": "2c2954ba72d4f578",
+      "createdAt": "2026-08-19T21:54:57.461Z",
+      "expiresAt": "2026-08-26T21:54:57.461Z",
+      "userAgent": "curl/7.88.1",
+      "ip": "127.0.0.1"
+    }
+  ],
+  "resetTokens": []
+}

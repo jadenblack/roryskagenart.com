@@ -24,13 +24,22 @@ export interface Session {
   ip?: string;
 }
 
+export interface PasswordResetToken {
+  token: string;
+  email: string;
+  expiresAt: string; // ISO string (15 mins TTL)
+  createdAt: string;
+}
+
 export interface AuthDatabaseSchema {
   users: User[];
   sessions: Session[];
+  resetTokens?: PasswordResetToken[];
 }
 
 const AUTH_DB_FILE = path.join(process.cwd(), "data", "auth_store.json");
 const SESSION_TTL_DAYS = 7;
+const RESET_TOKEN_TTL_MINUTES = 15;
 
 // Default Admin Credentials (can be customized via environment or changed after first login)
 const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@roryskagen.com").toLowerCase().trim();
@@ -69,12 +78,13 @@ class AuthService {
         this.db = {
           users: Array.isArray(parsed.users) ? parsed.users : [],
           sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
+          resetTokens: Array.isArray(parsed.resetTokens) ? parsed.resetTokens : [],
         };
       }
       this.isLoaded = true;
     } catch (err) {
       console.warn("[AuthService] Initializing with fresh in-memory database:", err);
-      this.db = { users: [], sessions: [] };
+      this.db = { users: [], sessions: [], resetTokens: [] };
     }
   }
 
@@ -87,8 +97,9 @@ class AuthService {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      // Clean up expired sessions before saving
+      // Clean up expired sessions & reset tokens before saving
       this.pruneExpiredSessions();
+      this.pruneExpiredResetTokens();
       fs.writeFileSync(AUTH_DB_FILE, JSON.stringify(this.db, null, 2), "utf-8");
     } catch (err) {
       console.error("[AuthService] Failed to save auth database to disk:", err);
@@ -171,6 +182,45 @@ class AuthService {
     return safe;
   }
 
+  /**
+   * Create a new user account (admin or editor)
+   */
+  public createUser(params: {
+    name: string;
+    email: string;
+    password: string;
+    role?: "admin" | "editor";
+  }): SafeUser {
+    const normEmail = params.email.toLowerCase().trim();
+    const existing = this.getUserByEmail(normEmail);
+    if (existing) {
+      throw new Error(`An account with email ${normEmail} already exists.`);
+    }
+
+    if (!params.name || params.name.trim().length === 0) {
+      throw new Error("Full name is required.");
+    }
+
+    if (!params.password || params.password.length < 6) {
+      throw new Error("Password must be at least 6 characters long.");
+    }
+
+    const passwordHash = this.hashPassword(params.password);
+    const newUser: User = {
+      id: crypto.randomBytes(8).toString("hex"),
+      email: normEmail,
+      name: params.name.trim(),
+      role: params.role || "admin",
+      passwordHash,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.db.users.push(newUser);
+    this.saveToDisk();
+    console.log(`[AuthService] Created new user: ${newUser.email} (${newUser.role})`);
+    return this.toSafeUser(newUser);
+  }
+
   public changeUserPassword(userId: string, newPlainPassword: string): boolean {
     const user = this.getUserById(userId);
     if (!user) return false;
@@ -178,6 +228,117 @@ class AuthService {
     user.passwordHash = this.hashPassword(newPlainPassword);
     this.saveToDisk();
     return true;
+  }
+
+  // -------------------------------------------------------------
+  // Password Reset Workflows (Zero-Dependency Cryptographic Code & Token)
+  // -------------------------------------------------------------
+
+  /**
+   * Generates a 6-digit numeric reset code (and optional secure token) for an account
+   */
+  public createPasswordResetToken(email: string): { resetCode: string; expiresAt: string } {
+    const normEmail = email.toLowerCase().trim();
+    const user = this.getUserByEmail(normEmail);
+    if (!user) {
+      throw new Error("No account found with this email address.");
+    }
+
+    if (!Array.isArray(this.db.resetTokens)) {
+      this.db.resetTokens = [];
+    }
+
+    // Clean existing tokens for this email
+    this.db.resetTokens = this.db.resetTokens.filter((t) => t.email.toLowerCase() !== normEmail);
+
+    // Generate 6-digit cryptographic numeric code (e.g. 849201)
+    const randomBuffer = crypto.randomBytes(4);
+    const numericCode = (randomBuffer.readUInt32BE(0) % 900000 + 100000).toString();
+
+    const createdAt = new Date().toISOString();
+    const expiresAt = new Date(Date.now() + RESET_TOKEN_TTL_MINUTES * 60 * 1000).toISOString();
+
+    const resetTokenRecord: PasswordResetToken = {
+      token: numericCode,
+      email: normEmail,
+      createdAt,
+      expiresAt,
+    };
+
+    this.db.resetTokens.push(resetTokenRecord);
+    this.saveToDisk();
+    console.log(`[AuthService] Generated password reset code for ${normEmail}: ${numericCode} (valid 15m)`);
+
+    return {
+      resetCode: numericCode,
+      expiresAt,
+    };
+  }
+
+  /**
+   * Verify password reset code and update user's password
+   */
+  public verifyAndResetPassword(params: {
+    email: string;
+    resetCode: string;
+    newPassword: string;
+  }): { success: boolean; user: SafeUser } {
+    const normEmail = params.email.toLowerCase().trim();
+    const trimmedCode = params.resetCode.trim();
+
+    if (!Array.isArray(this.db.resetTokens)) {
+      this.db.resetTokens = [];
+    }
+
+    const tokenRecord = this.db.resetTokens.find(
+      (t) => t.email.toLowerCase() === normEmail && t.token === trimmedCode
+    );
+
+    if (!tokenRecord) {
+      throw new Error("Invalid or expired password reset code. Please request a new one.");
+    }
+
+    // Check expiration
+    if (new Date(tokenRecord.expiresAt).getTime() < Date.now()) {
+      this.db.resetTokens = this.db.resetTokens.filter((t) => t !== tokenRecord);
+      this.saveToDisk();
+      throw new Error("Password reset code has expired (15m limit). Please request a new one.");
+    }
+
+    if (!params.newPassword || params.newPassword.length < 6) {
+      throw new Error("New password must be at least 6 characters long.");
+    }
+
+    const user = this.getUserByEmail(normEmail);
+    if (!user) {
+      throw new Error("User account not found.");
+    }
+
+    // Update password
+    user.passwordHash = this.hashPassword(params.newPassword);
+
+    // Invalidate reset token
+    this.db.resetTokens = this.db.resetTokens.filter((t) => t !== tokenRecord);
+
+    // Invalidate all existing sessions for this user for security
+    this.db.sessions = this.db.sessions.filter((s) => s.userId !== user.id);
+
+    this.saveToDisk();
+    console.log(`[AuthService] Successfully reset password for ${normEmail}`);
+
+    return {
+      success: true,
+      user: this.toSafeUser(user),
+    };
+  }
+
+  public pruneExpiredResetTokens(): void {
+    if (!Array.isArray(this.db.resetTokens)) {
+      this.db.resetTokens = [];
+      return;
+    }
+    const now = Date.now();
+    this.db.resetTokens = this.db.resetTokens.filter((t) => new Date(t.expiresAt).getTime() > now);
   }
 
   // -------------------------------------------------------------

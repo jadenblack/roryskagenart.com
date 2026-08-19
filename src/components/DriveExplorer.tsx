@@ -127,13 +127,13 @@ export const DriveExplorer: React.FC<DriveExplorerProps> = ({
         <div>
           <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-zinc-600 dark:text-zinc-400 mb-2 font-bold">
             <span className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-400 rounded-full"></span>
-            <span>RORY SKAGEN STUDIO — DRIVE REPOSITORY</span>
+            <span>RORY SKAGEN STUDIO — ARCHIVE &amp; CATALOG STORE</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-zinc-950 dark:text-white font-sans">
-            Drive File System &amp; Markdown Workspace
+            Studio Archive &amp; Markdown Workspace
           </h1>
           <p className="text-zinc-600 dark:text-zinc-400 text-xs mt-1 font-sans">
-            Directly author, modify, and inspect <code className="text-zinc-900 dark:text-zinc-300 font-bold">{DRIVE_ROOT_PATH}</code> files.
+            Directly author, modify, and inspect artworks and pages stored in the <code className="text-zinc-900 dark:text-zinc-300 font-bold">{DRIVE_ROOT_PATH}</code> catalog store.
           </p>
         </div>
 

@@ -26,10 +26,10 @@ export const ReadmeView: React.FC<ReadmeViewProps> = ({ readmeContent, onOpenExp
             <span>ARCHITECTURE SPECIFICATIONS (readme.md)</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-zinc-950 dark:text-white font-sans">
-            Drive Ecosystem &amp; System Specs
+            Studio System &amp; Architecture Specs
           </h1>
           <p className="text-zinc-600 dark:text-zinc-400 text-xs mt-1 font-sans">
-            Directly parsed from <code className="text-zinc-900 dark:text-zinc-300 font-bold">{DRIVE_ROOT_PATH}readme.md</code>
+            Parsed from <code className="text-zinc-900 dark:text-zinc-300 font-bold">studio-archive/readme.md</code>
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export const ReadmeView: React.FC<ReadmeViewProps> = ({ readmeContent, onOpenExp
             className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-black dark:hover:bg-zinc-200 transition-colors cursor-pointer rounded-xs shadow-xs"
           >
             <FolderTree className="w-3 h-3" />
-            <span>Open in Explorer</span>
+            <span>Open in Catalog Files</span>
           </button>
         </div>
       </div>
@@ -65,9 +65,9 @@ export const ReadmeView: React.FC<ReadmeViewProps> = ({ readmeContent, onOpenExp
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-[#0D0D10] border border-zinc-300 dark:border-zinc-800 p-5 space-y-2 shadow-xs transition-colors rounded-xs">
           <span className="text-zinc-900 dark:text-white text-[9px] font-black uppercase tracking-widest block">1. File Architecture</span>
-          <h3 className="font-bold text-zinc-950 dark:text-white text-sm uppercase">Direct Drive Driven</h3>
+          <h3 className="font-bold text-zinc-950 dark:text-white text-sm uppercase">Catalog Store</h3>
           <p className="text-[10px] text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
-            Content is loaded straight from <code className="text-zinc-900 dark:text-zinc-300 font-bold">index.md</code>, <code className="text-zinc-900 dark:text-zinc-300 font-bold">posts/*.md</code>, and <code className="text-zinc-900 dark:text-zinc-300 font-bold">images/</code>.
+            Content is loaded from <code className="text-zinc-900 dark:text-zinc-300 font-bold">index.md</code>, <code className="text-zinc-900 dark:text-zinc-300 font-bold">posts/*.md</code>, and <code className="text-zinc-900 dark:text-zinc-300 font-bold">images/</code>.
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export const ReadmeView: React.FC<ReadmeViewProps> = ({ readmeContent, onOpenExp
 
         <div className="bg-white dark:bg-[#0D0D10] border border-zinc-300 dark:border-zinc-800 p-5 space-y-2 shadow-xs transition-colors rounded-xs">
           <span className="text-zinc-900 dark:text-white text-[9px] font-black uppercase tracking-widest block">3. Media Resolver</span>
-          <h3 className="font-bold text-zinc-950 dark:text-white text-sm uppercase">Direct Asset Mapping</h3>
+          <h3 className="font-bold text-zinc-950 dark:text-white text-sm uppercase">Cloudinary &amp; CDN Mapping</h3>
           <p className="text-[10px] text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
             Markdown image tags <code className="text-zinc-900 dark:text-zinc-300 font-bold">![alt](images/file.svg)</code> dynamically render high-res visuals with lightbox zoom and scale measurement tools.
           </p>
@@ -91,7 +91,7 @@ export const ReadmeView: React.FC<ReadmeViewProps> = ({ readmeContent, onOpenExp
       {/* Raw Markdown Rendered Box */}
       <div className="bg-white dark:bg-[#0D0D10] border border-zinc-300 dark:border-zinc-800 p-6 sm:p-8 shadow-xs transition-colors rounded-xs">
         <h2 className="text-[10px] text-zinc-600 dark:text-zinc-500 uppercase tracking-widest mb-4 pb-2 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between font-bold">
-          <span>Source: {DRIVE_ROOT_PATH}readme.md</span>
+          <span>Source: studio-archive/readme.md</span>
           <span className="text-[9px] text-zinc-500">RAW BUFFER</span>
         </h2>
         <pre className="p-6 bg-[#F7F6F2] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-300 text-[11px] leading-relaxed overflow-x-auto whitespace-pre-wrap rounded-xs">

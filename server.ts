@@ -410,7 +410,105 @@ app.post("/api/auth/login", (req, res) => {
   }
 });
 
-// 4. User Logout
+// 4. Create Account / Register
+app.post("/api/auth/register", (req, res) => {
+  try {
+    const { name, email, password, role } = req.body || {};
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "Name, email, and password are required." });
+    }
+
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail.includes("@") || !trimmedEmail.includes(".")) {
+      return res.status(400).json({ error: "Please enter a valid email address." });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters long." });
+    }
+
+    const newUser = authService.createUser({
+      name,
+      email: trimmedEmail,
+      password,
+      role: role === "editor" ? "editor" : "admin",
+    });
+
+    // Auto log-in new user with session token
+    const session = authService.createSession(newUser.id, req);
+    authService.setSessionCookie(res, session.token, session.expiresAt);
+
+    return res.json({
+      success: true,
+      authenticated: true,
+      user: newUser,
+      token: session.token,
+      expiresAt: session.expiresAt,
+      message: "Account successfully created.",
+    });
+  } catch (err: any) {
+    console.error("Registration error:", err);
+    return res.status(400).json({ error: err.message || "Failed to create account." });
+  }
+});
+
+// 5. Request Password Reset Code / Token
+app.post("/api/auth/forgot-password", (req, res) => {
+  try {
+    const { email } = req.body || {};
+    if (!email) {
+      return res.status(400).json({ error: "Email address is required." });
+    }
+
+    const trimmedEmail = email.trim().toLowerCase();
+    const result = authService.createPasswordResetToken(trimmedEmail);
+
+    return res.json({
+      success: true,
+      resetCode: result.resetCode,
+      expiresAt: result.expiresAt,
+      message: `Password reset verification code generated for ${trimmedEmail}. Valid for 15 minutes.`,
+    });
+  } catch (err: any) {
+    console.error("Forgot password error:", err);
+    return res.status(400).json({ error: err.message || "Failed to request password reset code." });
+  }
+});
+
+// 6. Confirm Password Reset (with verification code)
+app.post("/api/auth/reset-password", (req, res) => {
+  try {
+    const { email, resetCode, newPassword } = req.body || {};
+    if (!email || !resetCode || !newPassword) {
+      return res.status(400).json({
+        error: "Email, reset verification code, and new password are required.",
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        error: "New password must be at least 6 characters long.",
+      });
+    }
+
+    const result = authService.verifyAndResetPassword({
+      email: email.trim().toLowerCase(),
+      resetCode: resetCode.trim(),
+      newPassword,
+    });
+
+    return res.json({
+      success: true,
+      message: "Your password has been successfully reset. Please sign in with your new password.",
+      user: result.user,
+    });
+  } catch (err: any) {
+    console.error("Reset password error:", err);
+    return res.status(400).json({ error: err.message || "Failed to reset password." });
+  }
+});
+
+// 7. User Logout
 app.post("/api/auth/logout", (req, res) => {
   try {
     const token = authService.parseSessionToken(req);
@@ -424,7 +522,7 @@ app.post("/api/auth/logout", (req, res) => {
   }
 });
 
-// 5. Change Password (Authenticated Admin only)
+// 8. Change Password (Authenticated Admin only)
 app.post("/api/auth/change-password", (req, res) => {
   try {
     const token = authService.parseSessionToken(req);

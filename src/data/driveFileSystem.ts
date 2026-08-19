@@ -4,17 +4,18 @@ import { generateFullIndexMd, generateAllPostsRecord, PORTFOLIO_POSTS_REGISTRY }
 import { CLOUDINARY_ASSETS_MAP } from './cloudinaryMap';
 import { MEDIA_ASSETS_LOG } from './mediaAssetsData';
 
-export const DRIVE_ROOT_PATH = "My Drive/Clients/roryskagen.com/website-content/";
+export const STUDIO_ARCHIVE_LABEL = "Studio Archive / Content Store";
+export const DRIVE_ROOT_PATH = "studio-archive/";
 
 export const INITIAL_INDEX_MD = generateFullIndexMd();
 
 export const INITIAL_README_MD = `# Rory Skagen Studio — Fine Art Works & Catalog
 
-This directory structure powers the official marketing and fine art sales site for **Rory Skagen Studio** (roryskagen.com). The website is designed to read directly from this synchronized Google Drive repository.
+This directory structure powers the official marketing and fine art sales site for **Rory Skagen Studio** (roryskagen.com). Content and media records are managed through this synchronized studio content archive and Cloudinary media store.
 
 ## Directory Layout
 \`\`\`
-My Drive/Clients/roryskagen.com/website-content/
+studio-archive/
 ├── index.md        # Master Map Index table of all portfolio entries
 ├── readme.md       # Foundational project guidelines (this file)
 ├── images/         # Original high-res artwork files (.svg, .jpg, .png)
