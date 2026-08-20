@@ -8,6 +8,8 @@ import { GalleryAppEngineInstance } from './engine/galleryStateEngine';
 import { ArtworkRecord, DriveFile, FilterState, PageDocument } from './types';
 import { Navbar } from './components/Navbar';
 import { HomeLandingView } from './components/HomeLandingView';
+import { AboutView } from './components/AboutView';
+import { ContactView } from './components/ContactView';
 import { AuthGateView } from './components/AuthGateView';
 import { GalleryGrid } from './components/GalleryGrid';
 import { ArtworkFocusView } from './components/ArtworkFocusView';
@@ -18,9 +20,8 @@ import { ReadmeView } from './components/ReadmeView';
 import { TrashView } from './components/TrashView';
 import { CloudinaryManager } from './components/CloudinaryManager';
 import { AdminLoginModal } from './components/AdminLoginModal';
-import { DRIVE_ROOT_PATH } from './data/driveFileSystem';
 import { useAuth } from './context/AuthContext';
-import { Sparkles, ArrowUp, Github, Heart, Lock, ShieldCheck } from 'lucide-react';
+import { Lock, ShieldCheck } from 'lucide-react';
 
 export default function App() {
   const { isAuthenticated, user } = useAuth();
@@ -47,8 +48,14 @@ export default function App() {
       if (!hash || hash === 'home') {
         setRoute('home');
         setSelectedArtworkSlug(null);
-      } else if (hash === 'gallery') {
+      } else if (hash === 'gallery' || hash === 'catalog') {
         setRoute('gallery');
+        setSelectedArtworkSlug(null);
+      } else if (hash === 'about') {
+        setRoute('about');
+        setSelectedArtworkSlug(null);
+      } else if (hash === 'contact' || hash === 'inquire') {
+        setRoute('contact');
         setSelectedArtworkSlug(null);
       } else if (hash.startsWith('artwork/')) {
         const slug = hash.replace('artwork/', '');
@@ -56,8 +63,14 @@ export default function App() {
         setSelectedArtworkSlug(slug);
       } else if (hash.startsWith('page/')) {
         const slug = hash.replace('page/', '');
-        setRoute('pages');
-        setSelectedPageSlug(slug);
+        if (slug === 'about') {
+          setRoute('about');
+        } else if (slug === 'contact') {
+          setRoute('contact');
+        } else {
+          setRoute('pages');
+          setSelectedPageSlug(slug);
+        }
       } else if (hash === 'registry' || hash === 'index') {
         setRoute('registry');
       } else if (hash === 'trash') {
@@ -83,9 +96,17 @@ export default function App() {
       window.location.hash = '#home';
       setRoute('home');
       setSelectedArtworkSlug(null);
-    } else if (newRoute === 'gallery') {
-      window.location.hash = '#gallery';
+    } else if (newRoute === 'gallery' || newRoute === 'catalog') {
+      window.location.hash = '#catalog';
       setRoute('gallery');
+      setSelectedArtworkSlug(null);
+    } else if (newRoute === 'about') {
+      window.location.hash = '#about';
+      setRoute('about');
+      setSelectedArtworkSlug(null);
+    } else if (newRoute === 'contact' || newRoute === 'inquire') {
+      window.location.hash = '#contact';
+      setRoute('contact');
       setSelectedArtworkSlug(null);
     } else if (newRoute === 'artwork' && param) {
       window.location.hash = `#artwork/${param}`;
@@ -93,9 +114,17 @@ export default function App() {
       setSelectedArtworkSlug(param);
     } else if (newRoute === 'pages') {
       const pSlug = param || selectedPageSlug || 'about';
-      window.location.hash = `#page/${pSlug}`;
-      setRoute('pages');
-      setSelectedPageSlug(pSlug);
+      if (pSlug === 'about') {
+        window.location.hash = '#about';
+        setRoute('about');
+      } else if (pSlug === 'contact') {
+        window.location.hash = '#contact';
+        setRoute('contact');
+      } else {
+        window.location.hash = `#page/${pSlug}`;
+        setRoute('pages');
+        setSelectedPageSlug(pSlug);
+      }
     } else if (newRoute === 'registry') {
       window.location.hash = '#registry';
       setRoute('registry');
@@ -116,17 +145,14 @@ export default function App() {
   // Helper to get friendly page title for auth gate
   const getPageTitle = (r: string): string => {
     switch (r) {
-      case 'gallery':
-      case 'artwork':
-        return 'Fine Art Works & Collection';
       case 'registry':
-        return 'Master Catalog Index';
+        return 'Master Catalog Index (index.md)';
       case 'trash':
-        return 'Trash & Archive Vault';
+        return 'Trash Vault & Recovery';
       case 'explorer':
-        return 'Virtual Drive & File Editor';
+        return 'Virtual Drive File Editor';
       case 'pages':
-        return 'Studio Pages & Biography';
+        return 'Studio Page Editor';
       case 'readme':
         return 'Studio System Guidelines';
       default:
@@ -167,24 +193,21 @@ export default function App() {
     return file ? file.content : '';
   }, [files, engineVersion]);
 
+  const isPublicRoute = ['home', 'gallery', 'catalog', 'artwork', 'about', 'contact'].includes(route);
+
   return (
     <div id="root-container" className="min-h-screen bg-[#E5E4DF] text-zinc-900 dark:bg-[#0c0c0e] dark:text-[#f4f4f5] flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-900 dark:selection:text-amber-200 transition-colors">
       <div>
-        {/* Navigation Bar */}
+        {/* Public Clean Header (Single-Tier) */}
         <Navbar
           currentRoute={route}
           onNavigate={(r) => navigateTo(r)}
-          searchQuery={activeFilters.search}
-          onSearchChange={(q) => GalleryAppEngineInstance.setFilter('search', q)}
-          totalWorks={allItems.filter(i => !i.trashed).length}
-          trashedCount={trashedItems.length}
-          onOpenCloudinary={() => setCloudinaryModalOpen(true)}
           onOpenAdminAuth={() => setAdminAuthModalOpen(true)}
         />
 
-        {/* Main Content Area with clear layout styling */}
+        {/* Main Content Area */}
         <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 w-full flex-grow">
-          {/* Route 0: Public Placeholder Home Page (Accessible by all) */}
+          {/* Public Route 0: Home Exhibition Landing */}
           {route === 'home' && (
             <HomeLandingView
               onNavigate={(r, p) => navigateTo(r, p)}
@@ -194,47 +217,66 @@ export default function App() {
             />
           )}
 
-          {/* Protected Routes Gate: If route is not home and user is unauthenticated, show AuthGateView */}
-          {route !== 'home' && !isAuthenticated ? (
+          {/* Public Route 1: Catalog / Gallery Grid */}
+          {route === 'gallery' && (
+            <GalleryGrid
+              items={filteredItems}
+              allItems={allItems}
+              filters={activeFilters}
+              onFilterChange={(key, val) => GalleryAppEngineInstance.setFilter(key, val)}
+              onResetFilters={() => GalleryAppEngineInstance.resetFilters()}
+              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+            />
+          )}
+
+          {/* Public Route 2: Individual Artwork Focus View */}
+          {route === 'artwork' && currentArtwork && (
+            <ArtworkFocusView
+              artwork={currentArtwork}
+              allArtworks={allItems}
+              onBack={() => navigateTo('gallery')}
+              onSelectArtwork={(slug) => navigateTo('artwork', slug)}
+              onNavigatePage={(slug) => navigateTo(slug)}
+              onEditInExplorer={(filePath) => navigateTo('explorer', filePath)}
+              onOpenCloudinary={() => setCloudinaryModalOpen(true)}
+              onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
+              onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
+              onTrashArtwork={(slug) => {
+                GalleryAppEngineInstance.trashArtwork(slug);
+                navigateTo('gallery');
+              }}
+            />
+          )}
+
+          {/* Public Route 3: About Page */}
+          {route === 'about' && (
+            <AboutView
+              onNavigate={(r, p) => navigateTo(r, p)}
+              onOpenInquiry={() => navigateTo('contact')}
+            />
+          )}
+
+          {/* Public Route 4: Contact & Inquiries Page */}
+          {route === 'contact' && (
+            <ContactView
+              onNavigate={(r, p) => navigateTo(r, p)}
+              prefillArtworkTitle={currentArtwork ? currentArtwork.title : undefined}
+            />
+          )}
+
+          {/* Protected Routes Gate: If route is an admin tool and visitor is not authenticated */}
+          {!isPublicRoute && !isAuthenticated && (
             <AuthGateView
               pageName={getPageTitle(route)}
               onOpenAdminAuth={() => setAdminAuthModalOpen(true)}
               onBackToHome={() => navigateTo('home')}
             />
-          ) : (
+          )}
+
+          {/* Protected Routes (When Authenticated) */}
+          {!isPublicRoute && isAuthenticated && (
             <>
-              {/* Route 1: Individual Artwork Focus View (Protected) */}
-              {route === 'artwork' && currentArtwork && (
-                <ArtworkFocusView
-                  artwork={currentArtwork}
-                  allArtworks={allItems}
-                  onBack={() => navigateTo('gallery')}
-                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-                  onNavigatePage={(slug) => navigateTo('pages', slug)}
-                  onEditInExplorer={(filePath) => navigateTo('explorer', filePath)}
-                  onOpenCloudinary={() => setCloudinaryModalOpen(true)}
-                  onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
-                  onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
-                  onTrashArtwork={(slug) => {
-                    GalleryAppEngineInstance.trashArtwork(slug);
-                    navigateTo('registry');
-                  }}
-                />
-              )}
-
-              {/* Route 2: Gallery Grid (Protected) */}
-              {route === 'gallery' && (
-                <GalleryGrid
-                  items={filteredItems}
-                  allItems={allItems}
-                  filters={activeFilters}
-                  onFilterChange={(key, val) => GalleryAppEngineInstance.setFilter(key, val)}
-                  onResetFilters={() => GalleryAppEngineInstance.resetFilters()}
-                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-                />
-              )}
-
-              {/* Route 3: Master Registry Table (index.md) (Protected) */}
+              {/* Admin Route 1: Master Registry Table (index.md) */}
               {route === 'registry' && (
                 <MasterRegistryTable
                   items={allItems.filter(i => !i.trashed)}
@@ -248,7 +290,7 @@ export default function App() {
                 />
               )}
 
-              {/* Route 3.5: Dedicated Trash Management View (Protected) */}
+              {/* Admin Route 2: Dedicated Trash Management View */}
               {route === 'trash' && (
                 <TrashView
                   trashedItems={trashedItems}
@@ -267,7 +309,7 @@ export default function App() {
                 />
               )}
 
-              {/* Route 4: Virtual Drive File Explorer (Protected) */}
+              {/* Admin Route 3: Virtual Drive File Explorer */}
               {route === 'explorer' && (
                 <DriveExplorer
                   files={files}
@@ -282,7 +324,7 @@ export default function App() {
                 />
               )}
 
-              {/* Route 5: Pages (About, Contact, Exhibitions, Commissions) (Protected) */}
+              {/* Admin Route 4: Markdown Pages Editor */}
               {route === 'pages' && (
                 <PagesView
                   pages={pages}
@@ -293,7 +335,7 @@ export default function App() {
                 />
               )}
 
-              {/* Route 6: System Guidelines (readme.md) (Protected) */}
+              {/* Admin Route 5: System Guidelines (readme.md) */}
               {route === 'readme' && (
                 <ReadmeView
                   readmeContent={readmeContent}
@@ -305,54 +347,130 @@ export default function App() {
         </main>
       </div>
 
-      {/* Luxury Studio Gallery Footer */}
-      <footer className="bg-[#DFDED9] dark:bg-[#09090c] border-t border-zinc-300 dark:border-zinc-800/80 mt-20 text-xs font-mono text-zinc-600 dark:text-zinc-500 py-12 transition-colors">
+      {/* ─────────────────────────────────────────────────────────────
+          PUBLIC FINE ART STUDIO FOOTER (Refined Editorial Layout)
+      ────────────────────────────────────────────────────────────────*/}
+      <footer className="bg-[#DFDED9] dark:bg-[#09090c] border-t-2 border-zinc-900 dark:border-zinc-800 mt-20 text-xs font-mono text-zinc-600 dark:text-zinc-400 py-12 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Brand & Studio Heritage Column */}
             <div className="md:col-span-2 space-y-3">
-              <span className="font-display font-black text-lg text-zinc-950 dark:text-zinc-100 tracking-wider">
-                RORY SKAGEN STUDIO
+              <span className="font-serif font-black text-xl text-zinc-950 dark:text-white uppercase tracking-wider block">
+                Rory Skagen Art
               </span>
               <p className="text-zinc-700 dark:text-zinc-400 font-sans text-xs max-w-md leading-relaxed">
-                Official fine art studio and gallery celebrating four decades of iconic retro pop art, Austin landmarks, and neon roadside Americana. Original paintings and fine art commissions available.
+                Official fine art studio and gallery celebrating four decades of iconic retro pop surrealism, Austin landmarks, and neon roadside Americana. Original paintings, large-scale steel panels, and fine art commissions available.
               </p>
-              <p className="text-[11px] text-amber-700 dark:text-amber-400/90 font-mono">
-                Studio Repository: <code className="text-zinc-900 dark:text-zinc-300">{DRIVE_ROOT_PATH}</code>
-              </p>
+              <div className="text-[11px] text-zinc-500 font-mono">
+                Austin, Texas • Est. 1985 • Co-Creator of <em>&ldquo;Greetings from Austin&rdquo;</em> Mural
+              </div>
             </div>
 
+            {/* Navigation Column */}
             <div className="space-y-2">
-              <span className="text-zinc-950 dark:text-zinc-200 font-bold text-xs block uppercase tracking-wider">Public &amp; Portfolio</span>
-              <ul className="space-y-1.5 text-xs text-zinc-700 dark:text-zinc-400 font-sans">
-                <li><button onClick={() => navigateTo('home')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer">Studio Home Page</button></li>
-                <li><button onClick={() => navigateTo('gallery')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Available Artworks</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
-                <li><button onClick={() => navigateTo('pages', 'about')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Biography &amp; Legacy</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
-                <li><button onClick={() => navigateTo('pages', 'commissions')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Mural Commissions</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
+              <span className="text-zinc-950 dark:text-zinc-100 font-bold text-xs block uppercase tracking-wider">
+                Explore
+              </span>
+              <ul className="space-y-2 text-xs font-mono">
+                <li>
+                  <button 
+                    onClick={() => navigateTo('home')} 
+                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
+                  >
+                    Home
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigateTo('gallery')} 
+                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
+                  >
+                    Catalog ({allItems.filter(i => !i.trashed).length} Works)
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigateTo('about')} 
+                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
+                  >
+                    About Rory
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigateTo('contact')} 
+                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
+                  >
+                    Contact &amp; Inquiries
+                  </button>
+                </li>
               </ul>
             </div>
 
+            {/* Studio Services Column */}
             <div className="space-y-2">
-              <span className="text-zinc-950 dark:text-zinc-200 font-bold text-xs block uppercase tracking-wider">Studio Portal (Protected)</span>
-              <ul className="space-y-1.5 text-xs text-zinc-700 dark:text-zinc-400 font-sans">
-                <li><button onClick={() => navigateTo('registry')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Master Catalog (index.md)</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
-                <li><button onClick={() => navigateTo('trash')} className="hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer flex items-center gap-1"><span>Trash Vault ({trashedItems.length})</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
-                <li><button onClick={() => navigateTo('explorer')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>Drive Files &amp; Editor</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
-                <li><button onClick={() => navigateTo('readme')} className="hover:text-black dark:hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1"><span>System Specs (readme.md)</span>{!isAuthenticated && <Lock className="w-2.5 h-2.5 text-zinc-400" />}</button></li>
-                <li><button onClick={() => setAdminAuthModalOpen(true)} className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors cursor-pointer font-bold text-emerald-800 dark:text-emerald-300">{isAuthenticated ? 'Studio Admin Active' : 'Studio Portal Sign In'}</button></li>
+              <span className="text-zinc-950 dark:text-zinc-100 font-bold text-xs block uppercase tracking-wider">
+                Studio Services
+              </span>
+              <ul className="space-y-2 text-xs font-mono text-zinc-700 dark:text-zinc-400">
+                <li>
+                  <button 
+                    onClick={() => navigateTo('contact')} 
+                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
+                  >
+                    Original Artwork Acquisition
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigateTo('contact')} 
+                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
+                  >
+                    Mural Commissions
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigateTo('contact')} 
+                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
+                  >
+                    Exhibitions &amp; Press
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigateTo('about')} 
+                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
+                  >
+                    Authenticity &amp; Provenance
+                  </button>
+                </li>
               </ul>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-zinc-300 dark:border-zinc-800/60 flex items-center justify-between flex-wrap gap-4 text-[11px] text-zinc-600 dark:text-zinc-500">
+          {/* Bottom Bar with Copyright and Subtle Admin Link */}
+          <div className="pt-8 border-t border-zinc-300 dark:border-zinc-800/80 flex items-center justify-between flex-wrap gap-4 text-[11px] text-zinc-600 dark:text-zinc-500">
             <div>
-              &copy; {new Date().getFullYear()} Rory Skagen Studio. All rights reserved. Artwork and original paintings presented for acquisition and exhibition.
+              &copy; {new Date().getFullYear()} Rory Skagen Studio. All rights reserved. Austin, Texas.
             </div>
             <div className="flex items-center gap-4 font-mono">
-              <span className="text-zinc-800 dark:text-zinc-400">Austin, Texas</span>
+              <span>Austin, TX 78704</span>
               <span>•</span>
-              <span className={isAuthenticated ? "text-emerald-700 dark:text-emerald-400 font-bold" : "text-amber-700 dark:text-amber-400 font-bold"}>
-                {isAuthenticated ? 'Studio Session Active' : 'Public Preview'}
-              </span>
+              <button
+                onClick={() => setAdminAuthModalOpen(true)}
+                className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors cursor-pointer flex items-center gap-1"
+                title="Studio Staff Portal"
+              >
+                {isAuthenticated ? (
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Studio Admin Active</span>
+                  </span>
+                ) : (
+                  <span>Studio Login</span>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -377,4 +495,3 @@ export default function App() {
     </div>
   );
 }
-
