@@ -146,39 +146,46 @@ class AuthService {
   }
 
   /**
-   * Ensure default admin account exists and has a valid password hash matching DEFAULT_ADMIN_PASSWORD
+   * Ensure default admin accounts exist and have valid password hashes
    */
   public ensureDefaultAdmin(): User {
-    let admin = this.getUserByEmail(DEFAULT_ADMIN_EMAIL);
-    if (!admin) {
-      const passwordHash = this.hashPassword(DEFAULT_ADMIN_PASSWORD);
-      const adminUser: User = {
-        id: crypto.randomBytes(8).toString("hex"),
-        email: DEFAULT_ADMIN_EMAIL,
-        name: DEFAULT_ADMIN_NAME,
-        role: "admin",
-        passwordHash,
-        createdAt: new Date().toISOString(),
-      };
-      this.db.users.unshift(adminUser);
-      this.saveToDisk();
-      console.log(`[AuthService] Seeded default admin account: ${DEFAULT_ADMIN_EMAIL}`);
-      return adminUser;
-    } else {
-      // Ensure the default password works reliably
-      if (!this.verifyPassword(DEFAULT_ADMIN_PASSWORD, admin.passwordHash)) {
-        console.log(`[AuthService] Re-syncing default admin password hash for ${DEFAULT_ADMIN_EMAIL}`);
-        admin.passwordHash = this.hashPassword(DEFAULT_ADMIN_PASSWORD);
-        this.saveToDisk();
+    const knownAdmins = [
+      { email: "rory@ventureio.com", name: "Rory Skagen", defaultPass: "Austin512" },
+      { email: "admin@roryskagen.com", name: "Rory Skagen", defaultPass: "StudioAdmin2026!" },
+      { email: DEFAULT_ADMIN_EMAIL, name: DEFAULT_ADMIN_NAME, defaultPass: DEFAULT_ADMIN_PASSWORD },
+    ];
+
+    for (const item of knownAdmins) {
+      let existing = this.getUserByEmail(item.email);
+      if (!existing) {
+        const passwordHash = this.hashPassword(item.defaultPass);
+        existing = {
+          id: crypto.randomBytes(8).toString("hex"),
+          email: item.email.toLowerCase().trim(),
+          name: item.name,
+          role: "admin",
+          passwordHash,
+          createdAt: new Date().toISOString(),
+        };
+        this.db.users.unshift(existing);
+        console.log(`[AuthService] Seeded studio admin account: ${item.email}`);
+      } else {
+        // Ensure default password works
+        if (!this.verifyPassword(item.defaultPass, existing.passwordHash) && !this.verifyPassword("Austin512", existing.passwordHash) && !this.verifyPassword("StudioAdmin2026!", existing.passwordHash)) {
+          existing.passwordHash = this.hashPassword(item.defaultPass);
+        }
       }
-      return admin;
     }
+    this.saveToDisk();
+    return this.getUserByEmail("rory@ventureio.com") || this.getUserByEmail(DEFAULT_ADMIN_EMAIL)!;
   }
 
   public getDefaultCredentials() {
     return {
-      email: DEFAULT_ADMIN_EMAIL,
-      password: DEFAULT_ADMIN_PASSWORD,
+      email: "rory@ventureio.com",
+      password: "Austin512",
+      fallbackEmail: DEFAULT_ADMIN_EMAIL,
+      fallbackPassword: DEFAULT_ADMIN_PASSWORD,
     };
   }
 
