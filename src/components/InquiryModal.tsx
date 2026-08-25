@@ -15,7 +15,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
   const [city, setCity] = useState('');
   const [message, setMessage] = useState(
     artwork
-      ? `Acquisition inquiry for "${artwork.title}" (${artwork.year}, ${artwork.price}). Requesting provenance dossier and crating/delivery specifications.`
+      ? `Inquiry for "${artwork.title}" (${artwork.year}, ${artwork.price}). Requesting purchase and delivery details.`
       : 'Studio and commission inquiry for custom fine art painting or mural installation.'
   );
   const [submitted, setSubmitted] = useState(false);
@@ -44,10 +44,10 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-black text-zinc-950 dark:text-white uppercase tracking-wider font-sans">
-              Transmission Complete
+              Message Sent
             </h3>
             <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed font-sans">
-              Inquiry for <strong className="text-zinc-950 dark:text-white font-bold">{artwork ? artwork.title : 'Rory Skagen Studio'}</strong> logged to studio dispatch. Studio director will respond within 24 standard business hours.
+              Inquiry for <strong className="text-zinc-950 dark:text-white font-bold">{artwork ? artwork.title : 'Rory Skagen Studio'}</strong> received. The studio will respond within 24 hours.
             </p>
             <div className="pt-4">
               <button
@@ -57,7 +57,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
                 }}
                 className="px-6 py-2.5 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-black dark:hover:bg-zinc-200 transition-colors cursor-pointer rounded-xs shadow-xs"
               >
-                Close Dispatch
+                Close Window
               </button>
             </div>
           </div>
@@ -66,10 +66,10 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
             <div className="mb-6">
               <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-zinc-600 dark:text-zinc-400 mb-1 font-bold">
                 <span className="w-1.5 h-1.5 bg-zinc-900 dark:bg-white inline-block"></span>
-                <span>RORY SKAGEN STUDIO DISPATCH</span>
+                <span>RORY SKAGEN STUDIO</span>
               </div>
               <h2 className="text-xl font-black uppercase tracking-tight text-zinc-950 dark:text-white font-sans">
-                {artwork ? `Acquire: ${artwork.title}` : 'Studio & Commission Inquiry'}
+                {artwork ? `Inquire: ${artwork.title}` : 'Studio and Commission Inquiry'}
               </h2>
               {artwork && (
                 <p className="text-[10px] text-zinc-600 dark:text-zinc-400 mt-1 font-sans">

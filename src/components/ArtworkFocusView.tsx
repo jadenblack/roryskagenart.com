@@ -349,7 +349,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
 
               <div>
                 <span className="text-[9px] uppercase tracking-wider text-zinc-600 dark:text-zinc-400 flex items-center gap-1 font-bold">
-                  <Tag className="w-3 h-3 text-zinc-500" /> Acquisition
+                  <Tag className="w-3 h-3 text-zinc-500" /> Price / Purchase
                 </span>
                 <span className="font-bold text-zinc-950 dark:text-white text-sm mt-1 block">
                   {artwork.price}
@@ -364,10 +364,10 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                 className="w-full py-3.5 px-6 bg-zinc-900 text-white dark:bg-white dark:text-black text-[10px] uppercase font-bold tracking-[0.2em] hover:bg-black dark:hover:bg-zinc-200 transition-colors cursor-pointer shadow-md rounded-xs"
               >
                 {artwork.status === 'Available'
-                  ? 'Inquire for Acquisition'
+                  ? 'Inquire About Original'
                   : artwork.status === 'Limited Edition'
                   ? 'Request Limited Edition Print'
-                  : 'Studio Inquiries & Provenance'}
+                  : 'Studio Inquiries'}
               </button>
             </div>
           </div>

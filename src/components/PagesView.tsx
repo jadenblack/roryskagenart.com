@@ -47,9 +47,9 @@ export const PagesView: React.FC<PagesViewProps> = ({
   };
 
   const pageNav = [
-    { slug: 'about', label: 'Biography & Legacy', icon: Info },
-    { slug: 'commissions', label: 'Mural & Canvas Commissions', icon: Palette },
-    { slug: 'exhibitions', label: 'Exhibitions & Collections', icon: Award },
+    { slug: 'about', label: 'Biography and Legacy', icon: Info },
+    { slug: 'commissions', label: 'Mural and Canvas Commissions', icon: Palette },
+    { slug: 'exhibitions', label: 'Exhibitions and Collections', icon: Award },
     { slug: 'contact', label: 'Studio Inquiries', icon: Mail },
   ];
 

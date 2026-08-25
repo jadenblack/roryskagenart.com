@@ -362,10 +362,10 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
         
         <div className="grid grid-cols-12 gap-2 text-[9px] uppercase tracking-wider text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800 pb-2 mb-2 font-mono font-bold">
           <span className="col-span-4 sm:col-span-3">Artwork Title / Reference</span>
-          <span className="col-span-4 sm:col-span-3">Medium &amp; Surface</span>
+          <span className="col-span-4 sm:col-span-3">Medium / Surface</span>
           <span className="col-span-2 sm:col-span-2">Year</span>
           <span className="col-span-2 sm:col-span-2">Status</span>
-          <span className="hidden sm:block sm:col-span-2 text-right">Acquisition</span>
+          <span className="hidden sm:block sm:col-span-2 text-right">Price</span>
         </div>
 
         <div className="space-y-1.5 max-h-52 overflow-y-auto font-mono text-[10px]">

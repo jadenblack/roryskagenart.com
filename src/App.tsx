@@ -148,7 +148,7 @@ export default function App() {
       case 'registry':
         return 'Master Catalog Index (index.md)';
       case 'trash':
-        return 'Trash Vault & Recovery';
+        return 'Trash Bin';
       case 'explorer':
         return 'Virtual Drive File Editor';
       case 'pages':
@@ -418,7 +418,7 @@ export default function App() {
                     onClick={() => navigateTo('contact')} 
                     className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
                   >
-                    Original Artwork Acquisition
+                    Original Artwork Inquiries
                   </button>
                 </li>
                 <li>
@@ -434,7 +434,7 @@ export default function App() {
                     onClick={() => navigateTo('contact')} 
                     className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
                   >
-                    Exhibitions &amp; Press
+                    Exhibitions and Press
                   </button>
                 </li>
                 <li>
@@ -442,7 +442,7 @@ export default function App() {
                     onClick={() => navigateTo('about')} 
                     className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
                   >
-                    Authenticity &amp; Provenance
+                    Certificate of Authenticity
                   </button>
                 </li>
               </ul>

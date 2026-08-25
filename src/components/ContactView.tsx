@@ -23,7 +23,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ onNavigate, prefillArt
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [inquiryType, setInquiryType] = useState('acquisition');
+  const [inquiryType, setInquiryType] = useState('original-artwork');
   const [artworkInterest, setArtworkInterest] = useState(prefillArtworkTitle || '');
   const [message, setMessage] = useState('');
 
@@ -48,13 +48,13 @@ export const ContactView: React.FC<ContactViewProps> = ({ onNavigate, prefillArt
       <header className="border-b-2 border-zinc-900 dark:border-zinc-700 pb-8 space-y-4">
         <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
-          <span>Studio Inquiries &amp; Acquisitions • Austin, Texas</span>
+          <span>Contact &amp; Inquiries • Austin, Texas</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-zinc-950 dark:text-white font-serif leading-none">
           Contact &amp; Inquiries
         </h1>
         <p className="text-sm sm:text-base font-mono uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-semibold max-w-3xl">
-          Original Art Acquisitions, Mural Commissions &amp; Studio Representation
+          Original Art Purchases, Mural Commissions and Studio Representation
         </p>
       </header>
 
@@ -161,11 +161,11 @@ export const ContactView: React.FC<ContactViewProps> = ({ onNavigate, prefillArt
                     onChange={(e) => setInquiryType(e.target.value)}
                     className="w-full bg-[#F4F3ED] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 px-3 py-2.5 text-zinc-900 dark:text-white focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors cursor-pointer"
                   >
-                    <option value="acquisition">Original Artwork Acquisition</option>
+                    <option value="original-artwork">Original Artwork Purchase</option>
                     <option value="mural">Mural / Commercial Commission</option>
                     <option value="canvas">Custom Canvas Commission</option>
                     <option value="exhibition">Exhibition / Gallery Curator</option>
-                    <option value="press">Press &amp; Media</option>
+                    <option value="press">Press and Media</option>
                     <option value="general">General Studio Inquiry</option>
                   </select>
                 </div>
@@ -195,7 +195,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ onNavigate, prefillArt
                   required
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Please describe your acquisition request, shipping location, or custom commission vision (wall surface, dimensions, target date)..."
+                  placeholder="Please describe your inquiry, artwork interest, shipping location, or custom commission vision (wall surface, dimensions, target date)..."
                   className="w-full bg-[#F4F3ED] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 p-3 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors resize-y font-mono text-xs"
                 />
               </div>
@@ -252,7 +252,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ onNavigate, prefillArt
           <div className="bg-[#F4F3ED] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 p-6 space-y-4 rounded-xs text-xs">
             <h4 className="font-serif font-bold text-base uppercase tracking-tight text-zinc-950 dark:text-white flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Collector Services &amp; Guarantees</span>
+              <span>Collector Services and Guarantees</span>
             </h4>
             <ul className="space-y-2.5 text-zinc-600 dark:text-zinc-400 font-mono text-[11px]">
               <li className="flex items-start gap-2">

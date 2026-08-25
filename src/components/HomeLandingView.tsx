@@ -392,35 +392,6 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
           <p className="text-xs sm:text-sm font-mono uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 font-semibold max-w-2xl mx-auto">
             Pop Surrealism • Atomic Americana • Landmark Public Murals
           </p>
-
-          {/* Classic Top Nav Links (Home | Catalog | About | Contact) */}
-          <nav className="pt-2 flex flex-wrap items-center justify-center gap-6 sm:gap-10 font-mono text-xs uppercase tracking-[0.2em] font-bold">
-            <button 
-              onClick={() => onNavigate('home')}
-              className="text-zinc-950 dark:text-white hover:text-emerald-700 dark:hover:text-emerald-400 border-b-2 border-zinc-950 dark:border-white pb-0.5 transition-colors cursor-pointer"
-            >
-              HOME
-            </button>
-            <button 
-              onClick={() => onNavigate('gallery')}
-              className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
-            >
-              CATALOG ({totalWorks || '700+'})
-            </button>
-            <button 
-              onClick={() => onNavigate('about')}
-              className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
-            >
-              ABOUT RORY
-            </button>
-            <button 
-              onClick={() => onNavigate('contact')}
-              className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer flex items-center gap-1"
-            >
-              <Mail className="w-3.5 h-3.5 text-emerald-600" />
-              <span>CONTACT &amp; INQUIRY</span>
-            </button>
-          </nav>
         </div>
 
         {/* Quick Filter / Search Bar */}
@@ -445,7 +416,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                   : 'bg-zinc-200/70 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
               }`}
             >
-              Kaiju &amp; Pop Monsters
+              Kaiju and Pop Monsters
             </button>
             <button
               onClick={() => setActiveCategory('ads')}
@@ -465,7 +436,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                   : 'bg-zinc-200/70 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
               }`}
             >
-              Cocktail Hours &amp; Tiki
+              Cocktail Hours and Tiki
             </button>
           </div>
 
@@ -700,7 +671,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
           <div className="bg-[#F4F3ED] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 p-5 space-y-3 rounded-xs font-mono text-xs">
             <h4 className="font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 flex items-center gap-2 border-b border-zinc-300 dark:border-zinc-700 pb-2">
               <Compass className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Landmarks &amp; Studio Portals</span>
+              <span>Landmarks and Studio Portals</span>
             </h4>
             <ul className="space-y-2.5 text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start gap-2">
@@ -757,7 +728,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             CURATED MEDIUM SPOTLIGHTS
           </span>
           <h2 className="text-3xl sm:text-4xl font-black uppercase text-zinc-950 dark:text-white font-serif">
-            Signs, Enamels &amp; Carnival Banners
+            Signs, Enamels and Carnival Banners
           </h2>
         </div>
 
@@ -863,7 +834,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
               CANONICAL 2010 COLLECTIONS
             </span>
             <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 dark:text-white font-serif">
-              Curated Series &amp; Groups
+              Curated Series and Groups
             </h2>
           </div>
           <button
@@ -1063,7 +1034,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                   className="w-full py-3 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
                 >
                   <Send className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-600" />
-                  <span>Send Acquisition Inquiry</span>
+                  <span>Send Studio Inquiry</span>
                 </button>
 
                 {isAuthenticated && (

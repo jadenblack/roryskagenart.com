@@ -30,7 +30,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'home', label: 'Home' },
     { id: 'gallery', label: 'Catalog' },
     { id: 'about', label: 'About' },
-    { id: 'contact', label: 'Contact' },
+    { id: 'contact', label: 'Contact & Inquiries' },
+    ...(isAuthenticated ? [{ id: 'registry', label: 'Registry' }] : []),
   ];
 
   const handleNavClick = (id: string) => {
@@ -91,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* ─────────────────────────────────────────────────────────────
-              3. RIGHT CONTROLS (Login + Light/Dark)
+              3. RIGHT CONTROLS (Login/Admin + Light/Dark)
           ────────────────────────────────────────────────────────────────*/}
           <div className="hidden md:flex items-center gap-3 font-mono text-xs">
             {/* Login / Admin Status Button */}
@@ -99,7 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onOpenAdminAuth}
                 title={isAuthenticated ? 'Studio Admin Authenticated' : 'Studio Portal Sign In'}
-                className={`flex items-center gap-1.5 px-3 py-2 border text-[10px] uppercase tracking-wider font-bold transition-all cursor-pointer rounded-xs ${
+                className={`h-9 px-3.5 min-w-[88px] flex items-center justify-center gap-1.5 border text-xs font-mono uppercase tracking-wider font-bold transition-all cursor-pointer rounded-xs ${
                   isAuthenticated
                     ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-400 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100'
                     : 'bg-[#F2F1EC] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-300'
@@ -107,12 +108,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 {isAuthenticated ? (
                   <>
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                     <span>Admin</span>
                   </>
                 ) : (
                   <>
-                    <Lock className="w-3.5 h-3.5 text-zinc-500" />
+                    <Lock className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0" />
                     <span>Login</span>
                   </>
                 )}
@@ -123,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={toggleTheme}
               title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
-              className="flex items-center justify-center w-9 h-9 bg-[#F2F1EC] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 transition-colors cursor-pointer rounded-xs"
+              className="flex items-center justify-center w-9 h-9 bg-[#F2F1EC] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 transition-colors cursor-pointer rounded-xs flex-shrink-0"
               aria-label="Toggle Theme"
             >
               {isDark ? (

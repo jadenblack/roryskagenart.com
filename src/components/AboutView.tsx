@@ -37,13 +37,13 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
       <header className="border-b-2 border-zinc-900 dark:border-zinc-700 pb-8 space-y-4">
         <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
-          <span>Artist Biography &amp; Studio Heritage • Austin, Texas</span>
+          <span>Artist Biography and Studio Heritage • Austin, Texas</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-zinc-950 dark:text-white font-serif leading-none">
           About Rory Skagen
         </h1>
         <p className="text-sm sm:text-base font-mono uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-semibold max-w-3xl">
-          Four Decades of Pop Surrealism, Atomic Americana &amp; Landmark Texas Murals
+          Four Decades of Pop Art, Atomic Americana and Landmark Texas Murals
         </p>
       </header>
 
@@ -91,7 +91,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
           {/* Quick Contact & Inquire Box */}
           <div className="bg-[#F4F3ED] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 p-6 space-y-4 rounded-xs">
             <h3 className="font-serif font-black text-lg uppercase tracking-tight text-zinc-950 dark:text-white">
-              Studio Representation &amp; Acquisitions
+              Studio Representation and Inquiries
             </h3>
             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
               Original panel enamels, large banner paintings, and commissioned murals are available directly through the studio and authorized gallery representations.
@@ -267,10 +267,10 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
       <section className="bg-zinc-900 text-white dark:bg-zinc-950 border-2 border-zinc-900 dark:border-zinc-700 p-8 sm:p-12 text-center space-y-6">
         <div className="max-w-2xl mx-auto space-y-3">
           <span className="text-xs font-mono uppercase tracking-[0.25em] text-emerald-400 font-bold">
-            ORIGINAL ARTWORKS &amp; COMMISSIONS
+            ORIGINAL ARTWORKS AND COMMISSIONS
           </span>
           <h3 className="text-3xl sm:text-4xl font-black uppercase font-serif tracking-tight">
-            Acquire an Original Rory Skagen
+            Inquire on an Original Rory Skagen
           </h3>
           <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">
             Inquire about available panel originals, historical archive prints, or custom mural commissions for public and private spaces.
@@ -289,7 +289,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
             className="px-6 py-3 bg-emerald-600 text-white font-mono font-bold uppercase tracking-widest text-xs hover:bg-emerald-500 transition-colors cursor-pointer flex items-center gap-2"
           >
             <Mail className="w-3.5 h-3.5" />
-            <span>Studio Contact &amp; Inquiry</span>
+            <span>Contact &amp; Inquiries</span>
           </button>
         </div>
       </section>
