@@ -19,6 +19,7 @@ import { useAuth } from '../context/AuthContext';
 import { InquiryModal } from './InquiryModal';
 import { CLOUDINARY_ASSETS_MAP, resolveCloudinaryUrl } from '../data/cloudinaryMap';
 import { getArtworkSvg } from '../data/artAssets';
+import { HeroGallerySlider } from './HeroGallerySlider';
 
 interface HomeLandingViewProps {
   onNavigate: (route: string, param?: string) => void;
@@ -393,6 +394,17 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             Pop Surrealism • Atomic Americana • Landmark Public Murals
           </p>
         </div>
+
+        {/* Hero Gallery Slider Feature */}
+        <HeroGallerySlider
+          artworks={featuredArtworks}
+          onSelectArtwork={(slug) => onNavigate('artwork', slug)}
+          onInquireArtwork={(art) => {
+            setSelectedInquiryArtwork(art);
+            setInquiryModalOpen(true);
+          }}
+          onOpenLightbox={(art) => setLightboxArtwork(art)}
+        />
 
         {/* Quick Filter / Search Bar */}
         <div className="mt-8 pt-4 border-t border-zinc-200 dark:border-zinc-800/80 flex flex-col md:flex-row items-center justify-between gap-4">

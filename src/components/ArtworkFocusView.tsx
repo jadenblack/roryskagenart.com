@@ -15,15 +15,16 @@ import {
   Share2, 
   Check, 
   ZoomIn, 
-  X,
-  Layers,
-  Edit3,
-  Cloud,
-  Power,
-  Box,
-  RotateCcw,
-  Trash2,
-  EyeOff
+  X, 
+  Layers, 
+  Edit3, 
+  Cloud, 
+  Power, 
+  Box, 
+  RotateCcw, 
+  Trash2, 
+  EyeOff,
+  Sparkles
 } from 'lucide-react';
 
 interface ArtworkFocusViewProps {
@@ -36,6 +37,7 @@ interface ArtworkFocusViewProps {
   onOpenCloudinary?: () => void;
   onToggleEnable?: (slug: string) => void;
   onToggleArchive?: (slug: string) => void;
+  onToggleHeroSlider?: (slug: string) => void;
   onTrashArtwork?: (slug: string) => void;
 }
 
@@ -49,6 +51,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
   onOpenCloudinary,
   onToggleEnable,
   onToggleArchive,
+  onToggleHeroSlider,
   onTrashArtwork
 }) => {
   const [activeTab, setActiveTab] = useState<'narrative' | 'scale' | 'source'>('narrative');
@@ -264,6 +267,21 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
               <div className="flex items-center gap-2 mb-4 p-2 bg-[#F2F1EC] dark:bg-black border border-zinc-300 dark:border-zinc-800/80 text-[10px] font-mono flex-wrap rounded-xs">
                 <span className="text-zinc-600 dark:text-zinc-500 uppercase text-[9px] tracking-wider mr-1 font-bold">STUDIO CONTROLS:</span>
                 
+                {onToggleHeroSlider && (
+                  <button
+                    onClick={() => onToggleHeroSlider(artwork.slug)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 text-[9px] uppercase tracking-wider border transition-all cursor-pointer font-bold rounded-xs ${
+                      artwork.heroSlider
+                        ? 'bg-amber-100 text-amber-950 border-amber-400 hover:bg-amber-200 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700 shadow-xs'
+                        : 'bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
+                    }`}
+                    title={artwork.heroSlider ? 'Remove from Homepage Hero Slider' : 'Show in Homepage Hero Slider'}
+                  >
+                    <Sparkles className={`w-3 h-3 ${artwork.heroSlider ? 'text-amber-600 dark:text-amber-400 fill-amber-500/20' : 'text-zinc-400'}`} />
+                    <span>Hero Slider: {artwork.heroSlider ? 'ON' : 'OFF'}</span>
+                  </button>
+                )}
+
                 {onToggleEnable && (
                   <button
                     onClick={() => onToggleEnable(artwork.slug)}

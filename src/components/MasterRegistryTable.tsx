@@ -16,7 +16,8 @@ import {
   Box,
   RotateCcw,
   Trash2,
-  EyeOff
+  EyeOff,
+  Sparkles
 } from 'lucide-react';
 import { DRIVE_ROOT_PATH } from '../data/driveFileSystem';
 import { MEDIA_ASSETS_LOG, MediaAssetLogEntry } from '../data/mediaAssetsData';
@@ -28,6 +29,7 @@ interface MasterRegistryTableProps {
   onEditIndexMd: () => void;
   onToggleEnable?: (slug: string) => void;
   onToggleArchive?: (slug: string) => void;
+  onToggleHeroSlider?: (slug: string) => void;
   onTrashArtwork?: (slug: string) => void;
   onNavigateToTrash?: () => void;
   trashedCount?: number;
@@ -40,12 +42,13 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
   onEditIndexMd,
   onToggleEnable,
   onToggleArchive,
+  onToggleHeroSlider,
   onTrashArtwork,
   onNavigateToTrash,
   trashedCount = 0
 }) => {
   const [activeTab, setActiveTab] = useState<'portfolio' | 'media' | 'raw'>('portfolio');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'sold' | 'archived' | 'disabled'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'hero' | 'available' | 'sold' | 'archived' | 'disabled'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [mediaFilter, setMediaFilter] = useState<'all' | 'active' | 'orphaned'>('all');
   const [copied, setCopied] = useState(false);
@@ -103,6 +106,7 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
 
     if (!matchesSearch) return false;
 
+    if (statusFilter === 'hero') return item.heroSlider === true;
     if (statusFilter === 'available') return item.status === 'Available';
     if (statusFilter === 'sold') return item.status === 'Sold';
     if (statusFilter === 'archived') return item.status === 'Archived' || item.archived === true;
@@ -111,6 +115,7 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
     return true;
   });
 
+  const heroCount = activeItems.filter((i) => i.heroSlider === true).length;
   const availableCount = activeItems.filter((i) => i.status === 'Available').length;
   const soldCount = activeItems.filter((i) => i.status === 'Sold').length;
   const archivedCount = activeItems.filter((i) => i.status === 'Archived' || i.archived === true).length;
@@ -242,6 +247,15 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
                   All ({activeItems.length})
                 </button>
                 <button
+                  onClick={() => setStatusFilter('hero')}
+                  className={`px-2 py-1 uppercase text-[9px] cursor-pointer rounded-xs flex items-center gap-1 ${
+                    statusFilter === 'hero' ? 'bg-amber-100 text-amber-950 dark:bg-amber-950/80 dark:text-amber-300 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-amber-700 dark:hover:text-amber-300'
+                  }`}
+                >
+                  <Sparkles className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400" />
+                  <span>Hero Slider ({heroCount})</span>
+                </button>
+                <button
                   onClick={() => setStatusFilter('available')}
                   className={`px-2 py-1 uppercase text-[9px] cursor-pointer rounded-xs ${
                     statusFilter === 'available' ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-400' : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-300'
@@ -361,9 +375,17 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
                           />
                         </div>
                         <div>
-                          <span className="font-bold text-zinc-950 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors block truncate max-w-[160px] font-sans">
-                            {cleanDisplayTitle(item.title, item.slug)}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-zinc-950 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors block truncate max-w-[160px] font-sans">
+                              {cleanDisplayTitle(item.title, item.slug)}
+                            </span>
+                            {item.heroSlider && (
+                              <span className="inline-flex items-center gap-0.5 px-1 py-0.2 bg-amber-100 text-amber-900 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-[8px] font-mono uppercase tracking-wider font-bold rounded-2xs flex-shrink-0" title="Featured in homepage hero slider">
+                                <Sparkles className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400" />
+                                Hero
+                              </span>
+                            )}
+                          </div>
                           <span className="text-[9px] text-zinc-500">{item.edition}</span>
                         </div>
                       </td>
@@ -404,6 +426,21 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
                       <td className="py-2.5 px-4 text-zinc-950 dark:text-white font-bold">{item.price}</td>
                       <td className="py-2.5 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+                          {/* Hero Slider Toggle Button */}
+                          {onToggleHeroSlider && (
+                            <button
+                              onClick={() => onToggleHeroSlider(item.slug)}
+                              className={`p-1.5 border transition-colors cursor-pointer rounded-xs ${
+                                item.heroSlider
+                                  ? 'bg-amber-100 text-amber-950 border-amber-400 hover:bg-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-700 shadow-2xs'
+                                  : 'bg-[#F2F1EC] text-zinc-600 border-zinc-300 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800 dark:hover:text-amber-400'
+                              }`}
+                              title={item.heroSlider ? 'Remove from Homepage Hero Slider' : 'Add to Homepage Hero Slider'}
+                            >
+                              <Sparkles className={`w-3.5 h-3.5 ${item.heroSlider ? 'text-amber-600 dark:text-amber-400 fill-amber-500/20' : ''}`} />
+                            </button>
+                          )}
+
                           {/* Enable/Disable Button */}
                           {onToggleEnable && (
                             <button

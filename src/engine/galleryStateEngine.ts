@@ -499,6 +499,25 @@ export class GalleryStateEngine {
       ? metadata.tags.split(',').map((t: string) => t.trim())
       : [];
 
+    const defaultHeroSlugs = [
+      'greetings-from-austin',
+      'godzilla-austin',
+      'king-kong-austin',
+      'drive-in-theatre',
+      'retro-robot-sign',
+      'atomic-cocktail-lounge',
+      'kirunan',
+      'terrordon',
+      'rendezvous-in-chinatown',
+      'the-cats-of-the-colloseum'
+    ];
+
+    const isHeroSlider = metadata.hero_slider !== undefined
+      ? Boolean(metadata.hero_slider)
+      : metadata.heroSlider !== undefined
+      ? Boolean(metadata.heroSlider)
+      : defaultHeroSlugs.includes(normSlug);
+
     const renderedHtml = this.renderMarkdownWithWikiLinks(body);
 
     return {
@@ -522,6 +541,7 @@ export class GalleryStateEngine {
       archived: isArchived,
       trashed: isTrashed,
       trashedAt,
+      heroSlider: isHeroSlider,
       narrative: body,
       renderedHtml,
       rawContent,
@@ -968,6 +988,53 @@ export class GalleryStateEngine {
     }
 
     this.syncIndexMdTable();
+    this.savePersistence();
+    this.notify();
+  }
+
+  public toggleHeroSlider(slug: string): void {
+    const normSlug = slug.toLowerCase().replace(/^posts\//i, '').replace(/\.md$/i, '').trim();
+    const item = this.items.find((i) => i.slug.toLowerCase() === normSlug);
+    if (!item) return;
+
+    const newHeroSlider = !item.heroSlider;
+    item.heroSlider = newHeroSlider;
+
+    this.artworkOverrides[normSlug] = {
+      ...(this.artworkOverrides[normSlug] || {}),
+      heroSlider: newHeroSlider
+    };
+
+    const postFile = this.files.find((f) => f.path === `posts/${normSlug}.md` || f.path === `trash/${normSlug}.md`);
+    if (postFile) {
+      postFile.content = this.updateFrontmatterProperty(postFile.content, 'hero_slider', newHeroSlider.toString());
+      postFile.lastModified = 'Just now';
+      this.customVirtualFiles[postFile.path] = { ...postFile };
+    }
+
+    this.savePersistence();
+    this.notify();
+  }
+
+  public setHeroSlider(slug: string, showInHero: boolean): void {
+    const normSlug = slug.toLowerCase().replace(/^posts\//i, '').replace(/\.md$/i, '').trim();
+    const item = this.items.find((i) => i.slug.toLowerCase() === normSlug);
+    if (!item) return;
+
+    item.heroSlider = showInHero;
+
+    this.artworkOverrides[normSlug] = {
+      ...(this.artworkOverrides[normSlug] || {}),
+      heroSlider: showInHero
+    };
+
+    const postFile = this.files.find((f) => f.path === `posts/${normSlug}.md` || f.path === `trash/${normSlug}.md`);
+    if (postFile) {
+      postFile.content = this.updateFrontmatterProperty(postFile.content, 'hero_slider', showInHero.toString());
+      postFile.lastModified = 'Just now';
+      this.customVirtualFiles[postFile.path] = { ...postFile };
+    }
+
     this.savePersistence();
     this.notify();
   }

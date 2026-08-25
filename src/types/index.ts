@@ -21,6 +21,7 @@ export interface ArtworkRecord {
   archived?: boolean;
   trashed?: boolean;
   trashedAt?: string;
+  heroSlider?: boolean;
   narrative: string; // Raw markdown body
   renderedHtml?: string; // Rendered with resolved wikilinks
   rawContent?: string; // Full markdown source with frontmatter

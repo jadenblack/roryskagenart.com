@@ -241,6 +241,7 @@ export default function App() {
               onOpenCloudinary={() => setCloudinaryModalOpen(true)}
               onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
               onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
+              onToggleHeroSlider={(slug) => GalleryAppEngineInstance.toggleHeroSlider(slug)}
               onTrashArtwork={(slug) => {
                 GalleryAppEngineInstance.trashArtwork(slug);
                 navigateTo('gallery');
@@ -285,6 +286,7 @@ export default function App() {
                   onEditIndexMd={() => navigateTo('explorer', 'index.md')}
                   onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
                   onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
+                  onToggleHeroSlider={(slug) => GalleryAppEngineInstance.toggleHeroSlider(slug)}
                   onTrashArtwork={(slug) => GalleryAppEngineInstance.trashArtwork(slug)}
                   onNavigateToTrash={() => navigateTo('trash')}
                 />

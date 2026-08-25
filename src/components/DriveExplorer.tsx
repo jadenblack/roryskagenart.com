@@ -11,7 +11,8 @@ import {
   Search,
   Layers,
   X,
-  Cloud
+  Cloud,
+  Sparkles
 } from 'lucide-react';
 import { DRIVE_ROOT_PATH } from '../data/driveFileSystem';
 
@@ -54,6 +55,7 @@ export const DriveExplorer: React.FC<DriveExplorerProps> = ({
   const [newPrice, setNewPrice] = useState('$9,500');
   const [newStatus, setNewStatus] = useState('Available');
   const [newSeries, setNewSeries] = useState('Neon Americana');
+  const [newHeroSlider, setNewHeroSlider] = useState(true);
   const [newNarrative, setNewNarrative] = useState('Original contemporary retro pop painting created by Rory Skagen in Austin, Texas.');
 
   useEffect(() => {
@@ -92,12 +94,14 @@ export const DriveExplorer: React.FC<DriveExplorerProps> = ({
         price: newPrice,
         status: newStatus as any,
         gallery_series: newSeries,
+        heroSlider: newHeroSlider,
       },
       `# ${newTitle}\n\n${newNarrative}`
     );
 
     setNewArtworkModalOpen(false);
     setNewTitle('');
+    setNewHeroSlider(true);
   };
 
   const filteredFiles = safeFiles.filter((f) => {
@@ -433,6 +437,35 @@ export const DriveExplorer: React.FC<DriveExplorerProps> = ({
                     className="w-full bg-[#F2F1EC] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 p-2 text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-500 rounded-xs"
                   />
                 </div>
+              </div>
+
+              {/* Hero Slider Toggle Switch */}
+              <div className="p-3 bg-[#F2F1EC] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 flex items-center justify-between gap-4 rounded-xs">
+                <div className="flex items-center gap-2">
+                  <Sparkles className={`w-4 h-4 ${newHeroSlider ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-400'}`} />
+                  <div>
+                    <span className="block text-[10px] font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+                      Homepage Hero Gallery Slider
+                    </span>
+                    <span className="block text-[9px] text-zinc-500 font-normal">
+                      Feature this artwork prominently in the main landing slider
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setNewHeroSlider(!newHeroSlider)}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${
+                    newHeroSlider ? 'bg-amber-600' : 'bg-zinc-300 dark:bg-zinc-700'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                      newHeroSlider ? 'translate-x-4.5' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
               </div>
 
               <div>
