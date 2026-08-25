@@ -48,10 +48,10 @@ export const ContactView: React.FC<ContactViewProps> = ({ onNavigate, prefillArt
       <header className="border-b-2 border-zinc-900 dark:border-zinc-700 pb-8 space-y-4">
         <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
-          <span>Contact &amp; Inquiries • Austin, Texas</span>
+          <span>Contact Me • Austin, Texas</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-zinc-950 dark:text-white font-serif leading-none">
-          Contact &amp; Inquiries
+          Contact Me
         </h1>
         <p className="text-sm sm:text-base font-mono uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-semibold max-w-3xl">
           Original Art Purchases, Mural Commissions and Studio Representation

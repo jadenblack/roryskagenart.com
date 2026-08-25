@@ -401,7 +401,7 @@ export default function App() {
                     onClick={() => navigateTo('contact')} 
                     className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
                   >
-                    Contact &amp; Inquiries
+                    Contact Me
                   </button>
                 </li>
               </ul>

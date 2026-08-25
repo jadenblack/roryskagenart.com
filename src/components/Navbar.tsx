@@ -30,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'home', label: 'Home' },
     { id: 'gallery', label: 'Catalog' },
     { id: 'about', label: 'About' },
-    { id: 'contact', label: 'Contact & Inquiries' },
+    { id: 'contact', label: 'Contact Me' },
     ...(isAuthenticated ? [{ id: 'registry', label: 'Registry' }] : []),
   ];
 

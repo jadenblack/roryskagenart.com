@@ -50,7 +50,7 @@ export const PagesView: React.FC<PagesViewProps> = ({
     { slug: 'about', label: 'Biography and Legacy', icon: Info },
     { slug: 'commissions', label: 'Mural and Canvas Commissions', icon: Palette },
     { slug: 'exhibitions', label: 'Exhibitions and Collections', icon: Award },
-    { slug: 'contact', label: 'Studio Inquiries', icon: Mail },
+    { slug: 'contact', label: 'Contact Me', icon: Mail },
   ];
 
   return (

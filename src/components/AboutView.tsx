@@ -102,7 +102,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
                 className="w-full py-2.5 bg-zinc-900 text-white dark:bg-white dark:text-black font-mono font-bold uppercase tracking-wider text-xs hover:bg-black transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
                 <Mail className="w-3.5 h-3.5" />
-                <span>Contact Studio</span>
+                <span>Contact Me</span>
               </button>
               <button
                 onClick={() => onNavigate('gallery')}
@@ -289,7 +289,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
             className="px-6 py-3 bg-emerald-600 text-white font-mono font-bold uppercase tracking-widest text-xs hover:bg-emerald-500 transition-colors cursor-pointer flex items-center gap-2"
           >
             <Mail className="w-3.5 h-3.5" />
-            <span>Contact &amp; Inquiries</span>
+            <span>Contact Me</span>
           </button>
         </div>
       </section>
