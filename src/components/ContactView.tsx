@@ -27,9 +27,27 @@ export const ContactView: React.FC<ContactViewProps> = ({ onNavigate, prefillArt
   const [artworkInterest, setArtworkInterest] = useState(prefillArtworkTitle || '');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) return;
+
+    try {
+      await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          phone: phone || null,
+          artwork_title: artworkInterest || null,
+          inquiry_type: inquiryType,
+          message,
+        }),
+      });
+    } catch (err) {
+      console.warn('Contact inquiry dispatch notice:', err);
+    }
+
     setFormSent(true);
   };
 

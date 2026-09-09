@@ -22,8 +22,25 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          phone: phone || null,
+          artwork_slug: artwork?.slug || null,
+          artwork_title: artwork?.title || null,
+          inquiry_type: artwork ? 'Artwork Acquisition' : 'Studio Inquiry',
+          message,
+        }),
+      });
+    } catch (err) {
+      console.warn('Inquiry dispatch notice:', err);
+    }
     setSubmitted(true);
   };
 

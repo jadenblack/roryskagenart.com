@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { AuthUser, AuthStatusInfo } from '../types';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
   authenticateLocalVault,
   getActiveVaultUser,
@@ -113,6 +114,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
 
+      // 0. Check Supabase Auth Session (Production / Cloud Auth)
+      if (isSupabaseConfigured) {
+        try {
+          const { data: sbSessionData } = await supabase.auth.getSession();
+          if (sbSessionData?.session?.user) {
+            const sbUser = sbSessionData.session.user;
+            const authenticatedUser: AuthUser = {
+              id: sbUser.id,
+              email: sbUser.email || 'admin@roryskagen.com',
+              name: (sbUser.user_metadata?.name as string) || 'Rory Skagen Studio Admin',
+              role: ((sbUser.app_metadata?.role || sbUser.user_metadata?.role) as any) || 'admin',
+              createdAt: sbUser.created_at,
+            };
+            setUser(authenticatedUser);
+            saveActiveVaultSession(authenticatedUser, sbSessionData.session.access_token);
+            setStatusInfo((prev) => ({
+              authenticated: true,
+              sessionExpiresAt: sbSessionData.session?.expires_at ? new Date(sbSessionData.session.expires_at * 1000).toISOString() : null,
+              serverTime: new Date().toISOString(),
+              authEngine: 'Supabase Auth + PostgreSQL',
+              defaultAdminEmail: 'rory@ventureio.com',
+              totalAdmins: 2,
+              activeSessions: 1,
+            }));
+            setIsLoading(false);
+            return;
+          }
+        } catch (sbErr) {
+          console.warn('[AuthContext] Supabase session check notice:', sbErr);
+        }
+      }
+
       // Check local vault session first
       const localActiveUser = getActiveVaultUser();
       if (localActiveUser) {
@@ -127,7 +160,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         const parsedStatus = await parseResponseSafe(statusRes);
         if (parsedStatus.ok && parsedStatus.data) {
-          setStatusInfo(parsedStatus.data);
+          setStatusInfo({
+            ...parsedStatus.data,
+            authEngine: isSupabaseConfigured ? 'Supabase Auth + PostgreSQL' : parsedStatus.data.authEngine,
+          });
         }
       } catch (err) {
         console.warn('[AuthContext] Auth status notice:', err);
@@ -163,6 +199,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     refreshAuth();
+
+    if (isSupabaseConfigured) {
+      const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+        if (session?.user) {
+          const authenticatedUser: AuthUser = {
+            id: session.user.id,
+            email: session.user.email || 'admin@roryskagen.com',
+            name: (session.user.user_metadata?.name as string) || 'Rory Skagen Studio Admin',
+            role: ((session.user.app_metadata?.role || session.user.user_metadata?.role) as any) || 'admin',
+            createdAt: session.user.created_at,
+          };
+          setUser(authenticatedUser);
+          saveActiveVaultSession(authenticatedUser, session.access_token);
+        } else if (event === 'SIGNED_OUT') {
+          clearActiveVaultSession();
+          setUser(null);
+        }
+      });
+
+      return () => {
+        authListener.subscription.unsubscribe();
+      };
+    }
   }, [refreshAuth]);
 
   // Login handler
@@ -171,7 +230,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const cleanEmail = email.trim().toLowerCase();
       const trimmedPass = (password || '').trim();
 
-      // 1. Attempt network sign-in against Node backend (if running)
+      // 1. First Attempt: Supabase Auth (Production Cloud Auth)
+      if (isSupabaseConfigured) {
+        try {
+          const { data: sbData, error: sbError } = await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password: trimmedPass,
+          });
+
+          if (!sbError && sbData?.user) {
+            const authenticatedUser: AuthUser = {
+              id: sbData.user.id,
+              email: sbData.user.email || cleanEmail,
+              name: (sbData.user.user_metadata?.name as string) || 'Rory Skagen Studio Admin',
+              role: ((sbData.user.app_metadata?.role || sbData.user.user_metadata?.role) as any) || 'admin',
+              createdAt: sbData.user.created_at,
+            };
+            saveActiveVaultSession(authenticatedUser, sbData.session?.access_token);
+            setUser(authenticatedUser);
+            return { success: true };
+          }
+        } catch (sbErr) {
+          console.warn('[AuthContext] Supabase sign in error, trying fallbacks:', sbErr);
+        }
+      }
+
+      // 2. Attempt network sign-in against Node backend (if running)
       let networkSuccess = false;
       let serverErrorMessage = '';
 
@@ -198,7 +282,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.warn('[AuthContext] API login request bypassed to local vault:', networkErr);
       }
 
-      // 2. Client-Side Vault Authentication (for Vercel static deployments & offline resilience)
+      // 3. Client-Side Vault Authentication (for Vercel static deployments & offline resilience)
       const localAuth = authenticateLocalVault(cleanEmail, trimmedPass);
       if (localAuth.success && localAuth.user) {
         saveActiveVaultSession(localAuth.user);
@@ -372,6 +456,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Logout handler
   const logout = async () => {
     try {
+      if (isSupabaseConfigured) {
+        try {
+          await supabase.auth.signOut();
+        } catch (sbErr) {
+          console.warn('[AuthContext] Supabase signOut notice:', sbErr);
+        }
+      }
+
       const res = await fetch('/api/auth/logout', {
         method: 'POST',
         headers: getAuthHeaders(),

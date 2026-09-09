@@ -5,6 +5,7 @@ import type { UploadApiResponse, v2 as CloudinaryV2Type } from "cloudinary";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import { authService } from "./src/server/authService";
+import { checkDbHealth, query } from "./src/server/db";
 
 dotenv.config();
 
@@ -240,7 +241,7 @@ app.get("/api/cloudinary/resources", async (req, res) => {
 });
 
 // 3. Upload File or Remote URL to Cloudinary
-app.post("/api/cloudinary/upload", upload.single("file"), async (req, res) => {
+app.post("/api/cloudinary/upload", upload.single("file") as any, async (req, res) => {
   try {
     const config = await getCloudinaryConfig();
     if (!config.configured) {
@@ -609,6 +610,261 @@ app.post("/api/auth/change-password", (req, res) => {
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message || "Failed to update password." });
+  }
+});
+
+// -------------------------------------------------------------
+// PostgreSQL Database & Supabase Integration API Endpoints
+// -------------------------------------------------------------
+
+// 1. Database Connection & Health Status
+app.get("/api/database/status", async (req, res) => {
+  try {
+    const health = await checkDbHealth();
+    return res.json({
+      success: true,
+      ...health,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, connected: false, error: err.message });
+  }
+});
+
+// 2. Fetch Artworks from PostgreSQL
+app.get("/api/artworks", async (req, res) => {
+  try {
+    const includeTrashed = req.query.include_trashed === "true";
+    let sql = `
+      SELECT 
+        id, slug, title, year, medium, dimensions, price, status, 
+        gallery_series, edition, location, image_url, hero_slider, 
+        enabled, archived, trashed, trashed_at, narrative, metadata, 
+        created_at, updated_at
+      FROM public.artworks
+    `;
+    if (!includeTrashed) {
+      sql += ` WHERE trashed = false`;
+    }
+    sql += ` ORDER BY updated_at DESC, created_at DESC`;
+
+    const result = await query(sql);
+    return res.json({
+      success: true,
+      count: result.rows.length,
+      artworks: result.rows,
+    });
+  } catch (err: any) {
+    console.error("Fetch artworks error:", err);
+    return res.status(500).json({ error: err.message || "Failed to fetch artworks from PostgreSQL" });
+  }
+});
+
+// 3. Fetch Single Artwork by Slug
+app.get("/api/artworks/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const result = await query(
+      `SELECT * FROM public.artworks WHERE slug = $1 LIMIT 1`,
+      [slug]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: `Artwork with slug "${slug}" not found.` });
+    }
+    return res.json({ success: true, artwork: result.rows[0] });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to fetch artwork" });
+  }
+});
+
+// 4. Create New Artwork in PostgreSQL
+app.post("/api/artworks", async (req, res) => {
+  try {
+    const {
+      slug, title, year, medium, dimensions, price, status,
+      gallery_series, edition, location, image_url, hero_slider,
+      narrative, metadata
+    } = req.body || {};
+
+    if (!title) {
+      return res.status(400).json({ error: "Title is required" });
+    }
+
+    const finalSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+    const result = await query(
+      `INSERT INTO public.artworks (
+        slug, title, year, medium, dimensions, price, status,
+        gallery_series, edition, location, image_url, hero_slider,
+        narrative, metadata, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, now(), now())
+      RETURNING *`,
+      [
+        finalSlug,
+        title,
+        year || "2024",
+        medium || "Acrylic on Canvas",
+        dimensions || "48\" x 60\"",
+        price || "$9,500",
+        status || "Available",
+        gallery_series || "Neon Americana",
+        edition || "Original Painting",
+        location || "Austin Studio",
+        image_url || `/images/${finalSlug}.svg`,
+        hero_slider === true,
+        narrative || "",
+        JSON.stringify(metadata || {})
+      ]
+    );
+
+    return res.status(201).json({ success: true, artwork: result.rows[0] });
+  } catch (err: any) {
+    console.error("Create artwork error:", err);
+    return res.status(500).json({ error: err.message || "Failed to create artwork" });
+  }
+});
+
+// 5. Update Artwork in PostgreSQL
+app.patch("/api/artworks/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const body = req.body || {};
+
+    // Build dynamic update query
+    const allowedFields = [
+      "title", "year", "medium", "dimensions", "price", "status",
+      "gallery_series", "edition", "location", "image_url", "hero_slider",
+      "enabled", "archived", "trashed", "trashed_at", "narrative", "metadata"
+    ];
+
+    const updates: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+
+    for (const field of allowedFields) {
+      if (field in body) {
+        let val = body[field];
+        if (field === "metadata" && typeof val === "object") {
+          val = JSON.stringify(val);
+        }
+        updates.push(`${field} = $${paramIndex}`);
+        values.push(val);
+        paramIndex++;
+      }
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: "No updatable fields provided" });
+    }
+
+    updates.push(`updated_at = now()`);
+    values.push(slug);
+
+    const sql = `
+      UPDATE public.artworks
+      SET ${updates.join(", ")}
+      WHERE slug = $${paramIndex}
+      RETURNING *
+    `;
+
+    const result = await query(sql, values);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: `Artwork "${slug}" not found` });
+    }
+
+    return res.json({ success: true, artwork: result.rows[0] });
+  } catch (err: any) {
+    console.error("Update artwork error:", err);
+    return res.status(500).json({ error: err.message || "Failed to update artwork" });
+  }
+});
+
+// 6. Delete or Trash Artwork
+app.delete("/api/artworks/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const permanent = req.query.permanent === "true";
+
+    if (permanent) {
+      await query(`DELETE FROM public.artworks WHERE slug = $1`, [slug]);
+      return res.json({ success: true, message: `Artwork "${slug}" permanently deleted.` });
+    } else {
+      const result = await query(
+        `UPDATE public.artworks SET trashed = true, trashed_at = now(), updated_at = now() WHERE slug = $1 RETURNING *`,
+        [slug]
+      );
+      return res.json({ success: true, message: `Artwork moved to trash.`, artwork: result.rows[0] });
+    }
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to delete artwork" });
+  }
+});
+
+// 7. Pages Endpoints
+app.get("/api/pages/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const result = await query(`SELECT * FROM public.pages WHERE slug = $1 LIMIT 1`, [slug]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: `Page "${slug}" not found` });
+    }
+    return res.json({ success: true, page: result.rows[0] });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to get page" });
+  }
+});
+
+app.put("/api/pages/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { title, content } = req.body || {};
+    const result = await query(
+      `INSERT INTO public.pages (slug, title, content, updated_at)
+       VALUES ($1, $2, $3, now())
+       ON CONFLICT (slug) DO UPDATE SET
+         title = COALESCE(EXCLUDED.title, pages.title),
+         content = EXCLUDED.content,
+         updated_at = now()
+       RETURNING *`,
+      [slug, title || slug, content || ""]
+    );
+    return res.json({ success: true, page: result.rows[0] });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to save page" });
+  }
+});
+
+// 8. Inquiries Endpoints (Public submission + Admin view)
+app.post("/api/inquiries", async (req, res) => {
+  try {
+    const { name, email, phone, artwork_slug, artwork_title, inquiry_type, message } = req.body || {};
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: "Name, email, and message are required." });
+    }
+
+    const result = await query(
+      `INSERT INTO public.inquiries (
+        name, email, phone, artwork_slug, artwork_title, inquiry_type, message, status, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'new', now())
+      RETURNING *`,
+      [name, email, phone || null, artwork_slug || null, artwork_title || null, inquiry_type || "General Inquiry", message]
+    );
+
+    return res.status(201).json({ success: true, inquiry: result.rows[0] });
+  } catch (err: any) {
+    console.error("Save inquiry error:", err);
+    return res.status(500).json({ error: err.message || "Failed to save inquiry" });
+  }
+});
+
+app.get("/api/inquiries", async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT * FROM public.inquiries ORDER BY created_at DESC LIMIT 100`
+    );
+    return res.json({ success: true, inquiries: result.rows });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to fetch inquiries" });
   }
 });
 

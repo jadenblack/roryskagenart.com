@@ -90,6 +90,47 @@ export class GalleryStateEngine {
     // 5. Load master registry and pages
     this.loadMasterRegistry();
     this.loadPages();
+
+    // 6. Asynchronously sync live state with PostgreSQL database
+    this.syncWithPostgres();
+  }
+
+  public async syncWithPostgres(): Promise<void> {
+    try {
+      const res = await fetch('/api/artworks?include_trashed=true');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success && Array.isArray(data.artworks) && data.artworks.length > 0) {
+        for (const row of data.artworks) {
+          const normSlug = (row.slug || '').toLowerCase().trim();
+          if (!normSlug) continue;
+
+          this.artworkOverrides[normSlug] = {
+            ...(this.artworkOverrides[normSlug] || {}),
+            title: row.title,
+            year: parseInt(row.year, 10) || 2024,
+            medium: row.medium,
+            dimensions: row.dimensions,
+            price: row.price,
+            status: row.status,
+            gallery_series: row.gallery_series,
+            edition: row.edition,
+            location: row.location,
+            heroSlider: row.hero_slider === true,
+            trashed: row.trashed === true,
+            enabled: row.enabled !== false,
+          };
+
+          if (row.trashed) {
+            this.trashedSlugs.add(normSlug);
+          }
+        }
+        this.loadMasterRegistry();
+        this.notify();
+      }
+    } catch (err) {
+      // Non-blocking fallback for offline environments
+    }
   }
 
   public subscribe(listener: () => void): () => void {
@@ -1014,6 +1055,13 @@ export class GalleryStateEngine {
 
     this.savePersistence();
     this.notify();
+
+    // Async sync to PostgreSQL database
+    fetch(`/api/artworks/${normSlug}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hero_slider: newHeroSlider }),
+    }).catch(() => {});
   }
 
   public setHeroSlider(slug: string, showInHero: boolean): void {
@@ -1037,6 +1085,13 @@ export class GalleryStateEngine {
 
     this.savePersistence();
     this.notify();
+
+    // Async sync to PostgreSQL database
+    fetch(`/api/artworks/${normSlug}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hero_slider: showInHero }),
+    }).catch(() => {});
   }
 
   public trashArtwork(slug: string): void {
@@ -1143,6 +1198,9 @@ export class GalleryStateEngine {
     this.syncIndexMdTable();
     this.savePersistence();
     this.notify();
+
+    // Async delete from Supabase PostgreSQL database
+    fetch(`/api/artworks/${normSlug}?permanent=true`, { method: 'DELETE' }).catch(() => {});
   }
 
   public emptyTrash(): void {
@@ -1351,3 +1409,5 @@ ${narrativeBody || `# ${record.title || 'Untitled Artwork'}\n\nOriginal painting
 
 // Global Singleton for immediate client accessibility & vanilla JS conformance
 export const GalleryAppEngineInstance = new GalleryStateEngine();
+export const GalleryAppEngine = GalleryStateEngine;
+export const galleryAppEngine = GalleryAppEngineInstance;

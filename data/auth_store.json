@@ -1,6 +1,14 @@
 {
   "users": [
     {
+      "id": "6b404a785d8b646e",
+      "email": "rory@ventureio.com",
+      "name": "Rory Skagen",
+      "role": "admin",
+      "passwordHash": "323a992ab0cc52c323a4f63c663c99ca:cd452535f952024dc1b8b0b5773adf22f90284cf9254dec8bd3b6cddc6f65adb22cbec86d74dc184ba522916fa0d6c13338d3e74217ce9480124f85ac65e045e",
+      "createdAt": "2026-09-09T12:59:14.821Z"
+    },
+    {
       "id": "80a842601d6f2c3d",
       "email": "admin@roryskagen.com",
       "name": "Rory Skagen",
@@ -18,15 +26,6 @@
       "lastLoginAt": "2026-08-19T21:54:57.461Z"
     }
   ],
-  "sessions": [
-    {
-      "token": "91ec66a5f3b0f86972c7aa291f92f0ec9b3ca3a0cb2ec2d68263b14466e8b3f9",
-      "userId": "2c2954ba72d4f578",
-      "createdAt": "2026-08-19T21:54:57.461Z",
-      "expiresAt": "2026-08-26T21:54:57.461Z",
-      "userAgent": "curl/7.88.1",
-      "ip": "127.0.0.1"
-    }
-  ],
+  "sessions": [],
   "resetTokens": []
 }
