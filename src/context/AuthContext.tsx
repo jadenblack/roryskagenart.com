@@ -229,8 +229,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const cleanEmail = email.trim().toLowerCase();
       const trimmedPass = (password || '').trim();
+      let supabaseErrorMessage = '';
 
-      // 1. First Attempt: Supabase Auth (Production Cloud Auth)
+      // 1. Primary Engine: Supabase Cloud Authentication (Simple Email & Password)
       if (isSupabaseConfigured) {
         try {
           const { data: sbData, error: sbError } = await supabase.auth.signInWithPassword({
@@ -250,15 +251,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUser(authenticatedUser);
             return { success: true };
           }
-        } catch (sbErr) {
-          console.warn('[AuthContext] Supabase sign in error, trying fallbacks:', sbErr);
+
+          if (sbError) {
+            console.warn('[AuthContext] Supabase sign in notice:', sbError.message);
+            supabaseErrorMessage = sbError.message;
+          }
+        } catch (sbErr: any) {
+          console.warn('[AuthContext] Supabase sign in exception:', sbErr);
+          supabaseErrorMessage = sbErr?.message || '';
         }
       }
 
-      // 2. Attempt network sign-in against Node backend (if running)
-      let networkSuccess = false;
+      // 2. High-Availability Server Fallback (Verifies against Supabase server-side or local secure store)
       let serverErrorMessage = '';
-
       try {
         const res = await fetch('/api/auth/login', {
           method: 'POST',
@@ -271,9 +276,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const data = parsed.data;
 
         if (parsed.ok && data?.success && data?.user) {
-          saveActiveVaultSession(data.user, data.token);
+          saveActiveVaultSession(data.user, data.token || data.supabaseToken);
           setUser(data.user);
-          networkSuccess = true;
           return { success: true };
         } else if (data?.error) {
           serverErrorMessage = data.error;
@@ -282,7 +286,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.warn('[AuthContext] API login request bypassed to local vault:', networkErr);
       }
 
-      // 3. Client-Side Vault Authentication (for Vercel static deployments & offline resilience)
+      // 3. Client-Side Vault Authentication (for local offline resilience)
       const localAuth = authenticateLocalVault(cleanEmail, trimmedPass);
       if (localAuth.success && localAuth.user) {
         saveActiveVaultSession(localAuth.user);
@@ -292,7 +296,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return {
         success: false,
-        error: localAuth.error || serverErrorMessage || 'Authentication failed. Please check your credentials.',
+        error: supabaseErrorMessage || serverErrorMessage || localAuth.error || 'Authentication failed. Please check your email and password.',
       };
     } catch (err: any) {
       return { success: false, error: err.message || 'Network error during sign in.' };
@@ -324,7 +328,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Register / Create Account handler
+  // Register / Create Account handler (Supabase Auth + Database Sync)
   const register = async (
     name: string,
     email: string,
@@ -335,7 +339,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const cleanEmail = email.trim().toLowerCase();
       const trimmedPass = password.trim();
 
-      // Update local vault immediately
+      // 1. Primary: Direct Supabase Cloud Account Creation
+      if (isSupabaseConfigured) {
+        try {
+          const { data: sbData, error: sbError } = await supabase.auth.signUp({
+            email: cleanEmail,
+            password: trimmedPass,
+            options: {
+              data: {
+                name: name.trim(),
+                role,
+              },
+            },
+          });
+
+          if (!sbError && sbData?.user) {
+            const newUser: AuthUser = {
+              id: sbData.user.id,
+              email: sbData.user.email || cleanEmail,
+              name: name.trim(),
+              role,
+              createdAt: sbData.user.created_at,
+            };
+            saveActiveVaultSession(newUser, sbData.session?.access_token);
+            setUser(newUser);
+            return { success: true };
+          }
+
+          if (sbError) {
+            console.warn('[AuthContext] Supabase sign up notice:', sbError.message);
+          }
+        } catch (sbErr) {
+          console.warn('[AuthContext] Supabase sign up exception:', sbErr);
+        }
+      }
+
+      // 2. Local Vault & Server Backup
       const localResult = registerLocalVault(name, cleanEmail, trimmedPass, role);
 
       try {

@@ -143,8 +143,12 @@ The Express server exposes the following RESTful endpoints on port `3000`:
 | `DELETE` | `/api/artworks/:slug` | Soft trash (`trashed: true`) or permanent purge (`?permanent=true`) |
 | `GET` | `/api/pages` | List published site pages (`about`, `contact`, etc.) |
 | `GET` | `/api/pages/:slug` | Get markdown content for specific page |
-| `POST` | `/api/inquiries` | Submit buyer/collector inquiry or commission request |
+| `POST` | `/api/inquiries` | Submit buyer/collector inquiry or commission request (triggers Resend notifications) |
 | `GET` | `/api/inquiries` | List submitted inquiries (admin review) |
+| `GET` | `/api/auth/status` | Check authentication configuration and session status |
+| `POST` | `/api/auth/login` | Authenticate with simple email and password credentials via Supabase |
+| `GET` | `/api/email/status` | Check Resend email domain configuration and API status |
+| `POST` | `/api/email/send-test` | Dispatch test verification email via Resend API |
 | `POST` | `/api/cloudinary/upload` | Upload image file to Cloudinary CDN folder |
 
 ---
@@ -200,10 +204,16 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
 Configure the following variables in `.env` (refer to `.env.example`):
 
 ```bash
-# Supabase PostgreSQL Configuration
+# Supabase Configuration (Database & Auth)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 POSTGRES_URL=postgresql://postgres:password@host:5432/postgres
+
+# Resend Email Integration
+RESEND_API_KEY=re_your_api_key
+RESEND_EMAIL_DOMAIN=roryskagenart.com
+RESEND_FROM_EMAIL="Rory Skagen Studio <studio@roryskagenart.com>"
 
 # Cloudinary CDN Configuration
 CLOUDINARY_CLOUD_NAME=xjilp2pq

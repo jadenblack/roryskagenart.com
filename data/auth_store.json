@@ -11,7 +11,7 @@
     {
       "id": "80a842601d6f2c3d",
       "email": "admin@roryskagen.com",
-      "name": "Rory Skagen",
+      "name": "Rory Skagen Studio Admin",
       "role": "admin",
       "passwordHash": "16892aad9fa7d6f997f68f0e17ace145:4458f4c4ee77ad83a6ff6ea9d46d989b35ff806c21361e4add3bce54a48e52a4c7a92267ed93fbf395db3009d847099bbde7ef5561878f2c50ae56b5b06a8660",
       "createdAt": "2026-08-19T21:34:30.632Z"
@@ -26,6 +26,23 @@
       "lastLoginAt": "2026-08-19T21:54:57.461Z"
     }
   ],
-  "sessions": [],
+  "sessions": [
+    {
+      "token": "f043f3b084cc7cd37fdfd67b1d46fea99f8a071663fffa23c8904d507f85b7aa",
+      "userId": "275a9a7b-a3f2-4672-9bb2-d6e74197f139",
+      "createdAt": "2026-09-09T15:40:56.572Z",
+      "expiresAt": "2026-09-16T15:40:56.572Z",
+      "userAgent": "node",
+      "ip": "127.0.0.1"
+    },
+    {
+      "token": "e166903614e63cf6851260c5ea37b8b4885f0ff48adb29c77ac5d86b55cf00ee",
+      "userId": "513ea763-f306-4392-abac-e29ddeec5c32",
+      "createdAt": "2026-09-09T15:41:02.777Z",
+      "expiresAt": "2026-09-16T15:41:02.777Z",
+      "userAgent": "node",
+      "ip": "127.0.0.1"
+    }
+  ],
   "resetTokens": []
 }

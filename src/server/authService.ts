@@ -245,6 +245,34 @@ class AuthService {
     return safe;
   }
 
+  public upsertUser(params: {
+    id: string;
+    email: string;
+    name: string;
+    role?: "admin" | "editor";
+  }): User {
+    const normEmail = params.email.toLowerCase().trim();
+    const existing = this.db.users.find((u) => u.id === params.id || u.email.toLowerCase() === normEmail);
+    if (existing) {
+      existing.name = params.name;
+      existing.role = params.role || existing.role || "admin";
+      this.saveToDisk();
+      return existing;
+    }
+
+    const newUser: User = {
+      id: params.id,
+      email: normEmail,
+      name: params.name,
+      role: params.role || "admin",
+      passwordHash: "supabase-managed",
+      createdAt: new Date().toISOString(),
+    };
+    this.db.users.push(newUser);
+    this.saveToDisk();
+    return newUser;
+  }
+
   /**
    * Create a new user account (admin or editor)
    */

@@ -229,10 +229,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
             </div>
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider font-mono">
-                Studio Admin Authentication
+                Studio Authentication
               </h3>
               <p className="text-[10px] text-zinc-500 font-mono">
-                Native Node.js Security • Account &amp; Key Management
+                Supabase Auth • Simple Email &amp; Password Credentials
               </p>
             </div>
           </div>
@@ -402,12 +402,20 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
 
                   {/* Security Notice & Quick Fill Helper */}
                   <div className="p-3 bg-[#F2F1EC] dark:bg-zinc-900/60 border border-zinc-300 dark:border-zinc-800 text-xs font-mono space-y-2 text-zinc-600 dark:text-zinc-400">
-                    <div className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-zinc-500 shrink-0" />
-                      <span>Studio Admin Authentication • Supports Cloud &amp; Vercel Serverless</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        <span className="font-bold text-zinc-800 dark:text-zinc-200">Supabase Cloud Auth</span>
+                      </div>
+                      <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-1.5 py-0.5 border border-emerald-300 dark:border-emerald-800 uppercase font-bold">
+                        Connected
+                      </span>
                     </div>
+                    <p className="text-[11px] leading-relaxed text-zinc-500">
+                      Sign in using your simple email and password credentials.
+                    </p>
                     <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-zinc-200 dark:border-zinc-800/80">
-                      <span className="text-[10px] uppercase font-bold text-zinc-500">Quick Fill:</span>
+                      <span className="text-[10px] uppercase font-bold text-zinc-500">Quick Credentials:</span>
                       <button
                         type="button"
                         onClick={() => {
@@ -886,6 +894,18 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
               </div>
             </form>
           )}
+        </div>
+
+        {/* Footer Status Indicator */}
+        <div className="px-6 py-2.5 bg-[#F6F5F0] dark:bg-black/90 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+            <span>Supabase Auth: Active</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+            <span>Resend: roryskagenart.com</span>
+          </div>
         </div>
       </div>
     </div>

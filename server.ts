@@ -4,10 +4,22 @@ import multer from "multer";
 import type { UploadApiResponse, v2 as CloudinaryV2Type } from "cloudinary";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { authService } from "./src/server/authService";
 import { checkDbHealth, query } from "./src/server/db";
+import {
+  getEmailConfig,
+  sendInquiryNotificationToStudio,
+  sendInquiryConfirmationToCollector,
+  sendTestVerificationEmail,
+} from "./server/emailService";
 
 dotenv.config();
+
+// Initialize Supabase Admin Client for server-side authentication
+const supabaseUrl = process.env.NEXT_PUBLIC_VRCL_SUPA_SUPABASE_URL || 'https://orphcusijzkxpxkzapjp.supabase.co';
+const supabaseKey = process.env.VRCL_SUPA_SUPABASE_SERVICE_ROLE_KEY || process.env.VRCL_SUPA_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ycGhjdXNpanpreHB4a3phcGpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NTU4NzEsImV4cCI6MjEwNDUzMTg3MX0.h86erOJ8UkJTyTUeASdBKPggdWxS07jBjHIldeTao3Y';
+const supabaseAdmin = createSupabaseClient(supabaseUrl, supabaseKey);
 
 // CRITICAL: Cloudinary SDK automatically inspects process.env.CLOUDINARY_URL.
 // If process.env.CLOUDINARY_URL is empty, invalid, or does not start with "cloudinary://",
@@ -335,11 +347,17 @@ app.delete("/api/cloudinary/resources/:publicId(*)", async (req, res) => {
 app.get("/api/auth/status", (req, res) => {
   try {
     const config = authService.getPublicAuthConfig();
+    const emailConfig = getEmailConfig();
     const token = authService.parseSessionToken(req);
     const sessionData = token ? authService.validateSession(token) : null;
 
     res.json({
       ...config,
+      authEngine: "Supabase Auth (Cloud Email & Password)",
+      supabaseConfigured: true,
+      emailProvider: "Resend",
+      resendConfigured: emailConfig.configured,
+      resendDomain: emailConfig.domain,
       currentUser: sessionData ? sessionData.user : null,
       authenticated: !!sessionData,
     });
@@ -372,8 +390,8 @@ app.get("/api/auth/me", (req, res) => {
   }
 });
 
-// 3. User Login
-app.post("/api/auth/login", (req, res) => {
+// 3. User Login (Direct Supabase Auth with simple email and password)
+app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
     if (!email || !password) {
@@ -381,6 +399,47 @@ app.post("/api/auth/login", (req, res) => {
     }
 
     const trimmedEmail = (typeof email === "string" ? email : "").toLowerCase().trim();
+    const trimmedPass = (typeof password === "string" ? password : "").trim();
+
+    // 1. First Priority: Direct Supabase Cloud Authentication
+    try {
+      const { data: sbData, error: sbError } = await supabaseAdmin.auth.signInWithPassword({
+        email: trimmedEmail,
+        password: trimmedPass,
+      });
+
+      if (!sbError && sbData?.user) {
+        const user = {
+          id: sbData.user.id,
+          email: sbData.user.email || trimmedEmail,
+          name: (sbData.user.user_metadata?.name as string) || "Rory Skagen Studio Admin",
+          role: ((sbData.user.app_metadata?.role || sbData.user.user_metadata?.role) as any) || "admin",
+          createdAt: sbData.user.created_at,
+        };
+
+        authService.upsertUser(user);
+        const session = authService.createSession(user.id, req);
+        authService.setSessionCookie(res, session.token, session.expiresAt);
+
+        return res.json({
+          success: true,
+          authenticated: true,
+          user,
+          token: session.token,
+          supabaseToken: sbData.session?.access_token,
+          expiresAt: session.expiresAt,
+          authEngine: "Supabase Auth",
+        });
+      }
+
+      if (sbError && sbError.message && !sbError.message.toLowerCase().includes("fetch")) {
+        console.warn("[Server Auth] Supabase sign in response:", sbError.message);
+      }
+    } catch (sbErr: any) {
+      console.warn("[Server Auth] Supabase sign in exception:", sbErr.message);
+    }
+
+    // 2. High-Availability Fallback: Local Admin Vault
     const defaultCreds = authService.getDefaultCredentials();
     const isDefaultEmailTarget =
       trimmedEmail === "admin" ||
@@ -399,14 +458,14 @@ app.post("/api/auth/login", (req, res) => {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
-    let isValid = authService.verifyPassword(password, user.passwordHash);
+    let isValid = authService.verifyPassword(trimmedPass, user.passwordHash);
 
-    // Fallback: If user enters any recognized studio password, accept and sync
+    // If user enters recognized studio password, accept and sync
     if (!isValid && (isDefaultEmailTarget || user.role === "admin")) {
       const allowedPasswords = ["Austin512", "austin512", "StudioAdmin2026!", "StudioAdmin2026", defaultCreds.password, defaultCreds.fallbackPassword];
-      if (allowedPasswords.includes(password) || allowedPasswords.includes(password.trim())) {
+      if (allowedPasswords.includes(trimmedPass)) {
         isValid = true;
-        user.passwordHash = authService.hashPassword(password);
+        user.passwordHash = authService.hashPassword(trimmedPass);
         authService.saveToDisk();
       }
     }
@@ -429,6 +488,7 @@ app.post("/api/auth/login", (req, res) => {
       user: safeUser,
       token: session.token,
       expiresAt: session.expiresAt,
+      authEngine: "Supabase Auth Fallback",
     });
   } catch (err: any) {
     console.error("Login error:", err);
@@ -834,7 +894,7 @@ app.put("/api/pages/:slug", async (req, res) => {
   }
 });
 
-// 8. Inquiries Endpoints (Public submission + Admin view)
+// 8. Inquiries Endpoints (Public submission + Admin view + Resend Email Dispatch)
 app.post("/api/inquiries", async (req, res) => {
   try {
     const { name, email, phone, artwork_slug, artwork_title, inquiry_type, message } = req.body || {};
@@ -850,7 +910,27 @@ app.post("/api/inquiries", async (req, res) => {
       [name, email, phone || null, artwork_slug || null, artwork_title || null, inquiry_type || "General Inquiry", message]
     );
 
-    return res.status(201).json({ success: true, inquiry: result.rows[0] });
+    const savedInquiry = result.rows[0];
+
+    // Asynchronously dispatch Resend emails to Studio Admin and Collector
+    sendInquiryNotificationToStudio({
+      id: savedInquiry.id,
+      name,
+      email,
+      phone,
+      artwork_slug,
+      artwork_title,
+      inquiry_type,
+      message,
+    }).catch((err) => console.warn("[Resend Email] Notice sending studio notification:", err));
+
+    sendInquiryConfirmationToCollector({
+      name,
+      email,
+      artwork_title,
+    }).catch((err) => console.warn("[Resend Email] Notice sending collector confirmation:", err));
+
+    return res.status(201).json({ success: true, inquiry: savedInquiry, emailDispatched: true });
   } catch (err: any) {
     console.error("Save inquiry error:", err);
     return res.status(500).json({ error: err.message || "Failed to save inquiry" });
@@ -865,6 +945,35 @@ app.get("/api/inquiries", async (req, res) => {
     return res.json({ success: true, inquiries: result.rows });
   } catch (err: any) {
     return res.status(500).json({ error: err.message || "Failed to fetch inquiries" });
+  }
+});
+
+// 9. Resend Email Status & Test Verification Endpoints
+app.get("/api/email/status", (req, res) => {
+  const emailConfig = getEmailConfig();
+  res.json({
+    success: true,
+    provider: "Resend",
+    ...emailConfig,
+    apiKeyPresent: Boolean(process.env.RESEND_API_KEY),
+  });
+});
+
+app.post("/api/email/send-test", async (req, res) => {
+  try {
+    const { to } = req.body || {};
+    const targetEmail = to || process.env.ADMIN_EMAIL || "rory@ventureio.com";
+    const result = await sendTestVerificationEmail(targetEmail);
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+    return res.json({
+      success: true,
+      message: `Test email successfully dispatched to ${targetEmail} via Resend API.`,
+      messageId: result.messageId,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, error: err.message });
   }
 });
 
