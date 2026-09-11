@@ -84,6 +84,14 @@ async function getCloudinary(): Promise<typeof CloudinaryV2Type> {
 const app = express();
 const PORT = 3000;
 
+// Serverless compatibility: Vercel's filesystem is read-only except /tmp.
+// Auth session persistence already degrades gracefully (try/catch), but we
+// point the auth store at /tmp when running in a serverless environment so
+// per-instance session caching works at all.
+if (process.env.VERCEL) {
+  process.env.AUTH_DB_DIR = "/tmp/roryskagen-auth";
+}
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -983,10 +991,23 @@ app.get("/api/health", (req, res) => {
 });
 
 // -------------------------------------------------------------
-// Vite Middleware / Static Asset Serving
+// Vite Middleware / Static Asset Serving + Dual-Mode Boot
 // -------------------------------------------------------------
+//
+// One Express app, two deployment modes (see README "Deployment"):
+//
+// 1. Standalone / local / Node host (npm run dev, npm start):
+//    `startServer()` attaches Vite middleware (dev) or serves dist/ (prod)
+//    and listens on PORT.
+//
+// 2. Vercel serverless (api/index.ts):
+//    Vercel builds the SPA itself (vite build) and serves static assets from
+//    its edge CDN; only /api/* invokes this app as a serverless function via
+//    the exported `app`. Vite is never imported there, and `app.listen` is
+//    never called.
+//
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -1005,5 +1026,11 @@ async function startServer() {
   });
 }
 
-startServer();
+// Serverless entry: export the configured app; the platform owns the listener.
+export default app;
+
+// Standalone boot (skipped on Vercel — see api/index.ts)
+if (!process.env.VERCEL) {
+  startServer();
+}
 

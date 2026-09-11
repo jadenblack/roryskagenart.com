@@ -263,6 +263,72 @@ PORT=3000
 
 ---
 
+## Deployment
+
+The application deploys as a **documented hybrid** on Vercel: a static SPA on the edge CDN plus one Node.js serverless function that runs the full Express API.
+
+### Architecture
+
+```
+                      Vercel Edge CDN (static)
+  Browser ──────────► / , /assets/*          ← vite build output (dist/)
+      │
+      └── /api/* ──────► api/index.ts (Node.js serverless function)
+                              └── imports server.ts  (the SAME Express app
+                                  that runs `npm run dev` / `npm start`)
+                                      ├── PostgreSQL (pg Pool → Supabase)
+                                      ├── Supabase Auth (admin sessions)
+                                      ├── Resend (inquiry emails)
+                                      └── Cloudinary SDK (legacy media)
+```
+
+One Express app, two boot modes:
+
+| Mode | Trigger | Behavior |
+| :--- | :--- | :--- |
+| **Standalone** | `npm run dev` / `npm start` (no `VERCEL` env) | Attaches Vite middleware (dev) or serves `dist/` (prod), listens on `PORT` |
+| **Serverless** | `VERCEL=1` (set automatically by Vercel) | `server.ts` only exports the configured `app`; no Vite import, no `app.listen()`. `api/index.ts` hands platform requests to it |
+
+### Required environment variables (Vercel project settings)
+
+```bash
+# Database — required for /api/artworks, /api/pages, /api/inquiries
+VRCL_SUPA_POSTGRES_PRISMA_URL=postgres://...      # or VRCL_SUPA_POSTGRES_URL
+VRCL_SUPA_SUPABASE_URL=https://<ref>.supabase.co
+VRCL_SUPA_SUPABASE_SERVICE_ROLE_KEY=eyJ...        # server-side auth + DB admin
+
+# Email — required for /api/inquiries notifications
+RESEND_API_KEY=re_...
+
+# Optional (legacy media pipeline)
+CLOUDINARY_URL=cloudinary://...
+
+# Optional (admin bootstrap; Supabase Auth is the primary path)
+ADMIN_EMAIL=
+ADMIN_INITIAL_PASSWORD=
+```
+
+### Serverless constraints & mitigations
+
+* **Read-only filesystem** — file-based admin session persistence (`data/auth_store.json`) is redirected to `/tmp` per instance and degrades gracefully; Supabase Auth is the authoritative identity path. Sessions do not survive instance recycling.
+* **No long-lived state** — the pg `Pool` is module-scoped and reused across warm invocations; cold starts pay one connection setup.
+* **Payload limits** — serverless request bodies cap around 4.5 MB; the 50 MB JSON limit and 30 MB Cloudinary uploads only apply in standalone mode.
+* **Function timeout** — `maxDuration: 30` in `api/index.ts`; all current endpoints complete well under this.
+
+### Deploying
+
+```bash
+vercel --prod
+```
+
+Pushes to `main` also trigger automatic production deployments (project `roryskagen`).
+
+### When to use standalone hosting instead
+
+The standalone Express server (`npm start` on a Node host) remains fully supported and is the right choice if you need: large admin uploads (>4 MB), long-lived in-process sessions, or WebSocket-style features later. Both modes share the identical route layer.
+
+---
+
 ## Pull Request & Development Plans
 
 All major architectural proposals and feature branches are documented in the `/plan` directory:

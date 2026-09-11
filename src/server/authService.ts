@@ -37,7 +37,9 @@ export interface AuthDatabaseSchema {
   resetTokens?: PasswordResetToken[];
 }
 
-const AUTH_DB_FILE = path.join(process.cwd(), "data", "auth_store.json");
+const AUTH_DB_FILE = process.env.AUTH_DB_DIR
+  ? path.join(process.env.AUTH_DB_DIR, "auth_store.json") // serverless: writable tmp dir
+  : path.join(process.cwd(), "data", "auth_store.json");
 const SESSION_TTL_DAYS = 7;
 const RESET_TOKEN_TTL_MINUTES = 15;
 
