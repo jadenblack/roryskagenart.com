@@ -1,0 +1,686 @@
+/*
+Theme Name: Berlin
+Theme URI: http://www.graphpaperpress.com/
+Description: A Wordpress magazine theme based on the Blueprint CSS Framework.
+Version: 2.2
+Author: Thad Allender for Graph Paper Press
+Author URI: http://www.graphpaperpress.com/
+License: GPL
+*/
+
+body
+{
+	background: #333;
+	margin: 0;
+	padding: 2em 0;
+}
+
+.container
+{
+	background: #fff;
+	padding: 2em;
+	clear:both;
+}
+
+blockquote
+{
+	background: url("images/quote.png") .5em top no-repeat;
+	color: #000;
+	font-style: normal;
+	padding: 0 0 0 0;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { color: #000; }
+
+em, dfn, em a {
+    font-style: normal;
+    color:#ECECEC;
+    background: #3F3F3F;
+    font-size: 14px;
+    padding: 3px 5px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -khtml-border-radius: 2px;
+    border-radius: 2px;
+}
+
+em:hover, dfn:hover, em a:hover {
+    color:#ECECEC !important;
+    background: #222222;
+}
+
+a
+{
+	color: #FF3706;
+	text-decoration: none;
+}
+
+a:active, h2 a:active, h3 a:active
+{
+	color: #8c1b00;
+	text-decoration: none;
+}
+
+a:hover, h2 a:hover, h3 a:hover
+{
+	color: #464646;
+	text-decoration: none;
+}
+
+blockquote p { padding: 0 20px 0 30px; }
+
+hr
+{
+	background: #CCC;
+	height: 1px;
+}
+
+img { margin: 0 0 4px 0; }
+
+img.centered {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	}
+
+img.alignright {
+	padding: 4px;
+	margin: 0 0 2px 7px;
+	display: inline;
+	}
+
+img.alignleft {
+	padding: 4px;
+	margin: 0 7px 2px 0;
+	display: inline;
+	}
+
+.alignright {
+	float: right;
+	}
+
+.alignleft {
+	float: left;
+	}
+	
+.post img {
+	max-width: 590px;
+	height:auto
+}
+
+.sticky {
+	background: #f7f7f7;
+	padding: 0 10px 10px;
+	}
+.sticky h2 {
+	padding-top: 10px;
+	}
+	
+.postmetadata {
+	clear: both;
+	font-size: .8em
+}
+
+a.button { float: left; }
+
+input
+{
+	border: 1px solid #CCCCCC;
+	padding-left: 0;
+}
+
+ol { margin-left: 35px; }
+label { font-weight: normal; }
+
+textarea
+{
+	height: 200px;
+	width: 500px;
+}
+
+.small { font-size: .9em; }
+.nomargin { margin: 0; }
+a.button, button { font-weight: normal; }
+dl.small dd { font-size: .9em; }
+.linkcat { list-style: none; }
+
+.post_first
+{
+	background: #fff;
+	padding: 1em;
+}
+
+.post_alt
+{
+	background: #eee;
+	padding: 1em;
+}
+
+span.meta_align_right
+{
+	color: #ccc;
+	float: right;
+	font-size: .6em;
+}
+
+span.meta_align_right a { color: #ccc; }
+span.meta_align_right a:hover { color: #000; }
+
+.meta
+{
+	color: #ccc;
+	font-family: Georgia;
+	font-size: .8em;
+	line-height: 1.875em;
+}
+
+.meta a { color: #ccc; }
+.meta a:hover { color: #000; }
+
+.byline
+{
+	color: #ccc;
+	font-size: .8em;
+	line-height: 1.875em;
+}
+
+.byline a
+{
+	color: #FF3706;
+	line-height: 1.875em;
+	text-decoration: none;
+}
+
+.byline a:hover { color: #000; }
+
+.meta_list, .meta_list a, ul.meta_list
+{
+	color: #aaa;
+	list-style-image: none;
+}
+
+.meta_list li
+{
+	border-bottom: 1px dotted #aaa;
+	list-style-image: none;
+}
+
+.five_posts h3
+{
+	margin-bottom: 0;
+	padding: .5em 0 .5em 0;
+}
+
+.five_posts h3 a { text-transform: uppercase; }
+
+.five_posts h6, .five_posts h4
+{
+	margin-bottom: 0;
+	padding: .5em 0 .5em 0;
+	text-transformation: uppercase;
+}
+
+.five_posts h4 a, .five_posts h6 a { text-transform: uppercase; }
+
+#maincontent h2
+{
+	border-bottom: 1px dotted #AAA;
+	color: #3B4A25;
+	margin-bottom: 15px;
+}
+
+h2 a
+{
+	color: #3B4A25;
+	text-decoration: none;
+}
+
+#maincontent .post h2 { margin-bottom: 5px; }
+#maincontent .content { padding: 25px 30px 20px 48px; }
+
+#maincontent h2.pagetitle
+{
+	border: none;
+	text-transform: uppercase;
+}
+
+#feature h3
+{
+	margin-bottom: 0;
+	padding: 0;
+}
+
+#feature p img { margin: 7px 0 2em 0; }
+.feature_text { margin-top: 2em; }
+#home_right { padding: 0; }
+#home_right .entry { padding: 0 0 2em 0; }
+#home_right ul {margin: 0 0 1.5em 0; padding: 0}
+#home_right ul li { height:156px; list-style-image:none; line-height: 1.5em}
+.news h3 { text-transform: uppercase; }
+
+ul#featurenav
+{
+	margin-left: 0;
+	padding-left: 0;
+	white-space: nowrap;
+}
+
+#featurenav li
+{
+	display: inline;
+	list-style-type: none;
+}
+
+#featurenav a { padding: 3px 10px; }
+
+#featurenav a:link, #featurenav a:visited
+{
+	background-color: #333;
+	border: 1px solid #000;
+	color: #fff;
+	text-decoration: none;
+}
+
+#featurenav a:hover
+{
+	background-color: #FF3706;
+	color: #fff;
+	text-decoration: none;
+}
+
+.author
+{
+	background: #eee;
+	margin-bottom: 1.5em;
+	padding: 1.5em;
+}
+
+.author img
+{
+	float: left;
+	padding: 0 1em 1em 0;
+}
+
+.author p { margin-left: 8em; }
+
+.author h6
+{
+	border-bottom: 1px #000 dotted;
+	margin-left: 7em;
+}
+
+.navigation, 
+
+.navigation a { color: #AAA; }
+.alignright { float: right; }
+.alignleft { float: left; }
+.post { float: left; clear:both; margin-bottom: 25px; }
+.entry { padding-bottom: 25px; }
+
+#header
+{
+	height: 50px;
+	padding: 4px 0 0 0;
+	width: 950px;
+}
+
+#header h1, #header .description
+{
+	line-height: 1em;
+	margin: 0;
+	padding: 0;
+}
+
+h1 a.logo { text-transform: uppercase; }
+
+.entry #nav .content
+{
+	margin: auto;
+	padding: 0;
+}
+
+.entry #nav
+{
+	background: #FFF;
+	margin-bottom: 15px;
+}
+
+.entry #nav li a
+{
+	background: #666;
+	border-right: 1px solid #AAA;
+	color: #FFF;
+}
+
+.entry #nav li.last a { border-right: none; }
+
+.entry #nav li a:hover
+{
+	background: #333;
+	color: #FFF;
+}
+
+#footer
+{
+	font-size: .9em;
+	margin: 0;
+	text-align: center;
+}
+
+#footer a { text-decoration: none; }
+#search { float: right; }
+
+#search #s
+{
+	background: transparent url("images/icons/search_grey.gif") 0px center no-repeat;
+	color: #CCCCCC;
+	font-size: 0.9em;
+	margin-right: 0px;
+	margin-top: 10px;
+	padding: 2px 0 2px 17px;
+	width: 135px;
+}
+
+#search #s:hover { color: #000; }
+.search-excerpt { margin: 0; }
+.commentlist li { padding: 8px 15px; }
+.comments-alt { background: #EEE; }
+.bottombar { }
+
+.bottombar h2
+{
+	font-size: 1em;
+	font-weight: bold;
+	line-height: 1em;
+	margin: 1em 0 1em;
+}
+
+ul
+{
+	list-style-type: none;
+	margin-left: 1em;
+	padding: 0;
+}
+
+ul li
+{
+	background-repeat: no-repeat;
+	line-height: 2em;
+	list-style-image: url("images/icons/li.png");
+	margin: 0;
+	padding: 0;
+}
+
+ul li a { color: #000; }
+
+#top
+{
+	margin: 0 auto;
+	width: 950px;
+}
+
+#title { float: left; }
+
+#title h1 {margin:0;}
+
+#title h1 a
+{
+	color: #fff;
+	font-weight: bold;
+	letter-spacing: -.1em;
+	line-height: 1em;
+	text-transform: uppercase;
+}
+
+#title h1 a:hover { color: #eee; }
+
+
+
+#slider-posts {margin-bottom: 2em}
+#slider-posts .slide {position:relative; width: 590px; height: 400px}
+#slider-posts .slide .slide-details {position: absolute; bottom:0px; left:0px; padding: 24px; background: transparent url("images/overlay.png")}
+#slider-posts .slide .slide-details p, #slider-posts .slide .slide-details h2 {color:#eee}
+#slider-posts .slide .slide-details a, #slider-posts .slide .slide-details h2 a {color:#fff; font-weight: bold}
+#slider-posts .slide .slide-details a:hover, #slider-posts .slide .slide-details h2 a:hover {color:#fff; font-weight: bold; text-decoration: underline}
+ul#slider-nav {margin: 0 0 1em 0; padding: 0}
+ul#slider-nav a { padding:5px 9px; -moz-border-radius:12px; -webkit-border-radius:12px; border-radius: 12px; background:#ddd; color:#fff; margin:0 12px 0 0; }
+ul#slider-nav a.activeSlide,ul#slider-nav a:hover { background:#333; }
+
+/*** ESSENTIAL STYLES ***/
+
+div.menu ul, div.menu ul * {
+	margin:			0;
+	padding:		0;
+	list-style:		none;
+}
+div.menu ul {
+	line-height:	1.0;
+}
+div.menu ul ul {
+	position:		absolute;
+	top:			-999em;
+}
+div.menu ul ul li {
+	width:			100%;
+}
+div.menu ul li:hover {
+	visibility:		inherit; /* fixes IE7 'sticky bug' */
+}
+div.menu ul li {
+	float:			left;
+	position:		relative;
+}
+div.menu ul a {
+	display:		block;
+	position:		relative;
+}
+div.menu ul li:hover ul,
+div.menu ul li.sfHover ul {
+	left:			0;
+	top:			2.5em; /* match top ul list item height */
+	z-index:		99;
+}
+div.menu ul li:hover li ul,
+div.menu ul li.sfHover li ul {
+	top:			-999em;
+	
+}
+div.menu ul li li:hover ul,
+div.menu ul li li.sfHover ul {
+	left:			12em; /* match ul width */
+	top:			0;
+}
+div.menu ul li li:hover li ul,
+div.menu ul li li.sfHover li ul {
+	top:			-999em;
+}
+div.menu ul li li li:hover ul,
+div.menu ul li li li.sfHover ul {
+	left:			12em; /* match ul width */
+	top:			0;
+}
+div.menu ul ul li a{
+	width: 80%;
+}
+div.menu ul li li {
+	background:		#ddd;
+	
+}
+div.menu ul li li li {
+	background:		#ddd;
+}
+div.menu ul li:hover, div.menu ul li.sfHover,
+div.menu ul a:focus, div.menu ul a:hover, div.menu ul a:active {
+	background:		#ccc;
+	outline:		0;
+	
+}
+/*** DEMO SKIN ***/
+div.menu ul {
+	float:			left;
+}
+div.menu ul a {	
+	padding: 		.75em 1em;
+	text-decoration:none;
+}
+
+
+/*** arrows **/
+div.menu ul a.sf-with-ul {
+	padding-right: 	2.25em;
+	min-width:		1px; /* trigger IE7 hasLayout so spans position accurately */
+}
+.sf-sub-indicator {
+	position:		absolute;
+	display:		block;
+	right:			.75em;
+	top:			1.05em; /* IE6 only */
+	width:			10px;
+	height:			10px;
+	text-indent: 	-999em;
+	overflow:		hidden;
+	background:		url("images/arrows-ffffff.png") no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
+}
+a > .sf-sub-indicator {  /* give all except IE6 the correct values */
+	top:			.8em;
+	background-position: 0 -100px; /* use translucent arrow for modern browsers*/
+}
+/* apply hovers to modern browsers */
+a:focus > .sf-sub-indicator,
+a:hover > .sf-sub-indicator,
+a:active > .sf-sub-indicator,
+li:hover > a > .sf-sub-indicator,
+li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px -100px; /* arrow hovers for modern browsers*/
+}
+
+/* point right for anchors in subs */
+div.menu ul ul .sf-sub-indicator { background-position:  -10px 0; }
+div.menu ul ul a > .sf-sub-indicator { background-position:  0 0; }
+/* apply hovers to modern browsers */
+div.menu ul ul a:focus > .sf-sub-indicator,
+div.menu ul ul a:hover > .sf-sub-indicator,
+div.menu ul ul a:active > .sf-sub-indicator,
+div.menu ul ul li:hover > a > .sf-sub-indicator,
+div.menu ul ul li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px 0; /* arrow hovers for modern browsers*/
+}
+
+/*** shadows for all but IE6 ***/
+.sf-shadow ul {
+	background:	url('http://roryskagen.com/art/wp-content/themes/berlin/images/shadow.png') no-repeat bottom right;
+	padding: 0 8px 9px 0;
+	-moz-border-radius-bottomleft: 17px;
+	-moz-border-radius-topright: 17px;
+	-webkit-border-top-right-radius: 17px;
+	-webkit-border-bottom-left-radius: 17px;
+}
+.sf-shadow ul.sf-shadow-off {
+	background: transparent;
+}
+
+
+.menu
+{
+float:right;
+margin:10px 0 0 0;
+}
+
+ .menu li
+{
+	display: inline;
+	float:right;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.menu a:link, .menu a:visited
+{
+	color: #999;
+	float: left;
+	font-size: small;
+	font-weight: normal;
+	line-height: 14px;
+	padding: 6px 10px 10px;
+	text-decoration: none;
+}
+
+.menu li.current-menu-item a
+{
+	background: #fff;
+	color: #000;
+}
+
+.menu a:hover { color: #f00; background:#fff}
+
+body.section-1 .menu li#nav-1 a,
+
+body.section-2 .menu li#nav-2 a,
+
+body.section-3 .menu li#nav-3 a,
+
+body.section-4 .menu li#nav-4 a
+{
+	background: #fff;
+	border-bottom: 1px solid #fff;
+	color: #000;
+}
+
+.menu #subnav-1,
+
+.menu #subnav-2,
+
+.menu #subnav-3,
+
+.menu #subnav-4
+{
+	display: none;
+	width: 90%;
+}
+
+body.section-1 .menu ul#subnav-1,
+
+body.section-2 .menu ul#subnav-2,
+
+body.section-3 .menu ul#subnav-3,
+
+body.section-4 .menu ul#subnav-4
+{
+	display: inline;
+	left: 10px;
+	position: absolute;
+	top: 95px;
+}
+
+body.section-1 .menu ul#subnav-1 a,
+
+body.section-2 .menu ul#subnav-2 a,
+
+body.section-3 .menu ul#subnav-3 a,
+
+body.section-4 .menu ul#subnav-4 a
+{
+	background: #fff;
+	border: none;
+	border-left: 1px solid #ccc;
+	color: #999;
+	font-size: smaller;
+	font-weight: bold;
+	line-height: 10px;
+	margin-right: 4px;
+	padding: 2px 10px 2px 10px;
+	text-decoration: none;
+}
+
+.menu ul a:hover { color: #f00 !important;}
+
+#contents
+{
+	background: #fff;
+	border: 1px solid #ccc;
+	border-top: none;
+	clear: both;
+	margin: 0px;
+	padding: 15px;
+}

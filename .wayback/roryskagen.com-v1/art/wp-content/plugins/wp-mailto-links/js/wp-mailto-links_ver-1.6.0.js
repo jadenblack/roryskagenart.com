@@ -1,0 +1,3 @@
+/* WP Mailto Links */
+/*global window, jQuery*/
+!function(t,e){"use strict";function n(t){return t.replace(/[a-zA-Z]/g,function(t){return String.fromCharCode(("Z">=t?90:122)>=(t=t.charCodeAt(0)+13)?t:t-26)})}function a(t){var e=t.getAttribute("data-enc-email");return e?(e=e.replace(/\[at\]/g,"@"),e=n(e)):null}function i(t){var e=t.getAttribute("title"),n=a(t);e&&n&&(e=e.replace("{{email}}",n),t.setAttribute("title",e))}function c(t){var e=a(t);e&&t.setAttribute("value",e)}function r(e){var n=a(e);n&&(t.location.href="mailto:"+n)}e(function(t){t("body").delegate("a[data-enc-email]","click",function(){r(this)}),t("a[data-enc-email]").each(function(){i(this)}),t("input[data-enc-email]").each(function(){c(this)})})}(window,jQuery);

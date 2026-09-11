@@ -1,0 +1,44 @@
+span.wpml-nodis { 
+    display:none !important; 
+}
+
+span.wpml-rtl { 
+    unicode-bidi:bidi-override !important; 
+    direction:rtl !important; 
+    display:inline !important; 
+}
+span.wpml-rtl span.wpml-sd, span.wpmt-nrtl span.wpml-sd{
+	display:inline !important;
+	padding-left:0 !important;
+}
+span.wpmt-nrtl { 
+    word-break: break-all !important;
+}
+
+.wpml-encoded { 
+    position:relative; 
+    margin-top:-0.3em; 
+    z-index:1000; 
+    color:green; 
+}
+/*
+     FILE ARCHIVED ON 05:40:30 May 23, 2022 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 01:39:13 Sep 10, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.546
+  exclusion.robots: 0.077
+  exclusion.robots.policy: 0.066
+  esindex: 0.009
+  cdx.remote: 30.264
+  LoadShardBlock: 152.125 (3)
+  PetaboxLoader3.datanode: 115.273 (5)
+  load_resource: 199.519
+  PetaboxLoader3.resolve: 86.287
+  loaddict: 95.128
+*/
