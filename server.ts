@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import multer from "multer";
 import type { UploadApiResponse, v2 as CloudinaryV2Type } from "cloudinary";
-import { createServer as createViteServer } from "vite";
+import type { ViteDevServer } from "vite";
 import dotenv from "dotenv";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { authService } from "./src/server/authService";
@@ -1008,6 +1008,9 @@ app.get("/api/health", (req, res) => {
 //
 async function startServer() {
   if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+    // Dynamic import: keeps Vite (a dev-only, ~30 MB dependency) out of the
+    // serverless bundle entirely. Only standalone dev mode loads it.
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
