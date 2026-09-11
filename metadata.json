@@ -1,6 +1,0 @@
-{
-  "name": "Rory Skagen Art",
-  "description": "Official gallery and original art collection for Rory Skagen Art",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
