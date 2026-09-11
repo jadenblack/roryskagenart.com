@@ -42,6 +42,14 @@
       "expiresAt": "2026-09-16T15:41:02.777Z",
       "userAgent": "node",
       "ip": "127.0.0.1"
+    },
+    {
+      "token": "9e5c2e8c80bbce1f84e9fcb740d7bc609b31177586562e37ef23d66dde707f06",
+      "userId": "275a9a7b-a3f2-4672-9bb2-d6e74197f139",
+      "createdAt": "2026-09-11T14:54:05.785Z",
+      "expiresAt": "2026-09-18T14:54:05.785Z",
+      "userAgent": "curl/8.21.0",
+      "ip": "127.0.0.1"
     }
   ],
   "resetTokens": []
