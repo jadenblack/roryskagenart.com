@@ -216,8 +216,10 @@ export const HeroGallerySlider: React.FC<HeroGallerySliderProps> = ({
                 className="relative max-h-[360px] sm:max-h-[420px] max-w-full aspect-[4/3] bg-white dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-700 shadow-md p-3 sm:p-5 flex items-center justify-center cursor-zoom-in group/hero-img transition-transform duration-300 hover:scale-[1.01]"
               >
                 <img
-                  src={currentArtwork.imageUrl}
+                  src={currentArtwork.renditions?.hero?.url || currentArtwork.imageUrl}
                   alt={currentArtwork.title}
+                  width={currentArtwork.renditions?.hero?.width || undefined}
+                  height={currentArtwork.renditions?.hero?.height || undefined}
                   loading="eager"
                   className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover/hero-img:scale-[1.03]"
                   onError={(e) => {

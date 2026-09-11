@@ -1,7 +1,7 @@
 import { ArtworkRecord, ArtworkStatus, DriveFile, FilterState, MasterIndexRow, PageDocument } from '../types';
 import { buildInitialVirtualFileSystem, DRIVE_ROOT_PATH } from '../data/driveFileSystem';
 import { getArtworkSvg } from '../data/artAssets';
-import { resolveCloudinaryUrl } from '../data/cloudinaryMap';
+import { resolveAssetUrl, resolveRenditions } from '../data/assetResolver';
 import { PORTFOLIO_POSTS_REGISTRY } from '../data/portfolioPostsData';
 
 export const ORIGINAL_POSTS_SLUGS: Set<string> = new Set(
@@ -278,8 +278,9 @@ export class GalleryStateEngine {
             record.tags = matchedRow.tags.split(',').map((t) => t.trim()).filter(Boolean);
           }
         }
-        // Resolve image URL
+        // Resolve image URL + stage v3.2 rendition bundle
         record.imageUrl = this.resolveImagePath(record.featured_image, record.slug);
+        record.renditions = this.resolveRenditionsFor(record.featured_image, record.slug) ?? undefined;
         seenSlugs.add(normSlug);
         records.push(record);
       } catch (err) {
@@ -313,6 +314,7 @@ export class GalleryStateEngine {
         price: row.price,
         featured_image: row.imageFile,
         imageUrl: this.resolveImagePath(row.imageFile, normalizedRowSlug),
+        renditions: this.resolveRenditionsFor(row.imageFile, normalizedRowSlug) ?? undefined,
         gallery_series: row.series || 'Texas Folklore',
         edition: 'Original Artwork',
         location: 'Rory Skagen Studio',
@@ -575,6 +577,7 @@ export class GalleryStateEngine {
       price,
       featured_image,
       imageUrl: this.resolveImagePath(featured_image, slug),
+      renditions: this.resolveRenditionsFor(featured_image, slug) ?? undefined,
       gallery_series,
       edition: metadata.edition || (metadata.surface ? `${metadata.medium} on ${metadata.surface}` : 'Original Artwork'),
       location: metadata.location || 'Austin, TX',
@@ -779,6 +782,11 @@ export class GalleryStateEngine {
     return result;
   }
 
+  /** Stage v3.2: rendition bundle for an artwork, or null when not in the Supabase registry. */
+  public resolveRenditionsFor(imgPath: string, slugHint?: string) {
+    return resolveRenditions(imgPath, slugHint);
+  }
+
   public resolveImagePath(imgPath: string, slugHint?: string): string {
     if (!imgPath && !slugHint) return getArtworkSvg('art');
 
@@ -787,10 +795,11 @@ export class GalleryStateEngine {
       return imgPath;
     }
 
-    // 2. Check direct Cloudinary image registry resolution
-    const cloudUrl = resolveCloudinaryUrl(imgPath, slugHint);
-    if (cloudUrl) {
-      return cloudUrl;
+    // 2. Stage v3.2 dual-read chain: Supabase registry first (hero rendition),
+    //    frozen Cloudinary map second (logs [asset-migration] miss), SVG fallback last.
+    const resolved = resolveAssetUrl(imgPath, slugHint, 'hero');
+    if (resolved) {
+      return resolved;
     }
 
     const filename = imgPath ? imgPath.split('/').pop() || '' : '';

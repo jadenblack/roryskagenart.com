@@ -1,7 +1,6 @@
 import { DriveFile } from '../types';
 import { getArtworkSvg } from './artAssets';
 import { generateFullIndexMd, generateAllPostsRecord, PORTFOLIO_POSTS_REGISTRY } from './portfolioPostsData';
-import { CLOUDINARY_ASSETS_MAP } from './cloudinaryMap';
 import { MEDIA_ASSETS_LOG } from './mediaAssetsData';
 
 export const STUDIO_ARCHIVE_LABEL = "Studio Archive / Content Store";

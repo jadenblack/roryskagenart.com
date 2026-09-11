@@ -186,9 +186,12 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
               className="relative aspect-[4/3] bg-[#F7F6F2] dark:bg-zinc-900/60 overflow-hidden flex items-center justify-center p-4 border border-zinc-200 dark:border-zinc-800/80 cursor-zoom-in group/img"
             >
               <img
-                src={artwork.imageUrl}
+                src={artwork.renditions?.hero?.url || artwork.imageUrl}
                 alt={artwork.title}
+                width={artwork.renditions?.hero?.width || undefined}
+                height={artwork.renditions?.hero?.height || undefined}
                 className="w-full h-full object-contain transition-transform duration-500 group-hover/img:scale-[1.02]"
+                style={artwork.renditions?.lqip ? { backgroundImage: `url(${artwork.renditions.lqip})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = getArtworkSvg(artwork.slug);
                 }}
@@ -461,7 +464,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
 
           <div className="flex-1 flex items-center justify-center p-4">
             <img
-              src={artwork.imageUrl}
+              src={artwork.renditions?.full?.url || artwork.renditions?.hero?.url || artwork.imageUrl}
               alt={artwork.title}
               className="max-h-[85vh] max-w-[90vw] object-contain border border-zinc-800 shadow-2xl"
               onError={(e) => {

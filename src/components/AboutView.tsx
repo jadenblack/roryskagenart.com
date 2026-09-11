@@ -11,7 +11,7 @@ import {
   ExternalLink,
   ShieldCheck
 } from 'lucide-react';
-import { resolveCloudinaryUrl } from '../data/cloudinaryMap';
+import { resolveAssetUrl } from '../data/assetResolver';
 
 interface AboutViewProps {
   onNavigate: (route: string, param?: string) => void;
@@ -19,13 +19,13 @@ interface AboutViewProps {
 }
 
 export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry }) => {
-  const roryPhotoUrl = resolveCloudinaryUrl('Rory-Skagen-Photo.jpg', 'rory-skagen-photo') || 
+  const roryPhotoUrl = resolveAssetUrl('Rory-Skagen-Photo.jpg', 'rory-skagen-photo', 'hero') ||
     'https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/Rory-Skagen-Photo.jpg';
 
-  const austinMuralUrl = resolveCloudinaryUrl('austin-Recovered-copy.jpg', 'greetings-from-austin') ||
+  const austinMuralUrl = resolveAssetUrl('austin-Recovered-copy.jpg', 'greetings-from-austin', 'hero') ||
     'https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/austin-Recovered-copy.jpg';
 
-  const drebblesUrl = resolveCloudinaryUrl('drebbles-copy.jpg', 'drebbles') ||
+  const drebblesUrl = resolveAssetUrl('drebbles-copy.jpg', 'drebbles', 'hero') ||
     'https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/drebbles-copy.jpg';
 
   return (

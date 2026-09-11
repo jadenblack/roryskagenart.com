@@ -17,7 +17,7 @@ import {
 import { ArtworkRecord } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { InquiryModal } from './InquiryModal';
-import { CLOUDINARY_ASSETS_MAP, resolveCloudinaryUrl } from '../data/cloudinaryMap';
+import { resolveAssetUrl } from '../data/assetResolver';
 import { getArtworkSvg } from '../data/artAssets';
 import { HeroGallerySlider } from './HeroGallerySlider';
 
@@ -297,15 +297,13 @@ const CURATED_FIVE_COLUMNS: CuratedColumnDef[] = [
   }
 ];
 
-// Helper to resolve real artwork image URLs
+// Helper to resolve real artwork image URLs — stage v3.2 dual-read chain
+// (Supabase registry first, frozen Cloudinary map second, SVG fallback last)
 const resolveImageUrl = (key: string, slug?: string): string => {
-  const url = resolveCloudinaryUrl(key, slug);
+  const url = resolveAssetUrl(key, slug, 'hero');
   if (url) return url;
-  if (CLOUDINARY_ASSETS_MAP[key]) return CLOUDINARY_ASSETS_MAP[key];
-  const cleanKey = key.replace(/\.[^/.]+$/, '');
-  if (CLOUDINARY_ASSETS_MAP[cleanKey]) return CLOUDINARY_ASSETS_MAP[cleanKey];
   // Fallback to high-res dynamic SVG from artAssets
-  return getArtworkSvg(slug || cleanKey);
+  return getArtworkSvg(slug || key.replace(/\.[^/.]+$/, ''));
 };
 
 export const HomeLandingView: React.FC<HomeLandingViewProps> = ({

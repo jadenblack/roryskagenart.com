@@ -295,10 +295,14 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
             {/* Visual Container */}
             <div className="aspect-[3/4] bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 relative overflow-hidden flex items-center justify-center p-4 group-hover:border-zinc-600 dark:group-hover:border-zinc-400 transition-colors shadow-xs">
               <img
-                src={art.imageUrl}
+                src={art.renditions?.thumb?.url || art.imageUrl}
                 alt={art.title}
+                width={art.renditions?.thumb?.width || undefined}
+                height={art.renditions?.thumb?.height || undefined}
                 className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
                 loading="lazy"
+                decoding="async"
+                style={art.renditions?.lqip ? { backgroundImage: `url(${art.renditions.lqip})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = getArtworkSvg(art.slug);
                 }}

@@ -1,5 +1,20 @@
 export type ArtworkStatus = 'Available' | 'Sold' | 'Archived' | 'Public Installation' | 'Private Collection' | 'Limited Edition' | 'Disabled' | 'Hidden' | 'Trashed';
 
+export interface AssetRendition {
+  url: string;
+  width: number;
+  height: number;
+  bytes: number;
+}
+
+export interface AssetRenditions {
+  thumb: AssetRendition | null;
+  hero: AssetRendition | null;
+  full: AssetRendition | null;
+  lqip: string | null;
+  source: 'supabase' | 'cloudinary';
+}
+
 export interface ArtworkRecord {
   slug: string;
   title: string;
@@ -12,6 +27,8 @@ export interface ArtworkRecord {
   price: string;
   featured_image: string; // relative image path e.g. "images/greetings-from-austin.svg"
   imageUrl?: string;
+  /** Stage v3.2 rendition bundle from the Supabase asset registry (null when unresolved). */
+  renditions?: AssetRenditions;
   gallery_series: string; // e.g. "Austin Iconic Murals", "Neon Americana", "Atomic Pop", "Texas Folklore"
   edition?: string; // e.g. "Original Oil on Canvas", "Edition of 25 Archival Prints"
   location?: string; // e.g. "Austin, TX (South 1st & Annie St)"
