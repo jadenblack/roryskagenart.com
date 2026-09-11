@@ -14,7 +14,9 @@
  * The `nodejs` runtime matches the pg + sharp + cloudinary dependency set.
  * maxDuration covers slow Supabase/Resend cold calls on the free tier.
  */
-import app from "../server";
+// Note: file extension required — Vercel's ESM resolver cannot resolve
+// directory imports, and tsx/node ESM need the explicit .ts via allowImportingTsExtensions.
+import app from "../server.ts";
 
 export const config = {
   runtime: "nodejs",
