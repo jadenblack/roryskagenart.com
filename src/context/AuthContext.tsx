@@ -1,219 +1,122 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { AuthUser, AuthStatusInfo } from '../types';
+import { AuthUser } from '../types';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import {
-  authenticateLocalVault,
-  getActiveVaultUser,
-  saveActiveVaultSession,
-  clearActiveVaultSession,
-  registerLocalVault,
-  updatePasswordLocalVault,
-} from '../utils/clientAuthVault';
 
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  statusInfo: AuthStatusInfo | null;
+  statusInfo: AuthStatusInfoLite | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithDefault: () => Promise<{ success: boolean; error?: string }>;
-  register: (name: string, email: string, password: string, role?: 'admin' | 'editor') => Promise<{ success: boolean; error?: string }>;
-  requestPasswordReset: (email: string) => Promise<{ success: boolean; resetCode?: string; message?: string; error?: string }>;
-  resetPassword: (email: string, resetCode: string, newPassword: string) => Promise<{ success: boolean; error?: string; message?: string }>;
+  requestPasswordReset: (email: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   logout: () => Promise<void>;
-  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
   refreshAuth: () => Promise<void>;
 }
 
+/** Minimal status surface kept for backward compatibility with existing UI */
+interface AuthStatusInfoLite {
+  authenticated: boolean;
+  authEngine: string;
+  emailProvider: string;
+}
+
+interface AuthStatusInfoAlias extends AuthStatusInfoLite {}
+type AuthStatusInfo = AuthStatusInfoAlias;
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const TOKEN_STORAGE_KEY = 'rory_studio_auth_token_v1';
-const LOCAL_USER_KEY = 'rory_studio_cached_user_v1';
-
 /**
- * Safely parse HTTP responses preventing JSON SyntaxErrors from Vercel / HTML 404/500 pages
+ * Map a Supabase auth user to the app's AuthUser shape.
+ * Role resolution order: profiles table (via RPC-less select) → user metadata → viewer.
  */
-async function parseResponseSafe(res: Response): Promise<{ ok: boolean; data: any; isHtmlOrUnavailable: boolean }> {
+async function mapSupabaseUser(sbUser: any): Promise<AuthUser> {
+  let role: AuthUser['role'] = 'viewer';
+  let name: string = (sbUser.user_metadata?.name as string) || '';
+
+  // Try to read the profile row. RLS allows users to read their own profile.
   try {
-    const text = await res.text();
-    if (!text || text.trim().length === 0) {
-      return { ok: res.ok, data: { success: res.ok }, isHtmlOrUnavailable: false };
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, full_name')
+      .eq('id', sbUser.id)
+      .single();
+    if (profile?.role === 'admin' || profile?.role === 'editor') {
+      role = profile.role;
+    } else if (profile?.role === 'viewer') {
+      role = 'viewer';
     }
-
-    const trimmed = text.trim();
-    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-      try {
-        const json = JSON.parse(trimmed);
-        return { ok: res.ok && json.success !== false, data: json, isHtmlOrUnavailable: false };
-      } catch {
-        // Fallback to text parsing
-      }
-    }
-
-    // Response is HTML / text (e.g. Vercel 404/405 page "The page could not be found...")
-    const isHtml =
-      trimmed.startsWith('<') ||
-      trimmed.toLowerCase().includes('the page') ||
-      trimmed.includes('404') ||
-      trimmed.includes('405') ||
-      trimmed.toLowerCase().includes('method not allowed');
-
-    return {
-      ok: false,
-      data: {
-        success: false,
-        error: isHtml
-          ? (res.status === 404 || res.status === 405
-              ? 'Authentication endpoint not reached. Falling back to standalone verification.'
-              : `Server error (${res.status} ${res.statusText || 'Error'}).`)
-          : trimmed.slice(0, 200),
-      },
-      isHtmlOrUnavailable: true,
-    };
-  } catch (err: any) {
-    return {
-      ok: false,
-      data: {
-        success: false,
-        error: err?.message || 'Network request could not be completed.',
-      },
-      isHtmlOrUnavailable: true,
-    };
+    if (profile?.full_name) name = profile.full_name;
+  } catch {
+    // Fall through to metadata below
   }
+
+  if (role === 'viewer') {
+    const metaRole = (sbUser.app_metadata?.role || sbUser.user_metadata?.role) as string | undefined;
+    if (metaRole === 'admin' || metaRole === 'editor') role = metaRole;
+  }
+
+  return {
+    id: sbUser.id,
+    email: sbUser.email || '',
+    name: name || 'Studio Admin',
+    role,
+    createdAt: sbUser.created_at || new Date().toISOString(),
+  };
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    return getActiveVaultUser();
-  });
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [statusInfo, setStatusInfo] = useState<AuthStatusInfo | null>({
     authenticated: false,
-    sessionExpiresAt: null,
-    serverTime: new Date().toISOString(),
-    authEngine: 'Dual Node.js + Standalone Client Vault',
-    defaultAdminEmail: 'rory@ventureio.com',
-    totalAdmins: 2,
-    activeSessions: 1,
+    authEngine: 'Supabase Auth',
+    emailProvider: 'Resend',
   });
 
-  // Helper to build headers with Authorization Bearer fallback
-  const getAuthHeaders = useCallback((): HeadersInit => {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    const token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem(TOKEN_STORAGE_KEY);
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    return headers;
-  }, []);
-
-  // Fetch current session and auth status from server
   const refreshAuth = useCallback(async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-
-      // 0. Check Supabase Auth Session (Production / Cloud Auth)
-      if (isSupabaseConfigured) {
-        try {
-          const { data: sbSessionData } = await supabase.auth.getSession();
-          if (sbSessionData?.session?.user) {
-            const sbUser = sbSessionData.session.user;
-            const authenticatedUser: AuthUser = {
-              id: sbUser.id,
-              email: sbUser.email || 'admin@roryskagen.com',
-              name: (sbUser.user_metadata?.name as string) || 'Rory Skagen Studio Admin',
-              role: ((sbUser.app_metadata?.role || sbUser.user_metadata?.role) as any) || 'admin',
-              createdAt: sbUser.created_at,
-            };
-            setUser(authenticatedUser);
-            saveActiveVaultSession(authenticatedUser, sbSessionData.session.access_token);
-            setStatusInfo((prev) => ({
-              authenticated: true,
-              sessionExpiresAt: sbSessionData.session?.expires_at ? new Date(sbSessionData.session.expires_at * 1000).toISOString() : null,
-              serverTime: new Date().toISOString(),
-              authEngine: 'Supabase Auth + PostgreSQL',
-              defaultAdminEmail: 'rory@ventureio.com',
-              totalAdmins: 2,
-              activeSessions: 1,
-            }));
-            setIsLoading(false);
-            return;
-          }
-        } catch (sbErr) {
-          console.warn('[AuthContext] Supabase session check notice:', sbErr);
-        }
+      if (!isSupabaseConfigured) {
+        setUser(null);
+        return;
       }
 
-      // Check local vault session first
-      const localActiveUser = getActiveVaultUser();
-      if (localActiveUser) {
-        setUser(localActiveUser);
-      }
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
 
-      // 1. Fetch public status info safely
-      try {
-        const statusRes = await fetch('/api/auth/status', {
-          headers: getAuthHeaders(),
-          credentials: 'include',
+      if (sessionData?.session?.user) {
+        const mapped = await mapSupabaseUser(sessionData.session.user);
+        setUser(mapped);
+        setStatusInfo({
+          authenticated: true,
+          authEngine: 'Supabase Auth',
+          emailProvider: 'Resend',
         });
-        const parsedStatus = await parseResponseSafe(statusRes);
-        if (parsedStatus.ok && parsedStatus.data) {
-          setStatusInfo({
-            ...parsedStatus.data,
-            authEngine: isSupabaseConfigured ? 'Supabase Auth + PostgreSQL' : parsedStatus.data.authEngine,
-          });
-        }
-      } catch (err) {
-        console.warn('[AuthContext] Auth status notice:', err);
-      }
-
-      // 2. Fetch current session (/api/auth/me) safely
-      try {
-        const meRes = await fetch('/api/auth/me', {
-          headers: getAuthHeaders(),
-          credentials: 'include',
+      } else {
+        setUser(null);
+        setStatusInfo({
+          authenticated: false,
+          authEngine: 'Supabase Auth',
+          emailProvider: 'Resend',
         });
-
-        const parsedMe = await parseResponseSafe(meRes);
-        if (parsedMe.ok && parsedMe.data?.authenticated && parsedMe.data?.user) {
-          setUser(parsedMe.data.user);
-          saveActiveVaultSession(parsedMe.data.user, parsedMe.data?.token);
-        } else if (!parsedMe.isHtmlOrUnavailable) {
-          // If server explicitly returned unauthenticated and no local session
-          if (parsedMe.data?.authenticated === false && !localActiveUser) {
-            setUser(null);
-            clearActiveVaultSession();
-          }
-        }
-      } catch (err) {
-        console.warn('[AuthContext] Session verification notice:', err);
       }
     } catch (err) {
-      console.warn('[AuthContext] Auth refresh notice:', err);
+      console.warn('[AuthContext] Session refresh notice:', err);
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
-  }, [getAuthHeaders]);
+  }, []);
 
   useEffect(() => {
     refreshAuth();
 
     if (isSupabaseConfigured) {
-      const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
         if (session?.user) {
-          const authenticatedUser: AuthUser = {
-            id: session.user.id,
-            email: session.user.email || 'admin@roryskagen.com',
-            name: (session.user.user_metadata?.name as string) || 'Rory Skagen Studio Admin',
-            role: ((session.user.app_metadata?.role || session.user.user_metadata?.role) as any) || 'admin',
-            createdAt: session.user.created_at,
-          };
-          setUser(authenticatedUser);
-          saveActiveVaultSession(authenticatedUser, session.access_token);
+          const mapped = await mapSupabaseUser(session.user);
+          setUser(mapped);
         } else if (event === 'SIGNED_OUT') {
-          clearActiveVaultSession();
           setUser(null);
         }
       });
@@ -224,333 +127,67 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [refreshAuth]);
 
-  // Login handler
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const cleanEmail = email.trim().toLowerCase();
-      const trimmedPass = (password || '').trim();
-      let supabaseErrorMessage = '';
-
-      // 1. Primary Engine: Supabase Cloud Authentication (Simple Email & Password)
-      if (isSupabaseConfigured) {
-        try {
-          const { data: sbData, error: sbError } = await supabase.auth.signInWithPassword({
-            email: cleanEmail,
-            password: trimmedPass,
-          });
-
-          if (!sbError && sbData?.user) {
-            const authenticatedUser: AuthUser = {
-              id: sbData.user.id,
-              email: sbData.user.email || cleanEmail,
-              name: (sbData.user.user_metadata?.name as string) || 'Rory Skagen Studio Admin',
-              role: ((sbData.user.app_metadata?.role || sbData.user.user_metadata?.role) as any) || 'admin',
-              createdAt: sbData.user.created_at,
-            };
-            saveActiveVaultSession(authenticatedUser, sbData.session?.access_token);
-            setUser(authenticatedUser);
-            return { success: true };
-          }
-
-          if (sbError) {
-            console.warn('[AuthContext] Supabase sign in notice:', sbError.message);
-            supabaseErrorMessage = sbError.message;
-          }
-        } catch (sbErr: any) {
-          console.warn('[AuthContext] Supabase sign in exception:', sbErr);
-          supabaseErrorMessage = sbErr?.message || '';
-        }
+  const login = useCallback(
+    async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+      if (!isSupabaseConfigured) {
+        return { success: false, error: 'Supabase is not configured on this deployment.' };
       }
-
-      // 2. High-Availability Server Fallback (Verifies against Supabase server-side or local secure store)
-      let serverErrorMessage = '';
       try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ email: cleanEmail, password: trimmedPass }),
+        const cleanEmail = email.trim().toLowerCase();
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: password.trim(),
         });
 
-        const parsed = await parseResponseSafe(res);
-        const data = parsed.data;
-
-        if (parsed.ok && data?.success && data?.user) {
-          saveActiveVaultSession(data.user, data.token || data.supabaseToken);
-          setUser(data.user);
-          return { success: true };
-        } else if (data?.error) {
-          serverErrorMessage = data.error;
+        if (error) {
+          return { success: false, error: error.message };
         }
-      } catch (networkErr: any) {
-        console.warn('[AuthContext] API login request bypassed to local vault:', networkErr);
-      }
-
-      // 3. Client-Side Vault Authentication (for local offline resilience)
-      const localAuth = authenticateLocalVault(cleanEmail, trimmedPass);
-      if (localAuth.success && localAuth.user) {
-        saveActiveVaultSession(localAuth.user);
-        setUser(localAuth.user);
-        return { success: true };
-      }
-
-      return {
-        success: false,
-        error: supabaseErrorMessage || serverErrorMessage || localAuth.error || 'Authentication failed. Please check your email and password.',
-      };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Network error during sign in.' };
-    }
-  };
-
-  // Login with default admin credentials
-  const loginWithDefault = async (): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const res = await fetch('/api/auth/default-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-
-      const parsed = await parseResponseSafe(res);
-      const data = parsed.data;
-
-      if (parsed.ok && data?.success && data?.user) {
-        saveActiveVaultSession(data.user, data.token);
-        setUser(data.user);
-        return { success: true };
-      }
-
-      // Fallback: Sign in with master Rory Skagen admin credentials
-      return await login('rory@ventureio.com', 'Austin512');
-    } catch (err: any) {
-      return await login('rory@ventureio.com', 'Austin512');
-    }
-  };
-
-  // Register / Create Account handler (Supabase Auth + Database Sync)
-  const register = async (
-    name: string,
-    email: string,
-    password: string,
-    role: 'admin' | 'editor' = 'admin'
-  ): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const cleanEmail = email.trim().toLowerCase();
-      const trimmedPass = password.trim();
-
-      // 1. Primary: Direct Supabase Cloud Account Creation
-      if (isSupabaseConfigured) {
-        try {
-          const { data: sbData, error: sbError } = await supabase.auth.signUp({
-            email: cleanEmail,
-            password: trimmedPass,
-            options: {
-              data: {
-                name: name.trim(),
-                role,
-              },
-            },
-          });
-
-          if (!sbError && sbData?.user) {
-            const newUser: AuthUser = {
-              id: sbData.user.id,
-              email: sbData.user.email || cleanEmail,
-              name: name.trim(),
-              role,
-              createdAt: sbData.user.created_at,
-            };
-            saveActiveVaultSession(newUser, sbData.session?.access_token);
-            setUser(newUser);
-            return { success: true };
-          }
-
-          if (sbError) {
-            console.warn('[AuthContext] Supabase sign up notice:', sbError.message);
-          }
-        } catch (sbErr) {
-          console.warn('[AuthContext] Supabase sign up exception:', sbErr);
-        }
-      }
-
-      // 2. Local Vault & Server Backup
-      const localResult = registerLocalVault(name, cleanEmail, trimmedPass, role);
-
-      try {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ name: name.trim(), email: cleanEmail, password: trimmedPass, role }),
-        });
-
-        const parsed = await parseResponseSafe(res);
-        const data = parsed.data;
-
-        if (parsed.ok && data?.success && data?.user) {
-          saveActiveVaultSession(data.user, data.token);
-          setUser(data.user);
+        if (data?.user) {
+          const mapped = await mapSupabaseUser(data.user);
+          setUser(mapped);
           return { success: true };
         }
-      } catch (err) {
-        console.warn('[AuthContext] Backend register bypassed to local vault:', err);
+        return { success: false, error: 'Sign-in returned no user.' };
+      } catch (err: any) {
+        return { success: false, error: err?.message || 'Network error during sign in.' };
       }
+    },
+    []
+  );
 
-      if (localResult.success && localResult.user) {
-        saveActiveVaultSession(localResult.user);
-        setUser(localResult.user);
-        return { success: true };
+  const requestPasswordReset = useCallback(
+    async (email: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+      if (!isSupabaseConfigured) {
+        return { success: false, error: 'Supabase is not configured on this deployment.' };
       }
-
-      return { success: false, error: localResult.error || 'Failed to create account.' };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Network error during account registration.' };
-    }
-  };
-
-  // Request password reset code handler
-  const requestPasswordReset = async (
-    email: string
-  ): Promise<{ success: boolean; resetCode?: string; message?: string; error?: string }> => {
-    try {
-      const cleanEmail = email.trim().toLowerCase();
-
       try {
-        const res = await fetch('/api/auth/forgot-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: cleanEmail }),
+        const cleanEmail = email.trim().toLowerCase();
+        const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+          redirectTo: `${window.location.origin}/#/admin/reset`,
         });
-
-        const parsed = await parseResponseSafe(res);
-        const data = parsed.data;
-
-        if (parsed.ok && data?.success) {
-          return {
-            success: true,
-            resetCode: data.resetCode,
-            message: data.message,
-          };
+        if (error) {
+          return { success: false, error: error.message };
         }
-      } catch (err) {
-        console.warn('[AuthContext] Forgot password bypassed to local generation:', err);
+        return {
+          success: true,
+          message: `Password reset email sent to ${cleanEmail}. Check your inbox.`,
+        };
+      } catch (err: any) {
+        return { success: false, error: err?.message || 'Network error during password reset request.' };
       }
+    },
+    []
+  );
 
-      // Standalone code generation for Vercel static environments
-      const mockCode = Math.floor(100000 + Math.random() * 900000).toString();
-      return {
-        success: true,
-        resetCode: mockCode,
-        message: `Verification code generated for ${cleanEmail}. Valid for 15 minutes.`,
-      };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Network error during password reset request.' };
-    }
-  };
-
-  // Confirm password reset with verification code
-  const resetPassword = async (
-    email: string,
-    resetCode: string,
-    newPassword: string
-  ): Promise<{ success: boolean; error?: string; message?: string }> => {
+  const logout = useCallback(async () => {
     try {
-      const cleanEmail = email.trim().toLowerCase();
-      const trimmedPass = newPassword.trim();
-
-      // Update local vault
-      updatePasswordLocalVault(cleanEmail, trimmedPass);
-
-      try {
-        const res = await fetch('/api/auth/reset-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: cleanEmail,
-            resetCode: resetCode.trim(),
-            newPassword: trimmedPass,
-          }),
-        });
-
-        const parsed = await parseResponseSafe(res);
-        const data = parsed.data;
-
-        if (parsed.ok && data?.success) {
-          return { success: true, message: data.message };
-        }
-      } catch (err) {
-        console.warn('[AuthContext] Backend password reset notice:', err);
-      }
-
-      return {
-        success: true,
-        message: 'Password successfully reset. You can now sign in with your new credentials.',
-      };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Network error during password reset.' };
-    }
-  };
-
-  // Logout handler
-  const logout = async () => {
-    try {
-      if (isSupabaseConfigured) {
-        try {
-          await supabase.auth.signOut();
-        } catch (sbErr) {
-          console.warn('[AuthContext] Supabase signOut notice:', sbErr);
-        }
-      }
-
-      const res = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        credentials: 'include',
-      });
-      await parseResponseSafe(res);
+      await supabase.auth.signOut();
     } catch (err) {
-      console.warn('[AuthContext] Logout notice:', err);
+      console.warn('[AuthContext] Supabase signOut notice:', err);
     } finally {
-      clearActiveVaultSession();
       setUser(null);
     }
-  };
-
-  // Change password handler
-  const changePassword = async (
-    currentPassword: string,
-    newPassword: string
-  ): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const trimmedNew = newPassword.trim();
-      if (user?.email) {
-        updatePasswordLocalVault(user.email, trimmedNew);
-      }
-
-      try {
-        const res = await fetch('/api/auth/change-password', {
-          method: 'POST',
-          headers: getAuthHeaders(),
-          credentials: 'include',
-          body: JSON.stringify({ currentPassword, newPassword: trimmedNew }),
-        });
-
-        const parsed = await parseResponseSafe(res);
-        const data = parsed.data;
-
-        if (parsed.ok && data?.success) {
-          return { success: true };
-        }
-      } catch (err) {
-        console.warn('[AuthContext] Backend change-password notice:', err);
-      }
-
-      return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Network error during password update.' };
-    }
-  };
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -560,12 +197,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         statusInfo,
         login,
-        loginWithDefault,
-        register,
         requestPasswordReset,
-        resetPassword,
         logout,
-        changePassword,
         refreshAuth,
       }}
     >

@@ -95,6 +95,101 @@ if (process.env.VERCEL) {
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
+// -------------------------------------------------------------
+// CMS v1 — Authentication & Role Middleware (Supabase Auth)
+// -------------------------------------------------------------
+// Verifies the client's Supabase JWT, loads the profile row, and
+// exposes `req.cmsUser = { id, email, role, isActive }`.
+
+interface CmsUser {
+  id: string;
+  email: string;
+  role: "admin" | "editor" | "viewer";
+  isActive: boolean;
+}
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      cmsUser?: CmsUser;
+    }
+  }
+}
+
+const ROLE_ORDER: Record<string, number> = { viewer: 0, editor: 1, admin: 2 };
+
+async function resolveCmsUser(req: any): Promise<CmsUser | null> {
+  const authHeader = req.headers["authorization"] || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) return null;
+
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (error || !data?.user) return null;
+
+  const sbUser = data.user;
+  // Load role from profiles table (fallback to user metadata)
+  let role: CmsUser["role"] = "viewer";
+  let isActive = true;
+  let fullName: string | null = null;
+  try {
+    const profileRes = await query<{ role: string; is_active: boolean; full_name: string | null }>(
+      `SELECT role, is_active, full_name FROM public.profiles WHERE id = $1 LIMIT 1`,
+      [sbUser.id]
+    );
+    if (profileRes.rows[0]) {
+      const r = String(profileRes.rows[0].role);
+      role = r === "admin" || r === "editor" ? r : "viewer";
+      isActive = profileRes.rows[0].is_active !== false;
+      fullName = profileRes.rows[0].full_name || null;
+    } else {
+      const metaRole = (sbUser.app_metadata?.role || sbUser.user_metadata?.role) as string | undefined;
+      role = metaRole === "admin" || metaRole === "editor" ? metaRole : "viewer";
+    }
+  } catch {
+    const metaRole = (sbUser.app_metadata?.role || sbUser.user_metadata?.role) as string | undefined;
+    role = metaRole === "admin" || metaRole === "editor" ? metaRole : "viewer";
+  }
+
+  return {
+    id: sbUser.id,
+    email: sbUser.email || "",
+    role,
+    isActive,
+    ...(fullName ? {} : {}),
+  };
+}
+
+/** Requires a valid Supabase session. Populates req.cmsUser. */
+async function requireAuth(req: any, res: any, next: any) {
+  try {
+    const user = await resolveCmsUser(req);
+    if (!user) {
+      return res.status(401).json({ error: "Authentication required." });
+    }
+    if (!user.isActive) {
+      return res.status(403).json({ error: "This account has been deactivated." });
+    }
+    req.cmsUser = user;
+    return next();
+  } catch (err: any) {
+    return res.status(401).json({ error: "Invalid or expired session." });
+  }
+}
+
+/** Requires req.cmsUser.role to be at least `minimum`. Use after requireAuth. */
+function requireRole(minimum: "editor" | "admin") {
+  return (req: any, res: any, next: any) => {
+    if (!req.cmsUser) {
+      return res.status(401).json({ error: "Authentication required." });
+    }
+    if ((ROLE_ORDER[req.cmsUser.role] ?? -1) < ROLE_ORDER[minimum]) {
+      return res.status(403).json({ error: `Requires ${minimum} role or higher.` });
+    }
+    return next();
+  };
+}
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 30 * 1024 * 1024 } // 30MB
@@ -175,7 +270,7 @@ async function getCloudinaryConfig(): Promise<{ configured: boolean; cloudName: 
 // -------------------------------------------------------------
 
 // 1. Connection Status & Diagnostic Check
-app.get("/api/cloudinary/status", async (req, res) => {
+app.get("/api/cloudinary/status", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const config = await getCloudinaryConfig();
     if (!config.configured) {
@@ -208,7 +303,7 @@ app.get("/api/cloudinary/status", async (req, res) => {
 });
 
 // 2. List Resources / Images from Cloudinary
-app.get("/api/cloudinary/resources", async (req, res) => {
+app.get("/api/cloudinary/resources", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const config = await getCloudinaryConfig();
     if (!config.configured) {
@@ -261,7 +356,7 @@ app.get("/api/cloudinary/resources", async (req, res) => {
 });
 
 // 3. Upload File or Remote URL to Cloudinary
-app.post("/api/cloudinary/upload", upload.single("file") as any, async (req, res) => {
+app.post("/api/cloudinary/upload", requireAuth, requireRole("editor"), upload.single("file") as any, async (req, res) => {
   try {
     const config = await getCloudinaryConfig();
     if (!config.configured) {
@@ -327,7 +422,7 @@ app.post("/api/cloudinary/upload", upload.single("file") as any, async (req, res
 });
 
 // 4. Delete Resource from Cloudinary
-app.delete("/api/cloudinary/resources/:publicId(*)", async (req, res) => {
+app.delete("/api/cloudinary/resources/:publicId(*)", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const config = await getCloudinaryConfig();
     if (!config.configured) {
@@ -686,7 +781,7 @@ app.post("/api/auth/change-password", (req, res) => {
 // -------------------------------------------------------------
 
 // 1. Database Connection & Health Status
-app.get("/api/database/status", async (req, res) => {
+app.get("/api/database/status", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const health = await checkDbHealth();
     return res.json({
@@ -746,7 +841,7 @@ app.get("/api/artworks/:slug", async (req, res) => {
 });
 
 // 4. Create New Artwork in PostgreSQL
-app.post("/api/artworks", async (req, res) => {
+app.post("/api/artworks", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const {
       slug, title, year, medium, dimensions, price, status,
@@ -793,7 +888,7 @@ app.post("/api/artworks", async (req, res) => {
 });
 
 // 5. Update Artwork in PostgreSQL
-app.patch("/api/artworks/:slug", async (req, res) => {
+app.patch("/api/artworks/:slug", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const { slug } = req.params;
     const body = req.body || {};
@@ -848,7 +943,7 @@ app.patch("/api/artworks/:slug", async (req, res) => {
 });
 
 // 6. Delete or Trash Artwork
-app.delete("/api/artworks/:slug", async (req, res) => {
+app.delete("/api/artworks/:slug", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const { slug } = req.params;
     const permanent = req.query.permanent === "true";
@@ -882,7 +977,7 @@ app.get("/api/pages/:slug", async (req, res) => {
   }
 });
 
-app.put("/api/pages/:slug", async (req, res) => {
+app.put("/api/pages/:slug", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const { slug } = req.params;
     const { title, content } = req.body || {};
@@ -945,7 +1040,7 @@ app.post("/api/inquiries", async (req, res) => {
   }
 });
 
-app.get("/api/inquiries", async (req, res) => {
+app.get("/api/inquiries", requireAuth, requireRole("editor"), async (req, res) => {
   try {
     const result = await query(
       `SELECT * FROM public.inquiries ORDER BY created_at DESC LIMIT 100`
@@ -967,7 +1062,7 @@ app.get("/api/email/status", (req, res) => {
   });
 });
 
-app.post("/api/email/send-test", async (req, res) => {
+app.post("/api/email/send-test", requireAuth, requireRole("admin"), async (req, res) => {
   try {
     const { to } = req.body || {};
     const targetEmail = to || process.env.ADMIN_EMAIL || "rory@ventureio.com";
@@ -988,6 +1083,280 @@ app.post("/api/email/send-test", async (req, res) => {
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", time: new Date().toISOString() });
+});
+
+// -------------------------------------------------------------
+// CMS v1 — Users management (admin only, via Supabase Admin API)
+// -------------------------------------------------------------
+
+app.get("/api/admin/users", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({ perPage: 200 });
+    if (error) throw error;
+
+    const profileRes = await query<{ id: string; role: string; is_active: boolean; full_name: string | null }>(
+      `SELECT id, role, is_active, full_name FROM public.profiles`
+    );
+    const profiles = new Map(profileRes.rows.map((p) => [p.id, p]));
+
+    const users = (data.users || []).map((u) => {
+      const p = profiles.get(u.id);
+      return {
+        id: u.id,
+        email: u.email || "",
+        name: p?.full_name || (u.user_metadata?.name as string) || "",
+        role: (p?.role as string) || (u.user_metadata?.role as string) || "viewer",
+        isActive: p ? p.is_active !== false : true,
+        lastSignInAt: u.last_sign_in_at || null,
+        createdAt: u.created_at,
+      };
+    });
+
+    return res.json({ success: true, users });
+  } catch (err: any) {
+    console.error("List users error:", err);
+    return res.status(500).json({ error: err.message || "Failed to list users" });
+  }
+});
+
+app.post("/api/admin/users/invite", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const { email, name, role } = req.body || {};
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+      return res.status(400).json({ error: "A valid email is required." });
+    }
+    const cleanRole = role === "editor" || role === "viewer" ? role : "editor";
+
+    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email.trim().toLowerCase(), {
+      data: { name: name || "", role: cleanRole },
+    });
+    if (error) throw error;
+
+    if (data.user) {
+      await query(
+        `INSERT INTO public.profiles (id, email, full_name, role)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id) DO UPDATE SET role = EXCLUDED.role, full_name = EXCLUDED.full_name`,
+        [data.user.id, email.trim().toLowerCase(), name || "", cleanRole]
+      );
+    }
+
+    return res.status(201).json({ success: true, user: { id: data.user?.id, email, role: cleanRole } });
+  } catch (err: any) {
+    console.error("Invite user error:", err);
+    return res.status(400).json({ error: err.message || "Failed to invite user" });
+  }
+});
+
+app.patch("/api/admin/users/:id", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role, isActive, name } = req.body || {};
+
+    if (role !== undefined) {
+      if (!["admin", "editor", "viewer"].includes(role)) {
+        return res.status(400).json({ error: "Invalid role." });
+      }
+      await query(`UPDATE public.profiles SET role = $1 WHERE id = $2`, [role, id]);
+      await supabaseAdmin.auth.admin.updateUserById(id, { user_metadata: { role } });
+    }
+
+    if (isActive !== undefined) {
+      await query(`UPDATE public.profiles SET is_active = $1 WHERE id = $2`, [Boolean(isActive), id]);
+      // Banning blocks sign-in at the auth layer too
+      await supabaseAdmin.auth.admin.updateUserById(id, { ban_duration: isActive ? "none" : "876000h" });
+    }
+
+    if (name !== undefined) {
+      await query(`UPDATE public.profiles SET full_name = $1 WHERE id = $2`, [String(name), id]);
+    }
+
+    return res.json({ success: true });
+  } catch (err: any) {
+    console.error("Update user error:", err);
+    return res.status(400).json({ error: err.message || "Failed to update user" });
+  }
+});
+
+app.delete("/api/admin/users/:id", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (id === req.cmsUser?.id) {
+      return res.status(400).json({ error: "You cannot delete your own account." });
+    }
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(id);
+    if (error) throw error;
+    return res.json({ success: true });
+  } catch (err: any) {
+    console.error("Delete user error:", err);
+    return res.status(400).json({ error: err.message || "Failed to delete user" });
+  }
+});
+
+// -------------------------------------------------------------
+// CMS v1 — Taxonomies CRUD (editor+)
+// -------------------------------------------------------------
+
+app.get("/api/taxonomies", async (req, res) => {
+  try {
+    const type = typeof req.query.type === "string" ? req.query.type : null;
+    const result = type
+      ? await query(`SELECT * FROM public.taxonomies WHERE type = $1 ORDER BY sort_order, name`, [type])
+      : await query(`SELECT * FROM public.taxonomies ORDER BY type, sort_order, name`);
+    return res.json({ success: true, terms: result.rows });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to fetch taxonomies" });
+  }
+});
+
+app.post("/api/taxonomies", requireAuth, requireRole("editor"), async (req, res) => {
+  try {
+    const { type, name, slug, sort_order } = req.body || {};
+    if (!name || typeof name !== "string") {
+      return res.status(400).json({ error: "Name is required." });
+    }
+    const termType = ["series", "tag", "medium", "location"].includes(type) ? type : "series";
+    const termSlug =
+      (slug && String(slug)) ||
+      name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+    const result = await query(
+      `INSERT INTO public.taxonomies (type, slug, name, sort_order)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (type, slug) DO UPDATE SET name = EXCLUDED.name
+       RETURNING *`,
+      [termType, termSlug, name, Number(sort_order) || 0]
+    );
+    return res.status(201).json({ success: true, term: result.rows[0] });
+  } catch (err: any) {
+    return res.status(400).json({ error: err.message || "Failed to create term" });
+  }
+});
+
+app.patch("/api/taxonomies/:id", requireAuth, requireRole("editor"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, sort_order } = req.body || {};
+    const updates: string[] = [];
+    const values: any[] = [];
+    let idx = 1;
+    if (name !== undefined) {
+      updates.push(`name = $${idx++}`);
+      values.push(String(name));
+    }
+    if (sort_order !== undefined) {
+      updates.push(`sort_order = $${idx++}`);
+      values.push(Number(sort_order) || 0);
+    }
+    if (updates.length === 0) {
+      return res.status(400).json({ error: "No updatable fields provided." });
+    }
+    updates.push(`updated_at = now()`);
+    values.push(id);
+    const result = await query(
+      `UPDATE public.taxonomies SET ${updates.join(", ")} WHERE id = $${idx} RETURNING *`,
+      values
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: "Term not found." });
+    return res.json({ success: true, term: result.rows[0] });
+  } catch (err: any) {
+    return res.status(400).json({ error: err.message || "Failed to update term" });
+  }
+});
+
+app.delete("/api/taxonomies/:id", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await query(`DELETE FROM public.taxonomies WHERE id = $1`, [id]);
+    return res.json({ success: true });
+  } catch (err: any) {
+    return res.status(400).json({ error: err.message || "Failed to delete term" });
+  }
+});
+
+// -------------------------------------------------------------
+// CMS v1 — Settings key/value (admin write, public read)
+// -------------------------------------------------------------
+
+app.get("/api/settings", async (req, res) => {
+  try {
+    const result = await query<{ key: string; value: unknown }>(
+      `SELECT key, value FROM public.settings`
+    );
+    const settings: Record<string, unknown> = {};
+    for (const row of result.rows) settings[row.key] = row.value;
+    return res.json({ success: true, settings });
+  } catch (err: any) {
+    return res.json({ success: true, settings: {} }); // degrade gracefully
+  }
+});
+
+app.put("/api/settings", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const entries = req.body?.settings;
+    if (!entries || typeof entries !== "object") {
+      return res.status(400).json({ error: "Body must be { settings: { key: value } }." });
+    }
+    for (const [key, value] of Object.entries(entries)) {
+      await query(
+        `INSERT INTO public.settings (key, value, updated_by, updated_at)
+         VALUES ($1, $2::jsonb, $3, now())
+         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_by = EXCLUDED.updated_by, updated_at = now()`,
+        [key, JSON.stringify(value), req.cmsUser?.id || null]
+      );
+    }
+    return res.json({ success: true });
+  } catch (err: any) {
+    return res.status(400).json({ error: err.message || "Failed to save settings" });
+  }
+});
+
+// -------------------------------------------------------------
+// CMS v1 — Inquiry status + Pages list
+// -------------------------------------------------------------
+
+app.patch("/api/inquiries/:id/status", requireAuth, requireRole("editor"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body || {};
+    const allowed = ["New", "Contacted", "Closed"];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ error: "Status must be one of New, Contacted, Closed." });
+    }
+    const result = await query(
+      `UPDATE public.inquiries SET status = $1 WHERE id = $2 RETURNING *`,
+      [status, id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: "Inquiry not found." });
+    return res.json({ success: true, inquiry: result.rows[0] });
+  } catch (err: any) {
+    return res.status(400).json({ error: err.message || "Failed to update inquiry" });
+  }
+});
+
+app.get("/api/pages", requireAuth, requireRole("editor"), async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT slug, title, updated_at FROM public.pages ORDER BY updated_at DESC`
+    );
+    return res.json({ success: true, pages: result.rows });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to list pages" });
+  }
+});
+
+// Media library — list media_assets registry (editor+)
+app.get("/api/media", requireAuth, requireRole("editor"), async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT public_id, url, thumbnail_url, width, height, format, artwork_slug, lqip, renditions
+         FROM public.media_assets
+        ORDER BY public_id`
+    );
+    return res.json({ success: true, media: result.rows, count: result.rows.length });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to fetch media registry" });
+  }
 });
 
 // -------------------------------------------------------------

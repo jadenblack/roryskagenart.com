@@ -964,7 +964,10 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             {/* Lightbox Image Stage */}
             <div className="md:w-3/5 bg-[#F4F3ED] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 flex items-center justify-center p-4 min-h-[300px]">
               <img
-                src={resolveImageUrl(lightboxArtwork.imageKey || (lightboxArtwork as any).featured_image || '', lightboxArtwork.slug)}
+                src={resolveImageUrl(
+                  (lightboxArtwork as ArchiveFeatureDef).imageKey || (lightboxArtwork as any).featured_image || '',
+                  lightboxArtwork.slug
+                )}
                 alt={lightboxArtwork.title}
                 referrerPolicy="no-referrer"
                 className="max-h-[70vh] max-w-full object-contain"
@@ -1012,7 +1015,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                       dimensions: lightboxArtwork.dimensions,
                       price: lightboxArtwork.price,
                       status: lightboxArtwork.status as any,
-                      featured_image: lightboxArtwork.imageKey || '',
+                      featured_image: (lightboxArtwork as ArchiveFeatureDef).imageKey || '',
                       gallery_series: 'Studio Archive',
                       narrative: lightboxArtwork.narrative,
                       filePath: `posts/${lightboxArtwork.slug}.md`

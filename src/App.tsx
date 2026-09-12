@@ -18,7 +18,7 @@ import { DriveExplorer } from './components/DriveExplorer';
 import { PagesView } from './components/PagesView';
 import { ReadmeView } from './components/ReadmeView';
 import { TrashView } from './components/TrashView';
-import { AdminLoginModal } from './components/AdminLoginModal';
+import { AdminApp } from './components/admin/AdminApp';
 import { useAuth } from './context/AuthContext';
 import { Lock, ShieldCheck } from 'lucide-react';
 
@@ -29,7 +29,7 @@ export default function App() {
   const [selectedArtworkSlug, setSelectedArtworkSlug] = useState<string | null>(null);
   const [selectedPageSlug, setSelectedPageSlug] = useState<string>('about');
   const [explorerTargetFilePath, setExplorerTargetFilePath] = useState<string | undefined>(undefined);
-  const [adminAuthModalOpen, setAdminAuthModalOpen] = useState(false);
+  const [adminPath, setAdminPath] = useState<string>('/admin');
 
   // Subscribe to engine state updates
   useEffect(() => {
@@ -43,6 +43,14 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#\/?/, '');
+
+      // Admin dashboard section: #/admin, #/admin/catalog, #/admin/users, …
+      if (hash === 'admin' || hash.startsWith('admin/') || hash.startsWith('/admin')) {
+        setRoute('admin');
+        setAdminPath(hash.startsWith('/admin') ? hash : `/${hash}`);
+        return;
+      }
+
       if (!hash || hash === 'home') {
         setRoute('home');
         setSelectedArtworkSlug(null);
@@ -90,6 +98,20 @@ export default function App() {
 
   // Sync route changes to window.location.hash
   const navigateTo = (newRoute: string, param?: string) => {
+    // Admin dashboard paths are full hash paths like "/admin/catalog"
+    if (newRoute.startsWith('/admin') || newRoute === '/') {
+      const target = newRoute === '/' ? 'home' : newRoute;
+      if (target === 'home') {
+        window.location.hash = '#home';
+        setRoute('home');
+        setSelectedArtworkSlug(null);
+        return;
+      }
+      window.location.hash = `#${target}`;
+      setRoute('admin');
+      setAdminPath(target);
+      return;
+    }
     if (newRoute === 'home') {
       window.location.hash = '#home';
       setRoute('home');
@@ -197,14 +219,21 @@ export default function App() {
   return (
     <div id="root-container" className="min-h-screen bg-[#E5E4DF] text-zinc-900 dark:bg-[#0c0c0e] dark:text-[#f4f4f5] flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-900 dark:selection:text-amber-200 transition-colors">
       <div>
-        {/* Public Clean Header (Single-Tier) */}
-        <Navbar
-          currentRoute={route}
-          onNavigate={(r) => navigateTo(r)}
-        />
+        {/* Admin Dashboard: full-screen takeover, no public chrome */}
+        {route === 'admin' && (
+          <AdminApp path={adminPath} onNavigate={(p) => navigateTo(p)} />
+        )}
+
+        {/* Public Clean Header (Single-Tier) — hidden on admin routes */}
+        {route !== 'admin' && (
+          <Navbar
+            currentRoute={route}
+            onNavigate={(r) => navigateTo(r)}
+          />
+        )}
 
         {/* Main Content Area */}
-        <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 w-full flex-grow">
+        <main id="main-content" className={route === 'admin' ? 'hidden' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 w-full flex-grow'}>
           {/* Public Route 0: Home Exhibition Landing */}
           {route === 'home' && (
             <HomeLandingView
@@ -261,11 +290,11 @@ export default function App() {
             />
           )}
 
-          {/* Protected Routes Gate: If route is an admin tool and visitor is not authenticated */}
+          {/* Protected Routes Gate: legacy admin tools redirect to the dashboard */}
           {!isPublicRoute && !isAuthenticated && (
             <AuthGateView
               pageName={getPageTitle(route)}
-              onOpenAdminAuth={() => setAdminAuthModalOpen(true)}
+              onOpenAdminAuth={() => navigateTo('/admin')}
               onBackToHome={() => navigateTo('home')}
             />
           )}
@@ -347,7 +376,7 @@ export default function App() {
       {/* ─────────────────────────────────────────────────────────────
           PUBLIC FINE ART STUDIO FOOTER (Refined Editorial Layout)
       ────────────────────────────────────────────────────────────────*/}
-      <footer className="bg-[#DFDED9] dark:bg-[#09090c] border-t-2 border-zinc-900 dark:border-zinc-800 mt-20 text-xs font-mono text-zinc-600 dark:text-zinc-400 py-12 transition-colors">
+      <footer className={route === 'admin' ? 'hidden' : 'bg-[#DFDED9] dark:bg-[#09090c] border-t-2 border-zinc-900 dark:border-zinc-800 mt-20 text-xs font-mono text-zinc-600 dark:text-zinc-400 py-12 transition-colors'}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand & Studio Heritage Column */}
@@ -455,7 +484,7 @@ export default function App() {
               <span>Austin, TX 78704</span>
               <span>•</span>
               <button
-                onClick={() => setAdminAuthModalOpen(true)}
+                onClick={() => navigateTo('/admin')}
                 className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors cursor-pointer flex items-center gap-1"
                 title="Studio Staff Portal"
               >
@@ -473,11 +502,7 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Zero-Dependency Admin Authentication Modal */}
-      <AdminLoginModal
-        isOpen={adminAuthModalOpen}
-        onClose={() => setAdminAuthModalOpen(false)}
-      />
+
     </div>
   );
 }
