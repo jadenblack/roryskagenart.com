@@ -17,10 +17,12 @@ This full-stack application provides both an elegant, collector-grade public pre
 
 - [Overview & Architecture](#overview--architecture)
 - [Key Features](#key-features)
+- [Admin Dashboard & CMS](#admin-dashboard--cms)
+- [Authentication & Roles](#authentication--roles)
 - [Data Engine & Storage Architecture](#data-engine--storage-architecture)
 - [Directory Structure](#directory-structure)
 - [API Endpoints](#api-endpoints)
-- [Database Schema (Supabase / PostgreSQL)](#database-schema-supabase--postgresql)
+- [Database Schema & Migrations (Supabase / PostgreSQL)](#database-schema--migrations-supabase--postgresql)
 - [Environment Variables](#environment-variables)
 - [Installation & Local Development](#installation--local-development)
 - [Deployment](#deployment)
@@ -37,17 +39,20 @@ The application is architected as a modern full-stack application combining a hi
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        Rory Skagen Studio App                          │
 ├────────────────────────────────────────────────────────────────────────┤
-│  Client Tier (React 18 + Vite + Tailwind CSS)                          │
+│  Client Tier (React 19 + Vite + Tailwind v4 + shadcn-style UI)         │
 │  ├── Collector Front: Landing, Curated Gallery Grid, Lightbox Focus    │
 │  ├── Inquiries: Direct Art Acquisition & Commission Forms              │
-│  ├── Studio Admin: Drive Explorer, Master Catalog Table, Trash Vault   │
+│  ├── Studio Admin Dashboard (#/admin): shadcn-style CMS workspace      │
+│  │   └── Dashboard · Catalog · Pages · Inquiries · Media ·             │
+│  │       Taxonomies · Users · Settings · Trash                         │
 │  └── GalleryStateEngine: Reactive Local State + Virtual File System    │
 ├──────────────────────────────────┬─────────────────────────────────────┤
 │  Backend Tier (Express.js)       │  Asset & Database Services          │
-│  ├── /api/artworks CRUD          │  ├── Cloudinary Media CDN           │
-│  ├── /api/inquiries capture      │  ├── Supabase PostgreSQL DB         │
-│  ├── /api/pages management       │  └── Google Drive Virtual Tree      │
-│  └── /api/cloudinary uploader    │                                     │
+│  ├── /api/artworks CRUD          │  ├── Supabase Auth (identity+roles) │
+│  ├── /api/admin/users (RBAC)     │  ├── Supabase PostgreSQL DB         │
+│  ├── /api/taxonomies, /settings  │  ├── Supabase Storage (artwork-     │
+│  ├── /api/inquiries capture      │  │   images bucket, renditions)     │
+│  └── /api/cloudinary (legacy)    │  └── Resend (transactional email)   │
 └──────────────────────────────────┴─────────────────────────────────────┘
 ```
 
@@ -62,11 +67,49 @@ The application is architected as a modern full-stack application combining a hi
 - **Acquisition Inquiry System**: Direct lead capture modal allowing serious collectors and gallery curators to inquire about individual works or commission custom pieces.
 - **Ambient Lighting Themes**: Handcrafted dark/light studio aesthetics with seamless state persistence.
 
-### 2. Studio Inventory & Asset Management
-- **Master Catalog & Media Registry (`/registry`)**: Comprehensive master table displaying all 130+ fine art records with real-time status toggling, direct markdown export, and Cloudinary asset mapping.
-- **Google Drive Virtual File System (`/explorer`)**: Visual file explorer mirroring the studio's Google Drive archive (`My Drive/Clients/roryskagen.com/website-content/`) with live YAML frontmatter editing and sync.
-- **Two-Stage Trash Vault (`/trash`)**: Non-destructive inventory lifecycle allowing works to be staged in trash, restored, or permanently expunged.
-- **Cloudinary Asset Manager (`xjilp2pq`)**: Direct image asset ingestion, URL signing, CDN cache busting, and asset health verification.
+### 2. Studio Inventory & Asset Management (Admin Dashboard — `#/admin`)
+- **Dashboard Home**: Catalog stats (total/available/sold/archived), series breakdown, latest inquiries, and live database health.
+- **Catalog Manager**: Filterable data table for all 130+ works with inline hero/enabled toggles, archive, trash/restore, admin-only permanent delete, and a full create/edit form dialog (title, year, medium, dimensions, price, status, series, edition, location, image, narrative).
+- **Pages Manager**: Database-backed page list with markdown editor, live preview, and instant publish.
+- **Inquiries Inbox**: Collector lead pipeline with New → Contacted → Closed status workflow.
+- **Media Library**: Grid over the `media_assets` registry (Supabase Storage `artwork-images` bucket) with rendition previews and copy-URL.
+- **Taxonomies**: CRUD and ordering for gallery series / tags / mediums / locations; feeds the catalog filters and artwork form.
+- **User Management** (admin-only): Supabase email invites, role assignment (admin/editor/viewer), deactivation, deletion.
+- **Settings** (admin-only): Site identity, inquiry notification routing, hero slider behaviour (JSONB key/value store).
+- **Two-Stage Trash Vault**: Non-destructive inventory lifecycle allowing works to be staged in trash, restored, or permanently expunged.
+- Legacy tools (Drive explorer, Cloudinary inspector) remain reachable on the public site for reference.
+
+---
+
+## Admin Dashboard & CMS
+
+The admin surface is a full-screen takeover at `#/admin` built from dependency-free shadcn-style primitives (Button, Card, Dialog, Table, Select, Switch, Badge, Dropdown, Input, Textarea, Skeleton) on Tailwind v4 design tokens. It shares the existing hash router with the public site and takes over the viewport when active.
+
+| Route | View | Min. role |
+| :--- | :--- | :--- |
+| `#/admin` | Dashboard home (stats, series, inquiries, health) | viewer |
+| `#/admin/catalog` | Catalog data table + artwork create/edit dialog | viewer (edit: editor) |
+| `#/admin/pages` | Pages list + markdown editor | editor |
+| `#/admin/inquiries` | Inquiry inbox with status workflow | editor |
+| `#/admin/media` | Media asset registry grid | editor |
+| `#/admin/taxonomies` | Series/tag/medium/location CRUD + ordering | editor |
+| `#/admin/users` | Invite, roles, deactivate, delete | admin |
+| `#/admin/settings` | Site identity, inquiry + hero settings | admin |
+| `#/admin/trash` | Trash management (restore / purge) | editor (purge: admin) |
+
+Sign in at `#/admin` (redirects to the login page when unauthenticated). Password resets are delivered by Supabase Auth email.
+
+---
+
+## Authentication & Roles
+
+Identity is **Supabase Auth only** (email + password). The legacy localStorage credential vault has been removed entirely.
+
+- Sessions are real Supabase JWTs; every API call attaches `Authorization: Bearer <jwt>` (`src/lib/adminApi.ts`).
+- Server middleware (`requireAuth`, `requireRole`) in `server.ts` verifies the JWT via `supabaseAdmin.auth.getUser()` and resolves the caller's role from `public.profiles`.
+- Roles: **admin** (full control incl. users, settings, permanent delete), **editor** (catalog, pages, media, inquiries, taxonomies), **viewer** (read-only dashboard).
+- All mutating and admin-read endpoints are protected; public reads (`GET /api/artworks`, `GET /api/pages/:slug`, `POST /api/inquiries`, `GET /api/taxonomies`, `GET /api/settings`) stay open.
+- New signups receive a `profiles` row via the `on_auth_user_created` trigger; the Users screen (admin) manages invites and role changes.
 
 ---
 
@@ -80,11 +123,12 @@ The application implements a resilient, hybrid data flow:
    - Preserves user adjustments in `localStorage` for offline and session continuity.
 
 2. **Supabase PostgreSQL Database**:
-   - Stores authoritative persistent records for artworks, pages, inquiries, and media asset logs.
-   - Accessed via server-side `/api/` endpoints to enforce security and bypass browser-side RLS constraints.
+   - Stores authoritative persistent records for artworks, pages, inquiries, profiles (roles), taxonomies, settings, and media asset logs.
+   - Accessed via server-side `/api/` endpoints to enforce security; schema changes ship as versioned SQL files in `/supabase/migrations`.
 
-3. **Cloudinary Asset Pipeline**:
-   - Delivers responsive, optimized WebP/JPEG assets globally from cloud storage.
+3. **Supabase Storage Asset Pipeline**:
+   - The `artwork-images` bucket delivers responsive renditions (thumb/hero/full + LQIP blur-up) tracked in `public.media_assets`.
+   - Cloudinary integration remains only as a legacy fallback path.
 
 ---
 
@@ -97,34 +141,29 @@ The application implements a resilient, hybrid data flow:
 ├── package.json              # Dependency manifests and run scripts
 ├── server.ts                 # Express backend API & Vite middleware entry
 ├── vite.config.ts            # Vite build configuration with Tailwind support
-├── /plan                     # Technical specifications, RFCs, & Pull Requests
-│   └── FEATURE_PULL_REQUEST.md # Full PR specification for Supabase Engine sync
+├── /plan                     # Technical specifications, RFCs, & PRs (legacy specs)
+├── /public                   # Static assets served verbatim (favicons, manifest)
+│   ├── favicon-*.png         # Generated icon sizes (16/32) from rory-icon.png
+│   ├── apple-touch-icon.png  # 180px iOS icon
+│   ├── android-chrome-*.png  # 192/512px PWA + OG icons
+│   └── site.webmanifest      # PWA manifest
+├── /scripts                  # Maintenance scripts (migration runner, asset registry)
+├── /supabase/migrations      # Versioned, idempotent SQL schema migrations
 ├── /src
-│   ├── App.tsx               # Root application router and view controller
+│   ├── App.tsx               # Root application router (public routes + #/admin)
 │   ├── main.tsx              # React DOM entry point
-│   ├── types.ts              # TypeScript interfaces for artworks, files, and state
-│   ├── /components           # Extracted UI components & views
-│   │   ├── Navbar.tsx        # Navigation header with routes & theme toggler
-│   │   ├── HomeLandingView.tsx # Collector landing page & hero slider
-│   │   ├── GalleryGrid.tsx   # Filterable fine art catalog grid
-│   │   ├── ArtworkFocusView.tsx # Full-screen artwork detail & lightbox
-│   │   ├── MasterRegistryTable.tsx # Studio inventory management registry
-│   │   ├── DriveExplorer.tsx # Virtual Google Drive directory browser
-│   │   ├── TrashView.tsx     # Studio trash vault for deleted items
-│   │   ├── InquiryModal.tsx  # Collector purchase inquiry modal form
-│   │   ├── ContactView.tsx   # Studio contact & commission inquiry page
-│   │   ├── AboutView.tsx     # Artist biography & career retrospective
-│   │   └── CloudinaryManager.tsx # Image asset uploader & registry inspector
+│   ├── /types                # TypeScript interfaces (artworks, auth, taxonomy)
+│   ├── /components           # Public site views (navbar, gallery, hero, contact…)
+│   ├── /components/admin     # CMS dashboard (AdminApp router, layout, views)
+│   ├── /components/ui        # shadcn-style primitives (button, card, dialog…)
 │   ├── /context              # React context providers (AuthContext, ThemeContext)
 │   ├── /data                 # Verified registries, Drive file system seed, mappings
-│   │   ├── driveFileSystem.ts # Virtual Drive folder generator & file builder
-│   │   ├── portfolioPostsData.ts # Catalog baseline records (130+ paintings)
-│   │   ├── cloudinaryMap.ts  # CDN mapping resolver and asset dictionary
-│   │   └── mediaAssetsData.ts # Media log entries with dimensions and formats
 │   ├── /engine
 │   │   └── galleryStateEngine.ts # Hybrid reactive state & virtual file system
 │   └── /lib
-│       └── supabase.ts       # Supabase client setup & environment loader
+│       ├── supabase.ts       # Supabase client setup & environment loader
+│       ├── adminApi.ts       # Authenticated fetch wrapper (Bearer JWT attach)
+│       └── utils.ts          # cn() class-merge utility
 ```
 
 ---
@@ -133,69 +172,70 @@ The application implements a resilient, hybrid data flow:
 
 The Express server exposes the following RESTful endpoints on port `3000`:
 
+🔒 = requires `Authorization: Bearer <supabase-jwt>`; role noted where relevant.
+
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `GET` | `/api/health` | Server health check and timestamp |
-| `GET` | `/api/artworks` | Query all artworks (supports `?include_trashed=true` & filters) |
+| `GET` | `/api/artworks` | Query all artworks (supports `?include_trashed=true`) |
 | `GET` | `/api/artworks/:slug` | Retrieve single artwork details by slug |
-| `POST` | `/api/artworks` | Create new artwork record in database |
-| `PATCH` | `/api/artworks/:slug` | Update metadata, pricing, hero status, or flags |
-| `DELETE` | `/api/artworks/:slug` | Soft trash (`trashed: true`) or permanent purge (`?permanent=true`) |
-| `GET` | `/api/pages` | List published site pages (`about`, `contact`, etc.) |
+| `POST` | `/api/artworks` | 🔒 Create artwork (editor+) |
+| `PATCH` | `/api/artworks/:slug` | 🔒 Update metadata, pricing, hero status, or flags (editor+) |
+| `DELETE` | `/api/artworks/:slug` | 🔒 Soft trash or permanent purge with `?permanent=true` (editor+) |
 | `GET` | `/api/pages/:slug` | Get markdown content for specific page |
-| `POST` | `/api/inquiries` | Submit buyer/collector inquiry or commission request (triggers Resend notifications) |
-| `GET` | `/api/inquiries` | List submitted inquiries (admin review) |
-| `GET` | `/api/auth/status` | Check authentication configuration and session status |
-| `POST` | `/api/auth/login` | Authenticate with simple email and password credentials via Supabase |
+| `PUT` | `/api/pages/:slug` | 🔒 Upsert page title/content (editor+) |
+| `GET` | `/api/pages` | 🔒 List pages with timestamps (editor+) |
+| `POST` | `/api/inquiries` | Submit buyer/collector inquiry (public; triggers Resend notifications) |
+| `GET` | `/api/inquiries` | 🔒 List submitted inquiries (editor+) |
+| `PATCH` | `/api/inquiries/:id/status` | 🔒 Update inquiry status: New / Contacted / Closed (editor+) |
+| `GET` | `/api/taxonomies` | List taxonomy terms (optional `?type=series\|tag\|medium\|location`) |
+| `POST` | `/api/taxonomies` | 🔒 Create term (editor+) |
+| `PATCH` | `/api/taxonomies/:id` | 🔒 Rename / reorder term (editor+) |
+| `DELETE` | `/api/taxonomies/:id` | 🔒 Delete term (admin) |
+| `GET` | `/api/settings` | Public site settings key/value map |
+| `PUT` | `/api/settings` | 🔒 Upsert settings groups (admin) |
+| `GET` | `/api/admin/users` | 🔒 List auth users with profile roles (admin) |
+| `POST` | `/api/admin/users/invite` | 🔒 Send Supabase invite email (admin) |
+| `PATCH` | `/api/admin/users/:id` | 🔒 Change role / deactivate (ban) / rename (admin) |
+| `DELETE` | `/api/admin/users/:id` | 🔒 Delete user permanently (admin) |
+| `GET` | `/api/media` | 🔒 List media_assets registry with renditions (editor+) |
+| `GET` | `/api/database/status` | 🔒 PostgreSQL connectivity check (editor+) |
 | `GET` | `/api/email/status` | Check Resend email domain configuration and API status |
-| `POST` | `/api/email/send-test` | Dispatch test verification email via Resend API |
-| `POST` | `/api/cloudinary/upload` | Upload image file to Cloudinary CDN folder |
+| `POST` | `/api/email/send-test` | 🔒 Dispatch test verification email (admin) |
+| `POST` | `/api/cloudinary/upload` | 🔒 Legacy image upload to Cloudinary (editor+) |
 
 ---
 
-## Database Schema (Supabase / PostgreSQL)
+## Database Schema & Migrations (Supabase / PostgreSQL)
 
-The backend interacts with the following PostgreSQL tables:
+### Migrations workflow
 
-```sql
--- 1. Artworks Table
-CREATE TABLE IF NOT EXISTS public.artworks (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    slug TEXT UNIQUE NOT NULL,
-    title TEXT NOT NULL,
-    year TEXT DEFAULT '2024',
-    medium TEXT DEFAULT 'Acrylic on Canvas',
-    dimensions TEXT DEFAULT '48" x 60"',
-    price TEXT DEFAULT '$9,500',
-    status TEXT DEFAULT 'Available',
-    gallery_series TEXT DEFAULT 'Neon Americana',
-    edition TEXT DEFAULT 'Original Painting',
-    location TEXT DEFAULT 'Austin Studio',
-    image_url TEXT,
-    hero_slider BOOLEAN DEFAULT false,
-    enabled BOOLEAN DEFAULT true,
-    archived BOOLEAN DEFAULT false,
-    trashed BOOLEAN DEFAULT false,
-    trashed_at TIMESTAMPTZ,
-    narrative TEXT DEFAULT '',
-    metadata JSONB DEFAULT '{}'::jsonb,
-    created_at TIMESTAMPTZ DEFAULT now(),
-    updated_at TIMESTAMPTZ DEFAULT now()
-);
+Schema lives in `/supabase/migrations` as versioned, idempotent SQL files. Apply them with the bundled runner (tracks applied files in `public.schema_migrations`, safe to re-run):
 
--- 2. Inquiries Table
-CREATE TABLE IF NOT EXISTS public.inquiries (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    artwork_slug TEXT,
-    artwork_title TEXT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT,
-    message TEXT NOT NULL,
-    status TEXT DEFAULT 'New',
-    created_at TIMESTAMPTZ DEFAULT now()
-);
+```bash
+npx tsx scripts/run-migrations.ts          # apply all pending
+npx tsx scripts/run-migrations.ts <file>.sql   # apply specific files
 ```
+
+Applied CMS v1 migrations:
+
+- `2026_09_12_cms_v1_profiles_roles.sql` — `public.profiles` (role/is_active keyed to `auth.users`), `on_auth_user_created` signup trigger, admin backfill for existing users, owner/admin RLS policies.
+- `2026_09_12_cms_v1_taxonomies_settings.sql` — `taxonomies` (+ `artwork_terms` join), `settings` JSONB key/value store, `gallery_series` backfill into series terms, default settings seeds.
+
+### Core tables
+
+| Table | Purpose |
+| :--- | :--- |
+| `artworks` | Master catalog: slug, title, year, medium, dimensions, price, status, gallery_series, edition, location, image_url, hero_slider, enabled/archived/trashed flags, narrative, metadata |
+| `inquiries` | Collector leads: artwork ref, name, email, phone, message, status (New/Contacted/Closed) |
+| `profiles` | Per-user role & activation state keyed to `auth.users` (admin/editor/viewer) |
+| `taxonomies` | Controlled vocabularies: series, tag, medium, location with slug + sort order |
+| `artwork_terms` | Many-to-many artwork ↔ taxonomy term links |
+| `settings` | JSONB key/value store (site identity, inquiries, hero) with updated_by audit |
+| `media_assets` | Supabase Storage registry: public_id, url, renditions (thumb/hero/full), lqip, artwork_slug |
+| `pages` | CMS pages: slug, title, markdown content |
+
+Full column definitions for `artworks` and `inquiries` are documented in the migration files and the v2 PRD under `/plan`.
 
 ---
 
@@ -209,6 +249,9 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 POSTGRES_URL=postgresql://postgres:password@host:5432/postgres
+
+# Admin bootstrap (first admin is created by the profiles migration
+# backfill; additional admins are invited from #/admin/users)
 
 # Resend Email Integration
 RESEND_API_KEY=re_your_api_key
@@ -307,6 +350,12 @@ CLOUDINARY_URL=cloudinary://...
 ADMIN_EMAIL=
 ADMIN_INITIAL_PASSWORD=
 ```
+
+### First-time setup checklist
+
+1. Apply migrations: `npx tsx scripts/run-migrations.ts` (creates `profiles`, `taxonomies`, `settings`; backfills admins & series).
+2. Existing `auth.users` are backfilled as **admin** — verify/tweak roles from `#/admin/users` after first sign-in.
+3. Ensure Supabase Auth email templates (invite / password reset) point at your deployed domain for `#/admin` flows.
 
 ### Serverless constraints & mitigations
 
