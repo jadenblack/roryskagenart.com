@@ -316,7 +316,7 @@ The application deploys as a **documented hybrid** on Vercel: a static SPA on th
                       Vercel Edge CDN (static)
   Browser ──────────► / , /assets/*          ← vite build output (dist/)
       │
-      └── /api/* ──────► api/index.ts (Node.js serverless function)
+      └── /api/* ──────► api/index.cjs (Node.js serverless function)
                               └── imports server.ts  (the SAME Express app
                                   that runs `npm run dev` / `npm start`)
                                       ├── PostgreSQL (pg Pool → Supabase)
@@ -330,7 +330,7 @@ One Express app, two boot modes:
 | Mode | Trigger | Behavior |
 | :--- | :--- | :--- |
 | **Standalone** | `npm run dev` / `npm start` (no `VERCEL` env) | Attaches Vite middleware (dev) or serves `dist/` (prod), listens on `PORT` |
-| **Serverless** | `VERCEL=1` (set automatically by Vercel) | `server.ts` only exports the configured `app`; no Vite import, no `app.listen()`. `api/index.ts` hands platform requests to it |
+| **Serverless** | `VERCEL=1` (set automatically by Vercel) | `server.ts` only exports the configured `app`; no Vite import, no `app.listen()`. `api/index.cjs` hands platform requests to it |
 
 ### Required environment variables (Vercel project settings)
 
@@ -362,7 +362,8 @@ ADMIN_INITIAL_PASSWORD=
 * **Read-only filesystem** — file-based admin session persistence (`data/auth_store.json`) is redirected to `/tmp` per instance and degrades gracefully; Supabase Auth is the authoritative identity path. Sessions do not survive instance recycling.
 * **No long-lived state** — the pg `Pool` is module-scoped and reused across warm invocations; cold starts pay one connection setup.
 * **Payload limits** — serverless request bodies cap around 4.5 MB; the 50 MB JSON limit and 30 MB Cloudinary uploads only apply in standalone mode.
-* **Function timeout** — `maxDuration: 30` in `api/index.ts`; all current endpoints complete well under this.
+* **Function timeout** — `maxDuration: 30` in `api/index.cjs`; all current endpoints complete well under this.
+* **CJS bundle requirement** — the serverless bundle must keep the `.cjs` extension: the repo's `package.json` declares `"type": "module"`, so a `.js` bundle would be loaded as ESM and crash (`module is not defined`). The build command and the `/api/(.*)` rewrite in `vercel.json` both target `api/index.cjs`.
 
 ### Deploying
 

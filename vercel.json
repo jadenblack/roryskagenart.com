@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=api/index.js",
+  "buildCommand": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=api/index.cjs",
   "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "destination": "/api/index.cjs"
     },
     {
       "source": "/((?!api/|favicon|apple-touch-icon|android-chrome|site[.]webmanifest).*)",
