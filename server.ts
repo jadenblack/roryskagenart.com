@@ -964,6 +964,18 @@ app.delete("/api/artworks/:slug", requireAuth, requireRole("editor"), async (req
 });
 
 // 7. Pages Endpoints
+// Public list with content — the SPA renders pages from the DB (source of truth).
+app.get("/api/pages", async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT slug, title, content, updated_at FROM public.pages ORDER BY slug`
+    );
+    return res.json({ success: true, pages: result.rows });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to list pages" });
+  }
+});
+
 app.get("/api/pages/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
@@ -1331,17 +1343,6 @@ app.patch("/api/inquiries/:id/status", requireAuth, requireRole("editor"), async
     return res.json({ success: true, inquiry: result.rows[0] });
   } catch (err: any) {
     return res.status(400).json({ error: err.message || "Failed to update inquiry" });
-  }
-});
-
-app.get("/api/pages", requireAuth, requireRole("editor"), async (req, res) => {
-  try {
-    const result = await query(
-      `SELECT slug, title, updated_at FROM public.pages ORDER BY updated_at DESC`
-    );
-    return res.json({ success: true, pages: result.rows });
-  } catch (err: any) {
-    return res.status(500).json({ error: err.message || "Failed to list pages" });
   }
 });
 

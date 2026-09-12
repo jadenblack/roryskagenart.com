@@ -45,7 +45,7 @@ The application is architected as a modern full-stack application combining a hi
 │  ├── Studio Admin Dashboard (#/admin): shadcn-style CMS workspace      │
 │  │   └── Dashboard · Catalog · Pages · Inquiries · Media ·             │
 │  │       Taxonomies · Users · Settings · Trash                         │
-│  └── GalleryStateEngine: Reactive Local State + Virtual File System    │
+│  └── GalleryStateEngine: Reactive store over the Supabase API        │
 ├──────────────────────────────────┬─────────────────────────────────────┤
 │  Backend Tier (Express.js)       │  Asset & Database Services          │
 │  ├── /api/artworks CRUD          │  ├── Supabase Auth (identity+roles) │
@@ -77,7 +77,6 @@ The application is architected as a modern full-stack application combining a hi
 - **User Management** (admin-only): Supabase email invites, role assignment (admin/editor/viewer), deactivation, deletion.
 - **Settings** (admin-only): Site identity, inquiry notification routing, hero slider behaviour (JSONB key/value store).
 - **Two-Stage Trash Vault**: Non-destructive inventory lifecycle allowing works to be staged in trash, restored, or permanently expunged.
-- Legacy tools (Drive explorer, Cloudinary inspector) remain reachable on the public site for reference.
 
 ---
 
@@ -115,16 +114,18 @@ Identity is **Supabase Auth only** (email + password). The legacy localStorage c
 
 ## Data Engine & Storage Architecture
 
-The application implements a resilient, hybrid data flow:
+The application treats **Supabase as the single source of truth**:
 
-1. **`GalleryStateEngine`**:
-   - Manages an in-memory virtual file system consisting of posts (`posts/{slug}.md`), pages (`pages/{slug}.md`), image representations, and the root `index.md` catalog.
-   - Provides reactive event subscription (`subscribe()`) ensuring instant UI re-renders across all active views upon any inventory modification.
-   - Preserves user adjustments in `localStorage` for offline and session continuity.
+1. **`GalleryStateEngine`** (thin reactive store):
+   - Loads artworks and pages from `/api/artworks` and `/api/pages` on boot and after every mutation; DB rows fully replace local state.
+   - The bundled catalog registry (`src/data/portfolioPostsData`) exists only as a synchronous bootstrap cache for first paint and offline fallback — it never persists and never merges back.
+   - Mutations are async API wrappers: optimistic local update → authenticated PATCH/DELETE → authoritative reload.
+   - Provides reactive event subscription (`subscribe()`) so all views re-render on state changes.
 
 2. **Supabase PostgreSQL Database**:
-   - Stores authoritative persistent records for artworks, pages, inquiries, profiles (roles), taxonomies, settings, and media asset logs.
-   - Accessed via server-side `/api/` endpoints to enforce security; schema changes ship as versioned SQL files in `/supabase/migrations`.
+   - Stores authoritative records for artworks (including narrative markdown and image refs), pages, inquiries, profiles (roles), taxonomies, settings, and media asset logs.
+   - `GET /api/pages` is public (slug/title/content) so the public site renders pages directly from the DB; writes stay editor-gated.
+   - Accessed via server-side `/api/` endpoints to enforce security; schema changes ship as versioned SQL files in `/supabase/migrations` (applied via `scripts/run-migrations.ts`).
 
 3. **Supabase Storage Asset Pipeline**:
    - The `artwork-images` bucket delivers responsive renditions (thumb/hero/full + LQIP blur-up) tracked in `public.media_assets`.
@@ -157,12 +158,13 @@ The application implements a resilient, hybrid data flow:
 │   ├── /components/admin     # CMS dashboard (AdminApp router, layout, views)
 │   ├── /components/ui        # shadcn-style primitives (button, card, dialog…)
 │   ├── /context              # React context providers (AuthContext, ThemeContext)
-│   ├── /data                 # Verified registries, Drive file system seed, mappings
+│   ├── /data                 # Verified registries + bundled bootstrap cache
 │   ├── /engine
-│   │   └── galleryStateEngine.ts # Hybrid reactive state & virtual file system
+│   │   └── galleryStateEngine.ts # DB-backed reactive store (API → state → UI)
 │   └── /lib
 │       ├── supabase.ts       # Supabase client setup & environment loader
 │       ├── adminApi.ts       # Authenticated fetch wrapper (Bearer JWT attach)
+│       ├── markdown.ts       # Wiki-link renderer + frontmatter utils (pure)
 │       └── utils.ts          # cn() class-merge utility
 ```
 

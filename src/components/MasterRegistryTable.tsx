@@ -606,7 +606,7 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
               className="flex items-center gap-1 text-[10px] text-emerald-700 dark:text-emerald-400 hover:underline transition-colors uppercase tracking-wider cursor-pointer font-bold"
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>Edit in Drive Explorer</span>
+              <span>Edit in Studio Dashboard</span>
             </button>
           </div>
           <pre className="bg-[#F7F6F2] dark:bg-black border border-zinc-300 dark:border-zinc-800 p-4 text-[10px] text-zinc-900 dark:text-zinc-300 font-mono overflow-x-auto max-h-[600px] leading-relaxed whitespace-pre rounded-xs">

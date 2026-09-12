@@ -32,7 +32,7 @@ interface ArtworkFocusViewProps {
   onBack: () => void;
   onSelectArtwork: (slug: string) => void;
   onNavigatePage: (slug: string) => void;
-  onEditInExplorer: (filePath: string) => void;
+  onEditInStudio: () => void;
   onToggleEnable?: (slug: string) => void;
   onToggleArchive?: (slug: string) => void;
   onToggleHeroSlider?: (slug: string) => void;
@@ -45,7 +45,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
   onBack,
   onSelectArtwork,
   onNavigatePage,
-  onEditInExplorer,
+  onEditInStudio,
   onToggleEnable,
   onToggleArchive,
   onToggleHeroSlider,
@@ -208,12 +208,11 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                 <span className="truncate">{artwork.slug}.md</span>
               </span>
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => onEditInExplorer(artwork.filePath)}
+              <div className="flex items-center gap-3">                  <button
+                  onClick={() => onEditInStudio()}
                   className="text-zinc-950 dark:text-white hover:underline flex items-center gap-1 uppercase tracking-wider text-[9px] cursor-pointer font-bold"
                 >
-                  <Edit3 className="w-3 h-3" /> Edit in Drive
+                  <Edit3 className="w-3 h-3" /> Edit in Studio
                 </button>
               </div>
             </div>
@@ -419,14 +418,14 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                   <div className="flex items-center justify-between text-zinc-600 dark:text-zinc-500 uppercase tracking-wider">
                     <span>File Path: {artwork.slug}.md</span>
                     <button
-                      onClick={() => onEditInExplorer(artwork.filePath)}
+                      onClick={() => onEditInStudio()}
                       className="text-zinc-900 dark:text-white hover:underline flex items-center gap-1 font-bold cursor-pointer"
                     >
-                      <Edit3 className="w-3 h-3" /> Edit in Drive Files
+                      <Edit3 className="w-3 h-3" /> Edit in Studio
                     </button>
                   </div>
                   <pre className="p-4 bg-[#F7F6F2] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 font-mono text-[11px] overflow-x-auto max-h-96 leading-relaxed">
-                    {artwork.rawContent}
+                    {artwork.narrative}
                   </pre>
                 </div>
               )}

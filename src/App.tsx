@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { GalleryAppEngineInstance } from './engine/galleryStateEngine';
-import { ArtworkRecord, DriveFile, FilterState, PageDocument } from './types';
+import { ArtworkRecord, FilterState, PageDocument } from './types';
 import { Navbar } from './components/Navbar';
 import { HomeLandingView } from './components/HomeLandingView';
 import { AboutView } from './components/AboutView';
@@ -14,12 +14,11 @@ import { AuthGateView } from './components/AuthGateView';
 import { GalleryGrid } from './components/GalleryGrid';
 import { ArtworkFocusView } from './components/ArtworkFocusView';
 import { MasterRegistryTable } from './components/MasterRegistryTable';
-import { DriveExplorer } from './components/DriveExplorer';
 import { PagesView } from './components/PagesView';
-import { ReadmeView } from './components/ReadmeView';
 import { TrashView } from './components/TrashView';
 import { AdminApp } from './components/admin/AdminApp';
 import { useAuth } from './context/AuthContext';
+import { generateFullIndexMd } from './data/portfolioPostsData';
 import { Lock, ShieldCheck } from 'lucide-react';
 
 export default function App() {
@@ -28,7 +27,6 @@ export default function App() {
   const [route, setRoute] = useState<string>('home');
   const [selectedArtworkSlug, setSelectedArtworkSlug] = useState<string | null>(null);
   const [selectedPageSlug, setSelectedPageSlug] = useState<string>('about');
-  const [explorerTargetFilePath, setExplorerTargetFilePath] = useState<string | undefined>(undefined);
   const [adminPath, setAdminPath] = useState<string>('/admin');
 
   // Subscribe to engine state updates
@@ -81,10 +79,10 @@ export default function App() {
         setRoute('registry');
       } else if (hash === 'trash') {
         setRoute('trash');
-      } else if (hash === 'explorer' || hash === 'files') {
-        setRoute('explorer');
-      } else if (hash === 'readme' || hash === 'docs') {
-        setRoute('readme');
+      } else if (hash === 'explorer' || hash === 'files' || hash === 'readme' || hash === 'docs') {
+        // Legacy drive tools are gone — the studio dashboard replaced them.
+        setRoute('admin');
+        setAdminPath('/admin/catalog');
       } else if (hash === 'pages') {
         setRoute('pages');
       }
@@ -151,13 +149,6 @@ export default function App() {
     } else if (newRoute === 'trash') {
       window.location.hash = '#trash';
       setRoute('trash');
-    } else if (newRoute === 'explorer') {
-      window.location.hash = '#explorer';
-      setRoute('explorer');
-      if (param) setExplorerTargetFilePath(param);
-    } else if (newRoute === 'readme') {
-      window.location.hash = '#readme';
-      setRoute('readme');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -169,12 +160,8 @@ export default function App() {
         return 'Master Catalog Index (index.md)';
       case 'trash':
         return 'Trash Bin';
-      case 'explorer':
-        return 'Virtual Drive File Editor';
       case 'pages':
         return 'Studio Page Editor';
-      case 'readme':
-        return 'Studio System Guidelines';
       default:
         return 'Studio Workspace';
     }
@@ -185,7 +172,6 @@ export default function App() {
   const catalogCount = GalleryAppEngineInstance.getCatalogCount();
   const filteredItems = GalleryAppEngineInstance.getFilteredItems();
   const trashedItems = GalleryAppEngineInstance.getTrashedItems();
-  const files = GalleryAppEngineInstance.files;
   const pages = GalleryAppEngineInstance.pages;
   const activeFilters = GalleryAppEngineInstance.activeFilters;
 
@@ -204,15 +190,8 @@ export default function App() {
     return map;
   }, [pages, engineVersion]);
 
-  const indexMdContent = useMemo(() => {
-    const file = files.find((f) => f.path === 'index.md');
-    return file ? file.content : '';
-  }, [files, engineVersion]);
-
-  const readmeContent = useMemo(() => {
-    const file = files.find((f) => f.path === 'readme.md');
-    return file ? file.content : '';
-  }, [files, engineVersion]);
+  // Master index markdown for the registry view (display-only snapshot)
+  const indexMdContent = useMemo(() => generateFullIndexMd(), [engineVersion]);
 
   const isPublicRoute = ['home', 'gallery', 'catalog', 'artwork', 'about', 'contact'].includes(route);
 
@@ -263,7 +242,7 @@ export default function App() {
               onBack={() => navigateTo('gallery')}
               onSelectArtwork={(slug) => navigateTo('artwork', slug)}
               onNavigatePage={(slug) => navigateTo(slug)}
-              onEditInExplorer={(filePath) => navigateTo('explorer', filePath)}
+              onEditInStudio={() => navigateTo('/admin/catalog')}
               onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
               onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
               onToggleHeroSlider={(slug) => GalleryAppEngineInstance.toggleHeroSlider(slug)}
@@ -308,7 +287,7 @@ export default function App() {
                   items={allItems.filter(i => !i.trashed)}
                   rawIndexMd={indexMdContent}
                   onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-                  onEditIndexMd={() => navigateTo('explorer', 'index.md')}
+                  onEditIndexMd={() => navigateTo('/admin/catalog')}
                   onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
                   onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
                   onToggleHeroSlider={(slug) => GalleryAppEngineInstance.toggleHeroSlider(slug)}
@@ -336,20 +315,6 @@ export default function App() {
                 />
               )}
 
-              {/* Admin Route 3: Virtual Drive File Explorer */}
-              {route === 'explorer' && (
-                <DriveExplorer
-                  files={files}
-                  initialSelectedPath={explorerTargetFilePath}
-                  onSaveFile={(path, content) => GalleryAppEngineInstance.saveFile(path, content)}
-                  onCreateArtwork={(record, narrative) => {
-                    const slug = GalleryAppEngineInstance.createNewArtwork(record, narrative);
-                    navigateTo('artwork', slug);
-                  }}
-                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-                    />
-              )}
-
               {/* Admin Route 4: Markdown Pages Editor */}
               {route === 'pages' && (
                 <PagesView
@@ -358,14 +323,6 @@ export default function App() {
                   onSelectPage={(slug) => navigateTo('pages', slug)}
                   onSelectArtwork={(slug) => navigateTo('artwork', slug)}
                   renderedHtmlMap={renderedPagesHtml}
-                />
-              )}
-
-              {/* Admin Route 5: System Guidelines (readme.md) */}
-              {route === 'readme' && (
-                <ReadmeView
-                  readmeContent={readmeContent}
-                  onOpenExplorer={() => navigateTo('explorer', 'readme.md')}
                 />
               )}
             </>
