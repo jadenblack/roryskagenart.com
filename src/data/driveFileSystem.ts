@@ -10,7 +10,7 @@ export const INITIAL_INDEX_MD = generateFullIndexMd();
 
 export const INITIAL_README_MD = `# Rory Skagen Studio — Fine Art Works & Catalog
 
-This directory structure powers the official marketing and fine art sales site for **Rory Skagen Studio** (roryskagen.com). Content and media records are managed through this synchronized studio content archive and Cloudinary media store.
+This directory structure powers the official marketing and fine art sales site for **Rory Skagen Studio** (roryskagen.com). Content and media records are managed through this synchronized studio content archive and CDN media store.
 
 ## Directory Layout
 \`\`\`
@@ -596,7 +596,7 @@ export function buildInitialVirtualFileSystem(): DriveFile[] {
     });
   }
 
-  // 4. Images - Verified 174 Cloudinary Media Assets & SVG representations
+  // 4. Images - Archived media assets & SVG representations
   for (const asset of MEDIA_ASSETS_LOG) {
     const filename = asset.filename;
     const ext = filename.endsWith('.png') ? 'png' : 'jpg';

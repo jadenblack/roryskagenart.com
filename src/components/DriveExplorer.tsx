@@ -11,7 +11,6 @@ import {
   Search,
   Layers,
   X,
-  Cloud,
   Sparkles
 } from 'lucide-react';
 import { DRIVE_ROOT_PATH } from '../data/driveFileSystem';
@@ -22,15 +21,13 @@ interface DriveExplorerProps {
   onSaveFile: (path: string, content: string) => void;
   onCreateArtwork: (record: Partial<ArtworkRecord>, narrative: string) => void;
   onSelectArtwork: (slug: string) => void;
-  onOpenCloudinary?: () => void;
 }
 
 export const DriveExplorer: React.FC<DriveExplorerProps> = ({
   files = [],
   initialSelectedPath,
   onSaveFile,
-  onCreateArtwork,
-  onOpenCloudinary
+  onCreateArtwork
 }) => {
   const safeFiles = files || [];
   const [selectedFile, setSelectedFile] = useState<DriveFile | null>(() => {
@@ -142,16 +139,6 @@ export const DriveExplorer: React.FC<DriveExplorerProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          {onOpenCloudinary && (
-            <button
-              onClick={onOpenCloudinary}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#F2F1EC] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-300 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold uppercase tracking-[0.15em] text-[10px] transition-colors cursor-pointer rounded-xs shadow-xs"
-            >
-              <Cloud className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-              <span>Cloudinary CDN Hub</span>
-            </button>
-          )}
-
           <button
             onClick={() => setNewArtworkModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-black dark:hover:bg-zinc-200 transition-colors cursor-pointer rounded-xs shadow-xs"

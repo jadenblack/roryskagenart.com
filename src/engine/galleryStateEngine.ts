@@ -872,6 +872,17 @@ export class GalleryStateEngine {
   /**
    * Filter and Sort workspace items live
    */
+  /**
+   * Single source of truth for "how many works does the catalog show" —
+   * public, enabled, non-trashed artworks. Consumed by the navbar label,
+   * the catalog status panel, and the landing page counts.
+   */
+  public getCatalogCount(): number {
+    return this.items.filter(
+      (i) => !i.trashed && i.enabled !== false && i.status !== 'Hidden' && i.status !== 'Disabled'
+    ).length;
+  }
+
   public getFilteredItems(): ArtworkRecord[] {
     const { search, status, medium, series, sort } = this.activeFilters;
     

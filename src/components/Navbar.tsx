@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 import { 
   Sun, 
   Moon, 
-  Lock, 
-  ShieldCheck, 
   Menu, 
-  X,
-  Palette
+  X
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -14,16 +11,14 @@ import { useAuth } from '../context/AuthContext';
 interface NavbarProps {
   currentRoute: string;
   onNavigate: (route: string) => void;
-  onOpenAdminAuth?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentRoute,
-  onNavigate,
-  onOpenAdminAuth,
+  onNavigate
 }) => {
   const { toggleTheme, isDark } = useTheme();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -92,34 +87,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* ─────────────────────────────────────────────────────────────
-              3. RIGHT CONTROLS (Login/Admin + Light/Dark)
+              3. RIGHT CONTROLS (Light/Dark)
           ────────────────────────────────────────────────────────────────*/}
           <div className="hidden md:flex items-center gap-3 font-mono text-xs">
-            {/* Login / Admin Status Button */}
-            {onOpenAdminAuth && (
-              <button
-                onClick={onOpenAdminAuth}
-                title={isAuthenticated ? 'Studio Admin Authenticated' : 'Studio Portal Sign In'}
-                className={`h-9 px-3.5 min-w-[88px] flex items-center justify-center gap-1.5 border text-xs font-mono uppercase tracking-wider font-bold transition-all cursor-pointer rounded-xs ${
-                  isAuthenticated
-                    ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-400 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100'
-                    : 'bg-[#F2F1EC] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-300'
-                }`}
-              >
-                {isAuthenticated ? (
-                  <>
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                    <span>Admin</span>
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0" />
-                    <span>Login</span>
-                  </>
-                )}
-              </button>
-            )}
-
             {/* Theme Toggle (Light/Dark) */}
             <button
               onClick={toggleTheme}
@@ -183,29 +153,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               );
             })}
 
-            {onOpenAdminAuth && (
-              <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 mt-2">
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenAdminAuth();
-                  }}
-                  className="w-full text-left px-3 py-2.5 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xs flex items-center gap-2"
-                >
-                  {isAuthenticated ? (
-                    <>
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      <span>Admin Portal (Authenticated)</span>
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="w-4 h-4 text-zinc-500" />
-                      <span>Studio Login</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
           </div>
         )}
 

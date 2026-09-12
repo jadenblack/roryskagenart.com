@@ -104,7 +104,10 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
             <div className="text-zinc-500 dark:text-zinc-400 uppercase text-[9px] tracking-wider font-bold">Studio Catalog Status</div>
             <div className="flex justify-between text-zinc-700 dark:text-zinc-300">
               <span>Cataloged Works:</span>
-              <span className="text-zinc-950 dark:text-white font-bold">{allItems.length} Original Items</span>
+              <span className="text-zinc-950 dark:text-white font-bold">
+                {safeAllItems.filter((i) => !i.trashed && i.enabled !== false && i.status !== 'Hidden' && i.status !== 'Disabled').length}{' '}
+                Original Items
+              </span>
             </div>
             <div className="flex justify-between text-zinc-700 dark:text-zinc-300">
               <span>Active Results:</span>

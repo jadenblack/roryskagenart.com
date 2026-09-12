@@ -608,12 +608,10 @@ class AuthService {
     res.setHeader("Set-Cookie", cookieParts.join("; "));
   }
 
+  /** Public-only: never expose credentials, email, or internal counts here. */
   public getPublicAuthConfig() {
     return {
-      defaultAdminEmail: DEFAULT_ADMIN_EMAIL,
-      defaultAdminPassword: DEFAULT_ADMIN_PASSWORD,
-      totalAdmins: this.db.users.length,
-      activeSessions: this.db.sessions.length,
+      authProvider: 'supabase' as const,
     };
   }
 }

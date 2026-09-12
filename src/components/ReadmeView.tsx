@@ -81,7 +81,7 @@ export const ReadmeView: React.FC<ReadmeViewProps> = ({ readmeContent, onOpenExp
 
         <div className="bg-white dark:bg-[#0D0D10] border border-zinc-300 dark:border-zinc-800 p-5 space-y-2 shadow-xs transition-colors rounded-xs">
           <span className="text-zinc-900 dark:text-white text-[9px] font-black uppercase tracking-widest block">3. Media Resolver</span>
-          <h3 className="font-bold text-zinc-950 dark:text-white text-sm uppercase">Cloudinary &amp; CDN Mapping</h3>
+          <h3 className="font-bold text-zinc-950 dark:text-white text-sm uppercase">Media &amp; CDN Mapping</h3>
           <p className="text-[10px] text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
             Markdown image tags <code className="text-zinc-900 dark:text-zinc-300 font-bold">![alt](images/file.svg)</code> dynamically render high-res visuals with lightbox zoom and scale measurement tools.
           </p>

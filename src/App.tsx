@@ -18,7 +18,6 @@ import { DriveExplorer } from './components/DriveExplorer';
 import { PagesView } from './components/PagesView';
 import { ReadmeView } from './components/ReadmeView';
 import { TrashView } from './components/TrashView';
-import { CloudinaryManager } from './components/CloudinaryManager';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { useAuth } from './context/AuthContext';
 import { Lock, ShieldCheck } from 'lucide-react';
@@ -30,7 +29,6 @@ export default function App() {
   const [selectedArtworkSlug, setSelectedArtworkSlug] = useState<string | null>(null);
   const [selectedPageSlug, setSelectedPageSlug] = useState<string>('about');
   const [explorerTargetFilePath, setExplorerTargetFilePath] = useState<string | undefined>(undefined);
-  const [cloudinaryModalOpen, setCloudinaryModalOpen] = useState(false);
   const [adminAuthModalOpen, setAdminAuthModalOpen] = useState(false);
 
   // Subscribe to engine state updates
@@ -162,6 +160,7 @@ export default function App() {
 
   // Get reactive items from engine
   const allItems = GalleryAppEngineInstance.items;
+  const catalogCount = GalleryAppEngineInstance.getCatalogCount();
   const filteredItems = GalleryAppEngineInstance.getFilteredItems();
   const trashedItems = GalleryAppEngineInstance.getTrashedItems();
   const files = GalleryAppEngineInstance.files;
@@ -202,7 +201,6 @@ export default function App() {
         <Navbar
           currentRoute={route}
           onNavigate={(r) => navigateTo(r)}
-          onOpenAdminAuth={() => setAdminAuthModalOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -211,9 +209,8 @@ export default function App() {
           {route === 'home' && (
             <HomeLandingView
               onNavigate={(r, p) => navigateTo(r, p)}
-              onOpenAdminAuth={() => setAdminAuthModalOpen(true)}
               featuredArtworks={allItems.filter(i => !i.trashed)}
-              totalWorks={allItems.filter(i => !i.trashed).length}
+              totalWorks={catalogCount}
             />
           )}
 
@@ -238,7 +235,6 @@ export default function App() {
               onSelectArtwork={(slug) => navigateTo('artwork', slug)}
               onNavigatePage={(slug) => navigateTo(slug)}
               onEditInExplorer={(filePath) => navigateTo('explorer', filePath)}
-              onOpenCloudinary={() => setCloudinaryModalOpen(true)}
               onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
               onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
               onToggleHeroSlider={(slug) => GalleryAppEngineInstance.toggleHeroSlider(slug)}
@@ -322,8 +318,7 @@ export default function App() {
                     navigateTo('artwork', slug);
                   }}
                   onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-                  onOpenCloudinary={() => setCloudinaryModalOpen(true)}
-                />
+                    />
               )}
 
               {/* Admin Route 4: Markdown Pages Editor */}
@@ -387,7 +382,7 @@ export default function App() {
                     onClick={() => navigateTo('gallery')} 
                     className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
                   >
-                    Catalog ({allItems.filter(i => !i.trashed).length} Works)
+                    Catalog ({catalogCount} Works)
                   </button>
                 </li>
                 <li>
@@ -477,17 +472,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      {/* Cloudinary Integration Modal (Protected) */}
-      <CloudinaryManager
-        isOpen={cloudinaryModalOpen && isAuthenticated}
-        onClose={() => setCloudinaryModalOpen(false)}
-        artworks={allItems}
-        onSelectArtwork={(slug) => {
-          setCloudinaryModalOpen(false);
-          navigateTo('artwork', slug);
-        }}
-      />
 
       {/* Zero-Dependency Admin Authentication Modal */}
       <AdminLoginModal

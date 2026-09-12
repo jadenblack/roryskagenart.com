@@ -221,7 +221,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
             onClick={() => onNavigate('gallery')}
             className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
           >
-            <span>Explore All 700+ Works in Catalog</span>
+            <span>Explore All Works in Catalog</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

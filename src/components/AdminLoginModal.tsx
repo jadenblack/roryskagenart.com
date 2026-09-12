@@ -400,7 +400,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                     </div>
                   )}
 
-                  {/* Security Notice & Quick Fill Helper */}
+                  {/* Sign-in hint */}
                   <div className="p-3 bg-[#F2F1EC] dark:bg-zinc-900/60 border border-zinc-300 dark:border-zinc-800 text-xs font-mono space-y-2 text-zinc-600 dark:text-zinc-400">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -412,36 +412,13 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                       </span>
                     </div>
                     <p className="text-[11px] leading-relaxed text-zinc-500">
-                      Sign in using your simple email and password credentials.
+                      Sign in with your studio email and password.
                     </p>
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-zinc-200 dark:border-zinc-800/80">
-                      <span className="text-[10px] uppercase font-bold text-zinc-500">Quick Credentials:</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLoginEmail('rory@ventureio.com');
-                          setLoginPassword('Austin512');
-                        }}
-                        className="px-2 py-0.5 text-[10px] font-mono bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 cursor-pointer transition-colors"
-                      >
-                        rory@ventureio.com
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLoginEmail('admin@roryskagen.com');
-                          setLoginPassword('StudioAdmin2026!');
-                        }}
-                        className="px-2 py-0.5 text-[10px] font-mono bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 cursor-pointer transition-colors"
-                      >
-                        admin@roryskagen.com
-                      </button>
-                    </div>
                   </div>
 
                   <div className="space-y-1">
                     <label className="block text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 font-bold">
-                      Admin Email:
+                      Email:
                     </label>
                     <div className="relative">
                       <input
@@ -449,7 +426,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
                         required
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
-                        placeholder="rory@ventureio.com"
+                        placeholder="you@roryskagen.com"
                         className="w-full px-3 py-2 text-xs font-mono border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black focus:outline-hidden focus:border-zinc-950 dark:focus:border-zinc-100 transition-colors"
                       />
                       <User className="w-4 h-4 text-zinc-400 absolute right-2.5 top-2.5 pointer-events-none" />

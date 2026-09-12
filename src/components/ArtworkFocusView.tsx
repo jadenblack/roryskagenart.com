@@ -18,7 +18,6 @@ import {
   X, 
   Layers, 
   Edit3, 
-  Cloud, 
   Power, 
   Box, 
   RotateCcw, 
@@ -34,7 +33,6 @@ interface ArtworkFocusViewProps {
   onSelectArtwork: (slug: string) => void;
   onNavigatePage: (slug: string) => void;
   onEditInExplorer: (filePath: string) => void;
-  onOpenCloudinary?: () => void;
   onToggleEnable?: (slug: string) => void;
   onToggleArchive?: (slug: string) => void;
   onToggleHeroSlider?: (slug: string) => void;
@@ -48,7 +46,6 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
   onSelectArtwork,
   onNavigatePage,
   onEditInExplorer,
-  onOpenCloudinary,
   onToggleEnable,
   onToggleArchive,
   onToggleHeroSlider,
@@ -212,14 +209,6 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
               </span>
 
               <div className="flex items-center gap-3">
-                {onOpenCloudinary && (
-                  <button
-                    onClick={onOpenCloudinary}
-                    className="text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 uppercase tracking-wider text-[9px] cursor-pointer font-bold"
-                  >
-                    <Cloud className="w-3 h-3" /> CDN Photo Sync
-                  </button>
-                )}
                 <button
                   onClick={() => onEditInExplorer(artwork.filePath)}
                   className="text-zinc-950 dark:text-white hover:underline flex items-center gap-1 uppercase tracking-wider text-[9px] cursor-pointer font-bold"

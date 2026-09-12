@@ -163,7 +163,7 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
               Master Catalog &amp; Media Registry
             </h1>
             <p className="text-zinc-600 dark:text-zinc-400 text-xs mt-1 font-sans">
-              Synchronized studio registry with <span className="text-zinc-950 dark:text-white font-bold">{activeItems.length}</span> active fine art works, 2 gallery pages, and <span className="text-zinc-950 dark:text-white font-bold">{MEDIA_ASSETS_LOG.length}</span> verified assets on Cloudinary CDN (<code className="text-emerald-700 dark:text-emerald-400 font-bold">xjilp2pq</code>).
+              Synchronized studio registry with <span className="text-zinc-950 dark:text-white font-bold">{activeItems.length}</span> active fine art works, 2 gallery pages, and <span className="text-zinc-950 dark:text-white font-bold">{MEDIA_ASSETS_LOG.length}</span> archived media assets on studio CDN storage.
             </p>
           </div>
 
@@ -512,7 +512,7 @@ export const MasterRegistryTable: React.FC<MasterRegistryTableProps> = ({
               <span className="text-zinc-400 dark:text-zinc-600">|</span>
               <span className="text-amber-700 dark:text-amber-400"><strong>{orphanedMediaCount}</strong> Orphaned / Unlinked</span>
             </div>
-            <span className="text-zinc-500 text-[10px]">Cloudinary CDN Account: <code>xjilp2pq</code></span>
+            <span className="text-zinc-500 text-[10px]">Studio CDN Archive</span>
           </div>
 
           <div className="overflow-x-auto">

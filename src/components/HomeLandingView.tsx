@@ -23,7 +23,6 @@ import { HeroGallerySlider } from './HeroGallerySlider';
 
 interface HomeLandingViewProps {
   onNavigate: (route: string, param?: string) => void;
-  onOpenAdminAuth: () => void;
   featuredArtworks: ArtworkRecord[];
   totalWorks: number;
 }
@@ -308,7 +307,6 @@ const resolveImageUrl = (key: string, slug?: string): string => {
 
 export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
   onNavigate,
-  onOpenAdminAuth,
   featuredArtworks,
   totalWorks,
 }) => {
@@ -341,14 +339,6 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
     };
     setSelectedInquiryArtwork(artRec);
     setInquiryModalOpen(true);
-  };
-
-  const handleProtectedAction = (targetRoute: string, param?: string) => {
-    if (isAuthenticated) {
-      onNavigate(targetRoute, param);
-    } else {
-      onOpenAdminAuth();
-    }
   };
 
   // Filtered exhibition items
@@ -708,22 +698,12 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             </ul>
 
             <div className="pt-3 border-t border-zinc-300 dark:border-zinc-800">
-              {isAuthenticated ? (
-                <button
-                  onClick={() => onNavigate('gallery')}
-                  className="w-full py-2 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest text-[10px] hover:bg-black transition-colors cursor-pointer rounded-xs"
-                >
-                  Open Full Studio Database
-                </button>
-              ) : (
-                <button
-                  onClick={onOpenAdminAuth}
-                  className="w-full py-2 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest text-[10px] hover:bg-black transition-colors cursor-pointer rounded-xs flex items-center justify-center gap-1.5"
-                >
-                  <Lock className="w-3 h-3 text-amber-400" />
-                  <span>Collector Portal Sign In</span>
-                </button>
-              )}
+              <button
+                onClick={() => onNavigate('gallery')}
+                className="w-full py-2 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest text-[10px] hover:bg-black transition-colors cursor-pointer rounded-xs"
+              >
+                Open Full Studio Database
+              </button>
             </div>
           </div>
         </aside>
@@ -851,7 +831,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             onClick={() => onNavigate('gallery')}
             className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-950 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center gap-1.5 transition-colors cursor-pointer"
           >
-            <span>Browse Complete Catalog (700+ Works)</span>
+            <span>Browse Complete Catalog ({totalWorks} Works)</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -945,10 +925,10 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
               <span>Collector &amp; Studio Database</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 dark:text-white font-serif">
-              Explore 700+ Master Catalogue Works
+              Explore the Complete Catalogue — {totalWorks} Works
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
-              The full Rory Skagen Studio archive contains over 700 original paintings, screenprints, mural schematics, scale visualizers, and drive files spanning 1985 to present day. Access is unlocked for authenticated studio sessions.
+              The full Rory Skagen Studio archive spans 1985 to present day — original paintings, enamels on panel, and landmark public murals. Open to collectors, curators, and fine art enthusiasts.
             </p>
           </div>
 

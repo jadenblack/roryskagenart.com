@@ -17,6 +17,37 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArtworkRecord } from '../types';
 import { getArtworkSvg } from '../data/artAssets';
 
+/**
+ * First readable prose line of a narrative, with markdown scaffolding
+ * (headings, emphasis, links, images, blockquotes) stripped so the hero
+ * excerpt is always clean display text.
+ */
+export function heroExcerpt(narrative: string): string {
+  const line = narrative
+    .split('\n')
+    .map((l) => l.trim())
+    .find(
+      (l) =>
+        l.length > 40 &&
+        !l.startsWith('#') &&
+        !l.startsWith('>') &&
+        !l.startsWith('![') &&
+        !l.startsWith('|') &&
+        !l.startsWith('---') &&
+        !l.startsWith('![[')
+    );
+  if (!line) return 'Curated masterwork in the retro-pop surrealist archive of Austin artist Rory Skagen.';
+  return line
+    .replace(/!\[\[[^\]]*\]\]/g, '')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[\[([^\]|]*)(?:\|([^\]]*))?\]\]/g, (_, _target, label) => label || _target)
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_{2}([^_]+)_{2}/g, '$1')
+    .trim();
+}
+
 interface HeroGallerySliderProps {
   artworks: ArtworkRecord[];
   onSelectArtwork: (slug: string) => void;
@@ -297,9 +328,9 @@ export const HeroGallerySlider: React.FC<HeroGallerySliderProps> = ({
                   </div>
                 </div>
 
-                {/* Curatorial Excerpt */}
+                {/* Curatorial Excerpt — first prose line of the narrative, markup stripped */}
                 <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-serif line-clamp-3">
-                  {currentArtwork.narrative ? currentArtwork.narrative.replace(/#+\s+/g, '').replace(/\[\[.*?\]\]/g, '') : "Curated masterwork in the retro-pop surrealist archive of Austin artist Rory Skagen."}
+                  {currentArtwork.narrative ? heroExcerpt(currentArtwork.narrative) : "Curated masterwork in the retro-pop surrealist archive of Austin artist Rory Skagen."}
                 </p>
               </div>
 
