@@ -10,6 +10,7 @@ import { Textarea } from '../ui/textarea';
 import { Select } from '../ui/select';
 import { Switch } from '../ui/switch';
 import { ArtworkRecord } from '../../types';
+import { MediaPicker } from './MediaPicker';
 
 interface ArtworkEditDialogProps {
   open: boolean;
@@ -186,21 +187,12 @@ export const ArtworkEditDialog: React.FC<ArtworkEditDialogProps> = ({
               <Input id="aw-location" value={form.location} onChange={(e) => set('location', e.target.value)} />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="aw-image">Image URL</Label>
-              <Input
-                id="aw-image"
+              <Label>Featured image</Label>
+              <MediaPicker
                 value={form.image_url}
-                onChange={(e) => set('image_url', e.target.value)}
-                placeholder="https://… or /images/…"
+                onChange={(url) => set('image_url', url)}
+                artworkSlug={isCreate ? undefined : artwork?.slug}
               />
-              {form.image_url && (
-                <img
-                  src={form.image_url}
-                  alt="Preview"
-                  className="mt-2 h-24 rounded-md border border-border object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-              )}
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label htmlFor="aw-narrative">Narrative (markdown)</Label>
