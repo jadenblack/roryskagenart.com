@@ -110,22 +110,23 @@ export interface CloudinaryStatus {
   error?: string;
 }
 
+export type UserRole = 'admin' | 'editor' | 'viewer';
+
 export interface AuthUser {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'editor';
+  role: UserRole;
   createdAt: string;
   lastLoginAt?: string;
 }
 
 export interface AuthStatusInfo {
-  defaultAdminEmail?: string;
-  defaultPasswordHint?: string;
-  isDefaultPasswordActive?: boolean;
-  totalAdmins: number;
-  activeSessions: number;
   authenticated?: boolean;
+  authEngine?: string;
+  emailProvider?: string;
+  totalAdmins?: number;
+  activeSessions?: number;
   currentUser?: AuthUser | null;
 }
 

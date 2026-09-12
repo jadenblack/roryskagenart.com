@@ -26,10 +26,15 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'gallery', label: 'Catalog' },
     { id: 'about', label: 'About' },
     { id: 'contact', label: 'Contact Me' },
-    ...(isAuthenticated ? [{ id: 'registry', label: 'Registry' }] : []),
+    ...(isAuthenticated ? [{ id: '/admin', label: 'Dashboard' }] : []),
   ];
 
   const handleNavClick = (id: string) => {
+    if (id.startsWith('/')) {
+      window.location.hash = `#${id}`;
+      setMobileMenuOpen(false);
+      return;
+    }
     onNavigate(id);
     setMobileMenuOpen(false);
   };
@@ -47,7 +52,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-3 text-left group cursor-pointer focus:outline-none"
             aria-label="Rory Skagen Art Home"
           >
-            <div className="w-4 h-4 bg-zinc-950 dark:bg-white transition-transform group-hover:rotate-45"></div>
+            <img
+              src="/android-chrome-192x192.png"
+              alt=""
+              className="h-9 w-9 rounded-md transition-transform group-hover:scale-105"
+            />
             <div className="flex flex-col">
               <span className="text-base sm:text-lg font-black tracking-[0.2em] uppercase text-zinc-950 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors font-serif leading-tight">
                 Rory Skagen Art

@@ -8,7 +8,7 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/|favicon|apple-touch-icon|android-chrome|site\.webmanifest).*)",
       "destination": "/index.html"
     }
   ]
