@@ -363,7 +363,7 @@ ADMIN_INITIAL_PASSWORD=
 * **No long-lived state** — the pg `Pool` is module-scoped and reused across warm invocations; cold starts pay one connection setup.
 * **Payload limits** — serverless request bodies cap around 4.5 MB; the 50 MB JSON limit and 30 MB Cloudinary uploads only apply in standalone mode.
 * **Function timeout** — `maxDuration: 30` in `api/index.cjs`; all current endpoints complete well under this.
-* **CJS bundle requirement** — the serverless bundle must keep the `.cjs` extension: the repo's `package.json` declares `"type": "module"`, so a `.js` bundle would be loaded as ESM and crash (`module is not defined`). The build command and the `/api/(.*)` rewrite in `vercel.json` both target `api/index.cjs`.
+* **CJS bundle requirement** — the repo's root `package.json` declares `"type": "module"`, which would make Vercel load an `api/index.js` bundle as ESM and crash (`module is not defined`). The fix is `api/package.json` declaring `{ "type": "commonjs" }`, scoping only the serverless directory to CommonJS while the Vite client stays ESM.
 
 ### Deploying
 
