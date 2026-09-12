@@ -1,25 +1,27 @@
 import React, { useState, useMemo } from 'react';
 import { 
-  Lock, 
-  ShieldCheck, 
   ArrowRight, 
   Sparkles, 
   Send, 
   Maximize2, 
-  Image as ImageIcon,
   Mail,
   Search,
   Eye,
   X,
   Compass,
-  ChevronRight
+  ChevronRight,
+  MapPin,
+  Camera,
+  Award
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { ArtworkRecord } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { InquiryModal } from './InquiryModal';
 import { resolveAssetUrl } from '../data/assetResolver';
 import { getArtworkSvg } from '../data/artAssets';
 import { HeroGallerySlider } from './HeroGallerySlider';
+import { PageHeader } from './PageHeader';
 
 interface HomeLandingViewProps {
   onNavigate: (route: string, param?: string) => void;
@@ -296,6 +298,34 @@ const CURATED_FIVE_COLUMNS: CuratedColumnDef[] = [
   }
 ];
 
+// ─────────────────────────────────────────────────────────────
+// LANDMARK PHOTO TRIPTYCH — the "Greetings from Austin" mural
+// in three eras: today, roadside nostalgia, and painting day 1998.
+// ─────────────────────────────────────────────────────────────
+const LANDMARK_TRIPTYCH = [
+  {
+    src: '/images/greetings-from-austin-mural.jpg',
+    alt: 'Visitor posing in front of the Greetings from Austin mural at Roadhouse Relics',
+    era: 'The Landmark Today',
+    caption: 'South 1st & Annie Street — photographed by millions of travelers since 1998.',
+    tag: 'Espy 2024'
+  },
+  {
+    src: '/images/greetings-mural-turquoise-truck.jpg',
+    alt: 'Vintage turquoise Chevrolet Apache pickup parked in front of the Greetings from Austin mural',
+    era: 'Roadside Americana',
+    caption: 'Roadhouse Relics gallery with a 1957 Apache — vintage neon signs & decor for homes.',
+    tag: 'The Gallery Years'
+  },
+  {
+    src: '/images/greetings-mural-painting-1998.jpg',
+    alt: 'Rory Skagen painting the Greetings from Austin mural in 1998 with ladder and paint supplies',
+    era: 'Painting Day, 1998',
+    caption: 'Skagen at the wall — hand-lettering the large-letter postcard that became an Austin icon.',
+    tag: 'Original Installation'
+  }
+];
+
 // Helper to resolve real artwork image URLs — stage v3.2 dual-read chain
 // (Supabase registry first, frozen Cloudinary map second, SVG fallback last)
 const resolveImageUrl = (key: string, slug?: string): string => {
@@ -354,35 +384,22 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
   }, [activeCategory, searchQuery]);
 
   return (
-    <div id="rory-skagen-home-archive" className="space-y-12 sm:space-y-16 pb-20 font-sans selection:bg-amber-500/25 selection:text-amber-900 dark:selection:text-amber-200">
+    <div id="rory-skagen-home-archive" className="space-y-12 sm:space-y-16 pb-20 font-sans">
       
       {/* ─────────────────────────────────────────────────────────────
-          1. CLASSIC VINTAGE TOP BANNER & MASTHEAD (2016 ARCHIVE REVERENCE)
+          1. HERO — ONE EDITORIAL STATEMENT, ONE STAGE. No duplicated
+          studio ribbon or masthead; the navbar carries the name.
       ────────────────────────────────────────────────────────────────*/}
-      <header className="border-b-2 border-zinc-900 dark:border-zinc-700 pb-6 sm:pb-8">
-        {/* Archival metadata ribbon */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 border-b border-zinc-300 dark:border-zinc-800 pb-2.5 mb-6">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse"></span>
-            <span>RORY SKAGEN STUDIO • AUSTIN, TEXAS • EST. 1985</span>
-          </div>
-          <div className="flex items-center gap-4 text-zinc-500">
-            <span>COLLECTOR ARCHIVES 2010–2026</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="hidden sm:inline">ORIGINAL ENAMELS, PAINTINGS &amp; MURALS</span>
-          </div>
-        </div>
-
-        {/* Bold Classic Header Masthead */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-wider text-zinc-950 dark:text-white font-serif leading-none">
-            Rory Skagen Art
-          </h1>
-          <p className="text-xs sm:text-sm font-mono uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 font-semibold max-w-2xl mx-auto">
-            Pop Surrealism • Atomic Americana • Landmark Public Murals
-          </p>
-        </div>
-
+      <PageHeader
+        kicker="The Studio of Rory Skagen — Austin, Texas"
+        statement="Pop surrealism from the roadside imagination"
+        support="Four decades of atomic Americana, Kaiju giants, neon supper clubs and landmark Texas murals — original enamels and paintings, available to collectors and curators."
+        meta={[
+          { label: 'Works Cataloged', value: String(totalWorks) },
+          { label: 'Studio Est.', value: '1985' },
+          { label: 'Landmark', value: 'Greetings from Austin' },
+        ]}
+      >
         {/* Hero Gallery Slider Feature */}
         <HeroGallerySlider
           artworks={featuredArtworks}
@@ -395,15 +412,15 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
         />
 
         {/* Quick Filter / Search Bar */}
-        <div className="mt-8 pt-4 border-t border-zinc-200 dark:border-zinc-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5 font-mono text-[11px]">
             <button
               onClick={() => setActiveCategory('all')}
               className={`px-3 py-1.5 rounded-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
                 activeCategory === 'all'
-                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
-                  : 'bg-zinc-200/70 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-surface-deep text-foreground/75 hover:bg-muted'
               }`}
             >
               2010 Landmark Archive
@@ -412,8 +429,8 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
               onClick={() => setActiveCategory('monsters')}
               className={`px-3 py-1.5 rounded-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
                 activeCategory === 'monsters'
-                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
-                  : 'bg-zinc-200/70 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-surface-deep text-foreground/75 hover:bg-muted'
               }`}
             >
               Kaiju and Pop Monsters
@@ -422,8 +439,8 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
               onClick={() => setActiveCategory('ads')}
               className={`px-3 py-1.5 rounded-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
                 activeCategory === 'ads'
-                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
-                  : 'bg-zinc-200/70 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-surface-deep text-foreground/75 hover:bg-muted'
               }`}
             >
               Vintage Advertisements
@@ -432,8 +449,8 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
               onClick={() => setActiveCategory('cocktail')}
               className={`px-3 py-1.5 rounded-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
                 activeCategory === 'cocktail'
-                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
-                  : 'bg-zinc-200/70 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-surface-deep text-foreground/75 hover:bg-muted'
               }`}
             >
               Cocktail Hours and Tiki
@@ -442,25 +459,82 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
 
           {/* Quick Search */}
           <div className="relative w-full md:w-64">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search archive titles..."
-              className="w-full pl-9 pr-3 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-xs font-mono text-zinc-900 dark:text-white rounded-xs focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors"
+              className="w-full pl-9 pr-3 py-1.5 bg-card border border-line text-xs font-mono text-foreground rounded-xs focus:outline-none focus:border-line-strong transition-colors placeholder:text-muted-foreground"
             />
             {searchQuery && (
               <button 
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="w-3 h-3" />
               </button>
             )}
           </div>
         </div>
-      </header>
+      </PageHeader>
+
+      {/* ─────────────────────────────────────────────────────────────
+          1b. LANDMARK TRIPTYCH — Greetings from Austin in three eras
+      ────────────────────────────────────────────────────────────────*/}
+      <section className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 text-amber-500" />
+              THE STUDIO LANDMARK
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase text-foreground font-serif tracking-tight">
+              Greetings from Austin — 1998 to Today
+            </h2>
+          </div>
+          <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+            <Camera className="w-3.5 h-3.5" />
+            Co-created with Bill Johnston • Roadhouse Relics
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          {LANDMARK_TRIPTYCH.map((photo, idx) => (
+            <motion.figure
+              key={photo.src}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
+              className="group relative overflow-hidden border-2 border-line-strong bg-card shadow-md transition-shadow hover:shadow-xl"
+            >
+              <div className="relative aspect-4/3 overflow-hidden">
+                <img
+                  src={photo.src}
+                  alt={photo.alt}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  loading={idx === 0 ? 'eager' : 'lazy'}
+                />
+                {/* Era tag */}
+                <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/80 backdrop-blur-xs text-white text-[9px] font-mono font-bold uppercase tracking-widest">
+                  {photo.tag}
+                </span>
+                {/* Hover veil */}
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <figcaption className="p-4 space-y-1 bg-surface">
+                <span className="block font-serif font-black text-sm uppercase tracking-tight text-foreground">
+                  {photo.era}
+                </span>
+                <span className="block text-[11px] text-muted-foreground leading-relaxed">
+                  {photo.caption}
+                </span>
+              </figcaption>
+            </motion.figure>
+          ))}
+        </div>
+      </section>
 
       {/* ─────────────────────────────────────────────────────────────
           2. MAIN 2-COLUMN ARCHIVE LAYOUT (PRIMARY FEED & SIDEBAR)
@@ -469,11 +543,11 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
         
         {/* LEFT COLUMN: THE MASTER 2010 EXHIBITION FEED (Kirunam, Terrordon, Jigoku, Utaho) */}
         <div className="lg:col-span-8 space-y-12 sm:space-y-16">
-          <div className="border-b border-zinc-400 dark:border-zinc-700 pb-2 flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-950 dark:text-white font-serif">
+          <div className="border-b border-line-strong pb-2 flex items-center justify-between">
+            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-foreground font-serif">
               Featured Exhibition Works
             </h2>
-            <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
+            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest">
               Original Enamel &amp; Panel Masterpieces
             </span>
           </div>
@@ -484,12 +558,12 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             return (
               <article 
                 key={art.id} 
-                className="group bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-4 sm:p-6 shadow-md transition-all hover:shadow-xl space-y-4"
+                className="group bg-card border-2 border-line-strong p-4 sm:p-6 shadow-md transition-all hover:shadow-xl space-y-4"
               >
                 {/* Artwork Media Box */}
                 <div 
                   onClick={() => setLightboxArtwork(art)}
-                  className="relative aspect-4/3 bg-[#F4F3ED] dark:bg-zinc-950 overflow-hidden border border-zinc-300 dark:border-zinc-800 cursor-pointer flex items-center justify-center p-3 sm:p-6"
+                  className="relative aspect-4/3 bg-surface-deep overflow-hidden border border-line cursor-pointer flex items-center justify-center p-3 sm:p-6"
                 >
                   <img
                     src={imageUrl}
@@ -501,10 +575,10 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
 
                   {/* Corner Badge */}
                   <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                    <span className="px-2.5 py-1 bg-black text-white text-[10px] font-mono font-bold uppercase tracking-wider">
+                    <span className="px-2.5 py-1 bg-primary text-primary-foreground text-[10px] font-mono font-bold uppercase tracking-wider">
                       {art.status}
                     </span>
-                    <span className="px-2 py-1 bg-white/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white text-[10px] font-mono font-bold border border-zinc-400 dark:border-zinc-700">
+                    <span className="px-2 py-1 bg-card/90 text-foreground text-[10px] font-mono font-bold border border-line">
                       {art.dimensions}
                     </span>
                   </div>
@@ -518,39 +592,39 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
 
                 {/* Artwork Narrative & Spec details */}
                 <div className="space-y-3 pt-2">
-                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-line pb-2">
                     <h3 
                       onClick={() => setLightboxArtwork(art)}
-                      className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 dark:text-white font-serif hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors cursor-pointer"
+                      className="text-2xl sm:text-3xl font-black uppercase text-foreground font-serif hover:text-amber-600 dark:hover:text-amber-400 transition-colors cursor-pointer"
                     >
                       {art.title}
                     </h3>
-                    <span className="font-mono font-bold text-sm text-zinc-900 dark:text-zinc-100">
+                    <span className="font-mono font-bold text-sm text-foreground">
                       {art.price}
                     </span>
                   </div>
 
                   {/* Narrative paragraph in artist's exact voice */}
-                  <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed font-serif italic">
+                  <p className="text-sm sm:text-base text-foreground/85 leading-relaxed font-serif italic">
                     &ldquo;{art.narrative}&rdquo;
                   </p>
 
                   {/* Specifications & Actions */}
                   <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
-                    <div className="text-zinc-500 dark:text-zinc-400">
-                      <span className="font-bold text-zinc-800 dark:text-zinc-200">{art.medium}</span> • {art.dimensions}
+                    <div className="text-muted-foreground">
+                      <span className="font-bold text-foreground">{art.medium}</span> • {art.dimensions}
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleArchiveInquiry(art)}
-                        className="px-4 py-2 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-wider text-[11px] hover:bg-black dark:hover:bg-zinc-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                        className="px-4 py-2 bg-primary text-primary-foreground font-bold uppercase tracking-wider text-[11px] hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-1.5"
                       >
                         <Send className="w-3 h-3 text-emerald-400 dark:text-emerald-600" />
                         <span>Inquire on Piece</span>
                       </button>
                       <button
                         onClick={() => setLightboxArtwork(art)}
-                        className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold uppercase tracking-wider text-[11px] hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                        className="px-3 py-2 bg-surface-deep border border-line text-foreground font-bold uppercase tracking-wider text-[11px] hover:bg-muted transition-colors cursor-pointer"
                       >
                         <Eye className="w-3.5 h-3.5" />
                       </button>
@@ -566,17 +640,17 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
         <aside className="lg:col-span-4 space-y-8">
           
           {/* 1. Year 2010 Spotlight Card */}
-          <div className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-5 sm:p-6 shadow-md space-y-6">
-            <div className="flex items-center justify-between border-b-2 border-zinc-900 dark:border-zinc-700 pb-3">
+          <div className="bg-card border-2 border-line-strong p-5 sm:p-6 shadow-md space-y-6">
+            <div className="flex items-center justify-between border-b-2 border-line-strong pb-3">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-1 bg-amber-500 text-black font-mono font-black text-xs uppercase tracking-widest">
                   2010
                 </span>
-                <h3 className="font-serif font-black text-lg uppercase tracking-tight text-zinc-950 dark:text-white">
+                <h3 className="font-serif font-black text-lg uppercase tracking-tight text-foreground">
                   Archive Spotlight
                 </h3>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
                 Classic Series
               </span>
             </div>
@@ -586,10 +660,10 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
               {SIDEBAR_SPOTLIGHTS.map((item) => {
                 const img = resolveImageUrl(item.imageKey, item.slug);
                 return (
-                  <div key={item.id} className="group space-y-2 border-b border-zinc-200 dark:border-zinc-800 pb-4 last:border-0 last:pb-0">
+                  <div key={item.id} className="group space-y-2 border-b border-line pb-4 last:border-0 last:pb-0">
                     <div 
                       onClick={() => setLightboxArtwork(item)}
-                      className="relative aspect-16/10 bg-[#F4F3ED] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 overflow-hidden cursor-pointer flex items-center justify-center p-2"
+                      className="relative aspect-16/10 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-2"
                     >
                       <img 
                         src={img} 
@@ -605,15 +679,15 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                     <div>
                       <h4 
                         onClick={() => setLightboxArtwork(item)}
-                        className="font-serif font-bold text-sm text-zinc-950 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors cursor-pointer uppercase"
+                        className="font-serif font-bold text-sm text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors cursor-pointer uppercase"
                       >
                         {item.title}
                       </h4>
-                      <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed line-clamp-2">
+                      <p className="text-xs text-muted-foreground font-sans leading-relaxed line-clamp-2">
                         {item.narrative}
                       </p>
                       <div className="mt-2 flex items-center justify-between text-[11px] font-mono">
-                        <span className="text-zinc-500">{item.dimensions}</span>
+                        <span className="text-muted-foreground">{item.dimensions}</span>
                         <button
                           onClick={() => handleArchiveInquiry(item)}
                           className="font-bold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer flex items-center gap-1"
@@ -630,16 +704,16 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
           </div>
 
           {/* 2. "About Rory Skagen Art" Profile Box */}
-          <div className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-5 sm:p-6 shadow-md space-y-4">
-            <div className="border-b border-zinc-300 dark:border-zinc-800 pb-3 flex items-center justify-between">
-              <h3 className="font-serif font-black text-lg uppercase tracking-tight text-zinc-950 dark:text-white">
+          <div className="bg-card border-2 border-line-strong p-5 sm:p-6 shadow-md space-y-4">
+            <div className="border-b border-line pb-3 flex items-center justify-between">
+              <h3 className="font-serif font-black text-lg uppercase tracking-tight text-foreground">
                 About Rory Skagen Art
               </h3>
               <Sparkles className="w-4 h-4 text-amber-500" />
             </div>
 
             {/* Artist portrait / Photo */}
-            <div className="relative aspect-4/3 bg-[#F4F3ED] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 overflow-hidden flex items-center justify-center">
+            <div className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden flex items-center justify-center">
               <img
                 src={resolveImageUrl('Rory-Skagen-Photo.jpg', 'rory-skagen-photo')}
                 alt="Artist Rory Skagen"
@@ -652,14 +726,14 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
-              Rory Skagen is a pioneering American painter and public muralist based in Austin, Texas. Co-founder of the South Austin Pop Culture Center and co-creator of the legendary <strong className="font-semibold text-zinc-950 dark:text-white">&ldquo;Greetings from Austin&rdquo;</strong> mural, his work merges 1950s atomic pop culture, monster cinema, and retro advertising into an iconic visual universe.
+            <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed font-sans">
+              Rory Skagen is a pioneering American painter and public muralist based in Austin, Texas. Co-founder of the South Austin Pop Culture Center and co-creator of the legendary <strong className="font-semibold text-foreground">&ldquo;Greetings from Austin&rdquo;</strong> mural, his work merges 1950s atomic pop culture, monster cinema, and retro advertising into an iconic visual universe.
             </p>
 
-            <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="pt-2 border-t border-line flex items-center justify-between">
               <button
                 onClick={() => onNavigate('about')}
-                className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-950 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="text-xs font-mono font-bold uppercase tracking-wider text-foreground hover:text-amber-600 dark:hover:text-amber-400 flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <span>Read Full Biography</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -668,39 +742,39 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
           </div>
 
           {/* 3. Other Sites & Landmark Projects by Rory */}
-          <div className="bg-[#F4F3ED] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 p-5 space-y-3 rounded-xs font-mono text-xs">
-            <h4 className="font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 flex items-center gap-2 border-b border-zinc-300 dark:border-zinc-700 pb-2">
+          <div className="bg-surface-deep border border-line p-5 space-y-3 rounded-xs font-mono text-xs">
+            <h4 className="font-bold uppercase tracking-wider text-foreground flex items-center gap-2 border-b border-line pb-2">
               <Compass className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>Landmarks and Studio Portals</span>
             </h4>
-            <ul className="space-y-2.5 text-zinc-700 dark:text-zinc-300">
+            <ul className="space-y-2.5 text-foreground/80">
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold">•</span>
                 <div>
-                  <strong className="text-zinc-950 dark:text-white block">Greetings From Austin Mural</strong>
-                  <span className="text-[11px] text-zinc-500">South 1st &amp; Annie Street, Austin TX</span>
+                  <strong className="text-foreground block">Greetings From Austin Mural</strong>
+                  <span className="text-[11px] text-muted-foreground">South 1st &amp; Annie Street, Austin TX</span>
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold">•</span>
                 <div>
-                  <strong className="text-zinc-950 dark:text-white block">SouthPop Cultural Center</strong>
-                  <span className="text-[11px] text-zinc-500">Preserving Central Texas music &amp; art history</span>
+                  <strong className="text-foreground block">SouthPop Cultural Center</strong>
+                  <span className="text-[11px] text-muted-foreground">Preserving Central Texas music &amp; art history</span>
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold">•</span>
                 <div>
-                  <strong className="text-zinc-950 dark:text-white block">Planet K Texas Public Murals</strong>
-                  <span className="text-[11px] text-zinc-500">Large-scale psychedelic &amp; pop installations</span>
+                  <strong className="text-foreground block">Planet K Texas Public Murals</strong>
+                  <span className="text-[11px] text-muted-foreground">Large-scale psychedelic &amp; pop installations</span>
                 </div>
               </li>
             </ul>
 
-            <div className="pt-3 border-t border-zinc-300 dark:border-zinc-800">
+            <div className="pt-3 border-t border-line">
               <button
                 onClick={() => onNavigate('gallery')}
-                className="w-full py-2 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest text-[10px] hover:bg-black transition-colors cursor-pointer rounded-xs"
+                className="w-full py-2 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[10px] hover:opacity-90 transition-opacity cursor-pointer rounded-xs"
               >
                 Open Full Studio Database
               </button>
@@ -712,12 +786,12 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
       {/* ─────────────────────────────────────────────────────────────
           3. DUAL CURATED CATEGORY HIGHLIGHTS (VINTAGE ADS & BANNERS)
       ────────────────────────────────────────────────────────────────*/}
-      <section className="border-t-2 border-b-2 border-zinc-900 dark:border-zinc-700 py-10 sm:py-14 space-y-8">
+      <section className="border-t-2 border-b-2 border-line-strong py-10 sm:py-14 space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="text-xs font-mono uppercase tracking-[0.25em] text-zinc-500 font-bold">
+          <span className="text-xs font-mono uppercase tracking-[0.25em] text-muted-foreground font-bold">
             CURATED MEDIUM SPOTLIGHTS
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black uppercase text-zinc-950 dark:text-white font-serif">
+          <h2 className="text-3xl sm:text-4xl font-black uppercase text-foreground font-serif">
             Signs, Enamels and Carnival Banners
           </h2>
         </div>
@@ -725,20 +799,20 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           
           {/* Feature 1: Vintage Food Advertisements (Drebbles) */}
-          <article className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-6 shadow-md flex flex-col justify-between space-y-6">
+          <article className="bg-card border-2 border-line-strong p-6 shadow-md flex flex-col justify-between space-y-6">
             <div className="space-y-4">
-              <div className="border-b border-zinc-300 dark:border-zinc-800 pb-2">
+              <div className="border-b border-line pb-2">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 dark:text-emerald-400 font-bold block mb-0.5">
                   {DUAL_SHOWCASE.vintageAds.sectionTitle}
                 </span>
-                <h3 className="text-2xl font-black uppercase text-zinc-950 dark:text-white font-serif">
+                <h3 className="text-2xl font-black uppercase text-foreground font-serif">
                   {DUAL_SHOWCASE.vintageAds.title}
                 </h3>
               </div>
 
               <div 
                 onClick={() => setLightboxArtwork(DUAL_SHOWCASE.vintageAds as any)}
-                className="relative aspect-4/3 bg-[#F4F3ED] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 overflow-hidden cursor-pointer flex items-center justify-center p-4 group"
+                className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-4 group"
               >
                 <img
                   src={resolveImageUrl(DUAL_SHOWCASE.vintageAds.imageKey, DUAL_SHOWCASE.vintageAds.slug)}
@@ -747,21 +821,21 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                   className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-103"
                   loading="lazy"
                 />
-                <div className="absolute top-3 right-3 px-2 py-1 bg-black text-white text-[10px] font-mono font-bold">
+                <div className="absolute top-3 right-3 px-2 py-1 bg-primary text-primary-foreground text-[10px] font-mono font-bold">
                   {DUAL_SHOWCASE.vintageAds.price}
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 font-serif italic leading-relaxed">
+              <p className="text-xs sm:text-sm text-foreground/85 font-serif italic leading-relaxed">
                 {DUAL_SHOWCASE.vintageAds.narrative}
               </p>
             </div>
 
-            <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between font-mono text-xs">
-              <span className="text-zinc-500">{DUAL_SHOWCASE.vintageAds.dimensions}</span>
+            <div className="pt-3 border-t border-line flex items-center justify-between font-mono text-xs">
+              <span className="text-muted-foreground">{DUAL_SHOWCASE.vintageAds.dimensions}</span>
               <button
                 onClick={() => handleArchiveInquiry(DUAL_SHOWCASE.vintageAds as any)}
-                className="px-4 py-2 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-wider text-[10px] hover:bg-black transition-colors cursor-pointer"
+                className="px-4 py-2 bg-primary text-primary-foreground font-bold uppercase tracking-wider text-[10px] hover:opacity-90 transition-opacity cursor-pointer"
               >
                 Inquire on Drebbles
               </button>
@@ -769,20 +843,20 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
           </article>
 
           {/* Feature 2: Banner Paintings (Dinosaur Land) */}
-          <article className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-6 shadow-md flex flex-col justify-between space-y-6">
+          <article className="bg-card border-2 border-line-strong p-6 shadow-md flex flex-col justify-between space-y-6">
             <div className="space-y-4">
-              <div className="border-b border-zinc-300 dark:border-zinc-800 pb-2">
+              <div className="border-b border-line pb-2">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400 font-bold block mb-0.5">
                   {DUAL_SHOWCASE.banners.sectionTitle}
                 </span>
-                <h3 className="text-2xl font-black uppercase text-zinc-950 dark:text-white font-serif">
+                <h3 className="text-2xl font-black uppercase text-foreground font-serif">
                   {DUAL_SHOWCASE.banners.title}
                 </h3>
               </div>
 
               <div 
                 onClick={() => setLightboxArtwork(DUAL_SHOWCASE.banners as any)}
-                className="relative aspect-4/3 bg-[#F4F3ED] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 overflow-hidden cursor-pointer flex items-center justify-center p-4 group"
+                className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-4 group"
               >
                 <img
                   src={resolveImageUrl(DUAL_SHOWCASE.banners.imageKey, DUAL_SHOWCASE.banners.slug)}
@@ -796,16 +870,16 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 font-serif italic leading-relaxed">
+              <p className="text-xs sm:text-sm text-foreground/85 font-serif italic leading-relaxed">
                 {DUAL_SHOWCASE.banners.narrative}
               </p>
             </div>
 
-            <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between font-mono text-xs">
-              <span className="text-zinc-500">{DUAL_SHOWCASE.banners.dimensions}</span>
+            <div className="pt-3 border-t border-line flex items-center justify-between font-mono text-xs">
+              <span className="text-muted-foreground">{DUAL_SHOWCASE.banners.dimensions}</span>
               <button
                 onClick={() => handleArchiveInquiry(DUAL_SHOWCASE.banners as any)}
-                className="px-4 py-2 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-wider text-[10px] hover:bg-black transition-colors cursor-pointer"
+                className="px-4 py-2 bg-primary text-primary-foreground font-bold uppercase tracking-wider text-[10px] hover:opacity-90 transition-opacity cursor-pointer"
               >
                 Inquire on Banners
               </button>
@@ -818,18 +892,18 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
           4. THE 5-COLUMN CURATED SERIES GRID (EXACT ARCHIVE HOMAGE)
       ────────────────────────────────────────────────────────────────*/}
       <section className="space-y-8">
-        <div className="border-b border-zinc-400 dark:border-zinc-700 pb-3 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+        <div className="border-b border-line-strong pb-3 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-500 block mb-1">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted-foreground block mb-1">
               CANONICAL 2010 COLLECTIONS
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 dark:text-white font-serif">
+            <h2 className="text-2xl sm:text-3xl font-black uppercase text-foreground font-serif">
               Curated Series and Groups
             </h2>
           </div>
           <button
             onClick={() => onNavigate('gallery')}
-            className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-950 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="text-xs font-mono font-bold uppercase tracking-wider text-foreground hover:text-amber-600 dark:hover:text-amber-400 flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <span>Browse Complete Catalog ({totalWorks} Works)</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -842,14 +916,18 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             const featImg = resolveImageUrl(col.featured.imageKey, col.featured.slug);
 
             return (
-              <div 
+              <motion.div 
                 key={index}
-                className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-4 shadow-sm flex flex-col justify-between space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                className="bg-card border-2 border-line-strong p-4 shadow-sm flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
                   {/* Column Header */}
-                  <div className="border-b-2 border-zinc-900 dark:border-zinc-700 pb-2">
-                    <h3 className="font-serif font-black text-base uppercase text-zinc-950 dark:text-white tracking-tight leading-tight">
+                  <div className="border-b-2 border-line-strong pb-2">
+                    <h3 className="font-serif font-black text-base uppercase text-foreground tracking-tight leading-tight">
                       {col.columnTitle}
                     </h3>
                   </div>
@@ -857,7 +935,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                   {/* Featured Item Preview */}
                   <div 
                     onClick={() => setLightboxArtwork(col.featured)}
-                    className="relative aspect-4/3 bg-[#F4F3ED] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 overflow-hidden cursor-pointer flex items-center justify-center p-2 group"
+                    className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-2 group"
                   >
                     <img 
                       src={featImg} 
@@ -866,7 +944,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                       className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
-                    <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-black text-white text-[8px] font-mono font-bold">
+                    <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-primary text-primary-foreground text-[8px] font-mono font-bold">
                       {col.featured.price}
                     </div>
                   </div>
@@ -875,19 +953,19 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                   <div className="space-y-1">
                     <h4 
                       onClick={() => setLightboxArtwork(col.featured)}
-                      className="font-serif font-bold text-sm text-zinc-950 dark:text-white hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors cursor-pointer uppercase line-clamp-1"
+                      className="font-serif font-bold text-sm text-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors cursor-pointer uppercase line-clamp-1"
                     >
                       {col.featured.title}
                     </h4>
-                    <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-sans leading-snug line-clamp-2">
+                    <p className="text-[11px] text-muted-foreground font-sans leading-snug line-clamp-2">
                       {col.featured.narrative}
                     </p>
                   </div>
                 </div>
 
                 {/* Sub-links to related works in this column */}
-                <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 space-y-1.5">
-                  <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-400 block">
+                <div className="pt-3 border-t border-line space-y-1.5">
+                  <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground block">
                     More in Series:
                   </span>
                   <ul className="space-y-1 text-xs font-sans">
@@ -895,12 +973,12 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                       <li key={lidx} className="flex items-center justify-between gap-1">
                         <button
                           onClick={() => onNavigate('artwork', link.slug)}
-                          className="text-left text-zinc-800 dark:text-zinc-200 hover:text-emerald-700 dark:hover:text-emerald-400 hover:underline transition-colors cursor-pointer line-clamp-1 text-[11px]"
+                          className="text-left text-foreground/85 hover:text-amber-600 dark:hover:text-amber-400 hover:underline transition-colors cursor-pointer line-clamp-1 text-[11px]"
                         >
                           {link.title}
                         </button>
                         {link.price && (
-                          <span className="text-[9px] font-mono text-zinc-400 flex-shrink-0">
+                          <span className="text-[9px] font-mono text-muted-foreground flex-shrink-0">
                             {link.price}
                           </span>
                         )}
@@ -908,7 +986,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                     ))}
                   </ul>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -917,17 +995,17 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
       {/* ─────────────────────────────────────────────────────────────
           5. STUDIO PORTAL & COLLECTOR GATEWAY
       ────────────────────────────────────────────────────────────────*/}
-      <section className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-6 sm:p-10 shadow-lg">
+      <section className="bg-card border-2 border-line-strong p-6 sm:p-10 shadow-lg">
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-3 max-w-xl text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-[10px] font-mono uppercase tracking-widest font-bold">
-              <ShieldCheck className="w-3.5 h-3.5" />
+              <Award className="w-3.5 h-3.5" />
               <span>Collector &amp; Studio Database</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 dark:text-white font-serif">
+            <h2 className="text-2xl sm:text-3xl font-black uppercase text-foreground font-serif">
               Explore the Complete Catalogue — {totalWorks} Works
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-sans">
               The full Rory Skagen Studio archive spans 1985 to present day — original paintings, enamels on panel, and landmark public murals. Open to collectors, curators, and fine art enthusiasts.
             </p>
           </div>
@@ -935,12 +1013,12 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
           <div className="flex-shrink-0 w-full md:w-auto text-center space-y-3">
             <button
               onClick={() => onNavigate('gallery')}
-              className="w-full sm:w-auto px-8 py-3.5 bg-zinc-900 text-white dark:bg-white dark:text-black font-mono font-bold uppercase tracking-[0.2em] text-xs hover:bg-black dark:hover:bg-zinc-200 transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-3.5 bg-primary text-primary-foreground font-mono font-bold uppercase tracking-[0.2em] text-xs hover:opacity-90 transition-opacity cursor-pointer shadow-md flex items-center justify-center gap-2"
             >
               <span>Explore Master Catalog</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-            <div className="text-[10px] font-mono text-zinc-500">
+            <div className="text-[10px] font-mono text-muted-foreground">
               Open to collectors, curators, &amp; fine art enthusiasts
             </div>
           </div>
@@ -952,17 +1030,17 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
       ────────────────────────────────────────────────────────────────*/}
       {lightboxArtwork && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-4 sm:p-8 shadow-2xl overflow-y-auto flex flex-col md:flex-row gap-6">
+          <div className="relative w-full max-w-4xl max-h-[90vh] bg-card border-2 border-line-strong p-4 sm:p-8 shadow-2xl overflow-y-auto flex flex-col md:flex-row gap-6">
             {/* Close Button */}
             <button
               onClick={() => setLightboxArtwork(null)}
-              className="absolute top-4 right-4 z-10 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 p-1.5 transition-colors cursor-pointer"
+              className="absolute top-4 right-4 z-10 text-muted-foreground hover:text-foreground bg-surface-deep border border-line p-1.5 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Lightbox Image Stage */}
-            <div className="md:w-3/5 bg-[#F4F3ED] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 flex items-center justify-center p-4 min-h-[300px]">
+            <div className="md:w-3/5 bg-surface-deep border border-line flex items-center justify-center p-4 min-h-[300px]">
               <img
                 src={resolveImageUrl(
                   (lightboxArtwork as ArchiveFeatureDef).imageKey || (lightboxArtwork as any).featured_image || '',
@@ -977,34 +1055,34 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             {/* Lightbox Metadata & Narrative */}
             <div className="md:w-2/5 flex flex-col justify-between space-y-4">
               <div className="space-y-3">
-                <div className="border-b border-zinc-200 dark:border-zinc-800 pb-2">
+                <div className="border-b border-line pb-2">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 dark:text-emerald-400 font-bold block mb-1">
                     {lightboxArtwork.year} • {lightboxArtwork.status}
                   </span>
-                  <h3 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 dark:text-white font-serif">
+                  <h3 className="text-2xl sm:text-3xl font-black uppercase text-foreground font-serif">
                     {lightboxArtwork.title}
                   </h3>
                 </div>
 
-                <div className="text-xs font-mono space-y-1 text-zinc-600 dark:text-zinc-400">
-                  <div><strong className="text-zinc-900 dark:text-zinc-200">Medium:</strong> {lightboxArtwork.medium}</div>
-                  <div><strong className="text-zinc-900 dark:text-zinc-200">Dimensions:</strong> {lightboxArtwork.dimensions}</div>
-                  <div><strong className="text-zinc-900 dark:text-zinc-200">Price:</strong> {lightboxArtwork.price}</div>
+                <div className="text-xs font-mono space-y-1 text-muted-foreground">
+                  <div><strong className="text-foreground">Medium:</strong> {lightboxArtwork.medium}</div>
+                  <div><strong className="text-foreground">Dimensions:</strong> {lightboxArtwork.dimensions}</div>
+                  <div><strong className="text-foreground">Price:</strong> {lightboxArtwork.price}</div>
                 </div>
 
                 {lightboxArtwork.narrative && (
-                  <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 block mb-1">
+                  <div className="pt-2 border-t border-line">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground block mb-1">
                       Artist Statement:
                     </span>
-                    <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 font-serif italic leading-relaxed">
+                    <p className="text-xs sm:text-sm text-foreground/85 font-serif italic leading-relaxed">
                       &ldquo;{lightboxArtwork.narrative}&rdquo;
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-2">
+              <div className="pt-4 border-t border-line space-y-2">
                 <button
                   onClick={() => {
                     const rec: ArtworkRecord = {
@@ -1024,9 +1102,9 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                     setLightboxArtwork(null);
                     setInquiryModalOpen(true);
                   }}
-                  className="w-full py-3 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-primary text-primary-foreground font-bold uppercase tracking-[0.2em] text-[11px] hover:opacity-90 transition-opacity cursor-pointer shadow-md flex items-center justify-center gap-2"
                 >
-                  <Send className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-600" />
+                  <Mail className="w-3.5 h-3.5" />
                   <span>Send Studio Inquiry</span>
                 </button>
 
@@ -1036,7 +1114,7 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                       setLightboxArtwork(null);
                       onNavigate('artwork', lightboxArtwork.slug);
                     }}
-                    className="w-full py-2 bg-[#F4F3ED] dark:bg-zinc-800 text-zinc-900 dark:text-white font-mono font-bold uppercase tracking-wider text-[10px] border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                    className="w-full py-2 bg-surface-deep text-foreground font-mono font-bold uppercase tracking-wider text-[10px] border border-line hover:bg-muted transition-colors cursor-pointer"
                   >
                     Open in Studio Focus View →
                   </button>

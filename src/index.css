@@ -2,6 +2,25 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Aceternity infinite marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@theme inline {
+  --animate-marquee: marquee var(--animation-duration, 70s) linear infinite;
+  --animate-marquee-reverse: marquee reverse var(--animation-duration, 70s) linear infinite;
+}
+
+.animate-marquee {
+  animation: marquee var(--animation-duration, 70s) linear var(--animation-direction, forwards);
+}
+
+.animate-marquee-reverse {
+  animation: marquee reverse var(--animation-duration, 70s) linear;
+}
+
 @theme inline {
   --color-border: var(--border);
   --color-input: var(--input);
@@ -21,64 +40,88 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  /* Design-menu surfaces — always defined so token utilities work in both modes */
+  --color-surface: var(--surface);
+  --color-surface-deep: var(--surface-deep);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
 }
 
+/* ============================================================
+   DEFAULT PALETTES — "Gallery Stone" (light) / "Charcoal Gallery" (dark)
+   Softer than pure paper-white light and lifted from near-black dark,
+   per studio design brief. Overridable at runtime by the admin
+   Design menu (PaletteContext injects inline CSS vars on <html>).
+   ============================================================ */
 :root {
-  --border: #d6d4cc;
-  --input: #d6d4cc;
+  --border: #d2cfc6;
+  --input: #d2cfc6;
   --ring: #b45309;
-  --background: #ECEBE4;
-  --foreground: #18181b;
-  --primary: #18181b;
-  --primary-foreground: #fafafa;
-  --secondary: #e4e2da;
-  --secondary-foreground: #18181b;
-  --muted: #e4e2da;
-  --muted-foreground: #71717a;
-  --accent: #e4e2da;
-  --accent-foreground: #18181b;
+  --background: #e3e1da;
+  --foreground: #1c1c20;
+  --primary: #26262b;
+  --primary-foreground: #faf9f6;
+  --secondary: #d8d6cd;
+  --secondary-foreground: #1c1c20;
+  --muted: #d8d6cd;
+  --muted-foreground: #5f5f68;
+  --accent: #d8d6cd;
+  --accent-foreground: #1c1c20;
   --destructive: #dc2626;
-  --card: #faf9f6;
-  --card-foreground: #18181b;
-  --popover: #faf9f6;
-  --popover-foreground: #18181b;
+  --card: #eeede8;
+  --card-foreground: #1c1c20;
+  --popover: #eeede8;
+  --popover-foreground: #1c1c20;
+  /* Design-menu surfaces */
+  --surface: #eeede8;
+  --surface-deep: #d8d6cd;
+  --line: #c9c6bc;
+  --line-strong: #3a3a40;
 }
 
 .dark {
-  --border: #2a2a30;
-  --input: #2a2a30;
+  --border: #33333a;
+  --input: #33333a;
   --ring: #f59e0b;
-  --background: #0c0c0e;
-  --foreground: #f4f4f5;
-  --primary: #fafafa;
-  --primary-foreground: #18181b;
-  --secondary: #1c1c20;
-  --secondary-foreground: #f4f4f5;
-  --muted: #1c1c20;
-  --muted-foreground: #a1a1aa;
-  --accent: #1c1c20;
-  --accent-foreground: #f4f4f5;
+  --background: #17171b;
+  --foreground: #f0f0f2;
+  --primary: #ececef;
+  --primary-foreground: #17171b;
+  --secondary: #222228;
+  --secondary-foreground: #f0f0f2;
+  --muted: #222228;
+  --muted-foreground: #9d9da6;
+  --accent: #222228;
+  --accent-foreground: #f0f0f2;
   --destructive: #ef4444;
-  --card: #121215;
-  --card-foreground: #f4f4f5;
-  --popover: #121215;
-  --popover-foreground: #f4f4f5;
+  --card: #1d1d22;
+  --card-foreground: #f0f0f2;
+  --popover: #1d1d22;
+  --popover-foreground: #f0f0f2;
+  /* Design-menu surfaces */
+  --surface: #1d1d22;
+  --surface-deep: #101013;
+  --line: #33333a;
+  --line-strong: #52525c;
 }
+
+/* Design-menu runtime overrides on :root (light values) are injected inline;
+   dark overrides are injected into this block by PaletteContext. */
 
 @layer base {
   :root {
-    --bg-main: #ECEBE4;
-    --text-main: #18181b;
+    --bg-main: #e3e1da;
+    --text-main: #1c1c20;
   }
 
   html.dark, body.dark {
-    --bg-main: #0c0c0e;
-    --text-main: #f4f4f5;
+    --bg-main: #17171b;
+    --text-main: #f0f0f2;
   }
 
   html.light, body.light {
-    --bg-main: #ECEBE4;
-    --text-main: #18181b;
+    --bg-main: #e3e1da;
+    --text-main: #1c1c20;
   }
 
   body {
@@ -109,14 +152,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3F3F46;
+  background: var(--line-strong);
   border-radius: 2px;
 }
 
-html.light ::-webkit-scrollbar-thumb, body.light ::-webkit-scrollbar-thumb {
-  background: #A1A1AA;
-}
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #71717A;
+  background: var(--muted-foreground);
 }

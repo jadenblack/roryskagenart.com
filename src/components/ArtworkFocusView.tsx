@@ -115,11 +115,11 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-16">
       {/* Top Breadcrumbs & Record Navigation Bar */}
-      <div className="flex items-center justify-between flex-wrap gap-4 bg-white dark:bg-[#0D0D10] border border-zinc-300 dark:border-zinc-800 p-3 sm:p-4 font-mono text-[10px] shadow-xs transition-colors">
+      <div className="flex items-center justify-between flex-wrap gap-4 bg-card border border-line p-3 sm:p-4 font-mono text-[10px] shadow-xs transition-colors">
         {/* Back Button */}
         <button
           onClick={onBack}
-          className="flex items-center gap-2 px-3 py-1.5 bg-[#F2F1EC] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white uppercase tracking-wider border border-zinc-300 dark:border-zinc-800 transition-colors cursor-pointer font-bold rounded-xs"
+          className="flex items-center gap-2 px-3 py-1.5 bg-surface-deep hover:bg-muted text-foreground/85 hover:text-foreground uppercase tracking-wider border border-line transition-colors cursor-pointer font-bold rounded-xs"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Return to Gallery</span>
@@ -127,25 +127,25 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
 
         {/* Record Counter & Next/Prev Controls */}
         <div className="flex items-center gap-3">
-          <span className="text-zinc-600 dark:text-zinc-500 uppercase tracking-widest hidden sm:inline font-bold">
-            ARTWORK <strong className="text-zinc-950 dark:text-white">{currentIndex + 1}</strong> OF{' '}
-            <strong className="text-zinc-700 dark:text-zinc-400">{allArtworks.length}</strong>
+          <span className="text-muted-foreground uppercase tracking-widest hidden sm:inline font-bold">
+            ARTWORK <strong className="text-foreground">{currentIndex + 1}</strong> OF{' '}
+            <strong className="text-foreground/80">{allArtworks.length}</strong>
           </span>
 
-          <div className="flex items-center gap-1 bg-[#F2F1EC] dark:bg-zinc-900 p-1 border border-zinc-300 dark:border-zinc-800 rounded-xs">
+          <div className="flex items-center gap-1 bg-surface-deep p-1 border border-line rounded-xs">
             <button
               onClick={() => prevArtwork && onSelectArtwork(prevArtwork.slug)}
               title={`Previous: ${prevArtwork?.title}`}
-              className="flex items-center gap-1 px-2.5 py-1 text-zinc-700 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 uppercase tracking-wider transition-colors cursor-pointer font-bold rounded-xs"
+              className="flex items-center gap-1 px-2.5 py-1 text-foreground/75 hover:text-foreground hover:bg-muted uppercase tracking-wider transition-colors cursor-pointer font-bold rounded-xs"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Prev</span>
             </button>
-            <span className="w-px h-3 bg-zinc-300 dark:bg-zinc-800"></span>
+            <span className="w-px h-3 bg-line"></span>
             <button
               onClick={() => nextArtwork && onSelectArtwork(nextArtwork.slug)}
               title={`Next: ${nextArtwork?.title}`}
-              className="flex items-center gap-1 px-2.5 py-1 text-zinc-700 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 uppercase tracking-wider transition-colors cursor-pointer font-bold rounded-xs"
+              className="flex items-center gap-1 px-2.5 py-1 text-foreground/75 hover:text-foreground hover:bg-muted uppercase tracking-wider transition-colors cursor-pointer font-bold rounded-xs"
             >
               <span className="hidden md:inline">Next</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -155,7 +155,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
           <button
             onClick={copyShareLink}
             title="Copy direct link to this artwork"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F2F1EC] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-300 dark:border-zinc-800 transition-colors uppercase tracking-wider font-bold rounded-xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-deep hover:bg-muted text-foreground/75 hover:text-foreground border border-line transition-colors uppercase tracking-wider font-bold rounded-xs cursor-pointer"
           >
             {copiedLink ? (
               <>
@@ -176,11 +176,11 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Visual Media Presentation */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="bg-white dark:bg-black border border-zinc-300 dark:border-zinc-800 p-4 sm:p-6 overflow-hidden shadow-xs transition-colors">
+          <div className="bg-card border border-line p-4 sm:p-6 overflow-hidden shadow-xs transition-colors">
             {/* Interactive Image Frame */}
             <div
               onClick={() => setLightboxOpen(true)}
-              className="relative aspect-[4/3] bg-[#F7F6F2] dark:bg-zinc-900/60 overflow-hidden flex items-center justify-center p-4 border border-zinc-200 dark:border-zinc-800/80 cursor-zoom-in group/img"
+              className="relative aspect-[4/3] bg-surface-deep overflow-hidden flex items-center justify-center p-4 border border-line cursor-zoom-in group/img"
             >
               <img
                 src={artwork.renditions?.hero?.url || artwork.imageUrl}
@@ -195,22 +195,22 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
               />
 
               {/* Click to expand pill */}
-              <div className="absolute bottom-3 right-3 bg-white/95 dark:bg-black/90 border border-zinc-300 dark:border-zinc-800 px-2.5 py-1 text-[9px] font-mono uppercase tracking-widest text-zinc-900 dark:text-zinc-300 flex items-center gap-1.5 opacity-90 group-hover/img:opacity-100 transition-opacity font-bold shadow-xs">
+              <div className="absolute bottom-3 right-3 bg-card/95 border border-line px-2.5 py-1 text-[9px] font-mono uppercase tracking-widest text-foreground flex items-center gap-1.5 opacity-90 group-hover/img:opacity-100 transition-opacity font-bold shadow-xs">
                 <ZoomIn className="w-3 h-3" />
                 <span>Zoom Artwork</span>
               </div>
             </div>
 
             {/* File Path Indicator below image */}
-            <div className="mt-4 flex items-center justify-between text-[10px] text-zinc-600 dark:text-zinc-500 font-mono flex-wrap gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-              <span className="flex items-center gap-1.5 text-zinc-800 dark:text-zinc-400 font-bold">
-                <FileCode className="w-3.5 h-3.5 text-zinc-500" />
+            <div className="mt-4 flex items-center justify-between text-[10px] text-muted-foreground font-mono flex-wrap gap-2 pt-3 border-t border-line">
+              <span className="flex items-center gap-1.5 text-foreground/80 font-bold">
+                <FileCode className="w-3.5 h-3.5 text-muted-foreground" />
                 <span className="truncate">{artwork.slug}.md</span>
               </span>
 
               <div className="flex items-center gap-3">                  <button
                   onClick={() => onEditInStudio()}
-                  className="text-zinc-950 dark:text-white hover:underline flex items-center gap-1 uppercase tracking-wider text-[9px] cursor-pointer font-bold"
+                  className="text-foreground hover:underline flex items-center gap-1 uppercase tracking-wider text-[9px] cursor-pointer font-bold"
                 >
                   <Edit3 className="w-3 h-3" /> Edit in Studio
                 </button>
@@ -225,11 +225,11 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
         {/* Right Column: Properties, Specs, Narrative */}
         <div className="lg:col-span-5 space-y-6">
           {/* Main Info Header Card */}
-          <div className="bg-white dark:bg-[#0D0D10] border border-zinc-300 dark:border-zinc-800 p-6 sm:p-8 space-y-6 shadow-xs transition-colors">
+          <div className="bg-card border border-line p-6 sm:p-8 space-y-6 shadow-xs transition-colors">
             <div>
               {/* Series & Status Badges */}
               <div className="flex items-center justify-between gap-2 flex-wrap mb-3 text-[9px] font-mono uppercase tracking-widest font-bold">
-                <span className="px-2.5 py-0.5 bg-[#F2F1EC] dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700">
+                <span className="px-2.5 py-0.5 bg-surface-deep text-foreground border border-line">
                   {artwork.gallery_series}
                 </span>
 
@@ -243,10 +243,10 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                         : artwork.status === 'Available'
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/80'
                         : artwork.status === 'Public Installation'
-                        ? 'bg-zinc-100 text-zinc-800 border-zinc-300 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-700'
+                        ? 'bg-surface-deep text-foreground/85 border-line'
                         : artwork.status === 'Limited Edition'
-                        ? 'bg-sky-50 text-sky-800 border-sky-300 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-700'
-                        : 'bg-zinc-100 text-zinc-600 border-zinc-300 dark:bg-black/60 dark:text-zinc-500 dark:border-zinc-800'
+                        ? 'bg-sky-50 text-sky-800 border-sky-300 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-800/80'
+                        : 'bg-surface-deep text-muted-foreground border-line'
                     }`}
                   >
                     {artwork.status === 'Hidden' ? 'Hidden' : isDisabled ? 'Disabled' : isStored ? 'Studio Storage' : artwork.status}
@@ -255,8 +255,8 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
               </div>
 
               {/* Lifecycle Actions Toolbar */}
-              <div className="flex items-center gap-2 mb-4 p-2 bg-[#F2F1EC] dark:bg-black border border-zinc-300 dark:border-zinc-800/80 text-[10px] font-mono flex-wrap rounded-xs">
-                <span className="text-zinc-600 dark:text-zinc-500 uppercase text-[9px] tracking-wider mr-1 font-bold">STUDIO CONTROLS:</span>
+              <div className="flex items-center gap-2 mb-4 p-2 bg-surface-deep border border-line text-[10px] font-mono flex-wrap rounded-xs">
+                <span className="text-muted-foreground uppercase text-[9px] tracking-wider mr-1 font-bold">STUDIO CONTROLS:</span>
                 
                 {onToggleHeroSlider && (
                   <button
@@ -264,11 +264,11 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                     className={`flex items-center gap-1.5 px-2.5 py-1 text-[9px] uppercase tracking-wider border transition-all cursor-pointer font-bold rounded-xs ${
                       artwork.heroSlider
                         ? 'bg-amber-100 text-amber-950 border-amber-400 hover:bg-amber-200 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700 shadow-xs'
-                        : 'bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
+                        : 'bg-card text-foreground/80 border-line hover:bg-muted'
                     }`}
                     title={artwork.heroSlider ? 'Remove from Homepage Hero Slider' : 'Show in Homepage Hero Slider'}
                   >
-                    <Sparkles className={`w-3 h-3 ${artwork.heroSlider ? 'text-amber-600 dark:text-amber-400 fill-amber-500/20' : 'text-zinc-400'}`} />
+                    <Sparkles className={`w-3 h-3 ${artwork.heroSlider ? 'text-amber-600 dark:text-amber-400 fill-amber-500/20' : 'text-muted-foreground'}`} />
                     <span>Hero Slider: {artwork.heroSlider ? 'ON' : 'OFF'}</span>
                   </button>
                 )}
@@ -279,10 +279,10 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                     className={`flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-wider border transition-colors cursor-pointer font-bold rounded-xs ${
                       isDisabled
                         ? 'bg-purple-100 text-purple-900 border-purple-300 hover:bg-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800'
-                        : 'bg-white text-zinc-800 border-zinc-300 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-800'
+                        : 'bg-card text-foreground/85 border-line hover:bg-muted'
                     }`}
                   >
-                    {isDisabled ? <Power className="w-3 h-3 text-purple-600 dark:text-purple-400" /> : <EyeOff className="w-3 h-3 text-zinc-500" />}
+                    {isDisabled ? <Power className="w-3 h-3 text-purple-600 dark:text-purple-400" /> : <EyeOff className="w-3 h-3 text-muted-foreground" />}
                     <span>{isDisabled ? 'Unhide Work' : 'Hide Work'}</span>
                   </button>
                 )}
@@ -293,10 +293,10 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                     className={`flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-wider border transition-colors cursor-pointer font-bold rounded-xs ${
                       isStored
                         ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
-                        : 'bg-white text-zinc-800 border-zinc-300 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-800'
+                        : 'bg-card text-foreground/85 border-line hover:bg-muted'
                     }`}
                   >
-                    {isStored ? <RotateCcw className="w-3 h-3 text-amber-600 dark:text-amber-400" /> : <Box className="w-3 h-3 text-zinc-500" />}
+                    {isStored ? <RotateCcw className="w-3 h-3 text-amber-600 dark:text-amber-400" /> : <Box className="w-3 h-3 text-muted-foreground" />}
                     <span>{isStored ? 'To Showroom' : 'To Storage'}</span>
                   </button>
                 )}
@@ -304,7 +304,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                 {onTrashArtwork && !isTrashed && (
                   <button
                     onClick={() => onTrashArtwork(artwork.slug)}
-                    className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-wider bg-white hover:bg-red-50 text-red-700 border border-zinc-300 hover:border-red-300 dark:bg-zinc-900 dark:hover:bg-red-950/80 dark:text-red-400 dark:border-zinc-800 transition-colors cursor-pointer ml-auto font-bold rounded-xs"
+                    className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-wider bg-card hover:bg-red-50 dark:hover:bg-red-950/60 text-red-700 dark:text-red-400 border border-line hover:border-red-300 dark:hover:border-red-800 transition-colors cursor-pointer ml-auto font-bold rounded-xs"
                   >
                     <Trash2 className="w-3 h-3 text-red-600 dark:text-red-400" />
                     <span>Trash</span>
@@ -313,54 +313,54 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
               </div>
 
               {/* Title & Production Year */}
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white uppercase font-sans">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground uppercase font-sans">
                 {artwork.title}
               </h1>
-              <p className="text-zinc-600 dark:text-zinc-400 text-xs mt-1.5 font-mono">
-                Original fine art work by Rory Skagen in <strong className="text-zinc-950 dark:text-white font-bold">{artwork.year}</strong>
+              <p className="text-muted-foreground text-xs mt-1.5 font-mono">
+                Original fine art work by Rory Skagen in <strong className="text-foreground font-bold">{artwork.year}</strong>
               </p>
             </div>
 
             {/* Structured Specifications Matrix */}
-            <div className="grid grid-cols-2 gap-3 p-4 bg-[#F7F6F2] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 font-mono text-[10px] shadow-xs">
+            <div className="grid grid-cols-2 gap-3 p-4 bg-surface-deep border border-line font-mono text-[10px] shadow-xs">
               <div>
-                <span className="text-[9px] uppercase tracking-wider text-zinc-600 dark:text-zinc-400 flex items-center gap-1 font-bold">
-                  <Ruler className="w-3 h-3 text-zinc-500" /> Dimensions
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground flex items-center gap-1 font-bold">
+                  <Ruler className="w-3 h-3 text-muted-foreground" /> Dimensions
                 </span>
-                <span className="font-bold text-zinc-950 dark:text-white mt-1 block">
+                <span className="font-bold text-foreground mt-1 block">
                   {artwork.dimensions}
                 </span>
-                <span className="text-[9px] text-zinc-500">
+                <span className="text-[9px] text-muted-foreground">
                   {artwork.dimensions_cm}
                 </span>
               </div>
 
               <div>
-                <span className="text-[9px] uppercase tracking-wider text-zinc-600 dark:text-zinc-400 flex items-center gap-1 font-bold">
-                  <Layers className="w-3 h-3 text-zinc-500" /> Medium / Substrate
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground flex items-center gap-1 font-bold">
+                  <Layers className="w-3 h-3 text-muted-foreground" /> Medium / Substrate
                 </span>
-                <span className="font-bold text-zinc-950 dark:text-white mt-1 block line-clamp-1">
+                <span className="font-bold text-foreground mt-1 block line-clamp-1">
                   {artwork.medium}
                 </span>
-                <span className="text-[9px] text-zinc-500">
+                <span className="text-[9px] text-muted-foreground">
                   {artwork.edition}
                 </span>
               </div>
 
               <div>
-                <span className="text-[9px] uppercase tracking-wider text-zinc-600 dark:text-zinc-400 flex items-center gap-1 font-bold">
-                  <MapPin className="w-3 h-3 text-zinc-500" /> Location / Studio
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground flex items-center gap-1 font-bold">
+                  <MapPin className="w-3 h-3 text-muted-foreground" /> Location / Studio
                 </span>
-                <span className="font-bold text-zinc-950 dark:text-white mt-1 block line-clamp-1">
+                <span className="font-bold text-foreground mt-1 block line-clamp-1">
                   {artwork.location || 'Austin, TX Studio'}
                 </span>
               </div>
 
               <div>
-                <span className="text-[9px] uppercase tracking-wider text-zinc-600 dark:text-zinc-400 flex items-center gap-1 font-bold">
-                  <Tag className="w-3 h-3 text-zinc-500" /> Price / Purchase
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground flex items-center gap-1 font-bold">
+                  <Tag className="w-3 h-3 text-muted-foreground" /> Price / Purchase
                 </span>
-                <span className="font-bold text-zinc-950 dark:text-white text-sm mt-1 block">
+                <span className="font-bold text-foreground text-sm mt-1 block">
                   {artwork.price}
                 </span>
               </div>
@@ -370,7 +370,7 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
             <div className="pt-2">
               <button
                 onClick={() => setInquiryOpen(true)}
-                className="w-full py-3.5 px-6 bg-zinc-900 text-white dark:bg-white dark:text-black text-[10px] uppercase font-bold tracking-[0.2em] hover:bg-black dark:hover:bg-zinc-200 transition-colors cursor-pointer shadow-md rounded-xs"
+                className="w-full py-3.5 px-6 bg-primary text-primary-foreground text-[10px] uppercase font-bold tracking-[0.2em] hover:opacity-90 transition-opacity cursor-pointer shadow-md rounded-xs"
               >
                 {artwork.status === 'Available'
                   ? 'Inquire About Original'
@@ -382,14 +382,14 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
           </div>
 
           {/* Narrative & Source File Tabs */}
-          <div className="bg-white dark:bg-[#0D0D10] border border-zinc-300 dark:border-zinc-800 shadow-xs transition-colors">
-            <div className="flex items-center border-b border-zinc-200 dark:border-zinc-800 bg-[#F2F1EC] dark:bg-black text-[10px] font-mono">
+          <div className="bg-card border border-line shadow-xs transition-colors">
+            <div className="flex items-center border-b border-line bg-surface-deep text-[10px] font-mono">
               <button
                 onClick={() => setActiveTab('narrative')}
                 className={`flex-1 py-2.5 uppercase tracking-wider transition-colors font-bold cursor-pointer ${
                   activeTab === 'narrative'
-                    ? 'border-b-2 border-zinc-950 dark:border-white text-zinc-950 dark:text-white bg-white dark:bg-zinc-900/40'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-300'
+                    ? 'border-b-2 border-line-strong text-foreground bg-card'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Curatorial Narrative
@@ -398,8 +398,8 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                 onClick={() => setActiveTab('source')}
                 className={`flex-1 py-2.5 uppercase tracking-wider transition-colors font-bold cursor-pointer ${
                   activeTab === 'source'
-                    ? 'border-b-2 border-zinc-950 dark:border-white text-zinc-950 dark:text-white bg-white dark:bg-zinc-900/40'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-300'
+                    ? 'border-b-2 border-line-strong text-foreground bg-card'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Drive Record ({artwork.slug}.md)
@@ -411,20 +411,20 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
                 <div
                   onClick={handleMarkdownClick}
                   dangerouslySetInnerHTML={{ __html: artwork.renderedHtml || '' }}
-                  className="prose prose-zinc dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-300 text-xs sm:text-sm leading-relaxed"
+                  className="prose prose-zinc dark:prose-invert max-w-none text-foreground/85 text-xs sm:text-sm leading-relaxed"
                 />
               ) : (
                 <div className="space-y-3 font-mono text-[10px]">
-                  <div className="flex items-center justify-between text-zinc-600 dark:text-zinc-500 uppercase tracking-wider">
+                  <div className="flex items-center justify-between text-muted-foreground uppercase tracking-wider">
                     <span>File Path: {artwork.slug}.md</span>
                     <button
                       onClick={() => onEditInStudio()}
-                      className="text-zinc-900 dark:text-white hover:underline flex items-center gap-1 font-bold cursor-pointer"
+                      className="text-foreground hover:underline flex items-center gap-1 font-bold cursor-pointer"
                     >
                       <Edit3 className="w-3 h-3" /> Edit in Studio
                     </button>
                   </div>
-                  <pre className="p-4 bg-[#F7F6F2] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 font-mono text-[11px] overflow-x-auto max-h-96 leading-relaxed">
+                  <pre className="p-4 bg-surface-deep border border-line text-foreground/85 font-mono text-[11px] overflow-x-auto max-h-96 leading-relaxed">
                     {artwork.narrative}
                   </pre>
                 </div>

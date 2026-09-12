@@ -40,7 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0A0A0C]/95 backdrop-blur-md border-b-2 border-zinc-900 dark:border-zinc-800 transition-colors shadow-xs">
+    <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b-2 border-line-strong transition-colors shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-18">
           
@@ -58,10 +58,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="h-9 w-9 rounded-md transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col">
-              <span className="text-base sm:text-lg font-black tracking-[0.2em] uppercase text-zinc-950 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors font-serif leading-tight">
+              <span className="text-base sm:text-lg font-black tracking-[0.2em] uppercase text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors font-serif leading-tight">
                 Rory Skagen Art
               </span>
-              <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-mono">
+              <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-mono">
                 Austin, Texas • Est. 1985
               </span>
             </div>
@@ -82,13 +82,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => handleNavClick(link.id)}
                   className={`py-1.5 transition-all cursor-pointer relative ${
                     isActive
-                      ? 'text-zinc-950 dark:text-white font-black'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
+                      ? 'text-foreground font-black'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <span>{link.label}</span>
                   {isActive && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-zinc-950 dark:bg-white animate-in fade-in" />
+                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-line-strong animate-in fade-in" />
                   )}
                 </button>
               );
@@ -103,13 +103,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={toggleTheme}
               title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
-              className="flex items-center justify-center w-9 h-9 bg-[#F2F1EC] dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 transition-colors cursor-pointer rounded-xs flex-shrink-0"
+              className="flex items-center justify-center w-9 h-9 bg-surface-deep hover:bg-muted border border-line text-foreground transition-colors cursor-pointer rounded-xs flex-shrink-0"
               aria-label="Toggle Theme"
             >
               {isDark ? (
                 <Sun className="w-4 h-4 text-amber-400" />
               ) : (
-                <Moon className="w-4 h-4 text-zinc-800" />
+                <Moon className="w-4 h-4 text-foreground/80" />
               )}
             </button>
           </div>
@@ -120,15 +120,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="p-2 bg-[#F2F1EC] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-xs"
+              className="p-2 bg-surface-deep border border-line text-foreground rounded-xs"
               aria-label="Toggle Theme"
             >
-              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-zinc-800" />}
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-foreground/80" />}
             </button>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 bg-zinc-900 text-white dark:bg-white dark:text-black rounded-xs cursor-pointer focus:outline-none"
+              className="p-2 bg-primary text-primary-foreground rounded-xs cursor-pointer focus:outline-none"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -141,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             5. MOBILE DROPDOWN MENU
         ────────────────────────────────────────────────────────────────*/}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-zinc-300 dark:border-zinc-800 py-4 space-y-2 font-mono text-xs uppercase tracking-wider animate-in slide-in-from-top-2 duration-200">
+          <div className="md:hidden border-t border-line py-4 space-y-2 font-mono text-xs uppercase tracking-wider animate-in slide-in-from-top-2 duration-200">
             {navLinks.map((link) => {
               const isActive =
                 currentRoute === link.id ||
@@ -152,8 +152,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => handleNavClick(link.id)}
                   className={`w-full text-left px-3 py-2.5 rounded-xs transition-colors flex items-center justify-between ${
                     isActive
-                      ? 'bg-zinc-950 text-white dark:bg-white dark:text-black font-bold'
-                      : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+                      ? 'bg-primary text-primary-foreground font-bold'
+                      : 'text-foreground/80 hover:bg-muted'
                   }`}
                 >
                   <span>{link.label}</span>

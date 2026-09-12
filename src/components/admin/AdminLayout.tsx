@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   X,
   Menu,
+  FolderOpen,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
@@ -39,8 +40,9 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { route: '/admin/catalog', label: 'Catalog', icon: ImageIcon },
   { route: '/admin/pages', label: 'Pages', icon: Files },
   { route: '/admin/inquiries', label: 'Inquiries', icon: Inbox },
-  { route: '/admin/media', label: 'Media', icon: Palette },
+  { route: '/admin/media', label: 'Media', icon: FolderOpen },
   { route: '/admin/taxonomies', label: 'Taxonomies', icon: Tags, minRole: 'editor' },
+  { route: '/admin/design', label: 'Design', icon: Palette, minRole: 'editor' },
   { route: '/admin/users', label: 'Users', icon: Users, minRole: 'admin' },
   { route: '/admin/settings', label: 'Settings', icon: Settings, minRole: 'admin' },
   { route: '/admin/trash', label: 'Trash', icon: Trash2, minRole: 'editor' },

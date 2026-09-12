@@ -3,15 +3,15 @@ import {
   Sparkles, 
   MapPin, 
   Award, 
-  Palette, 
-  Layers, 
   Mail, 
   ArrowRight, 
-  Compass, 
-  ExternalLink,
-  ShieldCheck
+  Compass,
+  Camera,
+  Paintbrush
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { resolveAssetUrl } from '../data/assetResolver';
+import { PageHeader } from './PageHeader';
 
 interface AboutViewProps {
   onNavigate: (route: string, param?: string) => void;
@@ -22,30 +22,22 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
   const roryPhotoUrl = resolveAssetUrl('Rory-Skagen-Photo.jpg', 'rory-skagen-photo', 'hero') ||
     'https://res.cloudinary.com/xjilp2pq/image/upload/v1787077006/Rory-Skagen-Photo.jpg';
 
-  const austinMuralUrl = resolveAssetUrl('austin-Recovered-copy.jpg', 'greetings-from-austin', 'hero') ||
-    'https://res.cloudinary.com/xjilp2pq/image/upload/v1787076989/austin-Recovered-copy.jpg';
-
-  const drebblesUrl = resolveAssetUrl('drebbles-copy.jpg', 'drebbles', 'hero') ||
-    'https://res.cloudinary.com/xjilp2pq/image/upload/v1787076993/drebbles-copy.jpg';
-
   return (
     <div className="space-y-12 sm:space-y-16 pb-20 font-sans">
       
       {/* ─────────────────────────────────────────────────────────────
-          1. HERO EDITORIAL HEADER
+          1. HERO EDITORIAL HEADER — shared statement masthead
       ────────────────────────────────────────────────────────────────*/}
-      <header className="border-b-2 border-zinc-900 dark:border-zinc-700 pb-8 space-y-4">
-        <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 font-bold">
-          <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
-          <span>Artist Biography and Studio Heritage • Austin, Texas</span>
-        </div>
-        <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-zinc-950 dark:text-white font-serif leading-none">
-          About Rory Skagen
-        </h1>
-        <p className="text-sm sm:text-base font-mono uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-semibold max-w-3xl">
-          Four Decades of Pop Art, Atomic Americana and Landmark Texas Murals
-        </p>
-      </header>
+      <PageHeader
+        kicker="Artist Biography & Studio Heritage"
+        statement="Four decades of pop art, atomic Americana and landmark Texas murals"
+        support="From the ‘Greetings from Austin’ mural to Kaiju enamel panels — the life, the craft, and the cultural stewardship of Austin's most enduring pop surrealist."
+        meta={[
+          { label: 'Studio Origin', value: 'Austin, Texas — 1985' },
+          { label: 'Co-Founder', value: 'SouthPop Center' },
+          { label: 'Landmark', value: 'Greetings from Austin' },
+        ]}
+      />
 
       {/* ─────────────────────────────────────────────────────────────
           2. BIOGRAPHY & ARTIST PORTRAIT GRID
@@ -54,8 +46,8 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
         
         {/* Left Column: Portrait & Studio Credentials */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-4 sm:p-5 shadow-md space-y-4">
-            <div className="relative aspect-4/5 bg-[#F4F3ED] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 overflow-hidden">
+          <div className="bg-card border-2 border-line-strong p-4 sm:p-5 shadow-md space-y-4">
+            <div className="relative aspect-4/5 bg-surface-deep border border-line overflow-hidden">
               <img
                 src={roryPhotoUrl}
                 alt="Rory Skagen in Studio"
@@ -69,44 +61,44 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
             </div>
 
             <div className="space-y-3 font-mono text-xs pt-2">
-              <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
-                <span className="text-zinc-500 uppercase">Studio Origin:</span>
-                <span className="font-bold text-zinc-900 dark:text-white">Austin, Texas (Est. 1985)</span>
+              <div className="flex items-center justify-between border-b border-line pb-2">
+                <span className="text-muted-foreground uppercase">Studio Origin:</span>
+                <span className="font-bold text-foreground">Austin, Texas (Est. 1985)</span>
               </div>
-              <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
-                <span className="text-zinc-500 uppercase">Key Mediums:</span>
-                <span className="font-bold text-zinc-900 dark:text-white">Enamel, Canvas, Steel, Murals</span>
+              <div className="flex items-center justify-between border-b border-line pb-2">
+                <span className="text-muted-foreground uppercase">Key Mediums:</span>
+                <span className="font-bold text-foreground">Enamel, Canvas, Steel, Murals</span>
               </div>
-              <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
-                <span className="text-zinc-500 uppercase">Cultural Heritage:</span>
-                <span className="font-bold text-zinc-900 dark:text-white">Co-Founder, SouthPop Center</span>
+              <div className="flex items-center justify-between border-b border-line pb-2">
+                <span className="text-muted-foreground uppercase">Cultural Heritage:</span>
+                <span className="font-bold text-foreground">Co-Founder, SouthPop Center</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-zinc-500 uppercase">Public Landmark:</span>
+                <span className="text-muted-foreground uppercase">Public Landmark:</span>
                 <span className="font-bold text-emerald-700 dark:text-emerald-400">Greetings from Austin Mural</span>
               </div>
             </div>
           </div>
 
           {/* Quick Contact & Inquire Box */}
-          <div className="bg-[#F4F3ED] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 p-6 space-y-4 rounded-xs">
-            <h3 className="font-serif font-black text-lg uppercase tracking-tight text-zinc-950 dark:text-white">
+          <div className="bg-surface-deep border border-line p-6 space-y-4 rounded-xs">
+            <h3 className="font-serif font-black text-lg uppercase tracking-tight text-foreground">
               Studio Representation and Inquiries
             </h3>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
+            <p className="text-xs text-muted-foreground leading-relaxed font-sans">
               Original panel enamels, large banner paintings, and commissioned murals are available directly through the studio and authorized gallery representations.
             </p>
             <div className="pt-2 flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => onNavigate('contact')}
-                className="w-full py-2.5 bg-zinc-900 text-white dark:bg-white dark:text-black font-mono font-bold uppercase tracking-wider text-xs hover:bg-black transition-colors cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-primary text-primary-foreground font-mono font-bold uppercase tracking-wider text-xs hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2"
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>Contact Me</span>
               </button>
               <button
                 onClick={() => onNavigate('gallery')}
-                className="w-full py-2.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white font-mono font-bold uppercase tracking-wider text-xs hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 bg-muted text-foreground font-mono font-bold uppercase tracking-wider text-xs hover:opacity-80 transition-opacity cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <span>View Catalog</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -116,13 +108,13 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
         </div>
 
         {/* Right Column: Full Narrative & History */}
-        <div className="lg:col-span-7 space-y-8 text-zinc-800 dark:text-zinc-200 font-sans leading-relaxed">
+        <div className="lg:col-span-7 space-y-8 text-foreground/85 font-sans leading-relaxed">
           
           <div className="space-y-4">
-            <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 dark:text-white font-serif border-b border-zinc-300 dark:border-zinc-800 pb-2">
+            <h2 className="text-2xl sm:text-3xl font-black uppercase text-foreground font-serif border-b border-line-strong pb-2">
               The Vision of Rory Skagen
             </h2>
-            <p className="text-base sm:text-lg text-zinc-700 dark:text-zinc-300 font-serif italic leading-relaxed">
+            <p className="text-base sm:text-lg text-foreground/90 font-serif italic leading-relaxed">
               &ldquo;My work lives at the intersection of atomic-age optimism, creature-feature dread, and the faded neon romance of mid-century commercial Americana.&rdquo;
             </p>
             <p className="text-sm sm:text-base">
@@ -133,26 +125,60 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
             </p>
           </div>
 
-          {/* Landmark Section: Greetings from Austin */}
-          <div className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-6 shadow-sm space-y-4">
+          {/* Landmark Section: Greetings from Austin — with 1998 painting photo */}
+          <div className="bg-card border-2 border-line-strong p-6 shadow-sm space-y-4">
             <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-xs font-bold uppercase tracking-widest">
               <Award className="w-4 h-4" />
               <span>Historic Austin Icon</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-black uppercase text-zinc-950 dark:text-white font-serif">
+            <h3 className="text-xl sm:text-2xl font-black uppercase text-foreground font-serif">
               The &ldquo;Greetings from Austin&rdquo; Mural (1998)
             </h3>
-            <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
-              In 1998, Rory Skagen, along with collaborator Bill Johnston, painted the world-famous <strong className="text-zinc-950 dark:text-white">&ldquo;Greetings from Austin&rdquo;</strong> postcard mural on the side of Roadhouse Relics at South 1st and Annie Street.
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <figure className="space-y-2">
+                <div className="relative overflow-hidden border border-line bg-surface-deep">
+                  <img
+                    src="/images/greetings-mural-painting-1998.jpg"
+                    alt="Rory Skagen hand-painting the Greetings from Austin mural in 1998"
+                    className="w-full h-44 object-cover transition-transform duration-500 hover:scale-105"
+                    loading="lazy"
+                  />
+                  <span className="absolute top-2 left-2 px-2 py-0.5 bg-black/80 text-white text-[8px] font-mono font-bold uppercase tracking-widest">
+                    1998 • Painting Day
+                  </span>
+                </div>
+                <figcaption className="text-[10px] font-mono text-muted-foreground leading-relaxed">
+                  Skagen at the wall on South 1st — ladder, enamel pots, and the large-letter postcard taking shape.
+                </figcaption>
+              </figure>
+              <figure className="space-y-2">
+                <div className="relative overflow-hidden border border-line bg-surface-deep">
+                  <img
+                    src="/images/greetings-mural-turquoise-truck.jpg"
+                    alt="Vintage turquoise pickup parked before the Greetings from Austin mural at Roadhouse Relics"
+                    className="w-full h-44 object-cover transition-transform duration-500 hover:scale-105"
+                    loading="lazy"
+                  />
+                  <span className="absolute top-2 left-2 px-2 py-0.5 bg-black/80 text-white text-[8px] font-mono font-bold uppercase tracking-widest">
+                    Roadhouse Relics
+                  </span>
+                </div>
+                <figcaption className="text-[10px] font-mono text-muted-foreground leading-relaxed">
+                  The gallery wall as roadside destination — vintage neon, relics, and a &apos;57 Apache keeping watch.
+                </figcaption>
+              </figure>
+            </div>
+            <p className="text-xs sm:text-sm text-foreground/85">
+              In 1998, Rory Skagen, along with collaborator Bill Johnston, painted the world-famous <strong className="text-foreground">&ldquo;Greetings from Austin&rdquo;</strong> postcard mural on the side of Roadhouse Relics at South 1st and Annie Street.
             </p>
-            <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
+            <p className="text-xs sm:text-sm text-foreground/85">
               Transforming a 1940s Curt Teich large-letter linen postcard into a 20-foot outdoor landmark, the mural has become the undisputed cultural beacon of Austin, photographed by millions of visitors, featured in films, television, and international travel documentaries.
             </p>
           </div>
 
           {/* SouthPop & Cultural Stewardship */}
           <div className="space-y-4">
-            <h3 className="text-xl sm:text-2xl font-black uppercase text-zinc-950 dark:text-white font-serif border-b border-zinc-300 dark:border-zinc-800 pb-2">
+            <h3 className="text-xl sm:text-2xl font-black uppercase text-foreground font-serif border-b border-line-strong pb-2">
               SouthPop &amp; Community Roots
             </h3>
             <p className="text-sm sm:text-base">
@@ -162,39 +188,39 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
 
           {/* Mediums & Techniques */}
           <div className="space-y-4">
-            <h3 className="text-xl sm:text-2xl font-black uppercase text-zinc-950 dark:text-white font-serif border-b border-zinc-300 dark:border-zinc-800 pb-2">
+            <h3 className="text-xl sm:text-2xl font-black uppercase text-foreground font-serif border-b border-line-strong pb-2">
               Techniques &amp; Craftsmanship
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-              <div className="bg-[#F4F3ED] dark:bg-zinc-900 p-4 border border-zinc-300 dark:border-zinc-800">
-                <span className="font-bold text-zinc-950 dark:text-white block mb-1 uppercase">
+              <div className="bg-surface-deep p-4 border border-line">
+                <span className="font-bold text-foreground block mb-1 uppercase">
                   Sign Enamels on Steel
                 </span>
-                <span className="text-zinc-600 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Industrial high-gloss sign enamels applied to custom steel and hardwood panels with multi-coat automotive clear patinas.
                 </span>
               </div>
-              <div className="bg-[#F4F3ED] dark:bg-zinc-900 p-4 border border-zinc-300 dark:border-zinc-800">
-                <span className="font-bold text-zinc-950 dark:text-white block mb-1 uppercase">
+              <div className="bg-surface-deep p-4 border border-line">
+                <span className="font-bold text-foreground block mb-1 uppercase">
                   Sideshow Banners
                 </span>
-                <span className="text-zinc-600 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Heavy canvas banners with hand-stitched leather corners, brass grommets, and weather-resistant paints echoing 1940s carnival art.
                 </span>
               </div>
-              <div className="bg-[#F4F3ED] dark:bg-zinc-900 p-4 border border-zinc-300 dark:border-zinc-800">
-                <span className="font-bold text-zinc-950 dark:text-white block mb-1 uppercase">
+              <div className="bg-surface-deep p-4 border border-line">
+                <span className="font-bold text-foreground block mb-1 uppercase">
                   Monumental Murals
                 </span>
-                <span className="text-zinc-600 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Large-scale exterior brick and masonry installations, including public art for Planet K Texas, commercial venues, and private estates.
                 </span>
               </div>
-              <div className="bg-[#F4F3ED] dark:bg-zinc-900 p-4 border border-zinc-300 dark:border-zinc-800">
-                <span className="font-bold text-zinc-950 dark:text-white block mb-1 uppercase">
+              <div className="bg-surface-deep p-4 border border-line">
+                <span className="font-bold text-foreground block mb-1 uppercase">
                   Hand-Lettered Satire
                 </span>
-                <span className="text-zinc-600 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Original typographic compositions evoking mid-century apothecary packaging, Tiki lounges, and atomic cinema title cards.
                 </span>
               </div>
@@ -205,15 +231,48 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
+          2b. THE MURAL TODAY — full-bleed visitor photo moment
+      ────────────────────────────────────────────────────────────────*/}
+      <section className="relative overflow-hidden border-2 border-line-strong shadow-lg">
+        <div className="relative aspect-21/9 min-h-[280px]">
+          <img
+            src="/images/greetings-from-austin-mural.jpg"
+            alt="A visitor poses before the Greetings from Austin postcard mural"
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/15 to-transparent" />
+          <div className="absolute bottom-0 inset-x-0 p-5 sm:p-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="space-y-1.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black/70 backdrop-blur-xs text-white text-[9px] font-mono font-bold uppercase tracking-widest">
+                <Camera className="w-3 h-3" />
+                South 1st &amp; Annie • Est. 1998
+              </span>
+              <p className="text-white font-serif font-black text-lg sm:text-2xl uppercase tracking-tight max-w-xl leading-tight">
+                The most photographed wall in Texas
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate('gallery')}
+              className="flex-shrink-0 px-5 py-2.5 bg-white/95 text-black font-mono font-bold uppercase tracking-widest text-[10px] hover:bg-white transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <Paintbrush className="w-3.5 h-3.5" />
+              <span>See Mural-Inspired Works</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
           3. SIGNATURE THEMES & EXHIBITION SERIES
       ────────────────────────────────────────────────────────────────*/}
-      <section className="border-t-2 border-zinc-900 dark:border-zinc-700 pt-10 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-zinc-300 dark:border-zinc-800 pb-3">
+      <section className="border-t-2 border-line-strong pt-10 space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-line-strong pb-3">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted-foreground font-bold block mb-1">
               STUDIO THEMATIC CANON
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 dark:text-white font-serif">
+            <h2 className="text-2xl sm:text-3xl font-black uppercase text-foreground font-serif">
               Signature Art Series
             </h2>
           </div>
@@ -227,44 +286,48 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-5 space-y-2">
-            <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">01 • SERIES</span>
-            <h4 className="font-serif font-bold text-lg text-zinc-950 dark:text-white uppercase">Kaiju &amp; Atomic Paranoia</h4>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Majestic, solitary behemoths like <em>Kirunam</em>, <em>Terrordon</em>, and <em>Jigoku</em> wandering dystopian mid-century metropolises.
-            </p>
-          </div>
-
-          <div className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-5 space-y-2">
-            <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">02 • SERIES</span>
-            <h4 className="font-serif font-bold text-lg text-zinc-950 dark:text-white uppercase">Vintage Advertisements</h4>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Fictional mid-century apothecary remedies, pine medicines (<em>Drebbles</em>), and satirical consumer goods in rich sign enamels.
-            </p>
-          </div>
-
-          <div className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-5 space-y-2">
-            <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">03 • SERIES</span>
-            <h4 className="font-serif font-bold text-lg text-zinc-950 dark:text-white uppercase">The Cocktail Hours &amp; Tiki</h4>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Nocturnal encounters in supper clubs, neon lounges (<em>The Blue Elephant Lounge</em>), and Polynesian luau fantasies (<em>Tipsy Island</em>).
-            </p>
-          </div>
-
-          <div className="bg-white dark:bg-[#0E0E12] border-2 border-zinc-900 dark:border-zinc-700 p-5 space-y-2">
-            <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">04 • SERIES</span>
-            <h4 className="font-serif font-bold text-lg text-zinc-950 dark:text-white uppercase">Landmark Murals &amp; Banners</h4>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Public masonry installations across Texas, alongside heavy carnival sideshow banners (<em>Dinosaur Land</em>) painted on canvas.
-            </p>
-          </div>
+          {[
+            {
+              num: '01 • SERIES',
+              title: 'Kaiju & Atomic Paranoia',
+              body: 'Majestic, solitary behemoths like Kirunam, Terrordon, and Jigoku wandering dystopian mid-century metropolises.',
+            },
+            {
+              num: '02 • SERIES',
+              title: 'Vintage Advertisements',
+              body: 'Fictional mid-century apothecary remedies, pine medicines (Drebbles), and satirical consumer goods in rich sign enamels.',
+            },
+            {
+              num: '03 • SERIES',
+              title: 'The Cocktail Hours & Tiki',
+              body: 'Nocturnal encounters in supper clubs, neon lounges (The Blue Elephant Lounge), and Polynesian luau fantasies (Tipsy Island).',
+            },
+            {
+              num: '04 • SERIES',
+              title: 'Landmark Murals & Banners',
+              body: 'Public masonry installations across Texas, alongside heavy carnival sideshow banners (Dinosaur Land) painted on canvas.',
+            },
+          ].map((series, idx) => (
+            <motion.div
+              key={series.num}
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.45, delay: idx * 0.08 }}
+              className="bg-card border-2 border-line-strong p-5 space-y-2"
+            >
+              <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">{series.num}</span>
+              <h4 className="font-serif font-bold text-lg text-foreground uppercase">{series.title}</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">{series.body}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
           4. BOTTOM CTA BANNER
       ────────────────────────────────────────────────────────────────*/}
-      <section className="bg-zinc-900 text-white dark:bg-zinc-950 border-2 border-zinc-900 dark:border-zinc-700 p-8 sm:p-12 text-center space-y-6">
+      <section className="bg-primary text-primary-foreground border-2 border-line-strong p-8 sm:p-12 text-center space-y-6">
         <div className="max-w-2xl mx-auto space-y-3">
           <span className="text-xs font-mono uppercase tracking-[0.25em] text-emerald-400 font-bold">
             ORIGINAL ARTWORKS AND COMMISSIONS
@@ -272,7 +335,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
           <h3 className="text-3xl sm:text-4xl font-black uppercase font-serif tracking-tight">
             Inquire on an Original Rory Skagen
           </h3>
-          <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">
+          <p className="text-primary-foreground/75 text-xs sm:text-sm leading-relaxed">
             Inquire about available panel originals, historical archive prints, or custom mural commissions for public and private spaces.
           </p>
         </div>
@@ -280,7 +343,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenInquiry 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
           <button
             onClick={() => onNavigate('gallery')}
-            className="px-6 py-3 bg-white text-black font-mono font-bold uppercase tracking-widest text-xs hover:bg-zinc-200 transition-colors cursor-pointer"
+            className="px-6 py-3 bg-primary-foreground text-primary font-mono font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-opacity cursor-pointer"
           >
             Browse Master Catalog
           </button>

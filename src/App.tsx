@@ -196,7 +196,7 @@ export default function App() {
   const isPublicRoute = ['home', 'gallery', 'catalog', 'artwork', 'about', 'contact'].includes(route);
 
   return (
-    <div id="root-container" className="min-h-screen bg-[#E5E4DF] text-zinc-900 dark:bg-[#0c0c0e] dark:text-[#f4f4f5] flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-900 dark:selection:text-amber-200 transition-colors">
+    <div id="root-container" className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-accent/30 transition-colors">
       <div>
         {/* Admin Dashboard: full-screen takeover, no public chrome */}
         {route === 'admin' && (
@@ -333,32 +333,32 @@ export default function App() {
       {/* ─────────────────────────────────────────────────────────────
           PUBLIC FINE ART STUDIO FOOTER (Refined Editorial Layout)
       ────────────────────────────────────────────────────────────────*/}
-      <footer className={route === 'admin' ? 'hidden' : 'bg-[#DFDED9] dark:bg-[#09090c] border-t-2 border-zinc-900 dark:border-zinc-800 mt-20 text-xs font-mono text-zinc-600 dark:text-zinc-400 py-12 transition-colors'}>
+      <footer className={route === 'admin' ? 'hidden' : 'bg-surface-deep border-t-2 border-line-strong mt-20 text-xs font-mono text-muted-foreground py-12 transition-colors'}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand & Studio Heritage Column */}
             <div className="md:col-span-2 space-y-3">
-              <span className="font-serif font-black text-xl text-zinc-950 dark:text-white uppercase tracking-wider block">
+              <span className="font-serif font-black text-xl text-foreground uppercase tracking-wider block">
                 Rory Skagen Art
               </span>
-              <p className="text-zinc-700 dark:text-zinc-400 font-sans text-xs max-w-md leading-relaxed">
+              <p className="text-foreground/80 font-sans text-xs max-w-md leading-relaxed">
                 Official fine art studio and gallery celebrating four decades of iconic retro pop surrealism, Austin landmarks, and neon roadside Americana. Original paintings, large-scale steel panels, and fine art commissions available.
               </p>
-              <div className="text-[11px] text-zinc-500 font-mono">
+              <div className="text-[11px] text-muted-foreground font-mono">
                 Austin, Texas • Est. 1985 • Co-Creator of <em>&ldquo;Greetings from Austin&rdquo;</em> Mural
               </div>
             </div>
 
             {/* Navigation Column */}
             <div className="space-y-2">
-              <span className="text-zinc-950 dark:text-zinc-100 font-bold text-xs block uppercase tracking-wider">
+              <span className="text-foreground font-bold text-xs block uppercase tracking-wider">
                 Explore
               </span>
               <ul className="space-y-2 text-xs font-mono">
                 <li>
                   <button 
                     onClick={() => navigateTo('home')} 
-                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
+                    className="hover:text-foreground transition-colors cursor-pointer"
                   >
                     Home
                   </button>
@@ -366,7 +366,7 @@ export default function App() {
                 <li>
                   <button 
                     onClick={() => navigateTo('gallery')} 
-                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
+                    className="hover:text-foreground transition-colors cursor-pointer"
                   >
                     Catalog ({catalogCount} Works)
                   </button>
@@ -374,7 +374,7 @@ export default function App() {
                 <li>
                   <button 
                     onClick={() => navigateTo('about')} 
-                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
+                    className="hover:text-foreground transition-colors cursor-pointer"
                   >
                     About Rory
                   </button>
@@ -382,7 +382,7 @@ export default function App() {
                 <li>
                   <button 
                     onClick={() => navigateTo('contact')} 
-                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
+                    className="hover:text-foreground transition-colors cursor-pointer"
                   >
                     Contact Me
                   </button>
@@ -392,14 +392,14 @@ export default function App() {
 
             {/* Studio Services Column */}
             <div className="space-y-2">
-              <span className="text-zinc-950 dark:text-zinc-100 font-bold text-xs block uppercase tracking-wider">
+              <span className="text-foreground font-bold text-xs block uppercase tracking-wider">
                 Studio Services
               </span>
-              <ul className="space-y-2 text-xs font-mono text-zinc-700 dark:text-zinc-400">
+              <ul className="space-y-2 text-xs font-mono text-foreground/75">
                 <li>
                   <button 
                     onClick={() => navigateTo('contact')} 
-                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
+                    className="hover:text-foreground transition-colors cursor-pointer text-left"
                   >
                     Original Artwork Inquiries
                   </button>
@@ -407,7 +407,7 @@ export default function App() {
                 <li>
                   <button 
                     onClick={() => navigateTo('contact')} 
-                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
+                    className="hover:text-foreground transition-colors cursor-pointer text-left"
                   >
                     Mural Commissions
                   </button>
@@ -415,7 +415,7 @@ export default function App() {
                 <li>
                   <button 
                     onClick={() => navigateTo('contact')} 
-                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
+                    className="hover:text-foreground transition-colors cursor-pointer text-left"
                   >
                     Exhibitions and Press
                   </button>
@@ -423,7 +423,7 @@ export default function App() {
                 <li>
                   <button 
                     onClick={() => navigateTo('about')} 
-                    className="hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer text-left"
+                    className="hover:text-foreground transition-colors cursor-pointer text-left"
                   >
                     Certificate of Authenticity
                   </button>
@@ -433,7 +433,7 @@ export default function App() {
           </div>
 
           {/* Bottom Bar with Copyright and Subtle Admin Link */}
-          <div className="pt-8 border-t border-zinc-300 dark:border-zinc-800/80 flex items-center justify-between flex-wrap gap-4 text-[11px] text-zinc-600 dark:text-zinc-500">
+          <div className="pt-8 border-t border-line flex items-center justify-between flex-wrap gap-4 text-[11px] text-muted-foreground">
             <div>
               &copy; {new Date().getFullYear()} Rory Skagen Studio. All rights reserved. Austin, Texas.
             </div>
@@ -442,7 +442,7 @@ export default function App() {
               <span>•</span>
               <button
                 onClick={() => navigateTo('/admin')}
-                className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors cursor-pointer flex items-center gap-1"
+                className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1"
                 title="Studio Staff Portal"
               >
                 {isAuthenticated ? (

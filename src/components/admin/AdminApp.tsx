@@ -9,6 +9,7 @@ import { PagesAdminView } from './PagesAdminView';
 import { UsersAdminView } from './UsersAdminView';
 import { TaxonomiesAdminView } from './TaxonomiesAdminView';
 import { SettingsAdminView } from './SettingsAdminView';
+import { DesignAdminView } from './DesignAdminView';
 import { MediaAdminView } from './MediaAdminView';
 import { useAuth } from '../../context/AuthContext';
 import { GalleryAppEngineInstance } from '../../engine/galleryStateEngine';
@@ -208,6 +209,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
         return role === 'admin' ? <UsersAdminView currentUser={user} /> : <Forbidden />;
       case 'settings':
         return role === 'admin' ? <SettingsAdminView /> : <Forbidden />;
+      case 'design':
+        return role === 'admin' || role === 'editor' ? <DesignAdminView /> : <Forbidden />;
       case 'trash':
         return (
           <CatalogView
