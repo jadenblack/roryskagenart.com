@@ -13,13 +13,13 @@ import { ContactView } from './components/ContactView';
 import { AuthGateView } from './components/AuthGateView';
 import { GalleryGrid } from './components/GalleryGrid';
 import { ArtworkFocusView } from './components/ArtworkFocusView';
-import { MasterRegistryTable } from './components/MasterRegistryTable';
 import { PagesView } from './components/PagesView';
-import { TrashView } from './components/TrashView';
-import { AdminApp } from './components/admin/AdminApp';
 import { useAuth } from './context/AuthContext';
-import { generateFullIndexMd } from './data/portfolioPostsData';
 import { Lock, ShieldCheck } from 'lucide-react';
+
+const AdminApp = React.lazy(() =>
+  import('./components/admin/AdminApp').then((m) => ({ default: m.AdminApp }))
+);
 
 export default function App() {
   const { isAuthenticated, user } = useAuth();
@@ -75,12 +75,7 @@ export default function App() {
           setRoute('pages');
           setSelectedPageSlug(slug);
         }
-      } else if (hash === 'registry' || hash === 'index') {
-        setRoute('registry');
-      } else if (hash === 'trash') {
-        setRoute('trash');
-      } else if (hash === 'explorer' || hash === 'files' || hash === 'readme' || hash === 'docs') {
-        // Legacy drive tools are gone — the studio dashboard replaced them.
+      } else if (hash === 'registry' || hash === 'index' || hash === 'trash' || hash === 'explorer' || hash === 'files' || hash === 'readme' || hash === 'docs') {
         setRoute('admin');
         setAdminPath('/admin/catalog');
       } else if (hash === 'pages') {
@@ -190,17 +185,16 @@ export default function App() {
     return map;
   }, [pages, engineVersion]);
 
-  // Master index markdown for the registry view (display-only snapshot)
-  const indexMdContent = useMemo(() => generateFullIndexMd(), [engineVersion]);
-
   const isPublicRoute = ['home', 'gallery', 'catalog', 'artwork', 'about', 'contact'].includes(route);
 
   return (
     <div id="root-container" className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-accent/30 transition-colors">
       <div>
-        {/* Admin Dashboard: full-screen takeover, no public chrome */}
+        {/* Admin Dashboard: full-screen takeover, lazy-loaded on demand */}
         {route === 'admin' && (
-          <AdminApp path={adminPath} onNavigate={(p) => navigateTo(p)} />
+          <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center text-muted-foreground text-sm">Loading Studio Admin...</div>}>
+            <AdminApp path={adminPath} onNavigate={(p) => navigateTo(p)} />
+          </React.Suspense>
         )}
 
         {/* Public Clean Header (Single-Tier) — hidden on admin routes */}
@@ -281,41 +275,7 @@ export default function App() {
           {/* Protected Routes (When Authenticated) */}
           {!isPublicRoute && isAuthenticated && (
             <>
-              {/* Admin Route 1: Master Registry Table (index.md) */}
-              {route === 'registry' && (
-                <MasterRegistryTable
-                  items={allItems.filter(i => !i.trashed)}
-                  rawIndexMd={indexMdContent}
-                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-                  onEditIndexMd={() => navigateTo('/admin/catalog')}
-                  onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
-                  onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
-                  onToggleHeroSlider={(slug) => GalleryAppEngineInstance.toggleHeroSlider(slug)}
-                  onTrashArtwork={(slug) => GalleryAppEngineInstance.trashArtwork(slug)}
-                  onNavigateToTrash={() => navigateTo('trash')}
-                />
-              )}
-
-              {/* Admin Route 2: Dedicated Trash Management View */}
-              {route === 'trash' && (
-                <TrashView
-                  trashedItems={trashedItems}
-                  trashedArtworks={trashedItems}
-                  onRestore={(slug) => GalleryAppEngineInstance.restoreArtwork(slug)}
-                  onRestoreArtwork={(slug) => GalleryAppEngineInstance.restoreArtwork(slug)}
-                  onPermanentDelete={(slug) => GalleryAppEngineInstance.permanentlyDeleteArtwork(slug)}
-                  onPermanentlyDeleteArtwork={(slug) => GalleryAppEngineInstance.permanentlyDeleteArtwork(slug)}
-                  onEmptyTrash={() => GalleryAppEngineInstance.emptyTrash()}
-                  onRestoreAll={() => GalleryAppEngineInstance.restoreAllTrash()}
-                  onRestoreAllTrash={() => GalleryAppEngineInstance.restoreAllTrash()}
-                  onNavigateToRegistry={() => navigateTo('registry')}
-                  onBackToRegistry={() => navigateTo('registry')}
-                  onNavigateToGallery={() => navigateTo('gallery')}
-                  onSelectArtwork={(slug) => navigateTo('artwork', slug)}
-                />
-              )}
-
-              {/* Admin Route 4: Markdown Pages Editor */}
+              {/* Admin Route: Markdown Pages Editor */}
               {route === 'pages' && (
                 <PagesView
                   pages={pages}

@@ -34,8 +34,8 @@ dotenv.config();
 // ---------------------------------------------------------------------------
 
 const BUCKET_NAME = 'artwork-images';
-const MANIFEST_PATH = path.resolve('all_cloudinary_assets.json');
-const VERIFIED_POSTS_PATH = path.resolve('verified_posts_full.json');
+const MANIFEST_PATH = path.resolve('data/archive/all_cloudinary_assets.json');
+const VERIFIED_POSTS_PATH = path.resolve('data/archive/verified_posts_full.json');
 
 export const RENDITIONS = {
   thumb: { width: 640, quality: 80 },

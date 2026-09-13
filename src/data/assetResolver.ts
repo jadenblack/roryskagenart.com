@@ -1,28 +1,13 @@
 /**
- * PRD_V3_CLOUDINARY_EXIT.md — Stage v3.2: dual-read resolution chain.
+ * Supabase Storage Asset Resolver.
  *
- * Resolution order (never removes a working source — see PRD §3.3):
- *   1. Supabase asset registry hit   -> serve rendition URLs
- *   2. Cloudinary map (frozen)       -> serve legacy URL + log migration miss
- *   3. Caller fallback (SVG)
- *
- * The `[asset-migration]` warnings are the v3.4 deletion gate telemetry:
- * seven consecutive days of zero misses in production clears Cloudinary
- * for removal.
+ * Resolves artwork image references directly against the Supabase asset registry
+ * and pre-rendered WebP renditions (thumb, hero, full, lqip).
  */
 
 import { ASSET_REGISTRY, AssetRegistryEntry, AssetRendition } from './assetRegistry';
-import { resolveCloudinaryUrl } from './cloudinaryMap';
 
 export { type AssetRegistryEntry, type AssetRendition };
-
-const MIGRATION_LOG_FLAG = true; // flip off after the v3.4 gate window
-
-function warnMiss(kind: string, ref: string | undefined, slugHint: string | undefined): void {
-  if (!MIGRATION_LOG_FLAG) return;
-  // Grep anchor for the v3.4 gate: "[asset-migration] cloudinary fallback"
-  console.warn(`[asset-migration] cloudinary fallback (${kind}): ${ref ?? '-'} slug=${slugHint ?? '-'}`);
-}
 
 /** Normalize any filename/path/slug into candidate registry keys. */
 export function candidateKeys(ref: string | undefined, slugHint: string | undefined): string[] {
@@ -72,12 +57,12 @@ export interface ResolvedRenditions {
   hero: AssetRendition | null;
   full: AssetRendition | null;
   lqip: string | null;
-  source: 'supabase' | 'cloudinary';
+  source: 'supabase';
 }
 
 /**
  * Full rendition bundle for an artwork. Returns null when the asset is not in
- * the Supabase registry (caller then falls back to the legacy single URL).
+ * the Supabase registry.
  */
 export function resolveRenditions(ref?: string, slugHint?: string): ResolvedRenditions | null {
   const entry = lookupRegistryEntry(ref, slugHint);
@@ -94,8 +79,7 @@ export function resolveRenditions(ref?: string, slugHint?: string): ResolvedRend
 }
 
 /**
- * Single-URL resolution with the dual-read chain. `size` picks the rendition
- * when Supabase has the asset; Cloudinary hits return the one legacy URL.
+ * Single-URL resolution via Supabase Storage renditions.
  */
 export function resolveAssetUrl(
   ref?: string,
@@ -106,12 +90,6 @@ export function resolveAssetUrl(
   if (entry) {
     const rend = entry[size] ?? entry.hero ?? entry.thumb ?? entry.full;
     if (rend) return rend.url;
-  }
-
-  const cloudUrl = resolveCloudinaryUrl(ref, slugHint);
-  if (cloudUrl) {
-    warnMiss(size, ref, slugHint);
-    return cloudUrl;
   }
   return null;
 }

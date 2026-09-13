@@ -12,7 +12,7 @@ export interface AssetRenditions {
   hero: AssetRendition | null;
   full: AssetRendition | null;
   lqip: string | null;
-  source: 'supabase' | 'cloudinary';
+  source: 'supabase';
 }
 
 export interface ArtworkRecord {
@@ -85,29 +85,6 @@ export interface PageDocument {
   subtitle?: string;
   filePath: string;
   rawMarkdown: string;
-}
-
-export interface CloudinaryResource {
-  publicId: string;
-  format: string;
-  version: number;
-  resourceType: string;
-  type: string;
-  createdAt: string;
-  bytes: number;
-  width: number;
-  height: number;
-  folder: string;
-  url: string;
-  thumbnailUrl: string;
-}
-
-export interface CloudinaryStatus {
-  configured: boolean;
-  connected: boolean;
-  cloudName: string | null;
-  message: string;
-  error?: string;
 }
 
 export type UserRole = 'admin' | 'editor' | 'viewer';

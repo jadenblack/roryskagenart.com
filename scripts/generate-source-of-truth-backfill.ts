@@ -8,7 +8,13 @@
 import fs from 'fs';
 import path from 'path';
 import { getBundledArtworks, DEFAULT_HERO_SLUGS } from '../src/data/bundledContent';
-import { INITIAL_PAGES } from '../src/data/driveFileSystem';
+
+const INITIAL_PAGES: Record<string, string> = {
+  'about.md': '# About Rory Skagen\n\nAustin pop artist and muralist.',
+  'contact.md': '# Contact & Studio Inquiries\n\nDirect contact for acquisitions.',
+  'commissions.md': '# Commissions\n\nCustom fine art and mural projects.',
+  'exhibitions.md': '# Exhibitions & Landmark Murals\n\nPublic works and gallery retrospectives.',
+};
 
 const OUT = path.resolve(process.cwd(), 'supabase', 'migrations', '2026_09_13_cms_v2_source_of_truth_backfill.sql');
 
