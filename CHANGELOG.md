@@ -7,7 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] - v2.9.0 Staged Milestone
+## [Unreleased]
+### Added — Draft Workflow, Auto-Save & Sticky Modals (PRD Phase 3+, per `docs/PRD.md`)
+- **Artwork Drafts:** New `draft` column (migration `2026_09_13_cms_v2_1_artwork_drafts.sql`) with partial indexes and a DB trigger enforcing that a draft can never be publicly enabled. Save-as-draft / Publish in the artwork editor, Draft badge, Drafts filter tab with count, Publish/Unpublish row-menu actions, and a dashboard Drafts stat.
+- **Draft Privacy End to End:** Anonymous API reads never receive draft rows (list filter + per-slug 404); the state engine gates drafts at its single `rowToRecord` choke point (`enabled=false`), so hero, gallery, catalog counts, and slug lookups all exclude them with no per-view special cases.
+- **Draft Auto-Save:** Persisted drafts save automatically ~1.2 s after typing pauses (snapshot-diffed, keystrokes batched); live status indicator (Unsaved… / Saving… / ✓ Saved / Save failed); closing the dialog flushes unsaved draft edits; create mode requires an explicit first Save-as-draft; published works are never silently auto-saved.
+- **Sticky Modal Headers:** `DialogHeader` is now sticky inside the scrolling `DialogContent` across all modals — titles and the close X stay pinned while long forms scroll.
+- **Actions at the Top of CRUD Modals:** Action buttons relocated from the bottom footer into the sticky header row of every admin modal — artwork editor (Cancel / Save draft / Publish·Save changes, with the autosave indicator), trash & permanent-delete confirms, user delete-confirm and invite, taxonomy delete-confirm and create, and both page dialogs. Primary buttons submit via `requestSubmit()` so keyboard and pointer share one path.
+- **Zero-Token Tests for Drafts & Autosave:** 11 new contracts covering the draft lifecycle (hidden publicly, badge, publish/unpublish fire once), autosave debouncing/batching/gating, close-flush, and sticky-header rendering (55 tests total).
+### Fixed
+- **Unsaved-Changes Protection:** Closing a dirty non-draft edit (X, Cancel, Esc, overlay) now asks "Discard unsaved changes?" instead of silently dropping edits; drafts flush automatically; `beforeunload` covers browser/tab closes; in-app navigation reporting via `onDirtyChange`.
+- **Form-Reset Race:** The artwork editor's form previously reset whenever the engine refreshed (new record object identity), wiping in-progress edits; reset is now keyed on dialog-open/slug change only.
+- **Duplicate Drafts on Create:** Creating a draft then continuing to type POSTed again on save; the dialog now switches to PATCH the created record (server returns the slug; engine refresh precedes the switch).
+- **Catalog Row-Click View:** Clicking anywhere on a data row opens the artwork dossier; `navigateTo` gained the missing `/artwork/<slug>` branch (previously both row-click and the View menu item were silent no-ops); row-interior switches/menus no longer double-fire.
+- **Modal (X) Close Button:** Now wired to `onOpenChange` via Radix context — previously dispatched a `dialog-close-request` CustomEvent that nothing in the codebase handled, so the button was guaranteed dead.
+- **Modal Scroll on Short Viewports:** Dialog content owns `max-h` + `overflow-y-auto` (upstream pattern), ending the flex-centering top-clipping geometry; per-call-site `max-h-[85vh]` patches removed from `ArtworkEditDialog` and `PagesAdminView`.
+- **Row Action (Dot) Menus:** Radix portal rendering with collision detection ends menu clipping inside the table's overflow container (the real mechanism behind "menu choices don't work"); items now carry `menu`/`menuitem` roles, arrow-key navigation, typeahead, and Esc/outside dismiss with focus restore.
+- **Unconfirmed Trash:** "Move to trash" now routes through a confirmation dialog (matching permanent delete) instead of deleting immediately.
+- **Native Browser Dialogs:** `window.confirm`/`alert` in Users and Taxonomies admin views replaced with standard themed confirm Dialogs; no native dialogs remain in `src/`.
+- **InquiryModal Stale State:** Reopening after a submit showed the "Message Sent" screen instead of the form; transient state now resets on open.
+### Changed
+- **shadcn/ui Registry Adoption:** `ui/dialog`, `ui/dropdown-menu`, `ui/switch`, and `ui/label` regenerated from the official Tailwind v4 registry source on Radix — replacing the hand-rolled imitations; public API of call sites kept (additive `variant`/`onSelect` migration).
+- **Bespoke Overlays Retired:** `ArtworkQuickViewModal` and `InquiryModal` migrated onto the shared `ui/Dialog` (portal, focus trap, scroll lock, working close); designs preserved and hardcoded hex colors tokenized.
+- **Dropdown API Canonicalized:** Call sites (`CatalogView`, `UsersAdminView`) migrated from the custom `trigger` prop to `DropdownMenuTrigger asChild` + `DropdownMenuContent`, with `onSelect` handlers and per-row `aria-label`s.
+
 ### Planned & Staged (per `PRD_V2.1_CLOUDINARY_EXIT.md`)
 - **Cloudinary Deletion Pass:**
   - Remove legacy `cloudinaryMap.ts` (765 lines) and frozen fallback resolution.

@@ -7,7 +7,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '../ui/table';
 import {
-  DropdownMenu, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
 } from '../ui/dropdown-menu';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -38,6 +38,7 @@ export const UsersAdminView: React.FC<{ currentUser: AuthUser | null }> = ({ cur
   const [inviteName, setInviteName] = useState('');
   const [inviteRole, setInviteRole] = useState('editor');
   const [inviting, setInviting] = useState(false);
+  const [confirmDeleteUser, setConfirmDeleteUser] = useState<ManagedUser | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -67,7 +68,6 @@ export const UsersAdminView: React.FC<{ currentUser: AuthUser | null }> = ({ cur
   };
 
   const deleteUser = async (user: ManagedUser) => {
-    if (!window.confirm(`Permanently delete ${user.email}? This cannot be undone.`)) return;
     try {
       await api(`/api/admin/users/${user.id}`, { method: 'DELETE' });
       await load();
@@ -156,39 +156,39 @@ export const UsersAdminView: React.FC<{ currentUser: AuthUser | null }> = ({ cur
                         </Badge>
                       </TableCell>
                       <TableCell className="pr-4 text-right">
-                        <DropdownMenu
-                          align="end"
-                          trigger={
-                            <Button variant="ghost" size="icon" aria-label="User actions">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" aria-label={`Actions for ${u.email}`}>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
-                          }
-                        >
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
                           <DropdownMenuLabel>{u.email}</DropdownMenuLabel>
                           {u.role !== 'admin' && (
-                            <DropdownMenuItem onClick={() => patchUser(u.id, { role: 'admin' })}>
+                            <DropdownMenuItem onSelect={() => patchUser(u.id, { role: 'admin' })}>
                               <ShieldCheck className="h-4 w-4" /> Make admin
                             </DropdownMenuItem>
                           )}
                           {u.role !== 'editor' && (
-                            <DropdownMenuItem onClick={() => patchUser(u.id, { role: 'editor' })}>
+                            <DropdownMenuItem onSelect={() => patchUser(u.id, { role: 'editor' })}>
                               Make editor
                             </DropdownMenuItem>
                           )}
                           {u.role !== 'viewer' && (
-                            <DropdownMenuItem onClick={() => patchUser(u.id, { role: 'viewer' })}>
+                            <DropdownMenuItem onSelect={() => patchUser(u.id, { role: 'viewer' })}>
                               Make viewer
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => patchUser(u.id, { isActive: !u.isActive })}>
+                          <DropdownMenuItem onSelect={() => patchUser(u.id, { isActive: !u.isActive })}>
                             {u.isActive ? 'Deactivate' : 'Reactivate'}
                           </DropdownMenuItem>
                           {!isSelf && (
-                            <DropdownMenuItem destructive onClick={() => deleteUser(u)}>
+                            <DropdownMenuItem variant="destructive" onSelect={() => setConfirmDeleteUser(u)}>
                               <Trash2 className="h-4 w-4" /> Delete user
                             </DropdownMenuItem>
                           )}
+                          </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
@@ -200,16 +200,56 @@ export const UsersAdminView: React.FC<{ currentUser: AuthUser | null }> = ({ cur
         </CardContent>
       </Card>
 
+      {/* Delete-user confirmation (replaces window.confirm) */}
+      <Dialog open={!!confirmDeleteUser} onOpenChange={(open) => !open && setConfirmDeleteUser(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle>Delete user?</DialogTitle>
+                <DialogDescription>
+                  {confirmDeleteUser?.email} will be permanently deleted. This cannot be undone.
+                </DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button variant="outline" size="sm" onClick={() => setConfirmDeleteUser(null)}>Cancel</Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (confirmDeleteUser) deleteUser(confirmDeleteUser);
+                    setConfirmDeleteUser(null);
+                  }}
+                >
+                  Delete user
+                </Button>
+              </div>
+            </div>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       {/* Invite dialog */}
       <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Invite a user</DialogTitle>
-            <DialogDescription>
-              They will receive a Supabase invitation email to set their password.
-            </DialogDescription>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle>Invite a user</DialogTitle>
+                <DialogDescription>
+                  They will receive a Supabase invitation email to set their password.
+                </DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button type="button" variant="ghost" size="sm" onClick={() => setInviteOpen(false)}>Cancel</Button>
+                <Button type="submit" form="invite-form" size="sm" disabled={inviting}>
+                  {inviting && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Send invite
+                </Button>
+              </div>
+            </div>
           </DialogHeader>
-          <form onSubmit={handleInvite} className="space-y-4">
+          <form id="invite-form" onSubmit={handleInvite} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="invite-email">Email *</Label>
               <Input
@@ -243,13 +283,6 @@ export const UsersAdminView: React.FC<{ currentUser: AuthUser | null }> = ({ cur
                 ]}
               />
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={inviting}>
-                {inviting && <Loader2 className="h-4 w-4 animate-spin" />}
-                Send invite
-              </Button>
-            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>

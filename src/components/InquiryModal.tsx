@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArtworkRecord } from '../types';
-import { X, Send, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Send, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 
 interface InquiryModalProps {
   artwork?: ArtworkRecord | null;
@@ -8,19 +9,37 @@ interface InquiryModalProps {
   onClose: () => void;
 }
 
+/**
+ * Inquiry modal on the shared shadcn/Radix Dialog (PRD §5): portal, focus
+ * trap, scroll lock, working X, Esc + overlay dismiss. Also fixes the stale
+ * state bug: `submitted` used to persist after close, so reopening the modal
+ * showed the "Message Sent" screen instead of the form.
+ */
 export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onClose }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [city, setCity] = useState('');
-  const [message, setMessage] = useState(
+  const [message, setMessage] = useState(() =>
     artwork
       ? `Inquiry for "${artwork.title}" (${artwork.year}, ${artwork.price}). Requesting purchase and delivery details.`
       : 'Studio and commission inquiry for custom fine art painting or mural installation.'
   );
   const [submitted, setSubmitted] = useState(false);
 
-  if (!isOpen) return null;
+  // Reset transient state when the modal opens; re-seed the message when the
+  // target artwork changes.
+  useEffect(() => {
+    if (isOpen) {
+      setSubmitted(false);
+      setMessage(
+        artwork
+          ? `Inquiry for "${artwork.title}" (${artwork.year}, ${artwork.price}). Requesting purchase and delivery details.`
+          : 'Studio and commission inquiry for custom fine art painting or mural installation.'
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, artwork?.slug]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,15 +64,14 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 font-mono">
-      <div className="relative w-full max-w-lg bg-card border border-line p-6 sm:p-8 shadow-2xl rounded-xs">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground bg-surface-deep border border-line p-1.5 transition-colors cursor-pointer rounded-xs"
-        >
-          <X className="w-4 h-4" />
-        </button>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-lg bg-card border-line p-6 sm:p-8 rounded-xs"
+      >
+        <DialogTitle className="sr-only">
+          {artwork ? `Inquire: ${artwork.title}` : 'Studio and Commission Inquiry'}
+        </DialogTitle>
 
         {submitted ? (
           <div className="text-center py-8 space-y-4">
@@ -79,7 +97,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
             </div>
           </div>
         ) : (
-          <div>
+          <div className="font-mono">
             <div className="mb-6">
               <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-muted-foreground mb-1 font-bold">
                 <span className="w-1.5 h-1.5 bg-line-strong inline-block"></span>
@@ -183,7 +201,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
             </form>
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

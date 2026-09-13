@@ -35,6 +35,7 @@ export const TaxonomiesAdminView: React.FC = () => {
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState('series');
   const [saving, setSaving] = useState(false);
+  const [confirmTerm, setConfirmTerm] = useState<Term | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -109,7 +110,6 @@ export const TaxonomiesAdminView: React.FC = () => {
   };
 
   const remove = async (term: Term) => {
-    if (!window.confirm(`Delete term "${term.name}"? Artworks keep their current series value.`)) return;
     try {
       await api(`/api/taxonomies/${term.id}`, { method: 'DELETE' });
       await load();
@@ -192,7 +192,7 @@ export const TaxonomiesAdminView: React.FC = () => {
                 <code className="hidden rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground sm:block">
                   {term.slug}
                 </code>
-                <Button variant="ghost" size="icon" onClick={() => remove(term)} aria-label="Delete term">
+                <Button variant="ghost" size="icon" onClick={() => setConfirmTerm(term)} aria-label={`Delete term ${term.name}`}>
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </div>
@@ -201,14 +201,54 @@ export const TaxonomiesAdminView: React.FC = () => {
         </Card>
       )}
 
+      {/* Delete-term confirmation (replaces window.confirm) */}
+      <Dialog open={!!confirmTerm} onOpenChange={(open) => !open && setConfirmTerm(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle>Delete term?</DialogTitle>
+                <DialogDescription>
+                  “{confirmTerm?.name}” will be removed from this taxonomy. Artworks keep their current series value.
+                </DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button variant="outline" size="sm" onClick={() => setConfirmTerm(null)}>Cancel</Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (confirmTerm) remove(confirmTerm);
+                    setConfirmTerm(null);
+                  }}
+                >
+                  Delete term
+                </Button>
+              </div>
+            </div>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       {/* Create dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>New taxonomy term</DialogTitle>
-            <DialogDescription>Slugs are generated from the name automatically.</DialogDescription>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle>New taxonomy term</DialogTitle>
+                <DialogDescription>Slugs are generated from the name automatically.</DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button type="button" variant="ghost" size="sm" onClick={() => setCreateOpen(false)}>Cancel</Button>
+                <Button type="submit" form="term-create-form" size="sm" disabled={saving || !newName.trim()}>
+                  {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Create
+                </Button>
+              </div>
+            </div>
           </DialogHeader>
-          <form onSubmit={createTerm} className="space-y-4">
+          <form id="term-create-form" onSubmit={createTerm} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="term-type">Type</Label>
               <Select
@@ -228,13 +268,6 @@ export const TaxonomiesAdminView: React.FC = () => {
                 placeholder="Neon Americana"
               />
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={saving || !newName.trim()}>
-                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-                Create
-              </Button>
-            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>

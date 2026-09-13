@@ -10,6 +10,8 @@ import {
   MoreHorizontal,
   Plus,
   Pencil,
+  FilePen,
+  Upload,
 } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -21,7 +23,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '../ui/table';
 import {
-  DropdownMenu, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel,
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel,
 } from '../ui/dropdown-menu';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -43,9 +45,11 @@ interface CatalogViewProps {
   onPermanentDelete?: (slug: string) => void;
   onEdit?: (slug: string) => void;
   onCreate?: () => void;
+  /** Publish (draft=false) / unpublish (draft=true) a work. */
+  onSetDraft?: (slug: string, draft: boolean) => void;
 }
 
-type Mode = 'active' | 'trash';
+type Mode = 'active' | 'drafts' | 'trash';
 
 export const CatalogView: React.FC<CatalogViewProps> = ({
   artworks,
@@ -60,12 +64,19 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
   onPermanentDelete,
   onEdit,
   onCreate,
+  onSetDraft,
 }) => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [seriesFilter, setSeriesFilter] = useState('all');
   const [mode, setMode] = useState<Mode>('active');
   const [confirmDelete, setConfirmDelete] = useState<ArtworkRecord | null>(null);
+  const [confirmTrash, setConfirmTrash] = useState<ArtworkRecord | null>(null);
+
+  const draftCount = useMemo(
+    () => artworks.filter((a) => a.draft === true && !a.trashed && a.status !== 'Trashed').length,
+    [artworks]
+  );
 
   const canEdit = role === 'admin' || role === 'editor';
   const isAdmin = role === 'admin';
@@ -80,7 +91,11 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
 
   const filtered = useMemo(() => {
     const inScope = artworks.filter((a) =>
-      mode === 'trash' ? a.trashed || a.status === 'Trashed' : !a.trashed && a.status !== 'Trashed'
+      mode === 'trash'
+        ? a.trashed || a.status === 'Trashed'
+        : mode === 'drafts'
+          ? a.draft === true && !a.trashed && a.status !== 'Trashed'
+          : a.draft !== true && !a.trashed && a.status !== 'Trashed'
     );
     return inScope.filter((a) => {
       const matchesSearch =
@@ -143,6 +158,15 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
             Active
           </button>
           <button
+            onClick={() => setMode('drafts')}
+            className={cn(
+              'rounded-sm px-3 py-1 text-xs font-medium cursor-pointer',
+              mode === 'drafts' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            Drafts{draftCount > 0 ? ` (${draftCount})` : ''}
+          </button>
+          <button
             onClick={() => setMode('trash')}
             className={cn(
               'rounded-sm px-3 py-1 text-xs font-medium cursor-pointer',
@@ -174,7 +198,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
             <div className="flex flex-col items-center gap-2 p-12 text-center">
               <ImageIcon className="h-8 w-8 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                {mode === 'trash' ? 'Trash is empty.' : 'No artworks match your filters.'}
+                {mode === 'trash' ? 'Trash is empty.' : mode === 'drafts' ? 'No drafts. Save one from the artwork editor.' : 'No artworks match your filters.'}
               </p>
             </div>
           ) : (
@@ -192,11 +216,18 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
               </TableHeader>
               <TableBody>
                 {filtered.map((a) => (
-                  <TableRow key={a.slug}>
+                  <TableRow
+                    key={a.slug}
+                    className={cn(onSelectArtwork && 'cursor-pointer')}
+                    onClick={onSelectArtwork ? () => onSelectArtwork(a.slug) : undefined}
+                  >
                     <TableCell className="pl-4">
                       <button
                         className="flex items-center gap-3 text-left cursor-pointer"
-                        onClick={() => onSelectArtwork?.(a.slug)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectArtwork?.(a.slug);
+                        }}
                       >
                         {a.imageUrl || a.featured_image ? (
                           <img
@@ -222,10 +253,13 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
                       {a.gallery_series || '—'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={statusBadgeVariant(a.status)}>{a.status}</Badge>
+                      <div className="flex items-center gap-1.5">
+                        <Badge variant={statusBadgeVariant(a.status)}>{a.status}</Badge>
+                        {a.draft && <Badge variant="warning">Draft</Badge>}
+                      </div>
                     </TableCell>
                     <TableCell className="hidden text-sm md:table-cell">{a.price || '—'}</TableCell>
-                    <TableCell className="hidden xl:table-cell">
+                    <TableCell className="hidden xl:table-cell" onClick={(e) => e.stopPropagation()}>
                       {canEdit ? (
                         <Switch
                           checked={!!a.heroSlider}
@@ -235,7 +269,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
                         a.heroSlider ? <Star className="h-4 w-4 text-amber-500" /> : null
                       )}
                     </TableCell>
-                    <TableCell className="hidden xl:table-cell">
+                    <TableCell className="hidden xl:table-cell" onClick={(e) => e.stopPropagation()}>
                       {canEdit ? (
                         <Switch
                           checked={a.enabled !== false}
@@ -247,49 +281,70 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="pr-4 text-right">
+                    <TableCell className="pr-4 text-right" onClick={(e) => e.stopPropagation()}>
                       {canEdit && (
-                        <DropdownMenu
-                          align="end"
-                          trigger={
-                            <Button variant="ghost" size="icon" aria-label="Row actions">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" aria-label={`Actions for ${a.title}`}>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
-                          }
-                        >
-                          <DropdownMenuLabel>{a.title}</DropdownMenuLabel>
-                          {mode === 'active' && (
-                            <>
-                              <DropdownMenuItem onClick={() => onSelectArtwork?.(a.slug)}>
-                                <Eye className="h-4 w-4" /> View
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => onEdit?.(a.slug)}>
-                                <Pencil className="h-4 w-4" /> Edit details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => onToggleArchive?.(a.slug, !a.archived)}>
-                                <Archive className="h-4 w-4" /> {a.archived ? 'Unarchive' : 'Archive'}
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem destructive onClick={() => onTrash?.(a.slug)}>
-                                <Trash2 className="h-4 w-4" /> Move to trash
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          {mode === 'trash' && (
-                            <>
-                              <DropdownMenuItem onClick={() => onRestore?.(a.slug)}>
-                                <RotateCcw className="h-4 w-4" /> Restore
-                              </DropdownMenuItem>
-                              {isAdmin && (
-                                <>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem destructive onClick={() => setConfirmDelete(a)}>
-                                    <Trash2 className="h-4 w-4" /> Delete permanently
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>{a.title}</DropdownMenuLabel>
+                            {mode === 'active' && (
+                              <>
+                                <DropdownMenuItem onSelect={() => onSelectArtwork?.(a.slug)}>
+                                  <Eye className="h-4 w-4" /> View
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => onEdit?.(a.slug)}>
+                                  <Pencil className="h-4 w-4" /> Edit details
+                                </DropdownMenuItem>
+                                {onSetDraft && (
+                                  <DropdownMenuItem onSelect={() => onSetDraft(a.slug, true)}>
+                                    <FilePen className="h-4 w-4" /> Unpublish to draft
                                   </DropdownMenuItem>
-                                </>
-                              )}
-                            </>
-                          )}
+                                )}
+                                <DropdownMenuItem onSelect={() => onToggleArchive?.(a.slug, !a.archived)}>
+                                  <Archive className="h-4 w-4" /> {a.archived ? 'Unarchive' : 'Archive'}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem variant="destructive" onSelect={() => setConfirmTrash(a)}>
+                                  <Trash2 className="h-4 w-4" /> Move to trash
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            {mode === 'drafts' && (
+                              <>
+                                {onSetDraft && (
+                                  <DropdownMenuItem onSelect={() => onSetDraft(a.slug, false)}>
+                                    <Upload className="h-4 w-4" /> Publish
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem onSelect={() => onEdit?.(a.slug)}>
+                                  <Pencil className="h-4 w-4" /> Edit details
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem variant="destructive" onSelect={() => setConfirmTrash(a)}>
+                                  <Trash2 className="h-4 w-4" /> Move to trash
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            {mode === 'trash' && (
+                              <>
+                                <DropdownMenuItem onSelect={() => onRestore?.(a.slug)}>
+                                  <RotateCcw className="h-4 w-4" /> Restore
+                                </DropdownMenuItem>
+                                {isAdmin && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem variant="destructive" onSelect={() => setConfirmDelete(a)}>
+                                      <Trash2 className="h-4 w-4" /> Delete permanently
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </DropdownMenuContent>
                         </DropdownMenu>
                       )}
                     </TableCell>
@@ -301,27 +356,61 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
         </CardContent>
       </Card>
 
+      {/* Move-to-trash confirmation (PRD: destructive actions confirm) */}
+      <Dialog open={!!confirmTrash} onOpenChange={(open) => !open && setConfirmTrash(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle>Move to trash?</DialogTitle>
+                <DialogDescription>
+                  “{confirmTrash?.title}” will be moved to the trash. You can restore it later from the Trash tab.
+                </DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button variant="outline" size="sm" onClick={() => setConfirmTrash(null)}>Cancel</Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (confirmTrash) onTrash?.(confirmTrash.slug);
+                    setConfirmTrash(null);
+                  }}
+                >
+                  Move to trash
+                </Button>
+              </div>
+            </div>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       {/* Permanent delete confirmation */}
       <Dialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete permanently?</DialogTitle>
-            <DialogDescription>
-              “{confirmDelete?.title}” will be removed from the database forever. This cannot be undone.
-            </DialogDescription>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle>Delete permanently?</DialogTitle>
+                <DialogDescription>
+                  “{confirmDelete?.title}” will be removed from the database forever. This cannot be undone.
+                </DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (confirmDelete) onPermanentDelete?.(confirmDelete.slug);
+                    setConfirmDelete(null);
+                  }}
+                >
+                  Delete forever
+                </Button>
+              </div>
+            </div>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancel</Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                if (confirmDelete) onPermanentDelete?.(confirmDelete.slug);
-                setConfirmDelete(null);
-              }}
-            >
-              Delete forever
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -35,6 +35,8 @@ export interface ArtworkRecord {
   surface?: string; // e.g. "Canvas", "Panel", "Illustration Board"
   type?: 'post' | 'page';
   enabled?: boolean;
+  /** Work-in-progress: excluded from every public surface until published. */
+  draft?: boolean;
   archived?: boolean;
   trashed?: boolean;
   trashedAt?: string;

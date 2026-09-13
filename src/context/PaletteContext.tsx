@@ -25,6 +25,15 @@ export interface ThemePalette {
   dark: ThemePaletteColors;
 }
 
+/** A named, saved style: the built-in presets and admin-created customs share this shape. */
+export interface StylePreset {
+  id: string;
+  label: string;
+  description: string;
+  palette: ThemePalette;
+  custom?: boolean;
+}
+
 export const DEFAULT_PALETTE: ThemePalette = {
   light: {
     background: '#e3e1da',
@@ -141,6 +150,12 @@ interface PaletteContextType {
   resetPalette: () => void;
   savePalette: (next: ThemePalette) => Promise<{ success: boolean; error?: string }>;
   isLoading: boolean;
+  /** Admin-created named styles (server-persisted). */
+  customStyles: StylePreset[];
+  /** Persist a new/updated named style on the server. */
+  saveStyle: (style: { id?: string; label: string; description?: string; palette: ThemePalette }) => Promise<{ success: boolean; error?: string; id?: string }>;
+  /** Remove a named style (built-ins cannot be deleted). */
+  deleteStyle: (id: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const PaletteContext = createContext<PaletteContextType>({
@@ -149,9 +164,18 @@ const PaletteContext = createContext<PaletteContextType>({
   resetPalette: () => {},
   savePalette: async () => ({ success: false, error: 'not initialized' }),
   isLoading: false,
+  customStyles: [],
+  saveStyle: async () => ({ success: false, error: 'not initialized' }),
+  deleteStyle: async () => ({ success: false, error: 'not initialized' }),
 });
 
-const CSS_VAR_MAP: Record<keyof ThemePaletteColors, string> = {
+/**
+ * Every CSS variable the admin palette drives, per mode. Covering the full
+ * shadcn token set here (popover, muted, secondary, primary…) is what makes
+ * the Design menu the single source of truth for ALL components — menus,
+ * dialogs, badges and buttons all follow the saved palette.
+ */
+export const CSS_VAR_MAP: Record<keyof ThemePaletteColors, string> = {
   background: '--background',
   foreground: '--foreground',
   card: '--card',
@@ -163,33 +187,59 @@ const CSS_VAR_MAP: Record<keyof ThemePaletteColors, string> = {
 };
 
 /** Inline-var escape so malformed admin input can never inject CSS. */
-const safeColor = (c: string): string => /^#[0-9a-fA-F]{3,8}$/.test(c) ? c : '';
+const safeColor = (c: string): string => (/^#[0-9a-fA-F]{3,8}$/.test(c) ? c : '');
 
-export function applyPaletteToDocument(palette: ThemePalette) {
-  const root = document.documentElement;
-  for (const [key, cssVar] of Object.entries(CSS_VAR_MAP) as [keyof ThemePaletteColors, string][]) {
-    const lightValue = safeColor(palette.light[key]);
-    if (lightValue) root.style.setProperty(cssVar, lightValue);
-    else root.style.removeProperty(cssVar);
-  }
-  const darkBlock = Object.entries(CSS_VAR_MAP)
+const cssBlock = (palette: ThemePaletteColors): string =>
+  Object.entries(CSS_VAR_MAP)
     .map(([key, cssVar]) => {
-      const value = safeColor(palette.dark[key as keyof ThemePaletteColors]);
-      return value ? `${cssVar}: ${value};` : '';
+      const value = safeColor(palette[key as keyof ThemePaletteColors]);
+      return value ? `${cssVar}:${value};` : '';
     })
-    .filter(Boolean)
-    .join(' ');
-  let styleEl = document.getElementById('palette-dark-vars') as HTMLStyleElement | null;
+    .join('');
+
+/**
+ * Apply a palette as a stylesheet, not inline styles: light values live in a
+ * `:root` block and dark values in a `.dark` block, exactly mirroring
+ * index.css. Inline `:root` overrides would beat the `.dark` class rules and
+ * franken-theme dark mode (light backgrounds under dark chrome) — that was
+ * the open-menu popover bug. Popover/secondary/muted/primary are derived from
+ * the editable tokens so every shadcn surface follows the palette.
+ */
+export function applyPaletteToDocument(palette: ThemePalette) {
+  let styleEl = document.getElementById('palette-vars') as HTMLStyleElement | null;
   if (!styleEl) {
     styleEl = document.createElement('style');
-    styleEl.id = 'palette-dark-vars';
+    styleEl.id = 'palette-vars';
+    // After the Vite-injected stylesheet so equal-specificity overrides win.
     document.head.appendChild(styleEl);
   }
-  styleEl.textContent = `.dark{${darkBlock}}`;
+  const rootVars = cssBlock(palette.light);
+  const derived = (p: ThemePaletteColors): string =>
+    `--popover:${safeColor(p.card) || p.card};--secondary:${safeColor(p.surface) || p.surface};--muted:${safeColor(p.surface) || p.surface};--primary:${safeColor(p.borderStrong) || p.borderStrong};--accent:${safeColor(p.surface) || p.surface};`;
+  styleEl.textContent =
+    `:root{${rootVars}${derived(palette.light)}}` + `\n.dark{${cssBlock(palette.dark)}${derived(palette.dark)}}`;
 }
 
 export const PaletteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [palette, setPaletteState] = useState<ThemePalette>(DEFAULT_PALETTE);
+  const [palette, setPaletteState] = useState<ThemePalette>(() => {
+    // Hydrate from the boot script's cache first — zero flash, zero requests.
+    try {
+      const cached = localStorage.getItem('rory_studio_palette');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.light && parsed?.dark) {
+          return {
+            light: { ...DEFAULT_PALETTE.light, ...parsed.light },
+            dark: { ...DEFAULT_PALETTE.dark, ...parsed.dark },
+          };
+        }
+      }
+    } catch {
+      // Corrupt cache falls through to defaults
+    }
+    return DEFAULT_PALETTE;
+  });
+  const [customStyles, setCustomStyles] = useState<StylePreset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -199,14 +249,22 @@ export const PaletteProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const data = await api<{ settings: Record<string, unknown> }>('/api/settings');
         const stored = data?.settings?.theme_palette as ThemePalette | undefined;
         if (!cancelled && stored?.light && stored?.dark) {
-          // Merge over defaults so newly-added keys stay populated
-          setPaletteState({
+          const merged: ThemePalette = {
             light: { ...DEFAULT_PALETTE.light, ...stored.light },
             dark: { ...DEFAULT_PALETTE.dark, ...stored.dark },
-          });
+          };
+          setPaletteState(merged);
+          // Keep the boot cache fresh so the next load paints immediately.
+          try {
+            localStorage.setItem('rory_studio_palette', JSON.stringify(merged));
+          } catch {}
+        }
+        const styles = data?.settings?.style_presets as StylePreset[] | undefined;
+        if (!cancelled && Array.isArray(styles)) {
+          setCustomStyles(styles.filter((s) => s?.id && s?.palette?.light && s?.palette?.dark));
         }
       } catch {
-        // Public endpoint degrades gracefully; keep defaults
+        // Public endpoint degrades gracefully; keep cached/defaults
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -228,14 +286,58 @@ export const PaletteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       await api('/api/settings', { method: 'PUT', body: { settings: { theme_palette: next } } });
       setPaletteState(next);
+      try {
+        localStorage.setItem('rory_studio_palette', JSON.stringify(next));
+      } catch {}
       return { success: true };
     } catch (err: any) {
       return { success: false, error: err.message || 'Failed to save palette' };
     }
   }, []);
 
+  const saveStyle = useCallback(
+    async ({ id, label, description, palette: stylePalette }: { id?: string; label: string; description?: string; palette: ThemePalette }) => {
+      const cleanLabel = label.trim() || 'Untitled style';
+      try {
+        // Read-modify-write style_presets on the server
+        const data = await api<{ settings: Record<string, unknown> }>('/api/settings');
+        const existing = (data?.settings?.style_presets as StylePreset[] | undefined) || [];
+        const finalId = id || `custom-${Date.now().toString(36)}`;
+        const entry: StylePreset = {
+          id: finalId,
+          label: cleanLabel,
+          description: description?.trim() || `Custom style saved ${new Date().toLocaleDateString()}`,
+          palette: stylePalette,
+          custom: true,
+        };
+        const next = [...existing.filter((s) => s.id !== finalId), entry];
+        await api('/api/settings', { method: 'PUT', body: { settings: { style_presets: next } } });
+        setCustomStyles(next);
+        return { success: true, id: finalId };
+      } catch (err: any) {
+        return { success: false, error: err.message || 'Failed to save style' };
+      }
+    },
+    []
+  );
+
+  const deleteStyle = useCallback(async (id: string) => {
+    try {
+      const data = await api<{ settings: Record<string, unknown> }>('/api/settings');
+      const existing = (data?.settings?.style_presets as StylePreset[] | undefined) || [];
+      const next = existing.filter((s) => s.id !== id);
+      await api('/api/settings', { method: 'PUT', body: { settings: { style_presets: next } } });
+      setCustomStyles(next);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Failed to delete style' };
+    }
+  }, []);
+
   return (
-    <PaletteContext.Provider value={{ palette, setPalette, resetPalette, savePalette, isLoading }}>
+    <PaletteContext.Provider
+      value={{ palette, setPalette, resetPalette, savePalette, isLoading, customStyles, saveStyle, deleteStyle }}
+    >
       {children}
     </PaletteContext.Provider>
   );

@@ -25,9 +25,10 @@ import { getArtworkSvg } from '../data/artAssets';
 import { PORTFOLIO_POSTS_REGISTRY } from '../data/portfolioPostsData';
 import { DEFAULT_HERO_SLUGS } from '../data/bundledContent';
 import { api } from '../lib/adminApi';
+import { supabase } from '../lib/supabase';
 
 /** DB row shape returned by GET /api/artworks. */
-interface ArtworkDbRow {
+export interface ArtworkDbRow {
   slug: string;
   title: string;
   year: string | number | null;
@@ -41,6 +42,7 @@ interface ArtworkDbRow {
   image_url: string | null;
   hero_slider: boolean | null;
   enabled: boolean | null;
+  draft: boolean | null;
   archived: boolean | null;
   trashed: boolean | null;
   trashed_at: string | null;
@@ -146,9 +148,15 @@ export class GalleryStateEngine {
     const status = ((row.status as ArtworkStatus) || 'Available');
     const isTrashed = row.trashed === true || status === 'Trashed';
     const dimensions = row.dimensions || '36" x 48"';
-    const enabled = row.enabled !== false && !isTrashed && status !== 'Hidden' && status !== 'Disabled';
+    // DRAFT GATE (single choke point, PRD §4 Phase 3): a draft forces
+    // enabled=false, so every public query (getCatalogCount, getFilteredItems,
+    // home hero, gallery grid, direct slug lookup) excludes it with no
+    // per-view special cases. Admin surfaces read the `draft` flag directly.
+    const isDraft = row.draft === true;
+    const enabled = !isDraft && row.enabled !== false && !isTrashed && status !== 'Hidden' && status !== 'Disabled';
 
     return {
+      draft: isDraft,
       slug,
       title: row.title || formatTitle(slug),
       year: row.year ? parseInt(String(row.year), 10) || row.year : 2019,
@@ -188,9 +196,19 @@ export class GalleryStateEngine {
    */
   public async loadFromApi(): Promise<void> {
     try {
+      // Authenticated fetch when a Supabase session exists, so editor/admin
+      // callers receive draft rows from the API (anonymous callers never do).
+      const authHeaders: Record<string, string> = {};
+      try {
+        const { data } = await supabase.auth.getSession();
+        const token = data.session?.access_token;
+        if (token) authHeaders['Authorization'] = `Bearer ${token}`;
+      } catch {
+        // Anonymous fallback is fine — drafts are simply absent
+      }
       const [artworksRes, pagesRes] = await Promise.all([
-        fetch('/api/artworks?include_trashed=true'),
-        fetch('/api/pages'),
+        fetch('/api/artworks?include_trashed=true', { headers: authHeaders, credentials: 'include' }),
+        fetch('/api/pages', { headers: authHeaders, credentials: 'include' }),
       ]);
 
       if (artworksRes.ok) {
@@ -222,6 +240,11 @@ export class GalleryStateEngine {
   /** Back-compat alias for the former override-sync entry point. */
   public async syncWithPostgres(): Promise<void> {
     return this.loadFromApi();
+  }
+
+  /** Admin query: all non-trashed drafts (badge, filter tab, dashboard count). */
+  public getDraftItems(): ArtworkRecord[] {
+    return this.items.filter((i) => i.draft === true && !i.trashed);
   }
 
   public subscribe(listener: () => void): () => void {

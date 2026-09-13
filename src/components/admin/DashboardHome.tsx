@@ -9,6 +9,7 @@ import {
   CircleDollarSign,
   CheckCircle2,
   Archive,
+  FilePen,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -67,6 +68,7 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({ artworks, catalogC
   const available = active.filter((a) => a.status === 'Available');
   const sold = active.filter((a) => a.status === 'Sold');
   const archived = active.filter((a) => a.archived);
+  const drafts = active.filter((a) => a.draft === true);
   const heroCount = active.filter((a) => a.heroSlider);
   const newInquiries = inquiries.filter((i) => (i.status || 'New').toLowerCase() === 'new');
 
@@ -74,7 +76,7 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({ artworks, catalogC
     { label: 'Total Catalog', value: catalogCount || active.length, icon: ImageIcon, hint: `${heroCount.length} on hero slider` },
     { label: 'Available', value: available.length, icon: CheckCircle2, hint: `${sold.length} sold` },
     { label: 'New Inquiries', value: newInquiries.length, icon: Inbox, hint: `${inquiries.length} total` },
-    { label: 'Archived', value: archived.length, icon: Archive, hint: 'not publicly listed' },
+    { label: 'Drafts', value: drafts.length, icon: FilePen, hint: drafts.length > 0 ? 'hidden from public site' : 'nothing in progress' },
   ];
 
   const seriesBreakdown = Object.entries(

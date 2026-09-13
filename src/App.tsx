@@ -91,6 +91,14 @@ export default function App() {
 
   // Sync route changes to window.location.hash
   const navigateTo = (newRoute: string, param?: string) => {
+    // Artwork dossier paths like "/artwork/<slug>" (catalog row/menu View)
+    if (newRoute.startsWith('/artwork/')) {
+      const slug = newRoute.replace('/artwork/', '');
+      window.location.hash = `#artwork/${slug}`;
+      setRoute('artwork');
+      setSelectedArtworkSlug(slug);
+      return;
+    }
     // Admin dashboard paths are full hash paths like "/admin/catalog"
     if (newRoute.startsWith('/admin') || newRoute === '/') {
       const target = newRoute === '/' ? 'home' : newRoute;

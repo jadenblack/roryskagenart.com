@@ -1,10 +1,20 @@
 import { Router } from "express";
 import { query } from "../../src/server/db";
-import { requireAuth, requireRole } from "../middleware/auth";
+import { requireAuth, requireRole, resolveCmsUser, CmsUser } from "../middleware/auth";
 
 export const artworksRouter = Router();
 
+/**
+ * Status values that mean "not shown publicly" for a brand-new non-draft row.
+ * (Mirrors the engine's enabled derivation for trashed/hidden/disabled.)
+ */
+function isHiddenStatus(status?: string): boolean {
+  return status === "Trashed" || status === "Hidden" || status === "Disabled";
+}
+
 // Fetch Artworks from PostgreSQL
+// Drafts are only readable by authenticated editors+: anonymous callers never
+// receive draft rows, so unpublished work cannot leak through the public API.
 artworksRouter.get("/", async (req, res) => {
   try {
     const includeTrashed = req.query.include_trashed === "true";
@@ -12,12 +22,28 @@ artworksRouter.get("/", async (req, res) => {
       SELECT 
         id, slug, title, year, medium, dimensions, price, status, 
         gallery_series, edition, location, image_url, hero_slider, 
-        enabled, archived, trashed, trashed_at, narrative, metadata, 
+        enabled, archived, trashed, trashed_at, draft, narrative, metadata, 
         created_at, updated_at
       FROM public.artworks
     `;
+    const conditions: string[] = [];
     if (!includeTrashed) {
-      sql += ` WHERE trashed = false`;
+      conditions.push(`trashed = false`);
+    }
+
+    let viewer: CmsUser | null = null;
+    try {
+      viewer = await resolveCmsUser(req);
+    } catch {
+      viewer = null;
+    }
+    const canSeeDrafts = !!viewer && viewer.isActive && (viewer.role === "admin" || viewer.role === "editor");
+    if (!canSeeDrafts) {
+      conditions.push(`draft = false`);
+    }
+
+    if (conditions.length > 0) {
+      sql += ` WHERE ${conditions.join(" AND ")}`;
     }
     sql += ` ORDER BY updated_at DESC, created_at DESC`;
 
@@ -33,7 +59,7 @@ artworksRouter.get("/", async (req, res) => {
   }
 });
 
-// Fetch Single Artwork by Slug
+// Fetch Single Artwork by Slug — drafts require an editor+ session
 artworksRouter.get("/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
@@ -44,7 +70,15 @@ artworksRouter.get("/:slug", async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: `Artwork with slug "${slug}" not found.` });
     }
-    return res.json({ success: true, artwork: result.rows[0] });
+    const artwork = result.rows[0];
+    if (artwork.draft === true) {
+      const viewer = await resolveCmsUser(req);
+      const canSeeDrafts = !!viewer && viewer.isActive && (viewer.role === "admin" || viewer.role === "editor");
+      if (!canSeeDrafts) {
+        return res.status(404).json({ error: `Artwork with slug "${slug}" not found.` });
+      }
+    }
+    return res.json({ success: true, artwork });
   } catch (err: any) {
     return res.status(500).json({ error: err.message || "Failed to fetch artwork" });
   }
@@ -56,7 +90,7 @@ artworksRouter.post("/", requireAuth, requireRole("editor"), async (req, res) =>
     const {
       slug, title, year, medium, dimensions, price, status,
       gallery_series, edition, location, image_url, hero_slider,
-      narrative, metadata
+      narrative, metadata, draft
     } = req.body || {};
 
     if (!title) {
@@ -65,12 +99,16 @@ artworksRouter.post("/", requireAuth, requireRole("editor"), async (req, res) =>
 
     const finalSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
+    const isDraft = draft === true;
+    // A draft can never be publicly enabled (belt: DB trigger; suspenders: here).
+    const enabledValue = isDraft ? false : !isHiddenStatus(status);
+
     const result = await query(
       `INSERT INTO public.artworks (
         slug, title, year, medium, dimensions, price, status,
         gallery_series, edition, location, image_url, hero_slider,
-        narrative, metadata, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, now(), now())
+        enabled, draft, narrative, metadata, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, now(), now())
       RETURNING *`,
       [
         finalSlug,
@@ -85,6 +123,8 @@ artworksRouter.post("/", requireAuth, requireRole("editor"), async (req, res) =>
         location || "Austin Studio",
         image_url || `/images/${finalSlug}.svg`,
         hero_slider === true,
+        enabledValue,
+        isDraft,
         narrative || "",
         JSON.stringify(metadata || {})
       ]
@@ -106,8 +146,18 @@ artworksRouter.patch("/:slug", requireAuth, requireRole("editor"), async (req, r
     const allowedFields = [
       "title", "year", "medium", "dimensions", "price", "status",
       "gallery_series", "edition", "location", "image_url", "hero_slider",
-      "enabled", "archived", "trashed", "trashed_at", "narrative", "metadata"
+      "enabled", "archived", "trashed", "trashed_at", "narrative", "metadata",
+      "draft"
     ];
+
+    // Publishing contract: flipping draft false→true↔false manages `enabled`
+    // atomically server-side so the client can never create a publicly-visible
+    // draft (DB trigger guards this too).
+    if (body.draft === true) {
+      body.enabled = false;
+    } else if (body.draft === false) {
+      body.enabled = true;
+    }
 
     const updates: string[] = [];
     const values: any[] = [];

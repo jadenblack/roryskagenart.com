@@ -8,6 +8,9 @@ import {
   Moon,
   Check,
   Wand2,
+  BookmarkPlus,
+  Trash2,
+  Star,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
@@ -65,12 +68,15 @@ const SwatchRow: React.FC<{
 );
 
 export const DesignAdminView: React.FC = () => {
-  const { palette, setPalette, resetPalette, savePalette, isLoading } = usePalette();
+  const { palette, setPalette, resetPalette, savePalette, isLoading, customStyles, saveStyle, deleteStyle } = usePalette();
   const { setTheme, isDark } = useTheme();
   const [draft, setDraft] = useState<ThemePalette>(palette);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [styleName, setStyleName] = useState('');
+  const [styleBusy, setStyleBusy] = useState(false);
+  const [styleNotice, setStyleNotice] = useState<string | null>(null);
 
   // Re-sync draft when the server palette loads (or changes underneath us)
   useEffect(() => {
@@ -102,6 +108,55 @@ export const DesignAdminView: React.FC = () => {
     resetPalette();
     setSavedAt(null);
     setError(null);
+  };
+
+  /** Save the current draft as a named reusable style (server-persisted). */
+  const handleSaveStyle = async () => {
+    setStyleBusy(true);
+    setStyleNotice(null);
+    setError(null);
+    const result = await saveStyle({ label: styleName, palette: draft });
+    if (result.success) {
+      setStyleNotice(`Style “${styleName.trim() || 'Untitled style'}” saved to your styles library.`);
+      setStyleName('');
+    } else {
+      setError(result.error || 'Failed to save style');
+    }
+    setStyleBusy(false);
+  };
+
+  /** Save-and-set-default in one step: persist the style, then publish it as the live palette. */
+  const handleSaveAndSetDefault = async () => {
+    setStyleBusy(true);
+    setStyleNotice(null);
+    setError(null);
+    const saveResult = await saveStyle({ label: styleName, palette: draft });
+    if (!saveResult.success) {
+      setError(saveResult.error || 'Failed to save style');
+      setStyleBusy(false);
+      return;
+    }
+    const publishResult = await savePalette(draft);
+    if (publishResult.success) {
+      setSavedAt(new Date().toLocaleTimeString());
+      setStyleNotice(`Style “${styleName.trim() || 'Untitled style'}” saved and set as the default for every visitor.`);
+      setStyleName('');
+    } else {
+      setError(publishResult.error || 'Failed to set default');
+    }
+    setStyleBusy(false);
+  };
+
+  const handleDeleteStyle = async (id: string, label: string) => {
+    setStyleBusy(true);
+    setError(null);
+    const result = await deleteStyle(id);
+    if (result.success) {
+      setStyleNotice(`Style “${label}” deleted.`);
+    } else {
+      setError(result.error || 'Failed to delete style');
+    }
+    setStyleBusy(false);
   };
 
   if (isLoading) {
@@ -179,6 +234,94 @@ export const DesignAdminView: React.FC = () => {
               </button>
             );
           })}
+        </CardContent>
+      </Card>
+
+      {/* Custom styles library */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <BookmarkPlus className="h-4 w-4" /> Your styles
+          </CardTitle>
+          <CardDescription>
+            Save the current swatches as a named style. Saved styles appear here for one-click reuse — “Save & set default” also publishes it to every visitor (no flash on reload).
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap items-end gap-2">
+            <div className="min-w-[200px] flex-1">
+              <Label htmlFor="style-name">Style name</Label>
+              <input
+                id="style-name"
+                value={styleName}
+                onChange={(e) => setStyleName(e.target.value)}
+                placeholder="e.g. Gallery Warm 1998"
+                className="mt-1 flex h-9 w-full rounded-md border border-border bg-background px-3 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && styleName.trim()) handleSaveStyle();
+                }}
+              />
+            </div>
+            <Button variant="outline" size="sm" onClick={handleSaveStyle} disabled={styleBusy}>
+              {styleBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <BookmarkPlus className="h-4 w-4" />}
+              Save style
+            </Button>
+            <Button size="sm" onClick={handleSaveAndSetDefault} disabled={styleBusy}>
+              {styleBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Star className="h-4 w-4" />}
+              Save & set default
+            </Button>
+          </div>
+
+          {styleNotice && (
+            <p className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+              <Check className="h-3.5 w-3.5" /> {styleNotice}
+            </p>
+          )}
+
+          {customStyles.length > 0 && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {customStyles.map((style) => {
+                const isActive =
+                  draft.light.background.toLowerCase() === style.palette.light.background.toLowerCase() &&
+                  draft.dark.background.toLowerCase() === style.palette.dark.background.toLowerCase();
+                return (
+                  <div
+                    key={style.id}
+                    className={`group relative rounded-lg border p-3 text-left transition-colors ${
+                      isActive ? 'border-ring ring-1 ring-ring' : 'border-border'
+                    }`}
+                  >
+                    <button
+                      onClick={() => applyLive(style.palette)}
+                      className="w-full cursor-pointer text-left"
+                      aria-label={`Apply style ${style.label}`}
+                    >
+                      <div className="flex items-center gap-1">
+                        {[style.palette.light.background, style.palette.light.card, style.palette.light.borderStrong, style.palette.dark.background, style.palette.dark.card].map((c, i) => (
+                          <span
+                            key={i}
+                            className="h-6 w-6 rounded-md border border-black/10"
+                            style={{ backgroundColor: c }}
+                          />
+                        ))}
+                      </div>
+                      <p className="mt-2.5 text-sm font-medium leading-tight">{style.label}</p>
+                      <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-muted-foreground">{style.description}</p>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteStyle(style.id, style.label)}
+                      disabled={styleBusy}
+                      className="absolute right-2 top-2 rounded-sm p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted hover:text-destructive focus:opacity-100 group-hover:opacity-100 cursor-pointer"
+                      aria-label={`Delete style ${style.label}`}
+                      title="Delete style"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
 

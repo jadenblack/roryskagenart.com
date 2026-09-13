@@ -40,6 +40,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
   const trashedCount = artworks.filter((a) => a.trashed || a.status === 'Trashed').length;
 
   const role: UserRole = (user?.role as UserRole) || 'viewer';
+  const canManageCatalog = role === 'admin' || role === 'editor';
   const normalizedPath = path.startsWith('/admin') ? path : '/admin';
   const subPath = normalizedPath.replace(/^\/admin\/?/, '') || '';
 
@@ -78,6 +79,17 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
       await GalleryAppEngineInstance.syncWithPostgres();
     } catch {
       // Engine handles its own fallback state
+    }
+  };
+
+  const handleSetDraft = async (slug: string, draft: boolean) => {
+    try {
+      // Server contract: draft=true forces enabled=false; draft=false republishes.
+      await api(`/api/artworks/${slug}`, { method: 'PATCH', body: { draft } });
+      showToast(draft ? 'Unpublished — now a private draft.' : 'Artwork published.');
+      await refreshEngine();
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update draft state');
     }
   };
 
@@ -143,15 +155,21 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
 
   const handleSaveArtwork = async (
     payload: Record<string, unknown> & { slug?: string }
-  ): Promise<{ success: boolean; error?: string }> => {
+  ): Promise<{ success: boolean; error?: string; slug?: string }> => {
     try {
       if (payload.slug) {
         const { slug, ...fields } = payload;
         await api(`/api/artworks/${slug}`, { method: 'PATCH', body: fields });
         showToast('Artwork updated.');
       } else {
-        await api('/api/artworks', { method: 'POST', body: payload });
-        showToast('Artwork created.');
+        const created = await api<{ success: boolean; artwork?: { slug: string } }>('/api/artworks', { method: 'POST', body: payload });
+        showToast(payload.draft ? 'Draft created — auto-save is now on.' : 'Artwork created.');
+        // Refresh FIRST so the dialog's artwork prop resolves to the new
+        // record, THEN switch the dialog into edit mode on it — continuing
+        // edits (incl. auto-save) PATCH instead of POST duplicates.
+        await refreshEngine();
+        setEditingArtwork(created?.artwork?.slug || null);
+        return { success: true, slug: created?.artwork?.slug };
       }
       await refreshEngine();
       return { success: true };
@@ -187,6 +205,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
             onTrash={handleTrash}
             onRestore={handleRestore}
             onPermanentDelete={handlePermanentDelete}
+            onSetDraft={canManageCatalog ? handleSetDraft : undefined}
             onEdit={(slug) => {
               setEditingArtwork(slug);
               setEditDialogOpen(true);
@@ -218,6 +237,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
             role={role}
             onRestore={handleRestore}
             onPermanentDelete={handlePermanentDelete}
+            onSetDraft={canManageCatalog ? handleSetDraft : undefined}
           />
         );
       default:

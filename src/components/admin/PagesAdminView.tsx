@@ -175,10 +175,21 @@ export const PagesAdminView: React.FC = () => {
 
       {/* Editor dialog */}
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Edit page — {editing?.slug}</DialogTitle>
-            <DialogDescription>Markdown content. Changes go live immediately on save.</DialogDescription>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle>Edit page — {editing?.slug}</DialogTitle>
+                <DialogDescription>Markdown content. Changes go live immediately on save.</DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button variant="ghost" size="sm" onClick={() => setEditing(null)}>Cancel</Button>
+                <Button size="sm" onClick={handleSave} disabled={saving}>
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  Save page
+                </Button>
+              </div>
+            </div>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
@@ -208,13 +219,6 @@ export const PagesAdminView: React.FC = () => {
               )}
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              Save page
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -222,8 +226,19 @@ export const PagesAdminView: React.FC = () => {
       <Dialog open={newDialogOpen} onOpenChange={setNewDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Create new page</DialogTitle>
-            <DialogDescription>The slug becomes the public URL: /#/page/your-slug</DialogDescription>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle>Create new page</DialogTitle>
+                <DialogDescription>The slug becomes the public URL: /#/page/your-slug</DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button variant="ghost" size="sm" onClick={() => setNewDialogOpen(false)}>Cancel</Button>
+                <Button size="sm" onClick={handleCreate} disabled={saving || !newSlug.trim()}>
+                  {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Create
+                </Button>
+              </div>
+            </div>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
@@ -245,13 +260,6 @@ export const PagesAdminView: React.FC = () => {
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setNewDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={saving || !newSlug.trim()}>
-              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              Create
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

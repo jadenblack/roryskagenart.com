@@ -25,6 +25,100 @@
   <body class="antialiased min-h-screen">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      /*
+       * No-flash theme boot (runs before the bundle, blocking on palette only).
+       * 1. Apply the cached palette from localStorage immediately (same key
+       *    the app reads/writes) — covers repeat visits with zero requests.
+       * 2. Fetch the published palette from /api/settings and update the
+       *    cache when it differs.
+       * 3. Reveal the app only once the palette is applied (or after a
+       *    bounded timeout so a slow API can never wedge the page). While
+       *    gated, html carries `palette-booting` and CSS keeps the page in
+       *    the pre-palette shell color instead of the default theme.
+       */
+      (function () {
+        try {
+          // Mode: mirror ThemeContext's localStorage key.
+          var mode = 'dark';
+          try { mode = localStorage.getItem('rory_studio_theme') === 'light' ? 'light' : 'dark'; } catch (e) {}
+          var root = document.documentElement;
+          root.classList.remove('dark', 'light');
+          root.classList.add(mode);
+          root.style.colorScheme = mode;
+
+          var STYLE_ID = 'palette-boot-vars';
+          var CACHE_KEY = 'rory_studio_palette';
+
+          function applyPalette(p) {
+            if (!p || !p.light || !p.dark) return false;
+            var block = function (c) {
+              if (!c) return '';
+              return '--background:' + c.background + ';--foreground:' + c.foreground +
+                ';--card:' + c.card + ';--surface:' + c.surface + ';--surface-deep:' + c.surfaceDeep +
+                ';--border:' + c.border + ';--line-strong:' + c.borderStrong + ';--ring:' + c.accent +
+                ';--popover:' + c.card + ';--secondary:' + c.surface + ';--muted:' + c.surface +
+                ';--primary:' + c.borderStrong + ';--accent:' + c.surface + ';';
+            };
+            var el = document.getElementById(STYLE_ID) || (function () {
+              var s = document.createElement('style');
+              s.id = STYLE_ID;
+              document.head.appendChild(s);
+              return s;
+            })();
+            el.textContent = ':root{' + block(p.light) + '}.dark{' + block(p.dark) + '}';
+            return true;
+          }
+
+          var cached = null;
+          try { cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch (e) {}
+          var applied = cached ? applyPalette(cached) : false;
+
+          var reveal = function () {
+            root.classList.remove('palette-booting');
+          };
+
+          if (applied) {
+            // Cache applied — reveal on next frame so the style is committed first.
+            requestAnimationFrame(function () { requestAnimationFrame(reveal); });
+          } else {
+            root.classList.add('palette-booting');
+          }
+
+          // Always revalidate against the server (custom styles may have changed).
+          fetch('/api/settings', { credentials: 'include' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+              var stored = data && data.settings && data.settings.theme_palette;
+              if (stored && stored.light && stored.dark) {
+                var merged = stored;
+                try {
+                  localStorage.setItem(CACHE_KEY, JSON.stringify(merged));
+                } catch (e) {}
+                if (applyPalette(merged)) {
+                  reveal();
+                  return;
+                }
+              }
+              if (!applied) reveal();
+            })
+            .catch(function () { if (!applied) reveal(); });
+
+          // Hard bound: never keep the page hidden longer than this.
+          setTimeout(reveal, 1500);
+        } catch (e) {
+          document.documentElement.classList.remove('palette-booting');
+        }
+      })();
+    </script>
+    <style>
+      /* Pre-palette gate: hold the shell in the default dark background so
+         first paint never flashes the light default before custom colors land. */
+      html.palette-booting, html.palette-booting body {
+        background-color: #17171b !important;
+      }
+      html.palette-booting #root { visibility: hidden; }
+    </style>
   </body>
 </html>
 
