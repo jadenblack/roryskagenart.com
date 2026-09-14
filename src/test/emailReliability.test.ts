@@ -146,4 +146,12 @@ describe('cron idempotency', () => {
     expect(hasDumpForDate(dumps, '2026-09-14')).toBe(true);
     expect(hasDumpForDate(dumps, '2026-09-15')).toBe(false);
   });
+
+  it('does not let an interrupted run satisfy a day — otherwise no restorable dump is ever made', () => {
+    // The realistic failure: a run dies mid-upload, leaving objects under today's stamp. If that
+    // counted as "today is done", every later attempt that day would skip and the day would end
+    // with nothing restorable.
+    const dumps = [{ name: '2026-09-14T06-43-00-000Z', createdAt: '2026-09-14T06:43:00Z', files: 3, hasManifest: false }];
+    expect(hasDumpForDate(dumps, '2026-09-14')).toBe(false);
+  });
 });

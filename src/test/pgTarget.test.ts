@@ -21,6 +21,7 @@ import { describe, expect, it } from 'vitest';
 import {
   TargetSafetyError,
   classifyTarget,
+  describeTarget,
   resolvePoolTarget,
   stripQueryParams,
 } from '../../scripts/lib/pgTarget';
@@ -98,5 +99,43 @@ describe('stripQueryParams', () => {
 
   it('removes everything from the first question mark', () => {
     expect(stripQueryParams('postgresql://h/db?sslmode=require&foo=bar')).toBe('postgresql://h/db');
+  });
+});
+
+/**
+ * `describeTarget` output is written into every backup manifest — which is uploaded off-site next
+ * to the data it describes. The one property that must never regress is that it carries no
+ * credential, so these tests assert on the *absence* of the password rather than only on the shape.
+ */
+describe('describeTarget', () => {
+  const PASSWORD = 'sup3r-s3cret-pw';
+
+  it('keeps the host, port and database name', () => {
+    expect(describeTarget(REMOTE_DIRECT)).toBe('db.orphcusijzkxpxkzapjp.supabase.co:5432/postgres');
+    expect(describeTarget(LOCAL)).toBe('127.0.0.1:54322/postgres');
+  });
+
+  it('never leaks the password, the user or the scheme', () => {
+    const target = `postgresql://postgres.abc:${PASSWORD}@aws-0-us-east-1.pooler.supabase.com:6543/postgres`;
+    const described = describeTarget(target);
+
+    expect(described).toBe('aws-0-us-east-1.pooler.supabase.com:6543/postgres');
+    expect(described).not.toContain(PASSWORD);
+    expect(described).not.toContain('postgres.abc');
+  });
+
+  it('survives a password containing URL-special characters', () => {
+    const described = describeTarget(`postgresql://u:p%40ss:w%2Frd@db.example.com:5432/app`);
+    expect(described).toBe('db.example.com:5432/app');
+    expect(described).not.toContain('%40');
+  });
+
+  it('omits the port when the connection string does not name one', () => {
+    expect(describeTarget('postgresql://db.example.com/postgres')).toBe('db.example.com/postgres');
+  });
+
+  it('reports rather than guesses when it cannot parse the string', () => {
+    expect(describeTarget('')).toBe('(unknown)');
+    expect(describeTarget('not a url')).toBe('(unparseable connection string)');
   });
 });

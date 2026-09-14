@@ -135,8 +135,34 @@ curl -s https://roryskagenart.com/api/email/status
    `[inquiries] studio notification FAILED:` when the studio copy does not go out.
 4. `GET /api/email/status` for `configured` + `mode` (unauthenticated; publishes no addresses).
 
-**Recommended next step:** add a Resend webhook (`POST /api/email/webhook`) recording
-`delivered | bounced | complained` against a stored `messageId`. The free plan allows 1 endpoint.
+### Delivery webhook (live — registered 2026-09-14)
+
+`POST /api/email/webhook` is registered in Resend (id `fc7a9297…`, events `email.bounced` and
+`email.complained`) and verifies the Svix HMAC against `RESEND_WEBHOOK_SECRET` (constant-time,
+5-minute replay window). On a bounce it sets `inquiries.email_status = 'bounced'` by matching the
+stored Resend message id.
+
+- **Mounted with `express.raw()`** — the signature covers the raw body, so anything that parses JSON
+  first breaks verification.
+- **Fails closed:** with no secret configured, or a bad signature, it answers **401**. Unknown event
+  types answer 200 so Resend does not retry forever.
+- The signing secret is shown **once**, at creation. It cannot be read back from Resend or Vercel;
+  if it is lost, delete and re-create the webhook.
+- Proof it is wired: `vercel logs https://roryskagenart.com` shows
+  `[email/webhook] rejected: Signature mismatch.` for a forged signature. A response of
+  *"RESEND_WEBHOOK_SECRET is not configured"* would mean the variable is missing.
+
+### Inquiry delivery state (live)
+
+`inquiries.email_status` — `unknown | sent | partial | failed | suppressed | bounced` — plus
+`email_error`, `email_sent_at`, `email_studio_id`, `email_collector_id` (migration
+`2026_09_14_v2_13_1_inquiry_email_status.sql`). `suppressed` (mail off by configuration) is kept
+distinct from `failed` (provider error) on purpose. Read it with:
+
+```sql
+SELECT name, email, email_status, email_error, created_at
+  FROM public.inquiries WHERE email_status <> 'sent' ORDER BY created_at DESC;
+```
 
 ---
 

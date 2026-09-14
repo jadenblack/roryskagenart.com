@@ -39,6 +39,19 @@ export const DEFAULT_RETENTION: RetentionPolicy = {
   minAgeDays: 7,
 };
 
+/**
+ * A dump in the store, richer than the `DumpSummary` retention consumes.
+ *
+ * `hasManifest` is the difference between a dump and debris: objects are uploaded one at a time and
+ * `manifest.json` goes last, so a stamp without one is a run that was interrupted.
+ */
+export interface OffsiteDumpSummary extends DumpSummary {
+  /** Objects under this stamp. */
+  files: number;
+  /** False ⇒ unfinished and unrestorable. See `incompleteStamps`. */
+  hasManifest: boolean;
+}
+
 /** Where one file of one dump lives in the store. */
 export function blobPathFor(stamp: string, fileName: string): string {
   return `${BLOB_PREFIX}/${stamp}/${fileName}`;
@@ -70,17 +83,19 @@ function isoOrNull(date: Date | null | undefined): string | null {
   return Number.isFinite(time) ? new Date(time).toISOString() : null;
 }
 
-export function dumpsFromBlobs(blobs: BlobRef[]): DumpSummary[] {
-  const byStamp = new Map<string, { uploadedAt: Date | null }>();
+export function dumpsFromBlobs(blobs: BlobRef[]): OffsiteDumpSummary[] {
+  const byStamp = new Map<string, { uploadedAt: Date | null; files: number; hasManifest: boolean }>();
 
   for (const blob of blobs) {
     const stamp = stampFromBlobPath(blob.pathname);
     if (stamp === null) continue;
     const existing = byStamp.get(stamp);
     if (!existing) {
-      byStamp.set(stamp, { uploadedAt: blob.uploadedAt });
+      byStamp.set(stamp, { uploadedAt: blob.uploadedAt, files: 1, hasManifest: blob.pathname.endsWith('/manifest.json') });
       continue;
     }
+    existing.files += 1;
+    if (blob.pathname.endsWith('/manifest.json')) existing.hasManifest = true;
     // The dump is only complete once its manifest has landed, so the newest object is the best
     // available answer to "when was this dump finished?". An invalid date never wins.
     const current = existing.uploadedAt?.getTime();
@@ -90,12 +105,29 @@ export function dumpsFromBlobs(blobs: BlobRef[]): DumpSummary[] {
     }
   }
 
-  const dumps: DumpSummary[] = [];
+  const dumps: OffsiteDumpSummary[] = [];
   for (const [name, entry] of byStamp) {
-    dumps.push({ name, createdAt: isoOrNull(entry.uploadedAt) ?? stampToIso(name) ?? '' });
+    dumps.push({
+      name,
+      createdAt: isoOrNull(entry.uploadedAt) ?? stampToIso(name) ?? '',
+      files: entry.files,
+      hasManifest: entry.hasManifest,
+    });
   }
 
   return dumps.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+/**
+ * Stamps that have objects but no `manifest.json` — a run that died part-way through its upload.
+ *
+ * These are the worst kind of debris: `scripts/verify-offsite-backup.ts` refuses to verify one, so
+ * while an incomplete stamp is the newest thing in the store **every** verification fails and the
+ * scheduled backup looks broken for as long as retention takes to clear it (up to 14 days). They
+ * are also unrestorable by definition, so nothing of value is lost by deleting them.
+ */
+export function incompleteStamps(dumps: readonly OffsiteDumpSummary[]): string[] {
+  return dumps.filter((dump) => dump.hasManifest === false).map((dump) => dump.name);
 }
 
 /**
@@ -108,15 +140,22 @@ export function dumpUtcDate(stamp: string): string | null {
 }
 
 /**
- * Is there already a dump for this UTC day?
+ * Is there already a **complete** dump for this UTC day?
  *
  * Used to make the backup route idempotent: Vercel's cron delivery is best-effort and
  * **can invoke the same scheduled run more than once** (vercel.com/docs/cron-jobs/manage-cron-jobs).
  * A duplicate dump is not dangerous, but it is 406 KB of pointless storage and it burns part of the
  * Hobby Blob allowance twice a day.
+ *
+ * ⚠️ An **incomplete** stamp does not satisfy a day. A run that died mid-upload leaves objects
+ * behind, and skipping subsequent runs because of them would leave the day with no restorable dump
+ * at all — the opposite of what idempotency is for. (`hasManifest` is `undefined` for callers that
+ * only know names and timestamps; only an explicit `false` means "known to be unfinished".)
  */
-export function hasDumpForDate(dumps: DumpSummary[], isoDate: string): boolean {
-  return dumps.some((dump) => dumpUtcDate(dump.name) === isoDate);
+export function hasDumpForDate(dumps: readonly DumpSummary[], isoDate: string): boolean {
+  return dumps.some(
+    (dump) => dumpUtcDate(dump.name) === isoDate && (dump as OffsiteDumpSummary).hasManifest !== false
+  );
 }
 
 export interface BlobUsage {
@@ -142,22 +181,59 @@ export function summarizeBlobs(blobs: BlobRef[]): BlobUsage {
 }
 
 /**
+ * How long an unfinished stamp is left alone before it is treated as debris.
+ *
+ * Not zero: two runs can overlap (a manual `?force=true` while a scheduled run is mid-upload), and
+ * pruning a sibling's in-flight objects would turn a recoverable retry into real data loss. 24 h is
+ * far longer than any run takes and far shorter than the 14 days an incomplete stamp would
+ * otherwise poison verification for.
+ */
+export const DEFAULT_INCOMPLETE_GRACE_HOURS = 24;
+
+/**
  * Which dumps to keep, and which to delete.
  *
- * `selectForRetention` already encodes the policy; this only adds the one invariant the route
- * cannot be trusted to remember: **the dump that was just written is never deleted**, whatever the
- * policy says. A retention rule that can delete the thing you just backed up is not a retention
- * rule, it is a data-loss bug.
+ * `selectForRetention` already encodes the policy; this adds the invariants the route cannot be
+ * trusted to remember:
+ *
+ *   1. **The dump that was just written is never deleted**, whatever the policy says. A retention
+ *      rule that can delete the thing you just backed up is not a retention rule, it is a
+ *      data-loss bug.
+ *   2. **An incomplete stamp is deleted once it is past its grace period**, regardless of
+ *      `minAgeDays`. The age floor exists to protect *good* dumps from a run of bad ones; an
+ *      unfinished stamp is not a dump, and leaving it in place is what makes verification fail
+ *      continuously. See `incompleteStamps`.
+ *
+ * `dumps` is typed as the plain `DumpSummary` so callers that only know names and timestamps still
+ * work; incomplete handling simply does nothing for them, because `hasManifest` is undefined
+ * rather than `false`.
  */
 export function planPrune(
   dumps: DumpSummary[],
   now: Date,
   policy: RetentionPolicy = DEFAULT_RETENTION,
-  protectedStamp?: string
+  protectedStamp?: string,
+  options: { incompleteGraceHours?: number } = {}
 ): { keep: string[]; remove: string[] } {
   const { keep, remove } = selectForRetention(dumps, policy, now);
-  if (!protectedStamp) return { keep, remove };
+
+  const graceHours = options.incompleteGraceHours ?? DEFAULT_INCOMPLETE_GRACE_HOURS;
+  const graceMs = graceHours * 3_600_000;
+  // `Partial` because a caller that only knows names and timestamps passes a plain `DumpSummary`;
+  // `hasManifest` is then `undefined`, and only an explicit `false` means "known to be unfinished".
+  const unfinished = (dumps as readonly Partial<OffsiteDumpSummary>[])
+    .filter((dump) => dump.hasManifest === false)
+    .filter((dump) => {
+      const created = Date.parse(dump.createdAt);
+      // An unparseable timestamp is not a reason to delete; retention can still reach it by name.
+      return Number.isFinite(created) && now.getTime() - created > graceMs;
+    })
+    .map((dump) => dump.name);
+
+  const merged = [...new Set([...remove, ...unfinished])];
+
+  if (!protectedStamp) return { keep, remove: merged };
 
   if (!keep.includes(protectedStamp)) keep.push(protectedStamp);
-  return { keep, remove: remove.filter((name) => name !== protectedStamp) };
+  return { keep, remove: merged.filter((name) => name !== protectedStamp) };
 }

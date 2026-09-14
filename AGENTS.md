@@ -325,6 +325,16 @@ re-exports it; never re-declare a role list.
 - **Back up before you write** — `npx tsx scripts/backup-catalog.ts`, then follow
   [`docs/runbooks/database-backup-restore.md`](docs/runbooks/database-backup-restore.md).
 - **Media is Supabase Storage only** — never reference Cloudinary in new code.
+- **`api/index.js` is a tracked build artifact — do NOT untrack or "clean up" it.** It is generated
+  by esbuild from `server.ts` (`npm run build:api`), but it is committed deliberately: `b5e6c3b`
+  (v2.7.0) tracked it so remote Vercel CI finds the serverless function at all, and `vercel.json`
+  binds both `functions["api/index.js"]` and the `/api/(.*)` rewrite to that exact path.
+  ⚠️ The committed copy is **regenerated on every deploy** — `vercel.json`'s `buildCommand` runs
+  esbuild straight into `api/index.js` — so a stale copy in git does **not** mean the deployed
+  function is stale. Never read it to determine which routes are live.
+- **Run `npm run smoke` after changing `server.ts` mounts.** It imports the app the way Vercel does
+  (`VERCEL=1`), walks the route table *through* mounted routers, and invokes the endpoints that can
+  be probed without a database. It exits non-zero when an endpoint is missing.
 - **Email branding has one source** — `server/emailTemplates.ts`. Studio-sent mail goes through
   Resend; Supabase's own mailer is branded separately by pasting `supabase/email-templates/` into the
   dashboard (see §2 and the runbook).
@@ -333,7 +343,7 @@ re-exports it; never re-declare a role list.
   `bareOrigin()` (`src/lib/authRedirect.ts`) or `buildAuthRedirect()` (`server/lib/userAdmin.ts`), and
   keep `src/lib/authRedirect.ts` as the **first** import in `src/main.tsx`.
 - **`tsc --noEmit` must stay clean** (`npm run lint`); `npm test` (vitest) is offline/zero-token.
-  Suite as of `v2.13.0`: **335 tests across 28 files**.
+  Suite as of `v2.14.0`: **390 tests across 31 files**.
   ⚠️ **vitest transpiles without typechecking** — a type error in `scripts/` or `server/` passes the
   test run and is caught only by `npm run lint`. Run both.
 - Verify a claim against the code before documenting it. Stale docs were this repo's largest

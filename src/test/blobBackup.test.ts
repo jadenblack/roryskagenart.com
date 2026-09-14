@@ -18,10 +18,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   BLOB_PREFIX,
+  DEFAULT_INCOMPLETE_GRACE_HOURS,
   DEFAULT_RETENTION,
   HOBBY_STORAGE_ALLOWANCE_BYTES,
   blobPathFor,
   dumpsFromBlobs,
+  incompleteStamps,
   planPrune,
   stampFromBlobPath,
   summarizeBlobs,
@@ -122,6 +124,35 @@ describe('dumpsFromBlobs', () => {
   it('ignores objects that are not off-site dumps', () => {
     expect(dumpsFromBlobs([blob('somewhere-else/a.json', '2026-09-14T04:00:00.000Z')])).toEqual([]);
   });
+
+  it('marks a stamp without manifest.json as incomplete — an interrupted run, not a dump', () => {
+    // Looked up by name: `dumpsFromBlobs` returns newest first, so positional indexing would
+    // silently assert against the wrong dump.
+    const dumps = dumpsFromBlobs([
+      ...dumpBlobs('2026-09-14T04-00-00-000Z', '2026-09-14T04:00:00.000Z'),
+      ...dumpBlobs('2026-09-14T05-00-00-000Z', '2026-09-14T05:00:00.000Z', ['artworks.json', 'pages.json']),
+    ]);
+    const complete = dumps.find((d) => d.name === '2026-09-14T04-00-00-000Z')!;
+    const partial = dumps.find((d) => d.name === '2026-09-14T05-00-00-000Z')!;
+
+    expect(complete.hasManifest).toBe(true);
+    expect(partial.hasManifest).toBe(false);
+    expect(partial.files).toBe(2);
+  });
+});
+
+describe('incompleteStamps', () => {
+  it('names only the stamps that never received a manifest', () => {
+    const dumps = dumpsFromBlobs([
+      ...dumpBlobs('2026-09-14T04-00-00-000Z', '2026-09-14T04:00:00.000Z'),
+      ...dumpBlobs('2026-09-14T05-00-00-000Z', '2026-09-14T05:00:00.000Z', ['artworks.json']),
+    ]);
+    expect(incompleteStamps(dumps)).toEqual(['2026-09-14T05-00-00-000Z']);
+  });
+
+  it('is empty for a store where every run finished', () => {
+    expect(incompleteStamps(dumpsFromBlobs(dumpBlobs('2026-09-14T04-00-00-000Z', '2026-09-14T04:00:00.000Z')))).toEqual([]);
+  });
 });
 
 describe('summarizeBlobs', () => {
@@ -187,5 +218,47 @@ describe('planPrune', () => {
     const { keep, remove } = planPrune(across, day(20), { keepRecent: 1, keepMonthly: true, minAgeDays: 0 });
     expect(keep).toContain('aug');
     expect(remove).not.toContain('aug');
+  });
+
+  /**
+   * An interrupted run leaves objects behind that can never be restored. Worse, while such a stamp
+   * is the newest in the store `scripts/verify-offsite-backup.ts` refuses everything — so the
+   * scheduled backup looks broken for as long as retention takes to clear it.
+   */
+  it('deletes an incomplete stamp that is past its grace period, despite the age floor', () => {
+    const hostileAgeFloor = { keepRecent: 14, keepMonthly: true, minAgeDays: 7 };
+    // Both are 2 days old: inside the 7-day age floor, so only the incompleteness distinguishes them.
+    const dumps = [
+      { name: 'good', createdAt: day(18).toISOString(), files: 9, hasManifest: true },
+      { name: 'half-written', createdAt: day(18).toISOString(), files: 3, hasManifest: false },
+    ];
+
+    const { remove } = planPrune(dumps, day(20), hostileAgeFloor);
+    expect(remove).toContain('half-written');
+    expect(remove).not.toContain('good');
+  });
+
+  it('leaves an incomplete stamp alone inside the grace period — a sibling run may still be writing it', () => {
+    const dumps = [
+      { name: 'in-flight', createdAt: day(20).toISOString(), files: 3, hasManifest: false },
+    ];
+    const oneHourLater = new Date(day(20).getTime() + 3_600_000);
+
+    expect(planPrune(dumps, oneHourLater).remove).toEqual([]);
+    expect(DEFAULT_INCOMPLETE_GRACE_HOURS).toBeGreaterThan(1);
+  });
+
+  it('never deletes the just-written stamp even if its manifest has not landed yet', () => {
+    const dumps = [
+      { name: 'just-written', createdAt: day(1).toISOString(), files: 4, hasManifest: false },
+    ];
+    const { remove } = planPrune(dumps, day(20), DEFAULT_RETENTION, 'just-written');
+    expect(remove).not.toContain('just-written');
+  });
+
+  it('does not treat a summary with no manifest information as incomplete', () => {
+    // Callers that only know names and timestamps must keep the previous behaviour.
+    const plain = [{ name: 'legacy', createdAt: day(1).toISOString() }];
+    expect(planPrune(plain, day(20), DEFAULT_RETENTION).remove).toEqual([]);
   });
 });

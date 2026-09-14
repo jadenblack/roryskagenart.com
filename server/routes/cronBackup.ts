@@ -23,7 +23,8 @@
 import { Router } from 'express';
 import { timingSafeEqual } from 'crypto';
 import { del, list, put } from '@vercel/blob';
-import { query } from '../../src/server/db';
+import { getCleanConnectionString, query } from '../../src/server/db';
+import { describeTarget } from '../../scripts/lib/pgTarget';
 import { buildCatalogDump } from '../lib/catalogDump';
 import {
   BLOB_PREFIX,
@@ -31,6 +32,7 @@ import {
   blobPathFor,
   dumpsFromBlobs,
   hasDumpForDate,
+  incompleteStamps,
   planPrune,
   stampFromBlobPath,
   summarizeBlobs,
@@ -121,7 +123,11 @@ router.get('/backup', async (req, res) => {
     }
 
     const startedAt = Date.now();
-    const dump = await buildCatalogDump(async (sql) => (await query(sql)).rows);
+    // `describeTarget` strips credentials — the manifest is uploaded alongside the data, so the
+    // connection string itself must never reach it.
+    const dump = await buildCatalogDump(async (sql) => (await query(sql)).rows, {
+      target: describeTarget(getCleanConnectionString()),
+    });
 
     // Upload first, prune second. If an upload fails the run aborts with a 500 and no dump is
     // deleted — a partial dump is a nuisance, but deleting history because a write failed is not.
@@ -146,6 +152,15 @@ router.get('/backup', async (req, res) => {
     const blobs = await listAll();
     const usage = summarizeBlobs(blobs);
     const dumps = dumpsFromBlobs(blobs);
+
+    // A stamp with no manifest.json is an interrupted run. It is unrestorable and, while it is the
+    // newest thing in the store, it makes every verification fail — so it is called out here rather
+    // than left to be discovered by `scripts/verify-offsite-backup.ts` days later.
+    const unfinished = incompleteStamps(dumps);
+    if (unfinished.length > 0) {
+      console.warn('[cron/backup] incomplete dump(s) in the store:', unfinished);
+    }
+
     const { keep, remove } = planPrune(dumps, new Date(), DEFAULT_RETENTION, dump.stamp);
 
     let deletedFiles = 0;
@@ -165,6 +180,9 @@ router.get('/backup', async (req, res) => {
       uploaded: written.length,
       retainedDumps: keep.length,
       removedDumps: remove.length,
+      // Non-zero means an earlier run was interrupted. Not fatal — the run that produced this
+      // response succeeded — but it is the number to watch after a failed deploy.
+      incompleteDumps: unfinished.length,
       deletedFiles,
       storeBytes: usage.bytes,
       storeDumps: usage.dumps,

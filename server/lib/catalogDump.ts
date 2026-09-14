@@ -82,6 +82,22 @@ function orderByClause(table: string): string {
   return spec.conflictTarget.map((column) => `"${column}"`).join(', ');
 }
 
+export interface CatalogDumpOptions {
+  /** Defaults to "now". Only tests pass this, to make a dump's bytes deterministic. */
+  now?: Date;
+  /**
+   * Credential-free description of where the dump came from, e.g.
+   * `db.abc123.supabase.co:5432/postgres`. Use `describeTarget()` from `scripts/lib/pgTarget.ts` —
+   * never a raw connection string, which would put the database password inside the dump.
+   *
+   * "Which database is this?" is the first question asked during a restore, and the answer is
+   * impossible to recover later: the CLI script and the scheduled cron route read the same catalog
+   * through different hosts (a pooler vs a direct connection), and every off-site dump looked
+   * identical until this was passed in.
+   */
+  target?: string;
+}
+
 /**
  * Read every catalog table and assemble a verified dump.
  *
@@ -89,7 +105,11 @@ function orderByClause(table: string): string {
  * files** before this returns, so a caller cannot receive a dump that does not agree with itself.
  * See `scripts/lib/backupManifest.ts` for why that check is the whole point.
  */
-export async function buildCatalogDump(runQuery: DumpQuery, now: Date = new Date()): Promise<CatalogDump> {
+export async function buildCatalogDump(
+  runQuery: DumpQuery,
+  options: CatalogDumpOptions = {}
+): Promise<CatalogDump> {
+  const now = options.now ?? new Date();
   const info = await runQuery('SELECT current_database() AS db, version() AS version');
   const first = info[0] ?? {};
   const database = String(first.db ?? '');
@@ -117,7 +137,7 @@ export async function buildCatalogDump(runQuery: DumpQuery, now: Date = new Date
 
   const manifest = buildManifest({
     createdAt: now.toISOString(),
-    target: '(serverless)',
+    target: options.target ?? '(unknown)',
     database,
     serverVersion,
     tables,
