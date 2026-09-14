@@ -96,6 +96,14 @@ npx tsx scripts/generate-asset-registry.ts   # rewrites src/data/assetRegistry.t
 Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwork_terms`,
 `settings`, `media_assets`.
 
+> ⚠️ **The core tables are not created by the migrations.** `supabase/migrations/` only `CREATE`s
+> `profiles`, `taxonomies`, `artwork_terms`, and `settings`; it `ALTER`s `artworks` / `media_assets`,
+> which exist only in the live project. **`artworks`, `media_assets`, `pages`, and `inquiries` have
+> no `CREATE TABLE` anywhere in the repo**, so the database is not reproducible from version control
+> and `run-migrations.ts` would fail against a fresh project. The only `CREATE TABLE artworks` on
+> disk is a **stale** block in the superseded `plan/DRAFT_FEATURE_PULL_REQUEST.md` — do not trust it.
+> See [`docs/adr/0001`](docs/adr/0001-schema-as-code-before-data-migration.md).
+
 Key facts:
 - `artworks` carries lifecycle flags `enabled / archived / trashed / draft` and `hero_slider`.
   A DB trigger (`trg_artworks_draft_guard`) forces `enabled = false` whenever `draft = true`.
@@ -133,6 +141,7 @@ Key facts:
 ├── data/archive/           # historical Cloudinary manifests + parsed posts (provenance)
 ├── wayback/                # archived predecessor sites (v3 migration source — see §7)
 ├── docs/PRD.md             # Admin UI reliability PRD (implemented)
+├── docs/adr/               # Architecture Decision Records (see ADR 0001)
 └── plan/                   # see plan/README.md for status of every spec
 ```
 

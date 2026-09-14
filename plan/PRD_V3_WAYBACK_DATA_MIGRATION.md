@@ -12,6 +12,24 @@
 
 ---
 
+## 0. Prerequisite (blocking) — see [ADR 0001](../docs/adr/0001-schema-as-code-before-data-migration.md)
+
+Do **not** start Step 5 (Apply) until this is satisfied:
+
+- [ ] **Baseline schema in version control.** `artworks`, `media_assets`, `pages`, and `inquiries`
+      are not `CREATE`d anywhere in the repo — the migrations only `ALTER` them. Introspect the live
+      DB and commit a baseline `CREATE TABLE IF NOT EXISTS` migration so a fresh project can be built
+      from the repo. (The only existing `CREATE TABLE artworks` is a **stale** block in the
+      superseded `DRAFT_FEATURE_PULL_REQUEST.md` — do not copy it.)
+- [ ] **Rollback path.** Document a catalog backup/restore procedure before the first write.
+- [ ] **Write-path tests.** `scripts/run-migrations.ts` idempotency is an acceptance criterion (§5.5)
+      but has no test today; add one before relying on it.
+
+Steps 0–4 (validate / extract / reconcile / media / emit) are **read-only or emit-only** and may
+proceed now — Step 4's output is exactly what produces the schema-fit gap list ADR 0001 calls for.
+
+---
+
 ## 1. Objective
 
 Merge all entries / projects / work-product from the two archived predecessor websites into the v2
@@ -98,7 +116,8 @@ Data-migration engineer for the "roryskagenart.com v2 Studio" app. Parse two loc
 HTML archives, reconcile them against the LIVE Supabase catalog, and emit an idempotent merge.
 
 STACK FACTS (verified — do not use Cloudinary)
-- Media + DB are Supabase-only. No `cloudinary`/`multer` deps exist.
+- Media + DB are Supabase-only. No `cloudinary` dependency exists (`multer` remains, but only for
+  the Supabase Storage upload route — see AGENTS.md; it is not a Cloudinary leftover).
 - Write path: `pg` Pool script applied via `npx tsx scripts/run-migrations.ts <file>` (idempotent,
   tracked in public.schema_migrations). Alt: `getSupabaseAdmin()` in src/server/db.ts (service role).
 - Media: Supabase Storage bucket `artwork-images`; renditions thumb/hero/full/lqip via `sharp`;
