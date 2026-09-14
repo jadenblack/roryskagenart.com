@@ -11,6 +11,7 @@ import { settingsRouter } from "./server/routes/settings";
 import { mediaRouter } from "./server/routes/media";
 import { inquiriesRouter } from "./server/routes/inquiries";
 import { adminUsersRouter } from "./server/routes/adminUsers";
+import { cronRouter } from "./server/routes/cronBackup";
 
 dotenv.config();
 
@@ -83,6 +84,9 @@ app.use("/api/settings", settingsRouter);
 app.use("/api/media", mediaRouter);
 app.use("/api/inquiries", inquiriesRouter);
 app.use("/api/admin/users", adminUsersRouter);
+// Guarded by CRON_SECRET (see server/routes/cronBackup.ts). Not behind requireAuth: Vercel Cron
+// cannot present a Supabase session, and the shared secret is the stronger gate for a machine caller.
+app.use("/api/cron", cronRouter);
 
 // -------------------------------------------------------------
 // Vite Dev Server & Static Asset Serving
