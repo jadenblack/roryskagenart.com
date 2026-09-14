@@ -19,7 +19,10 @@ This document tracks all production and preview deployments for **`roryskagenart
 
 | Date (UTC) | Version | Deployment URL | Status | Build Time | Target | Associated Commits / Milestone |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **2026-09-14** | **v2.13.0** | [`roryskagen-nw0o1dvkd-ventureio.vercel.app`](https://roryskagen-nw0o1dvkd-ventureio.vercel.app) | `● Ready` | 27s | Production | `0aab9b3`: PR #11 — backup durability: verifiable dumps (format v2 + self-check), scheduled off-site dump to Vercel Blob, media reconciliation (Current Active) |
+| **2026-09-14** | **v2.13.0** | [`roryskagen-l6owfa5ru-ventureio.vercel.app`](https://roryskagen-l6owfa5ru-ventureio.vercel.app) | `● Ready` | 37s | Production | `0aab9b3`: **redeploy** of PR #11 to activate `CRON_SECRET` — no code change (Current Active) |
+| 2026-09-14 | post-v2.13.0 | [`roryskagen-840bb4awf-ventureio.vercel.app`](https://roryskagen-840bb4awf-ventureio.vercel.app) | `● Ready` | 21s | Production | `7430c58`: PR #12 — deployment-log reconciliation for v2.13.0 (docs-only; no release cut) |
+| 2026-09-14 | post-v2.13.0-preview | [`roryskagen-fho11dxx3-ventureio.vercel.app`](https://roryskagen-fho11dxx3-ventureio.vercel.app) | `● Ready` | 28s | Preview | `dbab164`: `docs/deployment-log-v2.13.0` preview (PR #12) |
+| **2026-09-14** | **v2.13.0** | [`roryskagen-nw0o1dvkd-ventureio.vercel.app`](https://roryskagen-nw0o1dvkd-ventureio.vercel.app) | `● Ready` | 27s | Production | `0aab9b3`: PR #11 — backup durability: verifiable dumps (format v2 + self-check), scheduled off-site dump to Vercel Blob, media reconciliation |
 | 2026-09-14 | v2.13.0-preview | [`roryskagen-r7sgc8fca-ventureio.vercel.app`](https://roryskagen-r7sgc8fca-ventureio.vercel.app) | `● Ready` | 32s | Preview | `f97b262`: `release/v2.13.0` preview (PR #11) |
 | 2026-09-14 | v2.13.0-preview | [`roryskagen-75gdnmrt8-ventureio.vercel.app`](https://roryskagen-75gdnmrt8-ventureio.vercel.app) | `● Ready` | 27s | Preview | `0548783`: `release/v2.13.0` first push (PR #11) — verifiable dumps |
 | **2026-09-14** | post-v2.12.1 | [`roryskagen-mn0kyxxco-ventureio.vercel.app`](https://roryskagen-mn0kyxxco-ventureio.vercel.app) | `● Ready` | 21s | Production | `bd414c4`: PR #10 — deployment-log reconciliation for v2.12.1 (docs-only; no release cut) |

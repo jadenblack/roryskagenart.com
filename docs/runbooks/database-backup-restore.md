@@ -100,6 +100,21 @@ The response carries **metadata only** (counts, paths, byte totals) — never ro
 curl -H "Authorization: Bearer $CRON_SECRET" https://roryskagenart.com/api/cron/backup
 ```
 
+> ✅ **Exercised end-to-end against production on 2026-09-14.** `CRON_SECRET` was set in the Vercel
+> project, the deployment was redeployed so the variable took effect, and the endpoint was invoked.
+> It returned 307 rows / 11 migrations across 9 objects (406,593 B) in ~1.3 s. The dump was then
+> **downloaded back out of Blob and re-verified with `scripts/verify-backup.ts`** — 8 tables, 307
+> rows, `OK`, exit 0. A second run produced a second dump and deleted nothing
+> (`retainedDumps: 2`, `removedDumps: 0`), and the store grew to exactly 2 × 406,593 B.
+>
+> The gate was observed in both states: with `CRON_SECRET` unset the endpoint returns **503**
+> ("the backup endpoint is disabled"); once set, a wrong bearer returns **401**. It fails closed.
+>
+> ⚠️ **Without `CRON_SECRET` the job runs every morning and writes nothing.** It is a Vercel Secret,
+> so it is hidden in the dashboard and cannot be read back — keep a copy where you can reach it if
+> you want to trigger a dump by hand. Changing an environment variable requires a **redeploy** to
+> take effect.
+
 > ⚠️ **Hobby-plan limits, verified against `vercel.com/docs/vercel-blob/usage-and-pricing`
 > (2026-09-14).** Blob includes **1 GB/month storage** and **2,000 advanced operations/month**.
 > Exceeding either does **not** bill you — it **cuts off access to Blob for 30 days**. For a backup
