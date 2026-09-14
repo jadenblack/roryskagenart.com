@@ -268,3 +268,22 @@ re-exports it; never re-declare a role list.
   Suite as of `v2.11.0`: **199 tests across 20 files**.
 - Verify a claim against the code before documenting it. Stale docs were this repo's largest
   liability before `v2.9.0`.
+
+### Releases
+
+- **Everything ships through a PR.** Push the branch, open a PR, and wait for the gates before
+  merging. There are **no GitHub Actions** in this repo — the gates are a **Vercel preview
+  deployment**, **Socket Security**, and **Debricked** (`Vulnerability analysis`). Merge only when
+  `gh pr view <n> --json mergeStateStatus` reports `CLEAN` (`UNSTABLE` means checks are still running).
+- **Tag the merge commit on `main`**, not the branch tip — that is what `v2.10.0` (`962587e`) and
+  `v2.11.0` (`5122812`) do. ⚠️ `v2.9.0` is the exception: it points at a pre-merge commit
+  (`16df8d9`), so its tag predates the final CHANGELOG fix. Tags are immutable once pushed; do not
+  move one to "fix" it.
+- **Do not delete a release branch unless asked.** Branches were pruned after `v2.9.0`/`v2.10.0`, but
+  the user asked to **keep `release/v2.11.0`** (tip `467bd14`, fully merged). Check before pruning.
+- **Update `DEPLOYMENT_LOG.md`** for every release — it is one row per notable deployment and it
+  drifted three releases behind once already. The query to rebuild it from real data is in that file.
+- `gh` is not authenticated in this shell and is not on the Bash `PATH`; call it by absolute path
+  (`"/c/Program Files/GitHub CLI/gh.exe"`) with `GH_TOKEN` derived from the `origin` remote URL.
+  Prefix git network commands with `GIT_TERMINAL_PROMPT=0 git -c credential.helper=` (a credential
+  manager otherwise hangs them), and see the memory notes for this environment's ref-file quirk.
