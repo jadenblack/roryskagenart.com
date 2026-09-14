@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [2.9.0] - 2026-09-13
+
+> **Delivered by commits:** `406def2` (Cloudinary residue cleanup, Supabase RLS hardening, server
+> modularization) · `a43fe40` (artwork drafts, autosave, shadcn/ui primitives, test suite) ·
+> `8e14fda` (full-bleed home hero, profiles RLS 500 fix) · docs reconciliation (this release).
+> Baseline: `v2.8.0` (`411138a`).
+
 ### Added — Home Hero Rework & Profiles RLS Fix
 - **Full-Bleed Hero Backdrop Slider:** The home masthead now overlays a single full-bleed artwork slider — the active piece cover-crops the entire canvas (no letterboxing for any aspect ratio), blurred and brightness-tuned per theme with a slow settle animation. The artwork meta card is gone; the only chrome is hover ghost-arrows, an interior active-slide name pill beside progress dots (bottom-right), and pause/play. `PageHeader` remains the standard header for all other public pages (the transient `bleed`/`inset` experiment was reverted).
 - **Uniform Section Rhythm:** Sections below the hero live in one inset content frame whose `space-y` owns the vertical spacing — measured 64px between every section, fixing the padding gaps introduced by earlier full-width edits.
@@ -18,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Draft Auto-Save:** Persisted drafts save automatically ~1.2 s after typing pauses (snapshot-diffed, keystrokes batched); live status indicator (Unsaved… / Saving… / ✓ Saved / Save failed); closing the dialog flushes unsaved draft edits; create mode requires an explicit first Save-as-draft; published works are never silently auto-saved.
 - **Sticky Modal Headers:** `DialogHeader` is now sticky inside the scrolling `DialogContent` across all modals — titles and the close X stay pinned while long forms scroll.
 - **Actions at the Top of CRUD Modals:** Action buttons relocated from the bottom footer into the sticky header row of every admin modal — artwork editor (Cancel / Save draft / Publish·Save changes, with the autosave indicator), trash & permanent-delete confirms, user delete-confirm and invite, taxonomy delete-confirm and create, and both page dialogs. Primary buttons submit via `requestSubmit()` so keyboard and pointer share one path.
-- **Zero-Token Tests for Drafts & Autosave:** 11 new contracts covering the draft lifecycle (hidden publicly, badge, publish/unpublish fire once), autosave debouncing/batching/gating, close-flush, and sticky-header rendering (55 tests total).
+- **Zero-Token Tests for Drafts & Autosave:** 11 new contracts covering the draft lifecycle (hidden publicly, badge, publish/unpublish fire once), autosave debouncing/batching/gating, close-flush, and sticky-header rendering. Suite total as of this release: **64 tests across 9 files** (`npm test`, offline).
 ### Fixed
 - **Unsaved-Changes Protection:** Closing a dirty non-draft edit (X, Cancel, Esc, overlay) now asks "Discard unsaved changes?" instead of silently dropping edits; drafts flush automatically; `beforeunload` covers browser/tab closes; in-app navigation reporting via `onDirtyChange`.
 - **Form-Reset Race:** The artwork editor's form previously reset whenever the engine refreshed (new record object identity), wiping in-progress edits; reset is now keyed on dialog-open/slug change only.
@@ -35,14 +41,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Bespoke Overlays Retired:** `ArtworkQuickViewModal` and `InquiryModal` migrated onto the shared `ui/Dialog` (portal, focus trap, scroll lock, working close); designs preserved and hardcoded hex colors tokenized.
 - **Dropdown API Canonicalized:** Call sites (`CatalogView`, `UsersAdminView`) migrated from the custom `trigger` prop to `DropdownMenuTrigger asChild` + `DropdownMenuContent`, with `onSelect` handlers and per-row `aria-label`s.
 
-### Planned & Staged (per `PRD_V2.1_CLOUDINARY_EXIT.md`)
-- **Cloudinary Deletion Pass:**
-  - Remove legacy `cloudinaryMap.ts` (765 lines) and frozen fallback resolution.
-  - Delete `/api/cloudinary/*` routes (`status`, `resources`, `upload`, `delete`) and multer proxy.
-  - Uninstall `cloudinary` npm dependency.
-  - Clean up root mapping JSON files (`all_cloudinary_assets.json`, `precise_cloudinary_registry_mapping.json`, etc.).
-- **Database & Security Hardening:**
-  - Enable Row Level Security (RLS) on `public.taxonomies`, `public.artwork_terms`, and `public.settings` with explicit public-read and admin-write policies.
+### Docs — Documentation & Context Reconciliation
+- **`AGENTS.md` (new):** single verified project-context document — authoritative stack, env var
+  names, DB write path, post-migration schema, and guardrails — so future contributors and agents
+  stop re-deriving state from contradictory specs.
+- **`plan/README.md` (new):** status index for every specification (Implemented / Superseded / Planned).
+- **Spec status corrections:** `plan/PRD_V2.9_CLEANUP_AND_OPTIMIZATION.md` marked **Implemented** with
+  a per-subsystem delivery map; `plan/PRD_V2.1_CLOUDINARY_EXIT.md` marked **Implemented** with a
+  delivery record; `plan/DRAFT_FEATURE_PULL_REQUEST.md` marked **Superseded** (Cloudinary-era
+  assumptions).
+- **`plan/PRD_V3_WAYBACK_DATA_MIGRATION.md` (new):** the v3 plan for merging both archived
+  predecessor sites into the Supabase catalog + media library.
+- **`README.md` reconciliation:** removed the obsolete Cloudinary badge, endpoint row, and env vars
+  (including the legacy `CLOUDINARY_URL` line); corrected React 18→19 and Tailwind 3→4 badges; env
+  block now matches `.env.example` (`VRCL_SUPA_*`); migration list completed to 8/8; directory tree
+  refreshed; `/plan` links repaired; corrected the serverless entrypoint name to `api/index.js` and
+  re-scoped the payload-limit note off the retired vendor.
+- **Housekeeping:** quarantined the unimported `src/data/portfolioPostsData.updated.json` to
+  `data/archive/` (provenance only; no importers — verified by repo-wide search).
+- **Validation:** `npm run lint` (`tsc --noEmit`) clean; `npm test` — **64/64 passing across 9 files**;
+  all internal documentation links verified to resolve (two pre-existing README links repaired:
+  `/plan/FEATURE_PULL_REQUEST.md` → `plan/DRAFT_FEATURE_PULL_REQUEST.md`, and a `LICENSE` link with
+  no target file). Documentation-only release: no runtime, schema, or API changes.
+
+### Completed (previously listed under "Planned & Staged")
+- **Cloudinary deletion pass — done** (`406def2`): `cloudinaryMap.ts` deleted, the `/api/cloudinary/*`
+  routes and the Cloudinary upload proxy removed, the `cloudinary` npm dependency uninstalled, and the
+  image resolution chain is now Supabase-only (`external URL → asset registry → SVG fallback`). Root
+  mapping JSONs relocated to `data/archive/`. (`multer` is retained — it powers the Supabase Storage
+  upload route, not Cloudinary; see `AGENTS.md`.)
+- **Database & security hardening — done** (`2026_09_13_v2_9_security_rls_hardening.sql`): RLS enabled
+  on `taxonomies`, `artwork_terms`, and `settings` with public-read and admin/editor-write policies.
 
 ---
 
@@ -114,7 +143,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `lqip` (20w Base64 blur placeholder)
   - Supabase Storage bucket `artwork-images` configuration with public read access.
   - Automated ingestion into `public.media_assets` registry (152 assets migrated).
-- Added `.wayback` archive references for historical portfolio integrity verification.
+- Added the `wayback/` archive — static snapshots of the two predecessor sites (Central Texas Murals and the earlier Rory Skagen Art portfolio) — for historical portfolio integrity verification (`16f6fb2`, `9be1222`).
 
 ---
 
@@ -123,7 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Production Baseline Tag (`v2.0.0`):**
   - Integrated Supabase PostgreSQL database client and schema definitions (`47dc025`).
   - Integrated Resend email service for collector inquiry notifications (`908d105`).
-  - Architectural PRD roadmap documentation (`plan/DRAFT_PRD_V2_MIGRATION.md`, `plan/PRD_V2.1_CLOUDINARY_EXIT.md`).
+  - Architectural PRD roadmap documentation (`plan/PRD_V2.1_CLOUDINARY_EXIT.md`).
 - **Historical Pre-Release Features (v2.0.0-alpha / v1.x Consolidation):**
   - Native admin authentication & session vault (`105bd5d`, `b77846b`).
   - Hero slider carousel management (`fbaeccf`).

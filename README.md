@@ -1,15 +1,17 @@
 # Rory Skagen Studio — Official Web Application & Fine Art Catalog
 
-[![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
+[![React](https://img.shields.io/badge/React-19.x-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Express](https://img.shields.io/badge/Backend-Express.js-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![Supabase](https://img.shields.io/badge/Database-Supabase_PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
-[![Cloudinary](https://img.shields.io/badge/CDN-Cloudinary-3448C5?logo=cloudinary&logoColor=white)](https://cloudinary.com/)
+[![Supabase](https://img.shields.io/badge/Backend-Supabase_(DB_%2B_Storage_%2B_Auth)-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 
 Official digital gallery, catalog raisonné, and studio management application for celebrated Austin artist **Rory Skagen** ([roryskagenart.com](https://roryskagenart.com)). Renowned for defining Austin’s visual landscape—including the iconic *"Greetings from Austin"* South 1st Street mural—Rory Skagen's fine art oeuvre spans pop surrealism, neon Americana, retro-futurism, monumental public murals, and original acrylic and mixed-media canvases.
 
 This full-stack application provides both an elegant, collector-grade public presentation and a powerful virtual studio inventory engine.
+
+> **Current release:** `v2.9.0` · **Single vendor:** Supabase (database + storage + auth). Cloudinary has been fully decommissioned.
+> **Working in this repo (human or AI)?** Read [`AGENTS.md`](./AGENTS.md) first — it is the verified source of truth for the stack, schema, env vars, and write path. See [`plan/README.md`](./plan/README.md) for the status of every planning document.
 
 ---
 
@@ -33,7 +35,7 @@ This full-stack application provides both an elegant, collector-grade public pre
 
 ## Overview & Architecture
 
-The application is architected as a modern full-stack application combining a high-performance React 18 client with a bundled Express.js backend and a PostgreSQL database on Supabase:
+The application is architected as a modern full-stack application combining a high-performance React 19 client with a modular Express.js backend and a PostgreSQL database on Supabase:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -52,7 +54,7 @@ The application is architected as a modern full-stack application combining a hi
 │  ├── /api/admin/users (RBAC)     │  ├── Supabase PostgreSQL DB         │
 │  ├── /api/taxonomies, /settings  │  ├── Supabase Storage (artwork-     │
 │  ├── /api/inquiries capture      │  │   images bucket, renditions)     │
-│  └── /api/cloudinary (legacy)    │  └── Resend (transactional email)   │
+│  └── /api/media (registry)       │  └── Resend (transactional email)   │
 └──────────────────────────────────┴─────────────────────────────────────┘
 ```
 
@@ -128,8 +130,8 @@ The application treats **Supabase as the single source of truth**:
    - Accessed via server-side `/api/` endpoints to enforce security; schema changes ship as versioned SQL files in `/supabase/migrations` (applied via `scripts/run-migrations.ts`).
 
 3. **Supabase Storage Asset Pipeline**:
-   - The `artwork-images` bucket delivers responsive renditions (thumb/hero/full + LQIP blur-up) tracked in `public.media_assets`.
-   - Cloudinary integration remains only as a legacy fallback path.
+   - The `artwork-images` bucket delivers responsive renditions (thumb/hero/full + LQIP blur-up) tracked in `public.media_assets`; the client resolves image refs through the generated `src/data/assetRegistry.ts`.
+   - Image resolution is `external URL → Supabase asset registry → SVG fallback`. Cloudinary has been fully decommissioned — no package, no routes, no resolution step.
 
 ---
 
@@ -137,35 +139,43 @@ The application treats **Supabase as the single source of truth**:
 
 ```
 ├── .env.example              # Sample environment variable declarations
+├── AGENTS.md                 # Verified project context for humans & AI agents (read first)
 ├── README.md                 # Project documentation (this file)
-├── metadata.json             # AI Studio applet configuration & permissions
+├── CHANGELOG.md              # Release notes (Keep a Changelog / SemVer)
+├── DEPLOYMENT_LOG.md         # Vercel production & preview deployment history
 ├── package.json              # Dependency manifests and run scripts
-├── server.ts                 # Express backend API & Vite middleware entry
+├── server.ts                 # Slim Express entrypoint (mounts routers, exports app)
 ├── vite.config.ts            # Vite build configuration with Tailwind support
-├── /plan                     # Technical specifications, RFCs, & PRs (legacy specs)
+├── vercel.json               # Vercel routing / serverless function declaration
+├── /api                      # Vercel serverless entry (CommonJS)
+├── /server                   # Modular backend
+│   ├── middleware/auth.ts    # resolveCmsUser / requireAuth / requireRole
+│   ├── routes/*.ts           # artworks, pages, taxonomies, settings, media, inquiries, adminUsers
+│   └── emailService.ts       # Resend integration
+├── /plan                     # Specifications — see plan/README.md for the status of each
+├── /docs                     # Admin UI reliability PRD
 ├── /public                   # Static assets served verbatim (favicons, manifest)
-│   ├── favicon-*.png         # Generated icon sizes (16/32) from rory-icon.png
-│   ├── apple-touch-icon.png  # 180px iOS icon
-│   ├── android-chrome-*.png  # 192/512px PWA + OG icons
-│   └── site.webmanifest      # PWA manifest
-├── /scripts                  # Maintenance scripts (migration runner, asset registry)
+├── /scripts                  # Maintenance scripts (migration runner, asset registry, media migration)
 ├── /supabase/migrations      # Versioned, idempotent SQL schema migrations
+├── /data/archive             # Historical Cloudinary manifests & parsed posts (provenance only)
+├── /wayback                  # Archived predecessor sites (v3 migration source — read-only)
 ├── /src
-│   ├── App.tsx               # Root application router (public routes + #/admin)
+│   ├── App.tsx               # Root application router (public routes + lazy #/admin)
 │   ├── main.tsx              # React DOM entry point
 │   ├── /types                # TypeScript interfaces (artworks, auth, taxonomy)
 │   ├── /components           # Public site views (navbar, gallery, hero, contact…)
 │   ├── /components/admin     # CMS dashboard (AdminApp router, layout, views)
-│   ├── /components/ui        # shadcn-style primitives (button, card, dialog…)
+│   ├── /components/ui        # shadcn/ui (Radix) primitives
 │   ├── /context              # React context providers (AuthContext, ThemeContext)
-│   ├── /data                 # Verified registries + bundled bootstrap cache
+│   ├── /data                 # assetRegistry.ts (generated), assetResolver.ts, registries
 │   ├── /engine
 │   │   └── galleryStateEngine.ts # DB-backed reactive store (API → state → UI)
-│   └── /lib
-│       ├── supabase.ts       # Supabase client setup & environment loader
-│       ├── adminApi.ts       # Authenticated fetch wrapper (Bearer JWT attach)
-│       ├── markdown.ts       # Wiki-link renderer + frontmatter utils (pure)
-│       └── utils.ts          # cn() class-merge utility
+│   ├── /lib
+│   │   ├── supabase.ts       # Supabase client setup & environment loader
+│   │   ├── adminApi.ts       # Authenticated fetch wrapper (Bearer JWT attach)
+│   │   ├── markdown.ts       # Wiki-link renderer + image resolution chain
+│   │   └── utils.ts          # cn() class-merge utility
+│   └── /server/db.ts         # pg Pool + Supabase admin client
 ```
 
 ---
@@ -186,7 +196,7 @@ The Express server exposes the following RESTful endpoints on port `3000`:
 | `DELETE` | `/api/artworks/:slug` | 🔒 Soft trash or permanent purge with `?permanent=true` (editor+) |
 | `GET` | `/api/pages/:slug` | Get markdown content for specific page |
 | `PUT` | `/api/pages/:slug` | 🔒 Upsert page title/content (editor+) |
-| `GET` | `/api/pages` | 🔒 List pages with timestamps (editor+) |
+| `GET` | `/api/pages` | List pages (slug/title/content) — public |
 | `POST` | `/api/inquiries` | Submit buyer/collector inquiry (public; triggers Resend notifications) |
 | `GET` | `/api/inquiries` | 🔒 List submitted inquiries (editor+) |
 | `PATCH` | `/api/inquiries/:id/status` | 🔒 Update inquiry status: New / Contacted / Closed (editor+) |
@@ -201,10 +211,10 @@ The Express server exposes the following RESTful endpoints on port `3000`:
 | `PATCH` | `/api/admin/users/:id` | 🔒 Change role / deactivate (ban) / rename (admin) |
 | `DELETE` | `/api/admin/users/:id` | 🔒 Delete user permanently (admin) |
 | `GET` | `/api/media` | 🔒 List media_assets registry with renditions (editor+) |
+| `POST` | `/api/media/upload` | 🔒 Upload image to Supabase Storage `artwork-images` + register in media_assets (editor+) |
 | `GET` | `/api/database/status` | 🔒 PostgreSQL connectivity check (editor+) |
 | `GET` | `/api/email/status` | Check Resend email domain configuration and API status |
 | `POST` | `/api/email/send-test` | 🔒 Dispatch test verification email (admin) |
-| `POST` | `/api/cloudinary/upload` | 🔒 Legacy image upload to Cloudinary (editor+) |
 
 ---
 
@@ -219,12 +229,16 @@ npx tsx scripts/run-migrations.ts          # apply all pending
 npx tsx scripts/run-migrations.ts <file>.sql   # apply specific files
 ```
 
-Applied CMS v1 migrations:
+All migrations (applied in filename order):
 
+- `2026_09_v3_media_assets_extend.sql` — extends `media_assets` with `lqip` + `renditions` (jsonb) and an `updated_at` trigger for idempotent upserts.
 - `2026_09_12_cms_v1_profiles_roles.sql` — `public.profiles` (role/is_active keyed to `auth.users`), `on_auth_user_created` signup trigger, admin backfill for existing users, owner/admin RLS policies.
 - `2026_09_12_cms_v1_taxonomies_settings.sql` — `taxonomies` (+ `artwork_terms` join), `settings` JSONB key/value store, `gallery_series` backfill into series terms, default settings seeds.
+- `2026_09_12_cms_v1_1_slug_backfill.sql` — rewrites numeric import-index slugs (`0`..`136`) to title-derived slugs and remaps `media_assets.artwork_slug`.
+- `2026_09_13_cms_v2_source_of_truth_backfill.sql` — fills empty `narratives`, replaces placeholder `/images/*.svg` refs with real filenames, restores hero defaults, and seeds bundled `pages`.
 - `2026_09_13_cms_v2_1_artwork_drafts.sql` — `artworks.draft` flag with partial indexes and a DB trigger preventing drafts from being publicly enabled.
-- `2026_09_13_cms_v2_2_profiles_rls_recursion_fix.sql` — replaces the self-referencing `profiles_select_admin` RLS policy (which aborted every profile SELECT with Postgres 42P17 "infinite recursion", surfacing as HTTP 500) with `SECURITY DEFINER` helpers `is_admin()` / `is_admin_or_editor()`.
+- `2026_09_13_cms_v2_2_profiles_rls_recursion_fix.sql` — replaces the self-referencing `profiles_select_admin` RLS policy (Postgres 42P17 "infinite recursion" → HTTP 500) with `SECURITY DEFINER` helpers `is_admin()` / `is_admin_or_editor()`.
+- `2026_09_13_v2_9_security_rls_hardening.sql` — enables RLS on `taxonomies`, `artwork_terms`, `settings` with public-read + admin/editor-write policies.
 
 ### Core tables
 
@@ -248,27 +262,23 @@ Full column definitions for `artworks` and `inquiries` are documented in the mig
 Configure the following variables in `.env` (refer to `.env.example`):
 
 ```bash
-# Supabase Configuration (Database & Auth)
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-POSTGRES_URL=postgresql://postgres:password@host:5432/postgres
+# Supabase / PostgreSQL (Vercel integration naming — these are the names the code reads)
+NEXT_PUBLIC_VRCL_SUPA_SUPABASE_URL=
+NEXT_PUBLIC_VRCL_SUPA_SUPABASE_PUBLISHABLE_KEY=
+VRCL_SUPA_SUPABASE_ANON_KEY=
+VRCL_SUPA_SUPABASE_SERVICE_ROLE_KEY=
+VRCL_SUPA_POSTGRES_PRISMA_URL=          # preferred connection string
+VRCL_SUPA_POSTGRES_URL_NON_POOLING=
+VRCL_SUPA_SUPABASE_JWT_SECRET=
 
-# Admin bootstrap (first admin is created by the profiles migration
-# backfill; additional admins are invited from #/admin/users)
+# Studio admin bootstrap (optional — the first admin is created by the
+# profiles migration backfill; additional admins are invited from #/admin/users)
+ADMIN_EMAIL=
+ADMIN_INITIAL_PASSWORD=
 
 # Resend Email Integration
-RESEND_API_KEY=re_your_api_key
-RESEND_EMAIL_DOMAIN=roryskagenart.com
-RESEND_FROM_EMAIL="Rory Skagen Studio <studio@roryskagenart.com>"
-
-# Cloudinary CDN Configuration
-CLOUDINARY_CLOUD_NAME=xjilp2pq
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-
-# Application Port
-PORT=3000
+RESEND_API_KEY=
+RESEND_EMAIL_DOMAIN=
 ```
 
 ---
@@ -320,13 +330,13 @@ The application deploys as a **documented hybrid** on Vercel: a static SPA on th
                       Vercel Edge CDN (static)
   Browser ──────────► / , /assets/*          ← vite build output (dist/)
       │
-      └── /api/* ──────► api/index.cjs (Node.js serverless function)
+      └── /api/* ──────► api/index.js (Node.js serverless function)
                               └── imports server.ts  (the SAME Express app
                                   that runs `npm run dev` / `npm start`)
                                       ├── PostgreSQL (pg Pool → Supabase)
                                       ├── Supabase Auth (admin sessions)
-                                      ├── Resend (inquiry emails)
-                                      └── Cloudinary SDK (legacy media)
+                                      ├── Supabase Storage (media renditions)
+                                      └── Resend (inquiry emails)
 ```
 
 One Express app, two boot modes:
@@ -334,7 +344,7 @@ One Express app, two boot modes:
 | Mode | Trigger | Behavior |
 | :--- | :--- | :--- |
 | **Standalone** | `npm run dev` / `npm start` (no `VERCEL` env) | Attaches Vite middleware (dev) or serves `dist/` (prod), listens on `PORT` |
-| **Serverless** | `VERCEL=1` (set automatically by Vercel) | `server.ts` only exports the configured `app`; no Vite import, no `app.listen()`. `api/index.cjs` hands platform requests to it |
+| **Serverless** | `VERCEL=1` (set automatically by Vercel) | `server.ts` only exports the configured `app`; no Vite import, no `app.listen()`. `api/index.js` hands platform requests to it |
 
 ### Required environment variables (Vercel project settings)
 
@@ -346,9 +356,6 @@ VRCL_SUPA_SUPABASE_SERVICE_ROLE_KEY=eyJ...        # server-side auth + DB admin
 
 # Email — required for /api/inquiries notifications
 RESEND_API_KEY=re_...
-
-# Optional (legacy media pipeline)
-CLOUDINARY_URL=cloudinary://...
 
 # Optional (admin bootstrap; Supabase Auth is the primary path)
 ADMIN_EMAIL=
@@ -365,8 +372,8 @@ ADMIN_INITIAL_PASSWORD=
 
 * **Read-only filesystem** — file-based admin session persistence (`data/auth_store.json`) is redirected to `/tmp` per instance and degrades gracefully; Supabase Auth is the authoritative identity path. Sessions do not survive instance recycling.
 * **No long-lived state** — the pg `Pool` is module-scoped and reused across warm invocations; cold starts pay one connection setup.
-* **Payload limits** — serverless request bodies cap around 4.5 MB; the 50 MB JSON limit and 30 MB Cloudinary uploads only apply in standalone mode.
-* **Function timeout** — `maxDuration: 30` in `api/index.cjs`; all current endpoints complete well under this.
+* **Payload limits** — serverless request bodies cap around 4.5 MB; the 50 MB JSON body limit and the 30 MB media-upload limit (`server/routes/media.ts`) only apply in standalone mode.
+* **Function timeout** — `maxDuration: 30` in `vercel.json`; all current endpoints complete well under this.
 * **CJS bundle requirement** — the repo's root `package.json` declares `"type": "module"`, which would make Vercel load an `api/index.js` bundle as ESM and crash (`module is not defined`). The fix is `api/package.json` declaring `{ "type": "commonjs" }`, scoping only the serverless directory to CommonJS while the Vite client stays ESM.
 
 ### Deploying
@@ -387,11 +394,11 @@ The standalone Express server (`npm start` on a Node host) remains fully support
 
 All major architectural proposals and feature branches are documented in the `/plan` directory:
 
-- [`/plan/FEATURE_PULL_REQUEST.md`](./plan/FEATURE_PULL_REQUEST.md): Comprehensive feature specification, code diffs, and testing instructions for the full **Supabase Database Synchronization & Engine Integration** PR.
+- [`plan/DRAFT_FEATURE_PULL_REQUEST.md`](./plan/DRAFT_FEATURE_PULL_REQUEST.md): historical **Supabase Database Synchronization & Engine Integration** proposal — **superseded** by the current modular architecture. See [`plan/README.md`](./plan/README.md) for the status of every spec.
 
 ---
 
 ## License & Credits
 
 - **Artwork & Imagery**: © Rory Skagen. All rights reserved. Reproduction or distribution without prior written permission is strictly prohibited.
-- **Application Code**: Licensed under the [Apache-2.0 License](./LICENSE).
+- **Application Code**: Licensed under the Apache-2.0 License. *(No `LICENSE` file is currently present in the repository — add one to make this claim verifiable.)*
