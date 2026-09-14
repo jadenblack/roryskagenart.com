@@ -22,6 +22,7 @@ import fs from 'fs';
 import path from 'path';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import { resolvePoolTarget } from './lib/pgTarget';
 
 dotenv.config();
 
@@ -37,9 +38,12 @@ function getConnectionString(): string {
   return raw.replace(/\?.*$/, '');
 }
 
+// Loopback targets (the local scratch database on 127.0.0.1:54322) get no TLS — the SSL rule
+// lives in scripts/lib/pgTarget.ts. Remote behaviour is unchanged.
+const poolTarget = resolvePoolTarget(getConnectionString());
 const pool = new Pool({
-  connectionString: getConnectionString(),
-  ssl: { rejectUnauthorized: false },
+  connectionString: poolTarget.connectionString,
+  ssl: poolTarget.ssl,
 });
 
 /** Buffered so the report is written as one clean file — see the docblock. */
