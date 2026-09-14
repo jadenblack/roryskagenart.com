@@ -15,6 +15,7 @@ import { GalleryGrid } from './components/GalleryGrid';
 import { ArtworkFocusView } from './components/ArtworkFocusView';
 import { PagesView } from './components/PagesView';
 import { useAuth } from './context/AuthContext';
+import { buildEditPath } from './lib/adminRoute';
 import { Lock, ShieldCheck } from 'lucide-react';
 
 const AdminApp = React.lazy(() =>
@@ -195,6 +196,14 @@ export default function App() {
 
   const isPublicRoute = ['home', 'gallery', 'catalog', 'artwork', 'about', 'contact'].includes(route);
 
+  /**
+   * Editor-and-above capabilities, resolved once and passed down. Anything that
+   * mutates the catalog is gated on this — the public dossier must not render
+   * studio controls for visitors or read-only accounts.
+   */
+  const role = user?.role;
+  const canManageCatalog = isAuthenticated && (role === 'admin' || role === 'editor');
+
   return (
     <div id="root-container" className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-accent/30 transition-colors">
       <div>
@@ -244,14 +253,29 @@ export default function App() {
               onBack={() => navigateTo('gallery')}
               onSelectArtwork={(slug) => navigateTo('artwork', slug)}
               onNavigatePage={(slug) => navigateTo(slug)}
-              onEditInStudio={() => navigateTo('/admin/catalog')}
-              onToggleEnable={(slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug)}
-              onToggleArchive={(slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug)}
-              onToggleHeroSlider={(slug) => GalleryAppEngineInstance.toggleHeroSlider(slug)}
-              onTrashArtwork={(slug) => {
-                GalleryAppEngineInstance.trashArtwork(slug);
-                navigateTo('gallery');
-              }}
+              /**
+               * Studio chrome on the public dossier is editor-and-above only.
+               * Previously every handler was passed unconditionally, so an
+               * anonymous visitor saw (and could click) Hero Slider, Hide Work,
+               * To Storage, Trash and "Edit in Studio".
+               */
+              canManage={canManageCatalog}
+              onEditInStudio={
+                canManageCatalog
+                  ? (slug) => navigateTo(buildEditPath(slug))
+                  : undefined
+              }
+              onToggleEnable={canManageCatalog ? (slug) => GalleryAppEngineInstance.toggleEnableArtwork(slug) : undefined}
+              onToggleArchive={canManageCatalog ? (slug) => GalleryAppEngineInstance.toggleArchiveArtwork(slug) : undefined}
+              onToggleHeroSlider={canManageCatalog ? (slug) => GalleryAppEngineInstance.toggleHeroSlider(slug) : undefined}
+              onTrashArtwork={
+                canManageCatalog
+                  ? (slug) => {
+                      GalleryAppEngineInstance.trashArtwork(slug);
+                      navigateTo('gallery');
+                    }
+                  : undefined
+              }
             />
           )}
 
