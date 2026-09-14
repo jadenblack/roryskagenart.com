@@ -22,9 +22,13 @@ debt, improving the codebase — **before** attempting the v3 data migration?
 
 2. **The one schema reference we have is stale and incomplete.**
    The only `CREATE TABLE public.artworks` in the repo lives inside
-   `plan/DRAFT_FEATURE_PULL_REQUEST.md` — a document now marked **⛔ Superseded**. It is missing
-   columns the code actually uses (no `draft`, no `sort_order`) and names a column the code no
-   longer uses (`gallery_series`, while the API/engine use `series`).
+   `plan/DRAFT_FEATURE_PULL_REQUEST.md` — a document now marked **⛔ Superseded**. Verified against
+   the live database, it is missing exactly one column the code relies on: **`draft`**
+   (`boolean NOT NULL DEFAULT false`, added later by
+   `supabase/migrations/2026_09_13_cms_v2_1_artwork_drafts.sql`). It also omits every index, the
+   `ENABLE ROW LEVEL SECURITY` statement, and all RLS policies for the table. Its column names are
+   otherwise faithful — including `gallery_series`, which is the correct name in both the live DB
+   and `src/`.
 
 3. **Consequence: the database is not reproducible.** Running `scripts/run-migrations.ts` against
    a fresh Supabase project would fail — the first `ALTER TABLE public.artworks` targets a table
@@ -44,9 +48,9 @@ debt, improving the codebase — **before** attempting the v3 data migration?
    (`src/data/assetRegistry.ts`, 4602 lines) is auto-generated and not a concern.
 
 7. **The schema is already close to mural-capable.** `artworks` carries `location`, `year`,
-   `series`, `medium`, `dimensions`, `narrative`, `status`, plus M2M `taxonomies`/`artwork_terms`.
-   Mural-specific attributes (client, project type) map onto existing columns and taxonomy terms.
-   The expected schema gap is **small and additive**, not a redesign.
+   `gallery_series`, `medium`, `dimensions`, `narrative`, `status`, plus M2M
+   `taxonomies`/`artwork_terms`. Mural-specific attributes (client, project type) map onto existing
+   columns and taxonomy terms. The expected schema gap is **small and additive**, not a redesign.
 
 ## 3. Decision
 
@@ -91,4 +95,4 @@ Codifying process — this ADR, `AGENTS.md`, Conventional Commits, the CHANGELOG
 | :--- | :--- |
 | **Broad codebase refinement first** | No natural stopping point; priorities would be guessed without the mural data; delays the actual business value (content) behind open-ended polish. |
 | **Migrate immediately** | Targets a schema that exists only in production and is undocumented/stale; no rollback; highest-consequence code path is untested. |
-| **Rebuild the schema from the superseded doc** | The doc is stale and incomplete (§2.2); it would bake in wrong column names. Ground truth must come from introspecting the live DB. |
+| **Rebuild the schema from the superseded doc** | The doc is stale and incomplete (§2.2): it omits the `draft` column, every index, and all RLS objects. Ground truth must come from introspecting the live DB. |
