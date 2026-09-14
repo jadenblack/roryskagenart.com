@@ -19,7 +19,11 @@ This document tracks all production and preview deployments for **`roryskagenart
 
 | Date (UTC) | Version | Deployment URL | Status | Build Time | Target | Associated Commits / Milestone |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **2026-09-14** | **v2.12.0** | [`roryskagen-6bdmr4283-ventureio.vercel.app`](https://roryskagen-6bdmr4283-ventureio.vercel.app) | `● Ready` | 22s | Production | `f5cf64c`: PR #7 — recoverability: scripted restore path, target-aware TLS, migration-ledger RLS, SQL line-ending policy, deterministic backups, `artworks` draft-exclusion policy (Current Active) |
+| **2026-09-14** | **v2.12.1** | [`roryskagen-ea803f82o-ventureio.vercel.app`](https://roryskagen-ea803f82o-ventureio.vercel.app) | `● Ready` | 22s | Production | `9466c90`: PR #9 — security patch: the four blanket `{authenticated}` RLS policies scoped to `is_admin_or_editor()` (Current Active) |
+| 2026-09-14 | v2.12.1-preview | [`roryskagen-618pmc6b2-ventureio.vercel.app`](https://roryskagen-618pmc6b2-ventureio.vercel.app) | `● Ready` | 21s | Preview | `f87a695`: `release/v2.12.1` preview (PR #9) |
+| **2026-09-14** | post-v2.12.0 | [`roryskagen-q2pyhmx7b-ventureio.vercel.app`](https://roryskagen-q2pyhmx7b-ventureio.vercel.app) | `● Ready` | 20s | Production | `e4c49c7`: PR #8 — deployment-log reconciliation for v2.12.0 (docs-only; no release cut) |
+| 2026-09-14 | post-v2.12.0-preview | [`roryskagen-cwuk2xcnn-ventureio.vercel.app`](https://roryskagen-cwuk2xcnn-ventureio.vercel.app) | `● Ready` | 21s | Preview | `eb21640`: `docs/deployment-log-v2.12.0` preview (PR #8) |
+| **2026-09-14** | **v2.12.0** | [`roryskagen-6bdmr4283-ventureio.vercel.app`](https://roryskagen-6bdmr4283-ventureio.vercel.app) | `● Ready` | 22s | Production | `f5cf64c`: PR #7 — recoverability: scripted restore path, target-aware TLS, migration-ledger RLS, SQL line-ending policy, deterministic backups, `artworks` draft-exclusion policy |
 | 2026-09-14 | v2.12.0-preview | [`roryskagen-30qktwved-ventureio.vercel.app`](https://roryskagen-30qktwved-ventureio.vercel.app) | `● Ready` | 22s | Preview | `80dafa0`: `release/v2.12.0` preview (PR #7) |
 | **2026-09-14** | post-v2.11.0 | [`roryskagen-805gsqagx-ventureio.vercel.app`](https://roryskagen-805gsqagx-ventureio.vercel.app) | `● Ready` | 20s | Production | `fac2360`: PR #6 — archive sweep and deployment-log reconciliation (docs-only; no release cut) |
 | 2026-09-14 | post-v2.11.0-preview | [`roryskagen-f29yvagl5-ventureio.vercel.app`](https://roryskagen-f29yvagl5-ventureio.vercel.app) | `● Ready` | 22s | Preview | `6087cf3`: `docs/archive-sweep` preview (PR #6) |
@@ -87,6 +91,10 @@ This document tracks all production and preview deployments for **`roryskagenart
      scripted and rehearsed end-to-end, backups are deterministic and diffable, a local Supabase
      stack provides a scratch database to rehearse against, and the `artworks` public read policy
      no longer exposes drafts (`v2.12.0`).
+   - Authorization hardened on the database side: the four blanket `FOR ALL TO authenticated
+     USING (true)` policies on `artworks`, `media_assets`, `pages` and `inquiries` are scoped to
+     `public.is_admin_or_editor()`, so a `viewer` can no longer read or write through PostgREST.
+     Verified with a temporary viewer session against production (`v2.12.1`).
 
 ---
 
