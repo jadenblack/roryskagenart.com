@@ -9,7 +9,121 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [2.12.0] - 2026-09-14
+
+> **Recoverability release — and the completion of [ADR 0001](docs/adr/0001-schema-as-code-before-data-migration.md)
+> Phase A.** `v2.10.0` made the schema *reproducible*; this release makes it *recoverable*. The schema
+> was dropped and rebuilt from `supabase/migrations/` alone into a virgin database, then introspected
+> and diffed against production — **no structural differences remain** — and the restore path is now
+> scripted, deterministic and rehearsed end-to-end. It also closes the draft leak in the `artworks`
+> public read policy that `v2.10.0` and `v2.11.0` each recorded as an open finding.
+>
+> **One database migration** (`2026_09_14_v2_12_artworks_public_select_excludes_drafts.sql`) — a
+> policy *narrowing* only. No table, column, index, trigger or data change. Baseline: `v2.11.0`
+> (`5122812`).
+
+### Added — Scripted Restore & Connection-Target Safety
+- **`scripts/restore-catalog.ts` (new):** restores a `data/backups/<timestamp>/` snapshot through
+  `psql`-free, parameterised inserts. Two modes with deliberately different semantics —
+  `--mode load` (default) **never overwrites**, so it can only fill gaps and is safe to re-run;
+  `--mode repair` upserts on conflict. Dry-run by default; `--apply` is required to write. Remote
+  targets are refused unless `--allow-remote` is passed explicitly, `--tables`/`--all` scope the run,
+  and `--best-effort` reports failures instead of aborting. It was exercised against the local
+  scratch database before it was ever pointed at production (see **Validation**).
+- **`scripts/lib/restorePlan.ts` (new):** the pure, offline-testable half of the restore path — the
+  table list with each table's conflict target (primary key), the dependency-ordered
+  `RESTORE_ORDER` (so foreign keys land in the right sequence), `CATALOG_TABLES` vs
+  `ENVIRONMENT_TABLES`, the bindable-value coercion, statement construction, and failure
+  summarisation. Kept free of `pg` and of the filesystem so it runs in the vitest suite with no
+  network and no database.
+- **`scripts/lib/pgTarget.ts` (new):** one shared rule for "is this connection string loopback or
+  remote?", used by every script that opens a pool. Loopback (`localhost`, `127.0.0.1`, `::1`,
+  `host.docker.internal`) connects with **no TLS** — which is what the local Postgres on `:54322`
+  requires — while a remote target gets `{ rejectUnauthorized: false }`. Two parsing traps are
+  handled explicitly and documented in the file: `new URL()` returns the IPv6 host **with** its
+  brackets, so a bare `'::1'` comparison is dead code; and `postgresql:` is not a WHATWG "special
+  scheme", so the host is not guaranteed to be lowercased.
+- **Local Supabase dev stack (`supabase/config.toml`, `supabase/.gitignore`):** `supabase start` now
+  brings up a throwaway Postgres on `127.0.0.1:54322` with REST/Studio beside it, so migrations and
+  restores can be rehearsed against a real database instead of the live one. **CLI-managed migrations
+  and seeding are disabled** (`[db.migrations] enabled = false`, `[db.seed] enabled = false`) — see
+  the runbook for why this is not optional.
+- **`.gitattributes` (new):** `*.sql text eol=lf`. See **Fixed** for the defect this prevents.
+
+### Security
+- **The `artworks` public SELECT policy no longer exposes drafts**
+  (`supabase/migrations/2026_09_14_v2_12_artworks_public_select_excludes_drafts.sql`). The baseline
+  policy was `USING (trashed = false)`, which filtered trashed rows but not drafts, so any holder of
+  the anon key could read unpublished rows straight from PostgREST
+  (`GET /rest/v1/artworks?select=slug,title,narrative&draft=eq.true`). It was never exploited only
+  because the client reads through `GET /api/artworks`, which filters drafts server-side — a
+  load-bearing accident, not a control. The predicate is now `trashed = false AND draft = false`.
+  The server-side filter is **still required** and must not be removed: the API runs on the server's
+  own connection, where RLS does not apply.
+  **Verified against production rather than assumed.** The catalog currently holds zero drafts, which
+  would make a naive "anon sees 0 drafts" check vacuous — it would have passed before the migration
+  too. So a throwaway `draft = true` row was inserted, and with it present: the service role saw
+  1 draft, `anon` saw **0** by both the `draft=eq.true` filter *and* a direct `slug=` fetch (the row
+  has `trashed = false`, so the old predicate would have returned it), and `anon` still received all
+  **138** published rows, proving public reads remain granted. The row was then deleted and the
+  catalog confirmed back at 138 rows with 0 drafts.
+- **RLS enabled on the migration ledger the runner creates.** `scripts/run-migrations.ts` created
+  `public.schema_migrations` without row-level security, so on a rebuilt database the ledger was
+  readable with the anon key. Production happened to have RLS enabled on that table already, which is
+  exactly why no migration recorded it and why the static test set could never have caught it — the
+  gap only appears on a *rebuild*. The runner now enables RLS immediately after the
+  `CREATE TABLE IF NOT EXISTS`, making a from-scratch database match production.
+
+### Fixed
+- **Every database script hard-coded `ssl: { rejectUnauthorized: false }`.** Against the local
+  scratch database this failed with *"The server does not support SSL connections"*. All five
+  scripts (`run-migrations`, `backup-catalog`, `restore-catalog`, `introspect-schema`,
+  `generate-asset-registry`) now resolve TLS from the connection target via `scripts/lib/pgTarget.ts`.
+- **Latent dead code in the loopback check.** The IPv6 branch could never match, because Node's URL
+  parser returns `'[::1]'` rather than `'::1'`. Brackets are now stripped and the comparison is
+  case-insensitive; both are locked down by tests.
+- **`artworks` drafts could be reached by anon key** — see **Security**.
+- **Backups were not deterministic.** `scripts/backup-catalog.ts` selected rows with no `ORDER BY`,
+  so two consecutive dumps of an unchanged database were not byte-identical and could not be diffed.
+  It now orders by each table's primary key, sourced from the single table spec in
+  `scripts/lib/restorePlan.ts` (which also replaced a second, drifting copy of the table list), and
+  it throws if a table has no recorded primary key rather than silently dumping unordered.
+- **CRLF in migration files made "reproducible from version control" checkout-dependent.** Two of the
+  ten migrations (`2026_09_12_cms_v1_profiles_roles.sql`, `2026_09_12_cms_v1_taxonomies_settings.sql`)
+  carried CRLF in the working tree under the machine's global `core.autocrlf = true`. Because
+  Postgres stores function bodies verbatim as returned by `pg_get_functiondef`, the CR bytes were
+  written into the *stored* function source, so the same commit produced a different database on
+  Windows and on Linux — and a rebuild diff showed 17 carriage returns where production had none.
+  Their **committed** form was already LF, so no content rewrite was needed: `.gitattributes` pins
+  `*.sql` to `eol=lf`, the two files were re-checked out, and a rebuild now reports **0 CR bytes
+  across all 7 stored functions**.
+- **The autosave batching test was load-dependent.** It drove four rapid keystrokes with
+  `userEvent.type()`, which inserts real inter-key delays, so under parallel-suite load the debounce
+  window closed mid-word and the test asserted an intermediate title. Rewritten with synchronous
+  `fireEvent.change` plus an explicit `toHaveBeenCalledTimes(1)` assertion, so it now verifies the
+  property it was written for — four keystrokes produce exactly one save — rather than a timing race.
+- **`testTimeout` raised to 15s** (`vitest.config.ts`). A full-suite run under load was observed
+  taking ~25× its nominal duration in the environment phase, which pushed one real-timer
+  `UsersAdminView` test past the 5s default. The raise is bounded and documented rather than
+  open-ended, and is not a substitute for fixing genuinely slow tests.
+
 ### Docs
+- **New runbook material — [`docs/runbooks/database-backup-restore.md`](docs/runbooks/database-backup-restore.md):**
+  the plan tier is now recorded as **Free** (no platform backups, no PITR, projects pause after 7
+  days of inactivity) with the consequences spelled out; §4a is marked **exercised**, including the
+  rehearsal results and the `load` vs `repair` distinction; §6's known-gaps table was rebuilt from
+  real statuses; **§7** documents the *two-ledger* problem; **§7a** records the empirical
+  `supabase start` failure and its resolution; **§7b** is the scratch-database procedure.
+- **`AGENTS.md`:** §4 documents that the runner creates and locks down `public.schema_migrations`,
+  and adds the local scratch-database subsection (with the `config.toml` warning and the note that
+  Docker Desktop installs per-user, so its `bin` is not on `PATH`); §5 records the Phase A
+  verification, the gap it found, and the line-ending policy.
+- **`plan/ROADMAP_V3.md` (new):** the `v3.0.0` program plan — six phases with exit criteria,
+  dependencies and target release; a *justified* SemVer mapping; a risk register extending
+  `PRD_V3` §6; a "do not do yet" list honouring ADR 0001 §5; and open questions separated from
+  decisions. Indexed in `plan/README.md`.
 - **`plan/BACKLOG_STUDIO_CMS.md` (new):** prioritised studio-CMS backlog written for a
   non-technical operator — manual catalog/hero ordering, undo & revision history, inquiry spam
   protection, per-artwork SEO, alt text, bulk actions, export, and inquiry follow-up. Every item was
@@ -25,6 +139,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Socket Security, Debricked), the "tag the merge commit on `main`" convention, the note that
   `v2.9.0` deviates, the rule not to prune a release branch unless asked, and the
   `DEPLOYMENT_LOG.md` obligation.
+
+### Dependencies
+- **Both moderate `qs` advisories resolved.** `express` moves `4.22.2 → 4.22.3`, which raises its
+  `qs` range to `~6.16.0` (resolved `6.15.1 → 6.16.0`; `body-parser` dedupes to the same copy) and
+  `path-to-regexp` to `~0.1.13`. Transitive only — no direct dependency and no `package.json` change.
+  This clears the two Dependabot alerts that had been open since `v2.10.0`.
+
+### Validation
+- `npm run lint` (`tsc --noEmit`) clean. `npm test` — **237/237 passing across 22 files**, offline
+  and zero-token, green on two consecutive full runs. Two new suites (+38 tests): `restorePlan` (27)
+  and `pgTarget` (11). **Suite: 199 → 237 tests, 20 → 22 files.**
+- **Phase A verified by destruction and rebuild.** Every `public` table was dropped and the schema
+  recreated from `supabase/migrations/` alone — **10 of 10 migrations applied to a virgin database**.
+  Introspection then showed no structural differences against production: 9 tables with all columns,
+  types, defaults and constraints; 11 indexes; 20 policies; both `artworks` guard triggers; 7
+  functions; 9 RLS flags. The only residual diffs were the four expected ones (ledger rows, and
+  identifiers that differ by construction). This is what promoted Phase A from "believed" to
+  "verified" and what unblocks `v3.0.0`.
+- **The restore path was rehearsed end-to-end**, not merely unit-tested: plan mode wrote nothing;
+  `--apply` inserted **294 rows, skipped 4, failed 0**; an immediate re-run inserted **0, skipped
+  298, failed 0**, confirming idempotence; and a re-dump compared **5 of 6 tables byte-identical**,
+  with `pages` differing only in `updated_at`. The 4 skips were all `pages` rows seeded by a
+  migration — `load` correctly refuses to overwrite them, and `repair` is the mode that would.
+- The two new suites run with no database and no network, which is what makes the write path
+  testable at all; `server/` and `scripts/` still have almost no coverage, and the migration/write
+  path remains the highest-consequence untested code in the repo.
+
+### Findings recorded (not fixed in this release)
+- **The sibling policy `"Admins full access to artworks"` is declared `FOR ALL TO authenticated
+  USING (true) WITH CHECK (true)`.** The name says *admins*; the predicate says *any authenticated
+  user*, so a `viewer` can read and write every artwork through PostgREST, bypassing the role matrix
+  in `src/lib/roles.ts`. Scoping it to the real role claim is a larger change with a real blast
+  radius and is deliberately not bundled here (ROADMAP_V3 §9 Q8 / risk R-06).
+- **Storage objects are outside the backup scope.** `scripts/backup-catalog.ts` captures table rows
+  only; the `artwork-images` bucket is not covered, and Supabase's own backups exclude Storage
+  objects on every tier. Off-site durability for the image binaries is a separate, unscheduled work
+  item.
+- **The database password has not been rotated** — deliberately deferred by the owner to the `v3.0.0`
+  cycle.
+- Still open from `v2.10.0`: **no `LICENSE` file** (the README claims Apache-2.0 and now flags the
+  gap), `artwork_terms` is empty, and there is no Supabase MCP server configured in this repo.
 
 ---
 
