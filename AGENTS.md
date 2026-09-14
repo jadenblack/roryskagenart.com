@@ -4,8 +4,10 @@
 > repo. Read this **first** — it supersedes the historical specs in `/plan`, which contain
 > stale assumptions from earlier Cloudinary-era work.
 >
-> **Verified against:** release `v2.10.0` (2026-09-14). The schema section was re-verified by live
-> introspection — see `data/archive/schema_introspection.md`.
+> **Verified against:** release `v2.11.0` (2026-09-14). The schema section was re-verified by live
+> introspection — see `data/archive/schema_introspection.md`. `v2.11.0` was a studio-operations
+> release (user administration, branded email, catalog dossier and scale drawing) with **no schema
+> change**, so the schema facts below still carry the `v2.10.0` verification.
 
 ---
 
@@ -28,7 +30,7 @@ art) into this app's Supabase catalog. See `plan/PRD_V3_WAYBACK_DATA_MIGRATION.m
 | Database | **Supabase PostgreSQL** (`orphcusijzkxpxkzapjp`) | single source of truth |
 | Auth | **Supabase Auth** + `public.profiles` roles | admin / editor / viewer |
 | Media | **Supabase Storage** bucket `artwork-images` | thumb/hero/full/lqip WebP renditions |
-| Email | Resend | inquiry notifications |
+| Email | Resend | studio-owned mailer: inquiries **and** all staff invites / password resets |
 | **Cloudinary** | **REMOVED** | no package, no routes, no resolution step |
 
 ⚠️ **Cloudinary is fully decommissioned.** `package.json` has **no `cloudinary` dependency**;
@@ -40,6 +42,21 @@ Historical mentions in `/plan`, `data/archive/`, and a frozen fallback string in
 > **Note:** `multer` is **still a dependency** and is *not* a Cloudinary leftover — it is used by
 > `POST /api/media/upload` (`server/routes/media.ts`) to receive an image and stream it into the
 > Supabase Storage `artwork-images` bucket. Keep it.
+
+### Email: there are TWO mailers (do not conflate them)
+
+| Mailer | Owns | Controlled by |
+| :--- | :--- | :--- |
+| **Resend** | inquiries, staff invites, admin-issued password resets, access/email-change notices, test send | this repo — `server/emailService.ts` + `server/emailTemplates.ts` |
+| **Supabase Auth** | sign-up confirmation, magic link, reauthentication, and the *dashboard* fallbacks | the Supabase dashboard only — **not** the repo |
+
+Branding one does **not** brand the other. All studio-visible mail is rendered from the single
+branded shell in `server/emailTemplates.ts` (`BRAND`, `renderBrandedEmail()`); the studio routes its
+own invites and resets through Resend precisely so the copy and the logo are code-controlled.
+The Supabase Auth mailer is branded separately by pasting the generated files in
+`supabase/email-templates/` into the dashboard — regenerate them with
+`npx tsx scripts/generate-auth-email-templates.ts`. See
+[`docs/runbooks/supabase-email-branding.md`](docs/runbooks/supabase-email-branding.md).
 
 ---
 
@@ -61,6 +78,9 @@ VRCL_SUPA_SUPABASE_JWT_SECRET=
 # Email
 RESEND_API_KEY=
 RESEND_EMAIL_DOMAIN=
+ADMIN_EMAIL=                            # inquiry + studio notification recipient
+SITE_URL=                               # public origin used in email links (falls back to the live site)
+BRAND_LOGO_URL=                         # optional absolute brand-mark URL; defaults to ${SITE_URL}/android-chrome-192x192.png
 ```
 
 Local `.env` and `.env.local` exist (gitignored). **Never print or commit their contents.**
@@ -155,24 +175,31 @@ M2M filter path is currently unexercised. Re-verify any of these with
 ├── server/
 │   ├── middleware/auth.ts  # resolveCmsUser / requireAuth / requireRole
 │   ├── routes/*.ts         # artworks, pages, taxonomies, settings, media, inquiries, adminUsers
-│   └── emailService.ts     # Resend integration
+│   ├── lib/userAdmin.ts    # pure user-admin rules: state, patches, lockout guards (unit-tested)
+│   ├── emailTemplates.ts   # the branded email shell + BRAND identity (single source of email look)
+│   └── emailService.ts     # Resend integration (inquiries, invites, resets, notices)
 ├── api/                    # Vercel serverless entry (CommonJS — see api/package.json)
 ├── src/
-│   ├── components/         # public views + admin/ CMS + ui/ primitives
+│   ├── components/         # public views + admin/ CMS + ui/ primitives (+ co-located .test.tsx)
 │   ├── engine/             # galleryStateEngine.ts (DB-backed reactive store)
 │   ├── data/               # assetRegistry.ts (generated), assetResolver.ts, registries
-│   ├── lib/                # supabase.ts, adminApi.ts, markdown.ts
+│   ├── lib/                # supabase.ts, adminApi.ts, markdown.ts,
+│   │                       # roles.ts (shared role vocabulary), authRedirect.ts (auth hand-off),
+│   │                       # adminRoute.ts (hash-route parse), narrative.ts (record → parts),
+│   │                       # dimensions.ts (free-text size → inches)
 │   └── server/db.ts        # pg Pool + Supabase admin client
 ├── supabase/migrations/    # 9 idempotent SQL migrations (the baseline sorts first)
-├── scripts/                # run-migrations, introspect-schema, backup-catalog, generate-asset-registry
+├── supabase/email-templates/  # generated Supabase Auth mailer templates + manifest.json
+├── scripts/                # run-migrations, introspect-schema, backup-catalog,
+│   │                       # generate-asset-registry, generate-auth-email-templates
 │   └── lib/                # migrationPlan.ts — pure ordering/skip logic (unit-tested)
-├── src/test/               # vitest suites (incl. migrationSafety + migrationPlan)
+├── src/test/               # vitest suites (incl. migrationSafety + migrationPlan + userAdmin)
 ├── data/archive/           # historical manifests + live schema introspection (provenance)
 ├── data/backups/           # gitignored logical dumps (see docs/runbooks/)
 ├── wayback/                # archived predecessor sites (v3 migration source — see §7)
 ├── docs/PRD.md             # Admin UI reliability PRD (implemented)
 ├── docs/adr/               # Architecture Decision Records (see ADR 0001)
-├── docs/runbooks/          # operational procedures (backup/restore)
+├── docs/runbooks/          # operational procedures (backup/restore, Supabase email branding)
 └── plan/                   # see plan/README.md for status of every spec
 ```
 
@@ -198,6 +225,29 @@ Do **not** modify anything inside `wayback/` — it is an immutable archive.
 
 ## 8. Conventions & guardrails
 
+### Roles & permissions (the matrix is authoritative)
+
+Role vocabulary lives in **`src/lib/roles.ts`** (`CmsRole`, `ROLE_ORDER`, `ROLE_DESCRIPTIONS`,
+`roleAtLeast()`) so the browser bundle and the server share one definition. `server/lib/userAdmin.ts`
+re-exports it; never re-declare a role list.
+
+| Role | Rank | Can |
+| :--- | :--- | :--- |
+| `viewer` | 0 | Read-only: dashboard, catalog, pages |
+| `editor` | 1 | + catalog writes, pages, media, inquiries, taxonomies, design, trash |
+| `admin` | 2 | + Users and Settings (full control) |
+
+- **A `minRole` on a nav item must match the server guard on the matching API route.** Otherwise a
+  Viewer is offered a menu item that answers `403` — the exact defect `v2.11.0` fixed for Inquiries
+  and Media. `ADMIN_NAV` in `src/components/admin/AdminLayout.tsx` carries the mapping as a comment.
+- **Gate at both ends.** Route-level `requireAuth, requireRole(...)` on the server, plus a `Forbidden`
+  panel and disabled controls in the UI. Server is the authority; the UI only avoids dead ends.
+- **Never let the studio lock itself out.** `decideMutation()` in `server/lib/userAdmin.ts` refuses
+  self-role-change / self-deactivate / self-delete and protects the last active administrator. Do not
+  add a mutation path that bypasses it.
+
+### Guardrails
+
 - **Conventional Commits.** Release notes in `CHANGELOG.md` (Keep a Changelog + SemVer).
 - **Migrations are additive and idempotent** — `IF NOT EXISTS` / `OR REPLACE` / guarded triggers.
   Enforced by `src/test/migrationSafety.test.ts`; do not merge a migration that fails it.
@@ -207,6 +257,14 @@ Do **not** modify anything inside `wayback/` — it is an immutable archive.
 - **Back up before you write** — `npx tsx scripts/backup-catalog.ts`, then follow
   [`docs/runbooks/database-backup-restore.md`](docs/runbooks/database-backup-restore.md).
 - **Media is Supabase Storage only** — never reference Cloudinary in new code.
+- **Email branding has one source** — `server/emailTemplates.ts`. Studio-sent mail goes through
+  Resend; Supabase's own mailer is branded separately by pasting `supabase/email-templates/` into the
+  dashboard (see §2 and the runbook).
+- **Auth redirects must be a bare origin** (no `#`). This is a hash-router SPA and `supabase-js` parses
+  the session out of the URL *fragment*; a target like `…/#/admin` silently drops the session. Use
+  `bareOrigin()` (`src/lib/authRedirect.ts`) or `buildAuthRedirect()` (`server/lib/userAdmin.ts`), and
+  keep `src/lib/authRedirect.ts` as the **first** import in `src/main.tsx`.
 - **`tsc --noEmit` must stay clean** (`npm run lint`); `npm test` (vitest) is offline/zero-token.
+  Suite as of `v2.11.0`: **199 tests across 20 files**.
 - Verify a claim against the code before documenting it. Stale docs were this repo's largest
   liability before `v2.9.0`.

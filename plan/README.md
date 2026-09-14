@@ -14,8 +14,9 @@ Related material outside this directory:
 
 - [`../docs/adr/`](../docs/adr/) — Architecture Decision Records. **ADR 0001** governs the v3
   sequencing (baseline schema → read-only extract → load → feature work).
-- [`../docs/runbooks/`](../docs/runbooks/) — operational procedures, including the catalog
-  backup/restore runbook that Phase A required.
+- [`../docs/runbooks/`](../docs/runbooks/) — operational procedures: the catalog backup/restore
+  runbook that Phase A required, and the Supabase email-branding runbook (two-mailer model) added in
+  `v2.11.0`.
 
 ---
 

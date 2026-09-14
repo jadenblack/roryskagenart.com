@@ -7,6 +7,111 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.11.0] - 2026-09-14
+
+> **Studio-operations release.** The Users screen becomes a real staff-management console (edit,
+> invite, re-invite, reset), every studio email becomes branded, the public artwork dossier stops
+> duplicating itself and the Scale & Proportions drawing becomes a true-to-scale elevation. Baseline:
+> `v2.10.0` (`962587e`).
+>
+> **No database migration and no schema change.** The one API-shape change is additive; the only
+> behavioural changes are the role gates, which *narrow* what a non-admin sees.
+
+### Added — Studio User Administration
+- **User editing (`PATCH /api/admin/users/:id`):** an administrator can now change a staff member's
+  display name, email address, role and active state. Validated by `buildUserPatch()`
+  (`server/lib/userAdmin.ts`); best-effort notification emails fire on role/access/email change.
+- **Invite + re-invite:** `POST /api/admin/users/invite` mints an invitation; `POST /:id/reinvite`
+  re-sends to a still-pending user (returns `409` if the address is already confirmed). For a user
+  who has never signed in, the stale `auth.users` row is replaced first so re-invites are
+  deterministic rather than stacking duplicate accounts.
+- **Admin-issued password reset (`POST /:id/reset-password`):** mints a Supabase recovery link and
+  delivers it through the studio's own branded mailer, returning the URL so an administrator can also
+  hand it over manually.
+- **Users screen rebuilt (`src/components/admin/UsersAdminView.tsx`):** search, pending-invite count,
+  a "What each role can do" legend, an edit dialog, a delivery-result dialog with a copy-link field,
+  resend-invite / send-password-reset row actions, empty state and success flash.
+- **Branded email layer (`server/emailTemplates.ts`):** one table-based, inline-styled shell — brand
+  mark, wordmark, gold rule, footer — shared by every studio message. Renders invite, password reset,
+  access-changed, email-changed and test emails. `BRAND`, `resolveSiteUrl()` and
+  `resolveBrandLogoUrl()` centralise the identity so nothing is hard-coded per template.
+- **Supabase Auth mailer templates (`supabase/email-templates/`, `scripts/generate-auth-email-templates.ts`):**
+  the six dashboard-only Supabase auth emails (invite, confirm sign-up, magic link, change email,
+  reset password, reauthentication) generated from the same brand shell, plus a `manifest.json`
+  mapping each file to its dashboard slot and subject. Run
+  `npx tsx scripts/generate-auth-email-templates.ts` to regenerate.
+- **Password-setup screen (`src/components/admin/PasswordSetupView.tsx`, `#/admin/set-password`):**
+  the landing screen for invite and recovery sessions — new password + confirmation, reveal toggle,
+  minimum length, and an explicit "this link has expired or already been used" state. Replaces the
+  previously dead `#/admin/reset` route.
+- **Shared role vocabulary (`src/lib/roles.ts`):** `CmsRole`, `CMS_ROLES`, `ROLE_ORDER`,
+  `ROLE_LABELS`, `ROLE_DESCRIPTIONS`, `roleAtLeast()`, `normalizeRole()`, `roleLabel()`. Dependency-
+  free so the browser bundle and the server share one definition instead of drifting.
+
+### Changed — Catalog Administration
+- **"Edit in Studio" now opens that entry's editor.** It previously dropped the curator on the full
+  catalog list. `buildEditPath(slug)` produces `/admin/catalog?edit=<slug>`; `parseAdminPath()` reads
+  it back and `AdminApp` deep-links straight into the artwork dialog for that slug
+  (`src/lib/adminRoute.ts`).
+- **The entry description is promoted into the info card.** The stored `narrative` is the full
+  Obsidian source document — index link, H1, image embed, blockquote spec, then prose — and rendering
+  it verbatim repeated the title and the hero image that are already on screen.
+  `parseArtworkNarrative()` (`src/lib/narrative.ts`) now splits it into `description`, `metaLines`,
+  `notes` and the untouched `markdown`; the description appears near the top and the original document
+  moves behind a collapsed **Catalog Record** panel.
+- **Duplicate media removed from the dossier.** The `.md` caption and the redundant Drive-record tab
+  are gone; the physical size is shown instead, sourced from `formatDimensions()`.
+- **Scale & Proportions rewritten as a true-to-scale elevation (`src/components/ScaleVisualizer.tsx`).**
+  The old drawing was decorative and not proportional. The SVG is now drawn at **1 unit = 1 inch**
+  (`viewBox="0 0 ${wallW} ${wallH}"`) with a 10 ft reference wall, a museum-standard 57″ centre line,
+  a 5′ 10″ human figure and a 6 ft bench, plus dimension lines. Artwork rectangles carry
+  `data-artwork-frame` / `data-width-in` / `data-height-in` so the proportions are assertable in
+  tests. When no dimensions are recorded it says so instead of drawing a guess; a staff-only
+  `showDataWarning` flag flags an aspect ratio that disagrees with the photograph by more than 15%.
+- **Role-gated studio UI.** `ADMIN_NAV` items carry a `minRole` (`Inquiries`, `Media`, `Taxonomies`,
+  `Design`, `Trash` → editor; `Users`, `Settings` → admin) and are filtered by `roleAtLeast()`. The
+  matching routes render a `Forbidden` panel naming the required role, and every artwork mutation in
+  `App.tsx` is gated behind `canManageCatalog` (admin or editor). Previously a Viewer was offered menu
+  items that answered `403`.
+
+### Fixed
+- **Silent session drop on invite and reset links.** The app is a hash-router SPA and `supabase-js`
+  reads the session out of the URL *fragment* and then blanks `window.location.hash` during its own
+  async init — so by the time React mounted, the `type` that says "set a password first" was gone.
+  Two changes fix it: the auth hand-off `type` is captured at module load in
+  `src/lib/authRedirect.ts` (imported **first** in `src/main.tsx`, before the client is constructed),
+  and `redirectTo` is now a **bare origin** with no `#` (`bareOrigin()` / `buildAuthRedirect()`).
+- **Studio lockout is now impossible from the UI.** `decideMutation()` refuses self-role-change,
+  self-deactivate and self-delete, and protects the last remaining active administrator from being
+  demoted, deactivated or deleted by anyone. The Users screen mirrors the same guards by disabling the
+  controls, and surfaces the server's `409` reason when a mutation is refused.
+- **`UsersAdminView` imported role copy from a server module**, which risked pulling server code into
+  the client bundle. Both sides now read `src/lib/roles.ts`.
+
+### Docs
+- **New runbook — [`docs/runbooks/supabase-email-branding.md`](docs/runbooks/supabase-email-branding.md):**
+  documents the **two-mailer architecture** (studio-owned Resend vs dashboard-only Supabase Auth),
+  the Resend env vars, paste-in steps for the six templates, SMTP sender setup, the redirect
+  allow-list warning about `#`, known limitations and a verification checklist.
+- **`AGENTS.md`:** §2 records the two-mailer model and the branded-template pipeline; §6 adds
+  `server/lib/`, `supabase/email-templates/` and the new `src/lib/` modules; §8 adds the role matrix
+  and the bare-origin redirect rule.
+
+### Validation
+- `npm run lint` (`tsc --noEmit`) clean. `npm test` — **199/199 passing across 20 files**, offline and
+  zero-token. Nine new suites (+112 tests): `userAdmin` (29), `narrative` (13), `dimensions` (13),
+  `emailTemplates` (13), `authRedirect` (10), `adminRoute` (9), `ArtworkFocusView` (9),
+  `UsersAdminView` (8), `ScaleVisualizer` (8). **Suite: 87 → 199 tests.**
+- The proportional-integrity tests read the artwork frame's `data-width-in`, so true scale is asserted
+  numerically — `12"` renders width 12, `96"` renders width 96, and `3.5ft` resolves to 42.
+
+### Findings recorded (not fixed in this release)
+- **The `artworks` public SELECT policy still does not exclude drafts** (`USING (trashed = false)`).
+  Unchanged from `v2.10.0` and still not exploitable, because the client reads through `/api/artworks`,
+  which filters drafts server-side. Tightening the policy remains a tracked follow-up.
+
+---
+
 ## [2.10.0] - 2026-09-14
 
 > **Phase A of [ADR 0001](docs/adr/0001-schema-as-code-before-data-migration.md)** — the blocking
