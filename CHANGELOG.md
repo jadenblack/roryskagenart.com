@@ -32,8 +32,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`scripts/verify-offsite-backup.ts`** — the project produced off-site backups it had no
+  committed way to check. Newest / `--stamp <x>` / `--list` / `--max-age-hours <n>` / `--json`;
+  exit 0 verified · 1 problems · 2 nothing to check. Requires a `manifest.json`, so a dump whose
+  upload died halfway is reported rather than accepted as "the newest" (finding B5), and
+  `--max-age-hours` turns "the nightly backup stopped running" into a non-zero exit instead of a
+  silent gap — which matters because Hobby keeps runtime logs for one hour.
+  Proven against the live store: 8 tables / 307 rows / 11 migrations / 406,593 B, `OK`, exit 0.
+- `scripts/lib/offsiteBackup.ts` — pure dump-selection half, 11 new tests
+  (`src/test/offsiteBackup.test.ts`).
 - `server/lib/emailRouting.ts` — pure routing/recipient helpers, 16 new tests
-  (`src/test/emailRouting.test.ts`). Suite: **351 tests / 29 files** (was 335 / 28).
+  (`src/test/emailRouting.test.ts`). Suite: **362 tests / 30 files** (was 335 / 28).
 - [`docs/runbooks/email-delivery.md`](docs/runbooks/email-delivery.md) — two-mailer architecture,
   environment matrix, production go-live checklist, troubleshooting, and why Resend is the right
   long-term mailer.
