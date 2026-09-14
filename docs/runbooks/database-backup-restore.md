@@ -21,6 +21,8 @@ both.
 | :--- | :--- | :--- | :--- |
 | **Platform backups** (Supabase) | Disaster, corruption, catastrophic bad write | Whole project, to a point in time | Plan-dependent (see §3) |
 | **Repo logical dump** (`scripts/backup-catalog.ts`) | A specific bad migration or backfill | Per table, per row, inspectable as JSON | Free, ~1 second, run it yourself |
+| **Off-site scheduled dump** (Vercel Cron → `/api/cron/backup` → Vercel Blob) | Losing the machine that holds the dump | Per dump, ~14 daily + one per month | Included in the Hobby plan (§2b) |
+| **Storage object reconciliation** (`scripts/verify-media-backup.ts`) | An image the catalog still points at no longer existing in the bucket | Per object, both directions | Free, ~10 seconds (§2c) |
 
 ---
 
@@ -48,6 +50,100 @@ Connection comes from the same env vars as the migration runner
 
 **Use it for:** comparing before/after state around a migration, recovering specific rows or
 columns, and answering "what did this table look like at 14:32?".
+
+### 2a. Verifying a dump (manifest format v2)
+
+The manifest is **format v2**: it records a sha256, a row count and a byte length for every table
+file. A dump can therefore be checked against its own description instead of being trusted.
+
+```bash
+npx tsx scripts/verify-backup.ts                        # the newest dump
+npx tsx scripts/verify-backup.ts data/backups/<stamp>   # one specific dump
+npx tsx scripts/verify-backup.ts --all                  # every dump, newest first
+npx tsx scripts/verify-backup.ts --all --json           # machine-readable
+```
+
+Exit codes: **0** clean · **1** at least one problem — do not restore from it · **2** nothing to
+check. `backup-catalog.ts` re-reads what it wrote and **self-verifies before exiting**, so a bad
+dump fails at creation rather than at restore.
+
+> ⚠️ **Dumps taken before ~2026-09-14T18:15Z are format v1 and cannot be verified** — they have no
+> checksums. The verifier says so explicitly and still reports them as *restorable*, because they
+> are; it simply cannot prove they are intact. A v1 manifest is identified by the **absence** of a
+> `formatVersion` field, not by the value `1`. Re-take any v1 dump you are relying on.
+>
+> Why checksums and not just row counts: a file can be valid JSON, still contain all 138 rows, and
+> still be wrong — a single appended byte changes nothing a row count can see. That case is
+> exercised in `src/test/backupManifest.test.ts` and was confirmed by hand on a real dump.
+
+### 2b. Layer 3 — the scheduled off-site dump (Vercel Cron → Vercel Blob)
+
+A dump that only exists on the machine it protects is not a backup. On the Free plan it was also
+the *only* backup, which made that a single point of failure.
+
+`vercel.json` schedules one cron job; Vercel invokes `GET /api/cron/backup`, which builds the same
+dump as §2 and writes it to Vercel Blob under `catalog-backups/<stamp>/`.
+
+| Item | Value |
+| :--- | :--- |
+| Route | `server/routes/cronBackup.ts`, mounted at `/api/cron/backup` |
+| Schedule | `43 6 * * *` — daily. **Hobby allows only daily cron jobs** (§2b note below) |
+| Auth | `Authorization: Bearer $CRON_SECRET`. Unset ⇒ the route returns **503** (fails closed) |
+| Access | Objects are written `access: 'private'`. **Never change this** — a dump contains `profiles` emails and `inquiries` collector PII |
+| Retention | `keepRecent: 14`, one per month for history, and nothing under 7 days old is ever deleted |
+| Layout | `catalog-backups/<stamp>/manifest.json` + one `<table>.json` per table |
+
+The response carries **metadata only** (counts, paths, byte totals) — never row data.
+
+```bash
+# Trigger it by hand (requires the secret)
+curl -H "Authorization: Bearer $CRON_SECRET" https://roryskagenart.com/api/cron/backup
+```
+
+> ⚠️ **Hobby-plan limits, verified against `vercel.com/docs/vercel-blob/usage-and-pricing`
+> (2026-09-14).** Blob includes **1 GB/month storage** and **2,000 advanced operations/month**.
+> Exceeding either does **not** bill you — it **cuts off access to Blob for 30 days**. For a backup
+> sink that is a worse failure than an overage: the thing you need during an incident is the thing
+> that just got switched off.
+>
+> Current headroom is large but not infinite: a dump is ~0.5 MB, so 14 daily + monthly keeps is
+> ~10 MB (~1% of the allowance), and one run costs ~10 advanced operations (9 `put` + 1 `list`).
+> `del()` is free, so pruning costs nothing. The run's JSON response includes `allowanceUsed` —
+> watch it.
+>
+> **Hobby cron jobs may only run once per day** and scheduling precision is per-hour: a job written
+> as `43 6 * * *` fires somewhere in the following hour, not on the dot. Do not add a second cron
+> job or an hourly expression; the deployment will fail.
+
+### 2c. Storage objects are not covered by any database backup
+
+Database backups hold only *metadata* about Storage objects, so a restore does **not** bring back a
+deleted image. The `artwork-images` bucket needs its own check:
+
+```bash
+npx tsx scripts/verify-media-backup.ts              # summary
+npx tsx scripts/verify-media-backup.ts --json       # machine-readable
+npx tsx scripts/verify-media-backup.ts --limit 100  # show more problem lines
+```
+
+Strictly read-only: one `SELECT` plus a paginated walk of the bucket. It reports both directions —
+a row whose object is gone (a broken image on the live gallery) and an object no row references.
+
+Exit codes: **0** no blocking problems · **1** blocking problems · **2** nothing to check.
+
+**Verified against production 2026-09-14.** 152 rows ↔ 605 objects (76.6 MiB), **0 missing, 0
+unexpected orphans, 0 size mismatches**. The detection was also proven, not assumed: replaying the
+real 152 rows against a deliberately perturbed object list produced `missing: 1` when one object
+was removed and `unreferenced: 1` when one stranger was added.
+
+> 📌 **Finding worth keeping in mind: 151 `original.*` masters are unreferenced by design.** The
+> Cloudinary migration stored four objects per asset — `thumb`, `hero`, `full`, `original` — but
+> `media_assets.renditions` records only the first three, so one `original.*` per folder (151 of
+> them) is in the bucket with no row pointing at it. The script reports these separately and does
+> **not** fail on them, because they are expected — but "expected" is not "protected". They are the
+> highest-resolution copies of every artwork in the catalogue, they are invisible to the catalog,
+> and if one disappeared nothing in the app would notice. They are the strongest argument for
+> keeping an off-site copy of the bucket, which remains open (§6).
 
 ---
 
@@ -183,8 +279,9 @@ Copy this into the PR description for any migration that writes to the live cata
 
 | Gap | Impact | Status / plan |
 | :--- | :--- | :--- |
-| **Storage objects are not backed up** by database backups | Deleted `artwork-images` objects are unrecoverable from a DB restore | **Open.** Decide between bucket versioning and a periodic object listing + copy. Blocks the v3 media step. |
-| **No scheduled / off-site dump** | A dump that only exists on this machine is lost with the machine — and on a Free plan it is the *only* backup | **Open, and the top priority.** Copy `data/backups/<ts>/` somewhere off this machine, or automate it. |
+| **Storage objects are not backed up** by database backups | Deleted `artwork-images` objects are unrecoverable from a DB restore — including the 151 `original.*` masters no row references (§2c) | ✅ **Detected as of `v2.13.0`** — `scripts/verify-media-backup.ts` reconciles rows ↔ objects in both directions and is clean against production. ⚠️ **Detection is not backup.** An off-site *copy* of the 76.6 MiB bucket is still open; the whole image set is small enough that this is cheap. |
+| **No scheduled / off-site dump** | A dump that only exists on this machine is lost with the machine — and on a Free plan it is the *only* backup | ✅ **Closed in `v2.13.0`.** Vercel Cron → `GET /api/cron/backup` → Vercel Blob, daily, with retention (§2b). Watch the Hobby 1 GB allowance via the run's `allowanceUsed` field. |
+| **A dump that could not be checked** | `manifest.json` was written but never read back, so a truncated or corrupted dump would be found during a restore | ✅ **Closed in `v2.13.0`.** Manifest format v2 adds a sha256 per table; the writer self-verifies and `scripts/verify-backup.ts` re-checks any dump (§2a). |
 | **Backup plan tier** | — | ✅ **Resolved 2026-09-14: Free.** No automatic backups, no PITR. See §3. |
 | **No scripted restore** | Row-level recovery was manual | ✅ **Written and exercised 2026-09-14** — `scripts/restore-catalog.ts`, unit-tested, and rehearsed end-to-end against a scratch database. See §4a. |
 | **No native `pg_dump`** | `supabase db dump` shells out to a containerised `pg_dump`, so it fails with `docker: command not found`. Without it there is no restorable **schema** dump — only the per-table JSON in §2. | ✅ **Resolved 2026-09-14.** Docker Desktop 29.8.0 is installed and running. It lands at a **per-user** path (`%LOCALAPPDATA%\Programs\DockerDesktop\resources\bin`) that is *not* on `PATH` — export it first, or the CLI will not find `docker`. |

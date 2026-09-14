@@ -5,9 +5,15 @@
   "outputDirectory": "dist",
   "functions": {
     "api/index.js": {
-      "maxDuration": 30
+      "maxDuration": 60
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/backup",
+      "schedule": "43 6 * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",

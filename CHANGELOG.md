@@ -11,6 +11,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.13.0] - 2026-09-14
+
+> **Backup durability.** No schema change, no migration, and no change to the public gallery.
+>
+> The Supabase project is on the **Free plan: no automatic backups and no PITR** (verified
+> 2026-09-14). The repo's logical dump was therefore the *only* recovery path this project had — and
+> it existed on one laptop. This release makes that dump **verifiable**, **scheduled**, **off-site**
+> and **pruned**, and closes the separate hole where the 605 image files in Storage were never
+> compared against the rows describing them.
+>
+> It is a prerequisite for the v3 Wayback load, and deliberately its own release rather than scope
+> added to `v2.12.0`.
+
+### Added
+- **Scheduled off-site dump.** `vercel.json` schedules one cron job → `GET /api/cron/backup`
+  (`server/routes/cronBackup.ts`) → **Vercel Blob** under `catalog-backups/<stamp>/`. The route is
+  gated on `CRON_SECRET` and returns **503 when the secret is unset** — it fails closed rather than
+  open. Objects are written `access: 'private'`: a dump contains `profiles` emails and collector
+  inquiries. The response carries metadata only, never row data.
+- **`server/lib/catalogDump.ts`** — one in-memory dump builder shared by the CLI script and the cron
+  route, because two writers of one backup format is how a backup stops being restorable.
+- **`scripts/verify-backup.ts`** — re-check any dump: newest / a path / `--all` / `--json`.
+  Exit **0** clean, **1** problems (do not restore from it), **2** nothing to check.
+- **`scripts/verify-media-backup.ts`** — reconciles `media_assets` against the `artwork-images`
+  bucket in **both** directions, read-only. Storage objects are the one thing a database restore
+  cannot bring back, and nothing checked them before.
+- Retention (`server/lib/blobBackup.ts`): keep 14 recent dumps, one per month for history, and
+  never delete anything under 7 days old — so a run of bad dumps cannot wipe good ones. The dump
+  written by the current run is never deleted, whatever the policy says.
+- `src/test/bundleSafety.test.ts` — fails if a `scripts/lib/` module that runtime code depends on
+  ever starts importing `pg`, `fs` or `dotenv`, which would pull them into the serverless bundle.
+
+### Changed
+- **`scripts/backup-catalog.ts` now emits manifest format v2** — a sha256, row count and byte length
+  per table — and **self-verifies by re-reading the directory before exiting**, so a truncated or
+  corrupted dump fails at creation instead of at restore.
+
+### Fixed
+- A v1 manifest is identified by the **absence** of `formatVersion`, not by `=== 1`. Every real v1
+  dump on disk reports `undefined`, so the legacy branch was dead code and old dumps were reported
+  as an unknown version instead of as *unverifiable but still restorable*. Found by running the
+  verifier against the four dumps already in `data/backups/`.
+- `stampToIso()` — a dump stamp (`2026-09-14T17-27-10-591Z`) is **not** a parseable date, and
+  `selectForRetention` silently skips any dump whose `createdAt` fails to parse when applying its
+  minimum-age floor. Feeding raw stamps in would have quietly disabled the one rule that stops bad
+  dumps from deleting good ones.
+
+### Verified
+- **Against production, 2026-09-14** — `verify-media-backup.ts`: 152 rows ↔ 605 objects
+  (76.6 MiB), **0 missing, 0 unexpected orphans, 0 size mismatches**. Detection proven, not
+  assumed: replaying the real 152 rows against a perturbed object list yields `missing: 1` when one
+  object is removed and `unreferenced: 1` when one stranger is added.
+- 📌 **Finding: 151 `original.*` masters are unreferenced by design.** The Cloudinary migration
+  stored `thumb`/`hero`/`full`/`original` per asset, but `media_assets.renditions` records only the
+  first three. Those 151 files are the highest-resolution copies in the catalogue, no row points at
+  them, and nothing in the app would notice if one vanished. Reported, not treated as a failure.
+- Hobby-plan limits checked against `vercel.com/docs` rather than assumed: Blob includes
+  **1 GB/month + 2,000 advanced ops**, and exceeding either **cuts off Blob access for 30 days**
+  instead of billing — for a backup sink, a worse failure than an overage. One run is ~0.5 MB and
+  ~10 advanced ops (`del()` is free). Hobby cron jobs may only run **once per day**.
+
+### Notes
+- `@vercel/blob` added (0 vulnerabilities reported at install). `package.json` version stays
+  `0.0.0`; versions live in this file and in git tags.
+
+---
+
 ## [2.12.1] - 2026-09-14
 
 > **Security patch — no application code change.** Four Row Level Security policies granted full
