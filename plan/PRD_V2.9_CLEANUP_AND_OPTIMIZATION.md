@@ -5,8 +5,32 @@
 **Current Baseline:** v2.8.0 (Supabase single source of truth for gallery & CMS, Vercel serverless Express bundle, Cloudinary data fully migrated)  
 **Target Milestone:** v2.9.0 (Complete Cloudinary decommissioning, dead code & legacy mock elimination, RLS security remediation, server modularization, and bundle optimization)  
 **Owner:** Rory Skagen Studio Engineering  
-**Status:** Ready for Implementation  
+**Status:** ✅ **Implemented — shipped in `v2.9.0`** (delivered by commit `406def2`)  
 **Date:** September 12, 2026  
+**Implemented:** September 13, 2026  
+
+---
+
+## 0. Implementation Status (added 2026-09-13)
+
+All six subsystems below were delivered in commit `406def2`
+(*"refactor!: cleanup Cloudinary residue, harden Supabase RLS, and modularize server"*) and
+verified against the working tree on 2026-09-13. This section is the record of that delivery;
+the original specification follows unchanged.
+
+| § | Subsystem | Outcome | Evidence |
+| :--- | :--- | :--- | :--- |
+| 4.1 | Decommission Cloudinary residue | Done — no `cloudinary` in `package.json`; `cloudinaryMap.ts` deleted; resolver Supabase-only. **`multer` was retained** (repurposed for the Supabase Storage upload route, not a Cloudinary leftover) | `package.json`, `server/routes/media.ts`, `src/data/assetResolver.ts` |
+| 4.2 | Root/legacy mock purge | Done — `mediaAssetsData.ts`, `driveFileSystem.ts` deleted; root mapping JSONs relocated to `data/archive/` | `src/data/`, `data/archive/` |
+| 4.3 | Auth consolidation | Done — `src/server/authService.ts` deleted; all auth via Supabase SDK | `src/server/` (only `db.ts`) |
+| 4.4 | Security / RLS remediation | Done — `2026_09_13_v2_9_security_rls_hardening.sql` applied | `supabase/migrations/` |
+| 4.5 | Modularize `server.ts` | Done — `server/routes/*` (7 routers) + `server/middleware/auth.ts`; slim entrypoint | `server.ts`, `server/` |
+| 4.6 | Client bundle optimization | Done — `AdminApp` lazy-loaded | `src/App.tsx` |
+
+**Deferred (still open):** none functionally — the only remaining Cloudinary traces are a frozen
+fallback string in `src/components/AboutView.tsx` (dead code, registry already resolves the asset),
+two stale comments (`src/lib/markdown.ts`, `src/components/HomeLandingView.tsx`), and the
+historical `data/archive/*.json` manifests kept for provenance.
 
 ---
 

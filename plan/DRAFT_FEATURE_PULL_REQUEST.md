@@ -1,10 +1,23 @@
 # Feature Pull Request: Supabase Database Synchronization & Engine Integration
 
+> ⛔ **SUPERSEDED — historical record only (do not implement).**
+>
+> This proposal predates the architecture it describes. Since it was written the backend was
+> **modularized** (`server/routes/*`), the engine was rebuilt as a DB-backed reactive store
+> (`src/engine/galleryStateEngine.ts`), and Cloudinary was fully removed. Its assumptions no longer
+> match the codebase — in particular the `public.artworks` schema shown here omits `draft` and the
+> `taxonomies` / `artwork_terms` model, and the `GalleryAppEngine` / `batch-sync` surface it
+> describes was never built in this form.
+>
+> **For the verified current state, read [`../AGENTS.md`](../AGENTS.md).** See
+> [`README.md`](./README.md) for the status of every plan document.
+
 **Branch / Context:** `feature/supabase-engine-sync`  
 **Target:** `main`  
-**Status:** Preserved as Feature Proposal & Pull Request Specification  
+**Status:** Superseded (preserved as design history)  
 **Author:** Rory Skagen Studio Engineering  
 **Date:** September 9, 2026  
+**Superseded:** September 13, 2026 (v2.9.0)  
 
 ---
 

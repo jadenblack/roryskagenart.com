@@ -5,9 +5,16 @@
 **Current Baseline:** v2.x (Monolithic SPA, Hybrid Express/Vite, Supabase PostgreSQL + Cloudinary CDN)
 **Target Milestone:** v2.4.0 (Single-vendor media stack: Supabase Storage + PostgreSQL, Cloudinary fully removed)
 **Owner:** Rory Skagen Studio Engineering
-**Status:** Approved / Ready for Staging
-**Last Updated:** September 11, 2026
+**Status:** ✅ **Implemented — Cloudinary fully decommissioned as of `v2.9.0`**
+**Last Updated:** September 13, 2026
 **Supersedes (media scope only):** `PRD-2026-V2-MIGRATION` asset-management assumptions
+
+> **Delivery record.** Stage v2.1 (migration script + `artwork-images` bucket + `media_assets`
+> registry) shipped in `5b6a857`; the legacy Cloudinary UI was removed in `7be31a5`; the final
+> deletion pass (packages, routes, `cloudinaryMap.ts`, resolution-chain swap) shipped in `406def2`.
+> The dual-read cutover gate is therefore satisfied and the Cloudinary path is gone. Remaining
+> traces are provenance-only (see [`../AGENTS.md`](../AGENTS.md) §2). The specification below is
+> preserved as the design record.
 
 ---
 
