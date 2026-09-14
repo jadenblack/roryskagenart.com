@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [2.12.1] - 2026-09-14
+
+> **Security patch — no application code change.** Four Row Level Security policies granted full
+> table access to *any* authenticated user, so the lowest `viewer` role could read **and write** the
+> catalog, the media registry and the site pages, and read every collector inquiry, straight through
+> PostgREST — bypassing the role matrix in `src/lib/roles.ts` entirely.
+>
+> **One database migration**, a policy *narrowing* only. No table, column, index, trigger or data
+> change, and no client, server or API code touched. Baseline: `v2.12.0` (`f5cf64c`).
+
 ### Security
 - **Four policies granted full table access to any authenticated user.** `artworks`, `media_assets`,
   `pages` and `inquiries` each carried a `FOR ALL TO authenticated` policy whose predicate was
@@ -67,6 +79,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   published content and the public inquiry form are intended. The guard was **proven to fail**: with
   the fix removed it names all four offenders and the baseline that introduced them. Suite: 12 → 14
   tests in this file.
+
+### Validation
+- **Proven against production, not argued.** A temporary `viewer` account was created, signed in for
+  a real session token, used to hit PostgREST directly, then deleted — the same standard applied to
+  the `v2.12.0` draft fix:
+
+  | probe as a real `viewer` session | result |
+  | :--- | :--- |
+  | `SELECT` artworks (published) | **138 rows** — public read intact |
+  | `SELECT` inquiries (`name,email,phone,message`) | **0 rows** |
+  | `SELECT` profiles | 1 row (own only) |
+  | `UPDATE` artwork | **0 rows** |
+  | `DELETE` artwork | **0 rows** |
+  | `DELETE` inquiries | **0 rows** |
+  | `INSERT` artwork | **blocked, `42501`** |
+  | `UPDATE` own role → `admin` | **0 rows** — cannot self-promote |
+
+  Cleanup verified: the auth user and its cascaded `profiles` row are gone, no probe rows remain,
+  and the catalog is still at 138 artworks.
+- **Proven on the local scratch database first.** With the old `USING (true)` predicate restored, a
+  `viewer` passed **8 of 8** write probes; with the new predicate it is denied on **8 of 8**, while
+  `admin` and `editor` are unaffected. A `viewer` can still read *published* artworks and pages —
+  that is the `public` SELECT policy doing its job, since published work is public by design.
+- `npm run lint` (`tsc --noEmit`) clean. `npm test` — **239/239 passing across 22 files** (was 237;
+  the two new guards are included).
+- Live introspection confirms the end state in production: all four policies now read
+  `is_admin_or_editor()`, and the ledger is at **11 of 11**.
 
 ### Findings recorded (not fixed in this release)
 - `artwork_terms`, `settings` and `taxonomies` are *correctly* scoped already, but via inline
