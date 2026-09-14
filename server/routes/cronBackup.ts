@@ -30,6 +30,7 @@ import {
   DEFAULT_RETENTION,
   blobPathFor,
   dumpsFromBlobs,
+  hasDumpForDate,
   planPrune,
   stampFromBlobPath,
   summarizeBlobs,
@@ -97,6 +98,28 @@ router.get('/backup', async (req, res) => {
   }
 
   try {
+    // Idempotency for scheduled runs.
+    //
+    // Vercel's cron delivery is best-effort and **can invoke the same scheduled run more than
+    // once**. A second dump the same day is harmless but burns the Hobby Blob allowance for
+    // nothing, so a scheduled invocation that already has a dump for today's UTC date does nothing.
+    // Manual invocations are never skipped — `?force=true` exists for the rare deliberate re-run.
+    const isScheduled = (req.get('user-agent') ?? '').startsWith('vercel-cron/');
+    const force = req.query.force === 'true';
+    if (isScheduled && !force) {
+      const todayUtc = new Date().toISOString().slice(0, 10);
+      const existing = dumpsFromBlobs(await listAll());
+      if (hasDumpForDate(existing, todayUtc)) {
+        console.log('[cron/backup] skipped — a dump for', todayUtc, 'already exists');
+        return res.json({
+          success: true,
+          skipped: true,
+          reason: `A dump for ${todayUtc} (UTC) already exists; scheduled runs are once per day.`,
+          storeDumps: existing.length,
+        });
+      }
+    }
+
     const startedAt = Date.now();
     const dump = await buildCatalogDump(async (sql) => (await query(sql)).rows);
 

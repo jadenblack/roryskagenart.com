@@ -30,8 +30,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `user-agent` (`vercel-cron/1.0`) and `x-vercel-cron-schedule` header — relevant because Hobby keeps
   runtime logs for one hour.
 
+- **Email: delivery outcome is now part of the record.** New additive migration
+  `2026_09_14_v2_13_1_inquiry_email_status.sql` adds `inquiries.email_status`
+  (`unknown|sent|partial|failed|suppressed|bounced`), `email_error`, `email_sent_at` and the two
+  Resend message ids. A lost lead is now visible in `#/admin → Inquiries` instead of living only in
+  Vercel's 1-hour log window. `suppressed` is deliberately distinct from `failed`.
+- **Cron: scheduled runs are idempotent.** Vercel can deliver the same scheduled run more than once;
+  a scheduled invocation now skips when a dump already exists for the current UTC day. Manual calls
+  are never skipped, and `?force=true` overrides.
+
 ### Added
 
+- **`POST /api/email/webhook`** — Resend delivery events. Verifies the Svix HMAC (constant-time,
+  5-minute replay window) against `RESEND_WEBHOOK_SECRET` and marks an inquiry `bounced` by message
+  id. Implemented with `node:crypto` rather than adding an SDK, and mounted with `express.raw()`
+  because the signature covers the raw body.
 - **`scripts/verify-offsite-backup.ts`** — the project produced off-site backups it had no
   committed way to check. Newest / `--stamp <x>` / `--list` / `--max-age-hours <n>` / `--json`;
   exit 0 verified · 1 problems · 2 nothing to check. Requires a `manifest.json`, so a dump whose
@@ -42,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `scripts/lib/offsiteBackup.ts` — pure dump-selection half, 11 new tests
   (`src/test/offsiteBackup.test.ts`).
 - `server/lib/emailRouting.ts` — pure routing/recipient helpers, 16 new tests
-  (`src/test/emailRouting.test.ts`). Suite: **362 tests / 30 files** (was 335 / 28).
+  (`src/test/emailRouting.test.ts`); `src/test/offsiteBackup.test.ts` (11) and
+  `src/test/emailReliability.test.ts` (13). Suite: **375 tests / 31 files** (was 335 / 28).
 - [`docs/runbooks/email-delivery.md`](docs/runbooks/email-delivery.md) — two-mailer architecture,
   environment matrix, production go-live checklist, troubleshooting, and why Resend is the right
   long-term mailer.

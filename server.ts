@@ -1,8 +1,9 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
-import { checkDbHealth } from "./src/server/db";
+import { checkDbHealth, query } from "./src/server/db";
 import { getEmailConfig, sendTestVerificationEmail } from "./server/emailService";
+import { verifyResendWebhook } from "./server/lib/webhookSignature";
 import { requireAuth, requireRole } from "./server/middleware/auth";
 import { artworksRouter } from "./server/routes/artworks";
 import { pagesRouter } from "./server/routes/pages";
@@ -76,6 +77,59 @@ app.post("/api/email/send-test", requireAuth, requireRole("admin"), async (req, 
     });
   } catch (err: any) {
     return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * Resend delivery webhook — records bounces and complaints against the stored message id.
+ *
+ * WHY: Hobby keeps runtime logs for one hour, so a bounced inquiry notification is otherwise
+ * invisible. This closes the loop: the row written by `POST /api/inquiries` is corrected to
+ * `bounced` when the provider says the message did not land.
+ *
+ * ⚠️ `express.raw()` — the HMAC covers the raw bytes. Parsing JSON first would break it.
+ * Requests are answered 200 even for unknown event types: retrying an event we will never handle
+ * is worse than ignoring it. A bad signature, however, is a 401 — that is a security boundary.
+ */
+app.post("/api/email/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  const verification = verifyResendWebhook({
+    payload: req.body ?? Buffer.alloc(0),
+    headers: {
+      'svix-id': req.get('svix-id') ?? undefined,
+      'svix-timestamp': req.get('svix-timestamp') ?? undefined,
+      'svix-signature': req.get('svix-signature') ?? undefined,
+    },
+    secret: process.env.RESEND_WEBHOOK_SECRET,
+  });
+
+  if (!verification.ok) {
+    console.warn("[email/webhook] rejected:", verification.reason);
+    return res.status(401).json({ success: false, error: "Invalid signature." });
+  }
+
+  try {
+    const raw = Buffer.isBuffer(req.body) ? req.body.toString("utf8") : String(req.body ?? "");
+    const event = JSON.parse(raw || "{}");
+    const type = String(event?.type ?? "");
+    const emailId = event?.data?.email_id ? String(event.data.email_id) : null;
+
+    if ((type === "email.bounced" || type === "email.complained") && emailId) {
+      await query(
+        `UPDATE public.inquiries
+            SET email_status = 'bounced',
+                email_error = COALESCE($2, email_error)
+          WHERE email_studio_id = $1 OR email_collector_id = $1`,
+        [emailId, `${type}: ${event?.data?.bounce?.message ?? event?.data?.complaint?.type ?? "no detail"}`]
+      );
+      console.warn(`[email/webhook] ${type} for ${emailId}`);
+    } else {
+      console.log(`[email/webhook] ${type || "unknown event"} (no action)`);
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (err: any) {
+    console.error("[email/webhook] handler error:", err?.message ?? err);
+    return res.status(200).json({ success: true }); // never make Resend retry a bug forever
   }
 });
 

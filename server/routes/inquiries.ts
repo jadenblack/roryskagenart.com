@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { query } from "../../src/server/db";
 import { requireAuth, requireRole } from "../middleware/auth";
+import { classifyInquiryOutcome } from "../lib/emailRouting";
 import {
   sendInquiryNotificationToStudio,
   sendInquiryConfirmationToCollector,
@@ -49,18 +50,43 @@ inquiriesRouter.post("/", async (req, res) => {
       sendInquiryConfirmationToCollector({ name, email, artwork_title }),
     ]);
 
-    const delivered = (r: PromiseSettledResult<{ success: boolean }>) =>
-      r.status === "fulfilled" && r.value?.success === true;
+    const settled = (r: PromiseSettledResult<{ success: boolean; messageId?: string; error?: string }>) =>
+      r.status === "fulfilled" && r.value
+        ? r.value
+        : { success: false, error: r.status === "rejected" ? String(r.reason) : "Unknown failure" };
 
-    const studioSent = delivered(studioResult);
-    const collectorSent = delivered(collectorResult);
+    const studio = settled(studioResult);
+    const collector = settled(collectorResult);
+    const outcome = classifyInquiryOutcome({ studio, collector });
 
-    if (!studioSent) {
+    if (!studio.success) {
       // This is the one that matters: an undelivered studio notification is a lost sales lead.
-      console.error(
-        "[inquiries] studio notification FAILED:",
-        studioResult.status === "rejected" ? studioResult.reason : studioResult.value
+      console.error("[inquiries] studio notification FAILED:", studio.error);
+    }
+
+    // Persist the outcome. Best-effort on purpose: the inquiry is already committed, and a failure
+    // to record delivery status must never turn a successful submission into a 500. Hobby keeps
+    // runtime logs for one hour; this row is what makes a lost lead visible a week later.
+    try {
+      await query(
+        `UPDATE public.inquiries
+            SET email_status = $1,
+                email_error = $2,
+                email_sent_at = $3,
+                email_studio_id = $4,
+                email_collector_id = $5
+          WHERE id = $6`,
+        [
+          outcome.status,
+          outcome.error ? String(outcome.error).slice(0, 500) : null,
+          studio.success || collector.success ? new Date().toISOString() : null,
+          outcome.studioId ?? null,
+          outcome.collectorId ?? null,
+          savedInquiry.id,
+        ]
       );
+    } catch (err: any) {
+      console.error("[inquiries] could not record email status:", err?.message ?? err);
     }
 
     // 201 either way — the collector must not be punished for a mailer outage, and the inquiry is
@@ -68,7 +94,11 @@ inquiriesRouter.post("/", async (req, res) => {
     return res.status(201).json({
       success: true,
       inquiry: savedInquiry,
-      email: { studio: studioSent, collector: collectorSent },
+      email: {
+        studio: studio.success === true,
+        collector: collector.success === true,
+        status: outcome.status,
+      },
     });
   } catch (err: any) {
     console.error("Save inquiry error:", err);
