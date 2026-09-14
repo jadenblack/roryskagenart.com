@@ -19,7 +19,7 @@ interface PageRow {
   updated_at?: string;
 }
 
-export const PagesAdminView: React.FC = () => {
+export const PagesAdminView: React.FC<{ canEdit: boolean }> = ({ canEdit }) => {
   const [pages, setPages] = useState<PageRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -125,9 +125,16 @@ export const PagesAdminView: React.FC = () => {
         <span className="text-xs text-muted-foreground">
           {pages.length} page{pages.length === 1 ? '' : 's'}
         </span>
-        <Button size="sm" className="ml-auto" onClick={() => setNewDialogOpen(true)}>
-          <Plus className="h-4 w-4" /> New page
-        </Button>
+        {!canEdit && (
+          <span className="text-xs text-muted-foreground">
+            · read-only — your role cannot change page content
+          </span>
+        )}
+        {canEdit && (
+          <Button size="sm" className="ml-auto" onClick={() => setNewDialogOpen(true)}>
+            <Plus className="h-4 w-4" /> New page
+          </Button>
+        )}
       </div>
 
       {error && (
@@ -155,7 +162,14 @@ export const PagesAdminView: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {pages.map((page) => (
-            <Card key={page.slug} className="cursor-pointer transition-shadow hover:shadow-md" onClick={() => openEditor(page)}>
+            <Card
+              key={page.slug}
+              className={cn(
+                'transition-shadow',
+                canEdit ? 'cursor-pointer hover:shadow-md' : 'cursor-default'
+              )}
+              onClick={canEdit ? () => openEditor(page) : undefined}
+            >
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <FileText className="h-5 w-5 text-muted-foreground" />

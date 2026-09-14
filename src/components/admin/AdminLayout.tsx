@@ -21,6 +21,7 @@ import {
   FolderOpen,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { roleAtLeast } from '../../lib/roles';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Badge } from '../ui/badge';
@@ -35,12 +36,31 @@ export interface AdminNavItem {
   badgeCount?: number;
 }
 
+/**
+ * Studio navigation, with the minimum role that can actually use each section.
+ *
+ * `minRole` must match the server's own guard on the matching API route —
+ * otherwise a Viewer is offered a menu item that answers 403, which is how the
+ * Inquiries and Media pages previously failed for read-only accounts.
+ *
+ *   route          API guard            minRole
+ *   /admin         —                    (all)
+ *   catalog        public read          (all)
+ *   pages          public read          (all)
+ *   media          requireRole(editor)  editor
+ *   inquiries      requireRole(editor)  editor
+ *   taxonomies     requireRole(editor)  editor
+ *   design         local only           editor
+ *   trash          catalog mutations    editor
+ *   users          requireRole(admin)   admin
+ *   settings       requireRole(admin)   admin
+ */
 export const ADMIN_NAV: AdminNavItem[] = [
   { route: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { route: '/admin/catalog', label: 'Catalog', icon: ImageIcon },
   { route: '/admin/pages', label: 'Pages', icon: Files },
-  { route: '/admin/inquiries', label: 'Inquiries', icon: Inbox },
-  { route: '/admin/media', label: 'Media', icon: FolderOpen },
+  { route: '/admin/inquiries', label: 'Inquiries', icon: Inbox, minRole: 'editor' },
+  { route: '/admin/media', label: 'Media', icon: FolderOpen, minRole: 'editor' },
   { route: '/admin/taxonomies', label: 'Taxonomies', icon: Tags, minRole: 'editor' },
   { route: '/admin/design', label: 'Design', icon: Palette, minRole: 'editor' },
   { route: '/admin/users', label: 'Users', icon: Users, minRole: 'admin' },
@@ -72,11 +92,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   const role: UserRole = user?.role || 'viewer';
   const visibleNav = ADMIN_NAV.filter((item) => !item.minRole || roleAtLeast(role, item.minRole));
-
-  function roleAtLeast(current: UserRole, required: UserRole): boolean {
-    const order: Record<UserRole, number> = { viewer: 0, editor: 1, admin: 2 };
-    return order[current] >= order[required];
-  }
 
   const badgeFor = (route: string) =>
     route === '/admin/inquiries' ? inquiryCount : route === '/admin/trash' ? trashedCount : undefined;

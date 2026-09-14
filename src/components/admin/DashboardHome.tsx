@@ -16,7 +16,7 @@ import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
 import { api } from '../../lib/adminApi';
-import type { ArtworkRecord } from '../../types';
+import type { ArtworkRecord, UserRole } from '../../types';
 
 interface InquiriesResponse {
   success: boolean;
@@ -35,9 +35,17 @@ interface DashboardHomeProps {
   artworks: ArtworkRecord[];
   catalogCount: number;
   onNavigate: (path: string) => void;
+  /** Drives which shortcuts are offered — a viewer cannot open the editor-only sections. */
+  role?: UserRole;
 }
 
-export const DashboardHome: React.FC<DashboardHomeProps> = ({ artworks, catalogCount, onNavigate }) => {
+export const DashboardHome: React.FC<DashboardHomeProps> = ({
+  artworks,
+  catalogCount,
+  onNavigate,
+  role = 'viewer',
+}) => {
+  const canEdit = role === 'admin' || role === 'editor';
   const [inquiries, setInquiries] = useState<InquiriesResponse['inquiries']>([]);
   const [dbStatus, setDbStatus] = useState<{ connected: boolean; version?: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,8 +54,12 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({ artworks, catalogC
     let cancelled = false;
     (async () => {
       setLoading(true);
+      // `/api/inquiries` requires editor+, so do not even ask as a viewer —
+      // an unhandled 403 would surface as a broken card.
       const [inqRes, dbRes] = await Promise.allSettled([
-        api<InquiriesResponse>('/api/inquiries'),
+        canEdit
+          ? api<InquiriesResponse>('/api/inquiries')
+          : Promise.resolve({ inquiries: [] } as InquiriesResponse),
         api<{ connected: boolean; version?: string }>('/api/database/status'),
       ]);
       if (cancelled) return;
@@ -62,7 +74,7 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({ artworks, catalogC
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [canEdit]);
 
   const active = artworks.filter((a) => !a.trashed);
   const available = active.filter((a) => a.status === 'Available');
@@ -134,9 +146,11 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({ artworks, catalogC
                 <span className="w-8 text-right text-sm font-semibold">{count}</span>
               </div>
             ))}
-            <Button variant="outline" size="sm" className="mt-2" onClick={() => onNavigate('/admin/taxonomies')}>
-              Manage taxonomies <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
+            {canEdit && (
+              <Button variant="outline" size="sm" className="mt-2" onClick={() => onNavigate('/admin/taxonomies')}>
+                Manage taxonomies <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </CardContent>
         </Card>
 
@@ -147,9 +161,11 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({ artworks, catalogC
               <CardTitle className="text-base">Recent Inquiries</CardTitle>
               <CardDescription>Latest collector interest</CardDescription>
             </div>
-            <Button variant="outline" size="sm" onClick={() => onNavigate('/admin/inquiries')}>
-              View all
-            </Button>
+            {canEdit && (
+              <Button variant="outline" size="sm" onClick={() => onNavigate('/admin/inquiries')}>
+                View all
+              </Button>
+            )}
           </CardHeader>
           <CardContent>
             {loading ? (
