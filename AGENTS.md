@@ -4,10 +4,9 @@
 > repo. Read this **first** — it supersedes the historical specs in `/plan`, which contain
 > stale assumptions from earlier Cloudinary-era work.
 >
-> **Verified against:** release `v2.11.0` (2026-09-14). The schema section was re-verified by live
-> introspection — see `data/archive/schema_introspection.md`. `v2.11.0` was a studio-operations
-> release (user administration, branded email, catalog dossier and scale drawing) with **no schema
-> change**, so the schema facts below still carry the `v2.10.0` verification.
+> **Verified against:** release `v2.13.0` (2026-09-14). The schema section was re-verified by live
+> introspection — see `data/archive/schema_introspection.md`. `v2.13.0` was a backup-durability
+> release with **no schema change**, so the schema facts below still carry the `v2.10.0` verification.
 
 ---
 
@@ -31,6 +30,7 @@ art) into this app's Supabase catalog. See `plan/PRD_V3_WAYBACK_DATA_MIGRATION.m
 | Auth | **Supabase Auth** + `public.profiles` roles | admin / editor / viewer |
 | Media | **Supabase Storage** bucket `artwork-images` | thumb/hero/full/lqip WebP renditions |
 | Email | Resend | studio-owned mailer: inquiries **and** all staff invites / password resets |
+| Off-site backup | **Vercel Cron** → **Vercel Blob** | daily dump at `/api/cron/backup`; private objects; see §4 |
 | **Cloudinary** | **REMOVED** | no package, no routes, no resolution step |
 
 ⚠️ **Cloudinary is fully decommissioned.** `package.json` has **no `cloudinary` dependency**;
@@ -115,9 +115,27 @@ Inspecting and backing up the live database (**read-only** — run the backup be
 ```bash
 npx tsx scripts/introspect-schema.ts         # dumps live schema + policies → data/archive/schema_introspection.md
 npx tsx scripts/backup-catalog.ts            # per-table JSON snapshot → data/backups/<timestamp>/
+npx tsx scripts/verify-backup.ts             # re-check any dump against its manifest (--all, --json)
+npx tsx scripts/verify-media-backup.ts       # reconcile media_assets against the Storage bucket
 ```
+A dump is **manifest format v2** (sha256 per table) and `backup-catalog.ts` self-verifies before it
+exits. Dumps taken before ~2026-09-14T18:15Z are v1 — restorable, but **unverifiable** (no
+checksums); a v1 manifest is identified by the *absence* of `formatVersion`, not by `=== 1`.
 See [`docs/runbooks/database-backup-restore.md`](docs/runbooks/database-backup-restore.md) for the
 rollback procedure and the pre-migration checklist.
+
+### Off-site backup (v2.13.0)
+
+`vercel.json` schedules one cron job → `GET /api/cron/backup` (`server/routes/cronBackup.ts`) →
+Vercel Blob under `catalog-backups/<stamp>/`. It builds the same dump as above via
+`server/lib/catalogDump.ts`, so the CLI writer and the scheduled writer cannot drift apart.
+
+- Gated on `CRON_SECRET` (Vercel Cron sends `Authorization: Bearer $CRON_SECRET`); unset ⇒ **503**.
+- Objects are written `access: 'private'` — a dump contains `profiles` emails and collector PII.
+- Retention: keep 14 recent, one per month, never delete anything under 7 days old.
+- ⚠️ Hobby Blob includes **1 GB/month and 2,000 advanced ops**; exceeding either **cuts off Blob
+  access for 30 days** rather than billing. One run is ~0.5 MB and ~10 advanced ops. `del()` is free.
+- Hobby cron jobs may only run **once per day**, with per-hour scheduling precision.
 
 ### Local scratch database — and why the Supabase CLI must not run migrations
 
@@ -236,9 +254,13 @@ M2M filter path is currently unexercised. Re-verify any of these with
 │   └── server/db.ts        # pg Pool + Supabase admin client
 ├── supabase/migrations/    # 9 idempotent SQL migrations (the baseline sorts first)
 ├── supabase/email-templates/  # generated Supabase Auth mailer templates + manifest.json
-├── scripts/                # run-migrations, introspect-schema, backup-catalog,
-│   │                       # generate-asset-registry, generate-auth-email-templates
-│   └── lib/                # migrationPlan.ts — pure ordering/skip logic (unit-tested)
+├── scripts/                # run-migrations, introspect-schema, backup-catalog, verify-backup,
+│   │                       # verify-media-backup, restore-catalog, generate-asset-registry,
+│   │                       # generate-auth-email-templates
+│   └── lib/                # pure, offline-tested logic: migrationPlan (ordering/skip),
+│                           # restorePlan (restore safety), backupManifest (v2 manifest +
+│                           # verification + retention), dumpDir (dump I/O edge),
+│                           # mediaReconcile (rows ↔ Storage), pgTarget (TLS rule)
 ├── src/test/               # vitest suites (incl. migrationSafety + migrationPlan + userAdmin)
 ├── data/archive/           # historical manifests + live schema introspection (provenance)
 ├── data/backups/           # gitignored logical dumps (see docs/runbooks/)
@@ -311,7 +333,9 @@ re-exports it; never re-declare a role list.
   `bareOrigin()` (`src/lib/authRedirect.ts`) or `buildAuthRedirect()` (`server/lib/userAdmin.ts`), and
   keep `src/lib/authRedirect.ts` as the **first** import in `src/main.tsx`.
 - **`tsc --noEmit` must stay clean** (`npm run lint`); `npm test` (vitest) is offline/zero-token.
-  Suite as of `v2.11.0`: **199 tests across 20 files**.
+  Suite as of `v2.13.0`: **335 tests across 28 files**.
+  ⚠️ **vitest transpiles without typechecking** — a type error in `scripts/` or `server/` passes the
+  test run and is caught only by `npm run lint`. Run both.
 - Verify a claim against the code before documenting it. Stale docs were this repo's largest
   liability before `v2.9.0`.
 
