@@ -51,6 +51,25 @@ function tablesCreatedBy(sql: string): string[] {
   return [...sql.matchAll(/CREATE TABLE IF NOT EXISTS\s+(?:public\.)?(\w+)/g)].map((m) => m[1]);
 }
 
+/**
+ * The *effective* definition of every policy, keyed `"<table> :: <policy>"` with the schema
+ * qualifier stripped. Migrations are walked in the order the runner applies them, so the last
+ * `CREATE POLICY` for a given pair wins — which is what lets a later migration legitimately
+ * replace a blanket policy created earlier without tripping the assertions below.
+ */
+function finalPolicyDefinitions(): Map<string, { file: string; body: string }> {
+  const defs = new Map<string, { file: string; body: string }>();
+  for (const file of migrationFiles()) {
+    for (const m of read(file).matchAll(
+      /CREATE POLICY\s+"([^"]+)"\s+ON\s+([\w.]+)([\s\S]*?);/g
+    )) {
+      const table = m[2].replace(/^public\./, '');
+      defs.set(`${table} :: ${m[1]}`, { file, body: m[3] });
+    }
+  }
+  return defs;
+}
+
 describe('migration set', () => {
   it('is non-empty and contains the baseline', () => {
     const files = migrationFiles();
@@ -196,6 +215,55 @@ describe('reproducibility (a fresh database can be built from this repo)', () =>
     expect(alters.length).toBeGreaterThan(0);
     for (const file of alters) {
       expect(file > BASELINE).toBe(true);
+    }
+  });
+});
+
+describe('authorization (v2.12.1 regression guard)', () => {
+  /**
+   * `TO authenticated` is the Postgres role every Supabase session assumes — it carries no role
+   * claim. A policy that is `TO authenticated USING (true)` therefore grants the table to *any*
+   * logged-in user, including the lowest `viewer` role, and silently bypasses the whole matrix in
+   * src/lib/roles.ts. Four such policies shipped unnoticed (artworks, media_assets, pages,
+   * inquiries) and were fixed in v2.12.1.
+   *
+   * This walks the migrations in the order the runner applies them and keeps only the LAST
+   * definition of each (table, policy) pair, so a later migration that fixes an earlier blanket
+   * policy is not flagged — only the effective end state is judged.
+   *
+   * `TO public USING (true)` is deliberately allowed: anonymous read of published artworks, pages,
+   * settings and media URLs is the intended behaviour, as is the public inquiry INSERT.
+   */
+  it('leaves no policy that grants blanket access to the authenticated role', () => {
+    const finalDefs = finalPolicyDefinitions();
+
+    // Guard against the regex silently matching nothing and the assertion passing vacuously.
+    expect(finalDefs.size).toBeGreaterThanOrEqual(10);
+
+    const offenders: string[] = [];
+    for (const [key, { file, body }] of finalDefs) {
+      if (!/\bTO\s+authenticated\b/i.test(body)) continue;
+      if (/USING\s*\(\s*true\s*\)/i.test(body) || /WITH\s+CHECK\s*\(\s*true\s*\)/i.test(body)) {
+        offenders.push(`${key} — last set by ${file}`);
+      }
+    }
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('scopes the four staff-only tables to the definer helper, not a bare predicate', () => {
+    const finalDefs = finalPolicyDefinitions();
+    const staffScoped: Array<[string, string]> = [
+      ['artworks', 'Admins full access to artworks'],
+      ['media_assets', 'Admins full access to media assets'],
+      ['pages', 'Admins full access to pages'],
+      ['inquiries', 'Admins can view and manage inquiries'],
+    ];
+
+    for (const [table, policy] of staffScoped) {
+      const def = finalDefs.get(`${table} :: ${policy}`);
+      expect(def, `${policy} on ${table} must exist`).toBeDefined();
+      expect(def!.body).toMatch(/public\.is_admin_or_editor\(\)/);
     }
   });
 });

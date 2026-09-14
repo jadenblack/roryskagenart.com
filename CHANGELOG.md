@@ -11,6 +11,110 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.12.1] - 2026-09-14
+
+> **Security patch — no application code change.** Four Row Level Security policies granted full
+> table access to *any* authenticated user, so the lowest `viewer` role could read **and write** the
+> catalog, the media registry and the site pages, and read every collector inquiry, straight through
+> PostgREST — bypassing the role matrix in `src/lib/roles.ts` entirely.
+>
+> **One database migration**, a policy *narrowing* only. No table, column, index, trigger or data
+> change, and no client, server or API code touched. Baseline: `v2.12.0` (`f5cf64c`).
+
+### Security
+- **Four policies granted full table access to any authenticated user.** `artworks`, `media_assets`,
+  `pages` and `inquiries` each carried a `FOR ALL TO authenticated` policy whose predicate was
+  literally `true` — `"Admins full access to artworks"`, `"Admins full access to media assets"`,
+  `"Admins full access to pages"`, `"Admins can view and manage inquiries"`. The names said
+  *admins*; the predicates said *anyone who can log in*. `TO authenticated` is the Postgres role
+  every Supabase session assumes and it carries no role claim, so a **`viewer`** — the lowest role in
+  `src/lib/roles.ts` — could read and write every artwork, media asset and page, and read every
+  inquiry, straight through PostgREST, bypassing the entire role matrix:
+
+  ```
+  GET    /rest/v1/inquiries?select=name,email,phone,message   -- every collector's details
+  PATCH  /rest/v1/artworks?slug=eq.<any>                      -- edit any work
+  DELETE /rest/v1/artworks?slug=eq.<any>                      -- delete any work
+  ```
+
+  The `inquiries` case was the worst of the four: collector name, email, phone and message are
+  personal data the role matrix deliberately restricts to editor and above.
+
+  `v2.12.0` recorded this as a **finding** against `artworks` alone. Enumerating the live policies
+  showed the defect was in **four** places, and all four came from the same
+  `2026_09_01_baseline_core_tables.sql`. Fixing two of four would have looked complete while leaving
+  half the exposure — so this covers all four.
+
+  **The fix is a completion, not an invention.** `2026_09_13_cms_v2_2_profiles_rls_recursion_fix.sql`
+  already created and granted `public.is_admin_or_editor()`, and its own header says these helper
+  policies should be "rewrite[n] against the definer helper so they cannot recurse either" — but the
+  rewrite was never performed. The function was created, granted, and referenced by nothing. Each
+  policy now uses `USING (public.is_admin_or_editor()) WITH CHECK (public.is_admin_or_editor())`,
+  which mirrors the server guard exactly: all four routes are `requireRole("editor")`
+  (`server/routes/artworks.ts`, `media.ts`, `pages.ts`, `inquiries.ts`), so the two layers finally
+  agree. The helper is `SECURITY DEFINER` with `SET search_path = public`, which also avoids the
+  `42P17` infinite-recursion trap this repo already hit once.
+
+  It was never exploited — not because of a control, but because the app does not use that path.
+  Verified before writing: every read and write in `src/` goes through `/api/*` (the only direct
+  supabase-js table access in the client is `profiles`, in `src/context/AuthContext.tsx`), and the
+  API is RLS-exempt because `query()` in `src/server/db.ts` opens a `pg` pool on the **owner**
+  connection — no table here is `FORCE ROW LEVEL SECURITY`. As with the `v2.12.0` draft fix, that is
+  a load-bearing accident, not a control.
+
+  **Verified against a real database rather than argued.** The schema was built from
+  `supabase/migrations/` into the local scratch database, seeded with one artwork, one inquiry, one
+  media asset, one page and admin/editor/viewer profiles, then every policy was evaluated as each
+  role (`SET LOCAL ROLE authenticated` + `request.jwt.claims`). With the old `USING (true)`
+  predicate restored, a `viewer` passed **8 of 8** write probes; with the new predicate it is denied
+  on **8 of 8**, while `admin` and `editor` are unaffected. A `viewer` can still read *published*
+  artworks and pages — that is the `public` SELECT policy doing its job, since published work is
+  public by design. A viewer also cannot self-promote: `profiles` has no UPDATE policy at all, so
+  role changes can only go through `/api/admin/users` on the owner connection.
+- **New regression guard — `src/test/migrationSafety.test.ts`.** Two tests now walk the migrations in
+  apply order, keep only the *effective* final definition of each policy, and fail if any policy
+  leaves `TO authenticated` with a `USING (true)` or `WITH CHECK (true)` predicate. A later migration
+  that legitimately replaces a blanket policy is not flagged, so the guard judges the end state
+  rather than the history. `TO public USING (true)` is deliberately allowed — anonymous read of
+  published content and the public inquiry form are intended. The guard was **proven to fail**: with
+  the fix removed it names all four offenders and the baseline that introduced them. Suite: 12 → 14
+  tests in this file.
+
+### Validation
+- **Proven against production, not argued.** A temporary `viewer` account was created, signed in for
+  a real session token, used to hit PostgREST directly, then deleted — the same standard applied to
+  the `v2.12.0` draft fix:
+
+  | probe as a real `viewer` session | result |
+  | :--- | :--- |
+  | `SELECT` artworks (published) | **138 rows** — public read intact |
+  | `SELECT` inquiries (`name,email,phone,message`) | **0 rows** |
+  | `SELECT` profiles | 1 row (own only) |
+  | `UPDATE` artwork | **0 rows** |
+  | `DELETE` artwork | **0 rows** |
+  | `DELETE` inquiries | **0 rows** |
+  | `INSERT` artwork | **blocked, `42501`** |
+  | `UPDATE` own role → `admin` | **0 rows** — cannot self-promote |
+
+  Cleanup verified: the auth user and its cascaded `profiles` row are gone, no probe rows remain,
+  and the catalog is still at 138 artworks.
+- **Proven on the local scratch database first.** With the old `USING (true)` predicate restored, a
+  `viewer` passed **8 of 8** write probes; with the new predicate it is denied on **8 of 8**, while
+  `admin` and `editor` are unaffected. A `viewer` can still read *published* artworks and pages —
+  that is the `public` SELECT policy doing its job, since published work is public by design.
+- `npm run lint` (`tsc --noEmit`) clean. `npm test` — **239/239 passing across 22 files** (was 237;
+  the two new guards are included).
+- Live introspection confirms the end state in production: all four policies now read
+  `is_admin_or_editor()`, and the ledger is at **11 of 11**.
+
+### Findings recorded (not fixed in this release)
+- `artwork_terms`, `settings` and `taxonomies` are *correctly* scoped already, but via inline
+  `EXISTS (SELECT 1 FROM profiles ...)` subqueries rather than the definer helper. They work, but
+  they carry a subtle coupling to `profiles_select_own` that the helper does not. Left alone to keep
+  this change minimal.
+
+---
+
 ## [2.12.0] - 2026-09-14
 
 > **Recoverability release — and the completion of [ADR 0001](docs/adr/0001-schema-as-code-before-data-migration.md)
