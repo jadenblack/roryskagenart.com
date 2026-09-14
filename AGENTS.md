@@ -4,7 +4,8 @@
 > repo. Read this **first** — it supersedes the historical specs in `/plan`, which contain
 > stale assumptions from earlier Cloudinary-era work.
 >
-> **Verified against:** commit `8e14fda` (2026-09-13), release `v2.9.0`.
+> **Verified against:** release `v2.10.0` (2026-09-14). The schema section was re-verified by live
+> introspection — see `data/archive/schema_introspection.md`.
 
 ---
 
@@ -87,22 +88,39 @@ Regenerating the client asset map after media changes:
 npx tsx scripts/generate-asset-registry.ts   # rewrites src/data/assetRegistry.ts from media_assets
 ```
 
+Inspecting and backing up the live database (**read-only** — run the backup before any write):
+```bash
+npx tsx scripts/introspect-schema.ts         # dumps live schema + policies → data/archive/schema_introspection.md
+npx tsx scripts/backup-catalog.ts            # per-table JSON snapshot → data/backups/<timestamp>/
+```
+See [`docs/runbooks/database-backup-restore.md`](docs/runbooks/database-backup-restore.md) for the
+rollback procedure and the pre-migration checklist.
+
 > **No Supabase MCP server is configured in this repo.** Do not assume one exists.
 
 ---
 
-## 5. Database schema (after all 8 migrations)
+## 5. Database schema (after all 9 migrations)
 
 Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwork_terms`,
 `settings`, `media_assets`.
 
-> ⚠️ **The core tables are not created by the migrations.** `supabase/migrations/` only `CREATE`s
-> `profiles`, `taxonomies`, `artwork_terms`, and `settings`; it `ALTER`s `artworks` / `media_assets`,
-> which exist only in the live project. **`artworks`, `media_assets`, `pages`, and `inquiries` have
-> no `CREATE TABLE` anywhere in the repo**, so the database is not reproducible from version control
-> and `run-migrations.ts` would fail against a fresh project. The only `CREATE TABLE artworks` on
-> disk is a **stale** block in the superseded `plan/DRAFT_FEATURE_PULL_REQUEST.md` — do not trust it.
+> ✅ **The schema is now reproducible from version control.** The four core domain tables
+> (`artworks`, `media_assets`, `pages`, `inquiries`) were created directly in the Supabase project
+> and were never captured by a migration. `supabase/migrations/2026_09_01_baseline_core_tables.sql`
+> now `CREATE`s them along with their indexes, RLS enablement, and policies. It is dated to sort
+> **before** every migration that `ALTER`s them (the runner applies files in lexicographic filename
+> order) and is `IF NOT EXISTS` / `DROP POLICY IF EXISTS` throughout, so it is a no-op against the
+> existing database. That invariant is enforced by `src/test/migrationSafety.test.ts`.
 > See [`docs/adr/0001`](docs/adr/0001-schema-as-code-before-data-migration.md).
+
+> ℹ️ **The migration ledger was reconciled in `v2.10.0`.** `public.schema_migrations` had recorded
+> only 6 of the 9 files, while the effects of the two unrecorded ones
+> (`2026_09_13_v2_9_security_rls_hardening.sql` and `2026_09_v3_media_assets_extend.sql`) were
+> already live — they had been applied out-of-band. Re-running the runner recorded them, so the
+> ledger now holds **9 of 9**, and an introspection diff confirmed nothing but the ledger changed.
+> The lesson stands: the ledger is only as trustworthy as the discipline around it — always apply
+> migrations through `scripts/run-migrations.ts`, never by pasting SQL into the dashboard.
 
 Key facts:
 - `artworks` carries lifecycle flags `enabled / archived / trashed / draft` and `hero_slider`.
@@ -113,11 +131,20 @@ Key facts:
 - `media_assets` is the media registry of record: `public_id`, `url`, `thumbnail_url`,
   `lqip`, `renditions` (jsonb), `artwork_slug`.
 - RLS is enabled on all public tables (hardened in `2026_09_13_v2_9_security_rls_hardening.sql`).
+- ⚠️ **The `artworks` public SELECT policy does not exclude drafts** — it is `USING (trashed = false)`,
+  so draft rows are reachable with the anon key via a direct PostgREST query. It is not currently
+  exploitable because the client reads through `/api/artworks`, which filters drafts server-side —
+  **do not remove that filter**, and do not add a direct client-side Supabase read of `artworks`.
+  Tightening the policy is a tracked follow-up (see `CHANGELOG.md`, v2.10.0).
 
-**Baseline row counts** (as documented in `plan/PRD_V2.9_CLEANUP_AND_OPTIMIZATION.md`, 2026-09-12):
-`artworks` ≈ 138 · `media_assets` = 152 · `pages` = 4 · `profiles` = 2.
+**Live row counts** (verified by introspection, 2026-09-14):
+`artworks` = 138 · `media_assets` = 152 · `pages` = 4 · `inquiries` = 1 · `settings` = 5 ·
+`profiles` = 3 · `taxonomies` = 3 · `artwork_terms` = **0**.
 `src/data/assetRegistry.ts` currently exposes **457 registry keys** for those assets.
-*Re-verify with a live count before relying on these numbers.*
+
+⚠️ `artwork_terms` is **empty** — the taxonomy rows exist but nothing is linked to them, so the
+M2M filter path is currently unexercised. Re-verify any of these with
+`npx tsx scripts/introspect-schema.ts` before relying on them.
 
 ---
 
@@ -136,12 +163,16 @@ Key facts:
 │   ├── data/               # assetRegistry.ts (generated), assetResolver.ts, registries
 │   ├── lib/                # supabase.ts, adminApi.ts, markdown.ts
 │   └── server/db.ts        # pg Pool + Supabase admin client
-├── supabase/migrations/    # 8 idempotent SQL migrations
-├── scripts/                # run-migrations, generate-asset-registry, migrate-cloudinary-to-supabase
-├── data/archive/           # historical Cloudinary manifests + parsed posts (provenance)
+├── supabase/migrations/    # 9 idempotent SQL migrations (the baseline sorts first)
+├── scripts/                # run-migrations, introspect-schema, backup-catalog, generate-asset-registry
+│   └── lib/                # migrationPlan.ts — pure ordering/skip logic (unit-tested)
+├── src/test/               # vitest suites (incl. migrationSafety + migrationPlan)
+├── data/archive/           # historical manifests + live schema introspection (provenance)
+├── data/backups/           # gitignored logical dumps (see docs/runbooks/)
 ├── wayback/                # archived predecessor sites (v3 migration source — see §7)
 ├── docs/PRD.md             # Admin UI reliability PRD (implemented)
 ├── docs/adr/               # Architecture Decision Records (see ADR 0001)
+├── docs/runbooks/          # operational procedures (backup/restore)
 └── plan/                   # see plan/README.md for status of every spec
 ```
 
@@ -169,7 +200,12 @@ Do **not** modify anything inside `wayback/` — it is an immutable archive.
 
 - **Conventional Commits.** Release notes in `CHANGELOG.md` (Keep a Changelog + SemVer).
 - **Migrations are additive and idempotent** — `IF NOT EXISTS` / `OR REPLACE` / guarded triggers.
+  Enforced by `src/test/migrationSafety.test.ts`; do not merge a migration that fails it.
+- **A migration that touches a core table must sort after `2026_09_01_baseline_core_tables.sql`.**
+  Never add a file dated earlier than the baseline.
 - **Never overwrite non-empty DB fields during backfills** — fill only `NULL`/`''`.
+- **Back up before you write** — `npx tsx scripts/backup-catalog.ts`, then follow
+  [`docs/runbooks/database-backup-restore.md`](docs/runbooks/database-backup-restore.md).
 - **Media is Supabase Storage only** — never reference Cloudinary in new code.
 - **`tsc --noEmit` must stay clean** (`npm run lint`); `npm test` (vitest) is offline/zero-token.
 - Verify a claim against the code before documenting it. Stale docs were this repo's largest
