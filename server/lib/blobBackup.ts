@@ -98,6 +98,27 @@ export function dumpsFromBlobs(blobs: BlobRef[]): DumpSummary[] {
   return dumps.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+/**
+ * The UTC calendar day a stamp belongs to (`2026-09-14T20-08-20-091Z` → `2026-09-14`).
+ * Stamps are always UTC, so the leading date is the day without any timezone arithmetic.
+ */
+export function dumpUtcDate(stamp: string): string | null {
+  const match = /^(\d{4}-\d{2}-\d{2})/.exec(stamp);
+  return match ? match[1] : null;
+}
+
+/**
+ * Is there already a dump for this UTC day?
+ *
+ * Used to make the backup route idempotent: Vercel's cron delivery is best-effort and
+ * **can invoke the same scheduled run more than once** (vercel.com/docs/cron-jobs/manage-cron-jobs).
+ * A duplicate dump is not dangerous, but it is 406 KB of pointless storage and it burns part of the
+ * Hobby Blob allowance twice a day.
+ */
+export function hasDumpForDate(dumps: DumpSummary[], isoDate: string): boolean {
+  return dumps.some((dump) => dumpUtcDate(dump.name) === isoDate);
+}
+
 export interface BlobUsage {
   dumps: number;
   files: number;

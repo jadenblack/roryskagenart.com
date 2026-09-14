@@ -132,6 +132,61 @@ export function applyEmailRouting(email: OutboundEmail, env: EmailRoutingEnv = p
   };
 }
 
+/** Persisted outcome of an inquiry's two emails. Mirrors the values documented on the column. */
+export type InquiryEmailStatus = 'unknown' | 'sent' | 'partial' | 'failed' | 'suppressed';
+
+export interface EmailOutcome {
+  success: boolean;
+  messageId?: string;
+  error?: string;
+}
+
+export interface InquiryEmailRecord {
+  status: InquiryEmailStatus;
+  error?: string;
+  studioId?: string;
+  collectorId?: string;
+}
+
+/** An error that means "we deliberately did not send" rather than "the provider failed". */
+function isSuppression(error: string | undefined): boolean {
+  if (!error) return false;
+  return /EMAIL_MODE|EMAIL_REDIRECT_TO|disabled/i.test(error);
+}
+
+/**
+ * Reduce the two send results to one persisted record.
+ *
+ * `suppressed` is kept distinct from `failed`: a deployment with mail switched off is working as
+ * designed, whereas a provider failure needs someone to look at it. Conflating them means a studio
+ * chases a bug that does not exist — or worse, stops noticing one that does.
+ */
+export function classifyInquiryOutcome(input: {
+  studio: EmailOutcome;
+  collector: EmailOutcome;
+}): InquiryEmailRecord {
+  const { studio, collector } = input;
+  const record: InquiryEmailRecord = { status: 'unknown' };
+  if (studio.messageId) record.studioId = studio.messageId;
+  if (collector.messageId) record.collectorId = collector.messageId;
+
+  const sentCount = [studio.success, collector.success].filter(Boolean).length;
+  if (sentCount === 2) {
+    record.status = 'sent';
+    return record;
+  }
+  if (sentCount === 1) {
+    record.status = 'partial';
+    record.error = [studio, collector].find((r) => !r.success)?.error;
+    return record;
+  }
+
+  const errors = [studio.error, collector.error].filter(Boolean) as string[];
+  record.status = errors.some(isSuppression) ? 'suppressed' : 'failed';
+  record.error = errors[0];
+  return record;
+}
+
 /**
  * Who receives a new collector inquiry at the studio.
  *
