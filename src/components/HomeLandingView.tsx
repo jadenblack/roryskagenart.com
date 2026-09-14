@@ -21,7 +21,6 @@ import { InquiryModal } from './InquiryModal';
 import { resolveAssetUrl } from '../data/assetResolver';
 import { getArtworkSvg } from '../data/artAssets';
 import { HeroGallerySlider } from './HeroGallerySlider';
-import { PageHeader } from './PageHeader';
 
 interface HomeLandingViewProps {
   onNavigate: (route: string, param?: string) => void;
@@ -384,35 +383,83 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
   }, [activeCategory, searchQuery]);
 
   return (
-    <div id="rory-skagen-home-archive" className="space-y-12 sm:space-y-16 pb-20 font-sans">
+    <div id="rory-skagen-home-archive" className="pb-20 font-sans">
       
       {/* ─────────────────────────────────────────────────────────────
-          1. HERO — ONE EDITORIAL STATEMENT, ONE STAGE. No duplicated
-          studio ribbon or masthead; the navbar carries the name.
+          1. HERO — ONE FULL-BLEED CANVAS. The artwork slider IS the
+          background layer (cover-crop, ambient); the masthead overlays
+          it as the top section. Sections below return to the inset
+          content frame, which owns the vertical rhythm.
       ────────────────────────────────────────────────────────────────*/}
-      <PageHeader
-        kicker="The Studio of Rory Skagen — Austin, Texas"
-        statement="Pop surrealism from the roadside imagination"
-        support="Four decades of atomic Americana, Kaiju giants, neon supper clubs and landmark Texas murals — original enamels and paintings, available to collectors and curators."
-        meta={[
-          { label: 'Works Cataloged', value: String(totalWorks) },
-          { label: 'Studio Est.', value: '1985' },
-          { label: 'Landmark', value: 'Greetings from Austin' },
-        ]}
+      <section
+        className="relative w-full min-h-[470px] sm:min-h-[540px] md:min-h-[600px] overflow-hidden bg-surface-deep"
+        aria-label="The Studio of Rory Skagen — Austin, Texas"
       >
-        {/* Hero Gallery Slider Feature */}
-        <HeroGallerySlider
-          artworks={featuredArtworks}
-          onSelectArtwork={(slug) => onNavigate('artwork', slug)}
-          onInquireArtwork={(art) => {
-            setSelectedInquiryArtwork(art);
-            setInquiryModalOpen(true);
-          }}
-          onOpenLightbox={(art) => setLightboxArtwork(art)}
-        />
+        {/* Background layer: single artwork slider, no meta card */}
+        <HeroGallerySlider artworks={featuredArtworks} />
+
+        {/* Overlay: the masthead itself */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 md:pt-24 pb-12 sm:pb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Statement column */}
+            <div className="lg:col-span-8 space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/75"
+              >
+                <span className="h-px w-8 bg-amber-400" />
+                <span>The Studio of Rory Skagen — Austin, Texas</span>
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="font-serif font-black uppercase tracking-tight leading-[0.95] text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
+              >
+                Pop surrealism from the roadside imagination
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.25 }}
+                className="max-w-2xl text-sm sm:text-base leading-relaxed text-white/80"
+              >
+                Four decades of atomic Americana, Kaiju giants, neon supper clubs and landmark Texas murals — original enamels and paintings, available to collectors and curators.
+              </motion.p>
+            </div>
+
+            {/* Meta column */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="lg:col-span-4 space-y-3 font-mono text-[11px] border-l border-white/25 pl-5 lg:pl-6"
+            >
+              {[
+                { label: 'Works Cataloged', value: String(totalWorks) },
+                { label: 'Studio Est.', value: '1985' },
+                { label: 'Landmark', value: 'Greetings from Austin' },
+              ].map((row) => (
+                <div key={row.label} className="flex items-baseline justify-between gap-4">
+                  <span className="uppercase tracking-widest text-white/60">{row.label}</span>
+                  <span className="text-right font-bold text-white">{row.value}</span>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Inset content frame — every section below the hero lives here,
+          and this wrapper owns the vertical rhythm between sections ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-12 sm:space-y-16">
 
         {/* Quick Filter / Search Bar */}
-        <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5 font-mono text-[11px]">
             <button
@@ -477,7 +524,6 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
             )}
           </div>
         </div>
-      </PageHeader>
 
       {/* ─────────────────────────────────────────────────────────────
           1b. LANDMARK TRIPTYCH — Greetings from Austin in three eras
@@ -563,13 +609,23 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                 {/* Artwork Media Box */}
                 <div 
                   onClick={() => setLightboxArtwork(art)}
-                  className="relative aspect-4/3 bg-surface-deep overflow-hidden border border-line cursor-pointer flex items-center justify-center p-3 sm:p-6"
+                  className="relative aspect-4/3 bg-surface-deep overflow-hidden border border-line cursor-pointer group/media flex items-center justify-center p-3 sm:p-6"
                 >
+                  {/* Blurred artwork ambience — kills letterbox dead space */}
+                  <img
+                    src={imageUrl}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover blur-2xl scale-125 opacity-30"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = getArtworkSvg(art.slug);
+                    }}
+                  />
                   <img
                     src={imageUrl}
                     alt={art.title}
                     referrerPolicy="no-referrer"
-                    className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-102"
+                    className="relative max-h-full max-w-full object-contain drop-shadow-xl transition-transform duration-500 group-hover/media:scale-102"
                     loading="lazy"
                   />
 
@@ -663,13 +719,22 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                   <div key={item.id} className="group space-y-2 border-b border-line pb-4 last:border-0 last:pb-0">
                     <div 
                       onClick={() => setLightboxArtwork(item)}
-                      className="relative aspect-16/10 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-2"
+                      className="relative aspect-16/10 bg-surface-deep border border-line overflow-hidden cursor-pointer group/media flex items-center justify-center p-2"
                     >
+                      <img 
+                        src={img} 
+                        alt="" 
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover blur-xl scale-125 opacity-30"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = getArtworkSvg(item.slug);
+                        }}
+                      />
                       <img 
                         src={img} 
                         alt={item.title} 
                         referrerPolicy="no-referrer"
-                        className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                        className="relative max-h-full max-w-full object-contain drop-shadow-lg transition-transform duration-300 group-hover/media:scale-105"
                         loading="lazy"
                       />
                       <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-black/80 text-white text-[9px] font-mono font-bold">
@@ -812,13 +877,19 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
 
               <div 
                 onClick={() => setLightboxArtwork(DUAL_SHOWCASE.vintageAds as any)}
-                className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-4 group"
+                className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-4 group/media"
               >
+                <img
+                  src={resolveImageUrl(DUAL_SHOWCASE.vintageAds.imageKey, DUAL_SHOWCASE.vintageAds.slug)}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-2xl scale-125 opacity-30"
+                />
                 <img
                   src={resolveImageUrl(DUAL_SHOWCASE.vintageAds.imageKey, DUAL_SHOWCASE.vintageAds.slug)}
                   alt={DUAL_SHOWCASE.vintageAds.title}
                   referrerPolicy="no-referrer"
-                  className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-103"
+                  className="relative max-h-full max-w-full object-contain drop-shadow-xl transition-transform duration-300 group-hover/media:scale-103"
                   loading="lazy"
                 />
                 <div className="absolute top-3 right-3 px-2 py-1 bg-primary text-primary-foreground text-[10px] font-mono font-bold">
@@ -856,13 +927,19 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
 
               <div 
                 onClick={() => setLightboxArtwork(DUAL_SHOWCASE.banners as any)}
-                className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-4 group"
+                className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-4 group/media"
               >
+                <img
+                  src={resolveImageUrl(DUAL_SHOWCASE.banners.imageKey, DUAL_SHOWCASE.banners.slug)}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-2xl scale-125 opacity-30"
+                />
                 <img
                   src={resolveImageUrl(DUAL_SHOWCASE.banners.imageKey, DUAL_SHOWCASE.banners.slug)}
                   alt={DUAL_SHOWCASE.banners.title}
                   referrerPolicy="no-referrer"
-                  className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-103"
+                  className="relative max-h-full max-w-full object-contain drop-shadow-xl transition-transform duration-300 group-hover/media:scale-103"
                   loading="lazy"
                 />
                 <div className="absolute top-3 right-3 px-2 py-1 bg-amber-600 text-white text-[10px] font-mono font-bold">
@@ -935,13 +1012,22 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
                   {/* Featured Item Preview */}
                   <div 
                     onClick={() => setLightboxArtwork(col.featured)}
-                    className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-2 group"
+                    className="relative aspect-4/3 bg-surface-deep border border-line overflow-hidden cursor-pointer flex items-center justify-center p-2 group/media"
                   >
+                    <img 
+                      src={featImg} 
+                      alt="" 
+                      aria-hidden="true"
+                      className="absolute inset-0 w-full h-full object-cover blur-xl scale-125 opacity-30"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = getArtworkSvg(col.featured.slug);
+                      }}
+                    />
                     <img 
                       src={featImg} 
                       alt={col.featured.title} 
                       referrerPolicy="no-referrer"
-                      className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      className="relative max-h-full max-w-full object-contain drop-shadow-lg transition-transform duration-300 group-hover/media:scale-105"
                       loading="lazy"
                     />
                     <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-primary text-primary-foreground text-[8px] font-mono font-bold">
@@ -1124,6 +1210,8 @@ export const HomeLandingView: React.FC<HomeLandingViewProps> = ({
           </div>
         </div>
       )}
+
+      </div>{/* ── end inset content frame ── */}
 
       {/* ─────────────────────────────────────────────────────────────
           7. ACQUISITION & GENERAL INQUIRY MODAL

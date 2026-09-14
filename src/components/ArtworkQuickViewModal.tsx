@@ -49,12 +49,19 @@ export const ArtworkQuickViewModal: React.FC<ArtworkQuickViewModalProps> = ({
 
         {/* Media Frame (Left) */}
         <div className="md:w-3/5 bg-surface-deep flex items-center justify-center p-4 sm:p-8 relative min-h-[280px] md:min-h-[460px] overflow-hidden">
+              {/* Blurred artwork ambience behind the piece */}
+              <img
+                src={(artwork as any).renditions?.thumb?.url || artwork.imageUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover blur-2xl scale-125 opacity-30"
+              />
           {artwork.imageUrl ? (
             <img
               src={artwork.imageUrl}
               alt={artwork.title}
               referrerPolicy="no-referrer"
-              className="max-h-[75vh] max-w-full object-contain drop-shadow-2xl transition-transform duration-300 hover:scale-[1.02]"
+              className="relative max-h-[75vh] max-w-full object-contain drop-shadow-2xl transition-transform duration-300 hover:scale-[1.02]"
             />
           ) : (
             <div className="text-muted-foreground font-mono text-xs uppercase tracking-widest text-center">

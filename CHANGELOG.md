@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## [Unreleased]
+### Added — Home Hero Rework & Profiles RLS Fix
+- **Full-Bleed Hero Backdrop Slider:** The home masthead now overlays a single full-bleed artwork slider — the active piece cover-crops the entire canvas (no letterboxing for any aspect ratio), blurred and brightness-tuned per theme with a slow settle animation. The artwork meta card is gone; the only chrome is hover ghost-arrows, an interior active-slide name pill beside progress dots (bottom-right), and pause/play. `PageHeader` remains the standard header for all other public pages (the transient `bleed`/`inset` experiment was reverted).
+- **Uniform Section Rhythm:** Sections below the hero live in one inset content frame whose `space-y` owns the vertical spacing — measured 64px between every section, fixing the padding gaps introduced by earlier full-width edits.
+- **Profiles RLS Recursion Fix (migration `2026_09_13_cms_v2_2_profiles_rls_recursion_fix.sql`):** `profiles_select_admin` subqueried `public.profiles` inside a policy on `profiles`, so every client profile lookup aborted with Postgres 42P17 ("infinite recursion detected in policy") and PostgREST returned HTTP 500 on session refresh. The admin/editor checks moved into `SECURITY DEFINER` helper functions (`is_admin()`, `is_admin_or_editor()`); profile queries now return 200.
 ### Added — Draft Workflow, Auto-Save & Sticky Modals (PRD Phase 3+, per `docs/PRD.md`)
 - **Artwork Drafts:** New `draft` column (migration `2026_09_13_cms_v2_1_artwork_drafts.sql`) with partial indexes and a DB trigger enforcing that a draft can never be publicly enabled. Save-as-draft / Publish in the artwork editor, Draft badge, Drafts filter tab with count, Publish/Unpublish row-menu actions, and a dashboard Drafts stat.
 - **Draft Privacy End to End:** Anonymous API reads never receive draft rows (list filter + per-slug 404); the state engine gates drafts at its single `rowToRecord` choke point (`enabled=false`), so hero, gallery, catalog counts, and slug lookups all exclude them with no per-view special cases.

@@ -214,7 +214,7 @@ export default function App() {
         )}
 
         {/* Main Content Area */}
-        <main id="main-content" className={route === 'admin' ? 'hidden' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 w-full flex-grow'}>
+        <main id="main-content" className={route === 'admin' ? 'hidden' : route === 'home' ? 'w-full flex-grow' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 w-full flex-grow'}>
           {/* Public Route 0: Home Exhibition Landing */}
           {route === 'home' && (
             <HomeLandingView

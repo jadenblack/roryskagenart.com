@@ -182,12 +182,23 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
               onClick={() => setLightboxOpen(true)}
               className="relative aspect-[4/3] bg-surface-deep overflow-hidden flex items-center justify-center p-4 border border-line cursor-zoom-in group/img"
             >
+              {/* Blurred artwork ambience — no dead letterbox space for
+                  portrait or landscape works */}
+              <img
+                src={artwork.renditions?.hero?.url || artwork.imageUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover blur-2xl scale-125 opacity-30"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = getArtworkSvg(artwork.slug);
+                }}
+              />
               <img
                 src={artwork.renditions?.hero?.url || artwork.imageUrl}
                 alt={artwork.title}
                 width={artwork.renditions?.hero?.width || undefined}
                 height={artwork.renditions?.hero?.height || undefined}
-                className="w-full h-full object-contain transition-transform duration-500 group-hover/img:scale-[1.02]"
+                className="relative w-full h-full object-contain transition-transform duration-500 group-hover/img:scale-[1.02]"
                 style={artwork.renditions?.lqip ? { backgroundImage: `url(${artwork.renditions.lqip})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = getArtworkSvg(artwork.slug);

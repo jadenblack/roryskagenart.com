@@ -61,7 +61,7 @@ The application is architected as a modern full-stack application combining a hi
 ## Key Features
 
 ### 1. Collector & Visitor Experience
-- **Dynamic Hero Showcase**: High-impact carousel highlighting select monumental paintings and museum-scale works.
+- **Dynamic Hero Showcase**: A full-bleed masthead backdrop — the featured artwork cover-crops the entire hero canvas (blurred ambience, theme-tuned brightness) behind the overlaid studio statement, with an interior active-slide name pill, progress dots, hover arrows, and autoplay. Any aspect ratio fills edge-to-edge, portrait or landscape.
 - **Curated Gallery Grid**: Multi-dimensional filtering by gallery series (*Neon Americana*, *Pop Surrealism*, *Murals & Public Works*, etc.), medium, availability status (*Available*, *Reserved*, *Sold*), and size scale.
 - **Artwork Focus & Lightbox View**: High-definition zoom imagery, physical metrics in both imperial and metric units, background narratives, provenance notes, and live pricing.
 - **Acquisition Inquiry System**: Direct lead capture modal allowing serious collectors and gallery curators to inquire about individual works or commission custom pieces.
@@ -223,6 +223,8 @@ Applied CMS v1 migrations:
 
 - `2026_09_12_cms_v1_profiles_roles.sql` — `public.profiles` (role/is_active keyed to `auth.users`), `on_auth_user_created` signup trigger, admin backfill for existing users, owner/admin RLS policies.
 - `2026_09_12_cms_v1_taxonomies_settings.sql` — `taxonomies` (+ `artwork_terms` join), `settings` JSONB key/value store, `gallery_series` backfill into series terms, default settings seeds.
+- `2026_09_13_cms_v2_1_artwork_drafts.sql` — `artworks.draft` flag with partial indexes and a DB trigger preventing drafts from being publicly enabled.
+- `2026_09_13_cms_v2_2_profiles_rls_recursion_fix.sql` — replaces the self-referencing `profiles_select_admin` RLS policy (which aborted every profile SELECT with Postgres 42P17 "infinite recursion", surfacing as HTTP 500) with `SECURITY DEFINER` helpers `is_admin()` / `is_admin_or_editor()`.
 
 ### Core tables
 
