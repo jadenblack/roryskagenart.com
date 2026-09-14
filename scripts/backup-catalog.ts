@@ -23,24 +23,29 @@ import fs from 'fs';
 import path from 'path';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import { resolvePoolTarget } from './lib/pgTarget';
+import { RESTORE_ORDER, TABLES as TABLE_SPECS } from './lib/restorePlan';
 
 dotenv.config();
 
 /**
  * Every table in `public` except `schema_migrations` (the runner owns it and it is
- * reconstructible). Order is dependency-friendly for a future scripted restore:
- * parents before the M2M rows that reference them.
+ * reconstructible).
+ *
+ * Both the list and the primary keys come from `scripts/lib/restorePlan.ts`, which is the single
+ * source of truth for the backup/restore pair — so the dump order, the dump's row order, and the
+ * restore's insert order cannot drift apart. `RESTORE_ORDER` is dependency-friendly: parents
+ * before the M2M rows that reference them, and it is unit-tested in
+ * `src/test/restorePlan.test.ts`.
  */
-const TABLES = [
-  'profiles',
-  'taxonomies',
-  'settings',
-  'artworks',
-  'artwork_terms',
-  'media_assets',
-  'pages',
-  'inquiries',
-] as const;
+const TABLES = RESTORE_ORDER;
+
+/** The table's primary key, used to make each dump deterministic. */
+function orderByClause(table: string): string {
+  const spec = TABLE_SPECS[table];
+  if (!spec) throw new Error(`No primary key recorded for table "${table}" in scripts/lib/restorePlan.ts.`);
+  return spec.conflictTarget.map((column) => `"${column}"`).join(', ');
+}
 
 function getConnectionString(): string {
   const raw =
@@ -77,9 +82,12 @@ async function main(): Promise<void> {
   const outDir = resolveOutDir();
   fs.mkdirSync(outDir, { recursive: true });
 
+  // Loopback targets (the local scratch database on 127.0.0.1:54322) get no TLS — the SSL rule
+  // lives in scripts/lib/pgTarget.ts. Remote behaviour is unchanged.
+  const poolTarget = resolvePoolTarget(connectionString);
   const pool = new Pool({
-    connectionString,
-    ssl: { rejectUnauthorized: false },
+    connectionString: poolTarget.connectionString,
+    ssl: poolTarget.ssl,
   });
 
   const info = await pool.query<{ db: string; version: string }>(
@@ -107,8 +115,10 @@ async function main(): Promise<void> {
 
   let totalRows = 0;
   for (const table of TABLES) {
-    // `table` comes from the hardcoded TABLES tuple above, never from user input.
-    const { rows } = await pool.query(`SELECT * FROM public.${table}`);
+    // `table` comes from RESTORE_ORDER in scripts/lib/restorePlan.ts, never from user input.
+    // ORDER BY the primary key so two dumps of identical data are byte-identical — that is what
+    // makes the before/after diff in docs/runbooks/database-backup-restore.md §4a reliable.
+    const { rows } = await pool.query(`SELECT * FROM public.${table} ORDER BY ${orderByClause(table)}`);
     const json = JSON.stringify(rows, null, 2);
     fs.writeFileSync(path.join(outDir, `${table}.json`), json);
     const bytes = Buffer.byteLength(json, 'utf8');
