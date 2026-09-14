@@ -10,6 +10,7 @@ verified current state; these documents are historical specs and design records.
 | [`DRAFT_FEATURE_PULL_REQUEST.md`](./DRAFT_FEATURE_PULL_REQUEST.md) | ⛔ **Superseded** | Early Cloudinary-era Supabase sync proposal | Architecture since modularized; see `../AGENTS.md` |
 | [`PRD_V3_WAYBACK_DATA_MIGRATION.md`](./PRD_V3_WAYBACK_DATA_MIGRATION.md) | ✅ **Prerequisites satisfied** | Merge both archived predecessor sites into the Supabase catalog | Next milestone. §0 blocking prerequisites delivered in `v2.10.0` — see [ADR 0001](../docs/adr/0001-schema-as-code-before-data-migration.md) |
 | [`BACKLOG_STUDIO_CMS.md`](./BACKLOG_STUDIO_CMS.md) | 📋 **Proposed** | Prioritised studio-CMS backlog for a non-technical operator (ordering, undo, spam, SEO, a11y, export, inquiry follow-up) | Written against `v2.11.0`. Every item verified against code + live schema. **Not scheduled** |
+| [`ROADMAP_V3.md`](./ROADMAP_V3.md) | 🧭 **Proposed — awaiting owner review** | The **v3.0.0 program**: six phases (pre-flight, hygiene, addressability, then ADR 0001 Phases B/C/D), the SemVer version mapping, sequencing with hard blockers, risk register, and 15 open questions | **Start here for "what happens next."** Sequencing supersedes `PRD_V3`'s status; the two must be read together |
 
 Related material outside this directory:
 
@@ -24,8 +25,10 @@ Related material outside this directory:
 ## Reading order for a new agent
 
 1. [`../AGENTS.md`](../AGENTS.md) — verified current state, schema, write path, guardrails.
-2. [`PRD_V3_WAYBACK_DATA_MIGRATION.md`](./PRD_V3_WAYBACK_DATA_MIGRATION.md) — the work in flight.
-3. This index — only dip into the historical specs when you need the *why* behind an earlier decision.
+2. [`ROADMAP_V3.md`](./ROADMAP_V3.md) — the program: phases, sequencing, blockers, open questions.
+3. [`PRD_V3_WAYBACK_DATA_MIGRATION.md`](./PRD_V3_WAYBACK_DATA_MIGRATION.md) — the migration's own spec
+   (extraction steps, agent prompt, acceptance criteria).
+4. This index — only dip into the historical specs when you need the *why* behind an earlier decision.
 
 ## Conventions
 
