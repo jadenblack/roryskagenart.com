@@ -19,7 +19,11 @@ This document tracks all production and preview deployments for **`roryskagenart
 
 | Date (UTC) | Version | Deployment URL | Status | Build Time | Target | Associated Commits / Milestone |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **2026-09-14** | **v2.11.0** | [`roryskagen-megh7ufrr-ventureio.vercel.app`](https://roryskagen-megh7ufrr-ventureio.vercel.app) | `● Ready` | 22s | Production | `5122812`: PR #5 — studio operations: user administration, branded email, catalog dossier, true-to-scale drawing, role-gated nav (Current Active) |
+| **2026-09-14** | **v2.12.0** | [`roryskagen-6bdmr4283-ventureio.vercel.app`](https://roryskagen-6bdmr4283-ventureio.vercel.app) | `● Ready` | 22s | Production | `f5cf64c`: PR #7 — recoverability: scripted restore path, target-aware TLS, migration-ledger RLS, SQL line-ending policy, deterministic backups, `artworks` draft-exclusion policy (Current Active) |
+| 2026-09-14 | v2.12.0-preview | [`roryskagen-30qktwved-ventureio.vercel.app`](https://roryskagen-30qktwved-ventureio.vercel.app) | `● Ready` | 22s | Preview | `80dafa0`: `release/v2.12.0` preview (PR #7) |
+| **2026-09-14** | post-v2.11.0 | [`roryskagen-805gsqagx-ventureio.vercel.app`](https://roryskagen-805gsqagx-ventureio.vercel.app) | `● Ready` | 20s | Production | `fac2360`: PR #6 — archive sweep and deployment-log reconciliation (docs-only; no release cut) |
+| 2026-09-14 | post-v2.11.0-preview | [`roryskagen-f29yvagl5-ventureio.vercel.app`](https://roryskagen-f29yvagl5-ventureio.vercel.app) | `● Ready` | 22s | Preview | `6087cf3`: `docs/archive-sweep` preview (PR #6) |
+| **2026-09-14** | **v2.11.0** | [`roryskagen-megh7ufrr-ventureio.vercel.app`](https://roryskagen-megh7ufrr-ventureio.vercel.app) | `● Ready` | 22s | Production | `5122812`: PR #5 — studio operations: user administration, branded email, catalog dossier, true-to-scale drawing, role-gated nav |
 | 2026-09-14 | v2.11.0-preview | [`roryskagen-ppaqvs6aa-ventureio.vercel.app`](https://roryskagen-ppaqvs6aa-ventureio.vercel.app) | `● Ready` | 21s | Preview | `467bd14`: `release/v2.11.0` preview |
 | **2026-09-14** | **v2.10.0** | [`roryskagen-janycb9ok-ventureio.vercel.app`](https://roryskagen-janycb9ok-ventureio.vercel.app) | `● Ready` | 22s | Production | `962587e`: PR #4 — schema as code, reproducibility & rollback path |
 | 2026-09-14 | v2.10.0-preview | [`roryskagen-ltwemien7-ventureio.vercel.app`](https://roryskagen-ltwemien7-ventureio.vercel.app) | `● Ready` | 20s | Preview | `48b01b9`: `release/v2.10.0` preview |
@@ -73,10 +77,16 @@ This document tracks all production and preview deployments for **`roryskagenart
    - Baseline schema migration (`2026_09_01_baseline_core_tables.sql`) makes the database
      reproducible from version control; read-only schema introspection and a catalog
      backup/restore runbook were added (`v2.10.0`).
-7. **Phase VII: Studio Operations (Sep 14, 2026 — Present)**
+7. **Phase VII: Studio Operations (Sep 14, 2026)**
    - Staff-management console (edit / invite / re-invite / reset), branded studio email from a
      single shell, role-gated navigation and actions, and a true-to-scale Scale & Proportions
      drawing (`v2.11.0`).
+8. **Phase VIII: Recoverability & Rehearsal (Sep 14, 2026 — Present)**
+   - ADR 0001 Phase A verified by destruction and rebuild: 10 of 10 migrations recreate the schema
+     in a virgin database with no structural difference from production. The restore path is
+     scripted and rehearsed end-to-end, backups are deterministic and diffable, a local Supabase
+     stack provides a scratch database to rehearse against, and the `artworks` public read policy
+     no longer exposes drafts (`v2.12.0`).
 
 ---
 
