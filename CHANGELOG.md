@@ -64,6 +64,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/plan/FEATURE_PULL_REQUEST.md` → `plan/DRAFT_FEATURE_PULL_REQUEST.md`, and a `LICENSE` link with
   no target file). Documentation-only release: no runtime, schema, or API changes.
 
+### Chore — Repository Hygiene & Decision Records
+- **Package renamed off the scaffold name:** `"react-example"` → `"roryskagenart"` in `package.json`
+  and `package-lock.json` (both the root and `packages[""]` entries, so `npm ci` stays valid).
+  `.workbuddy-ai/` added to `.gitignore` so local agent workspace data stays out of `git status`.
+- **ADR convention introduced (`docs/adr/`):** numbered Architecture Decision Records, immutable once
+  accepted. **ADR 0001** records the sequencing decision for the v3 data migration, plus the finding
+  that `artworks`, `media_assets`, `pages`, and `inquiries` have **no `CREATE TABLE` anywhere in the
+  repo** — the database is therefore not reproducible from version control and `run-migrations.ts`
+  would fail against a fresh project. It also corrects the v3 PRD's claim that no `multer` dependency
+  exists.
+
 ### Completed (previously listed under "Planned & Staged")
 - **Cloudinary deletion pass — done** (`406def2`): `cloudinaryMap.ts` deleted, the `/api/cloudinary/*`
   routes and the Cloudinary upload proxy removed, the `cloudinary` npm dependency uninstalled, and the
