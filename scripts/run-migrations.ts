@@ -10,10 +10,9 @@ import fs from 'fs';
 import path from 'path';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import { MIGRATIONS_DIR, assertExist, resolveTargets, selectPending } from './lib/migrationPlan';
 
 dotenv.config();
-
-const MIGRATIONS_DIR = path.resolve(process.cwd(), 'supabase', 'migrations');
 
 function getConnectionString(): string {
   const raw =
@@ -28,18 +27,8 @@ function getConnectionString(): string {
 }
 
 async function main(): Promise<void> {
-  const explicit = process.argv.slice(2);
-  const allFiles = fs
-    .readdirSync(MIGRATIONS_DIR)
-    .filter((f) => f.endsWith('.sql'))
-    .sort();
-  const files = explicit.length ? explicit : allFiles;
-
-  for (const f of files) {
-    if (!fs.existsSync(path.join(MIGRATIONS_DIR, f))) {
-      throw new Error(`Migration file not found: ${f}`);
-    }
-  }
+  const files = resolveTargets(process.argv.slice(2));
+  assertExist(files);
 
   const pool = new Pool({
     connectionString: getConnectionString(),
@@ -53,13 +42,16 @@ async function main(): Promise<void> {
     )
   `);
 
+  // One read of the ledger, then decide in memory — the selection logic itself is pure
+  // and unit-tested in src/test/migrationPlan.test.ts.
+  const ledger = await pool.query('SELECT filename FROM public.schema_migrations');
+  const pending = new Set(
+    selectPending(files, ledger.rows.map((r: { filename: string }) => r.filename))
+  );
+
   let applied = 0;
   for (const file of files) {
-    const tracked = await pool.query(
-      'SELECT 1 FROM public.schema_migrations WHERE filename = $1',
-      [file]
-    );
-    if (tracked.rows.length > 0) {
+    if (!pending.has(file)) {
       console.log(`= ${file} (already applied, skipping)`);
       continue;
     }
