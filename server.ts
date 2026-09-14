@@ -45,12 +45,18 @@ app.get("/api/database/status", requireAuth, requireRole("editor"), async (req, 
 });
 
 // Resend Email Status & Test Verification
+//
+// Unauthenticated by design (it is a public health check), so the payload is deliberately the
+// minimum: `adminEmail` used to be published here, which handed a real studio address to anyone
+// who asked. Nothing in `src/` consumes this endpoint beyond `configured`/`mode`.
 app.get("/api/email/status", (req, res) => {
   const emailConfig = getEmailConfig();
   res.json({
     success: true,
     provider: "Resend",
-    ...emailConfig,
+    configured: emailConfig.configured,
+    domain: emailConfig.domain,
+    mode: emailConfig.mode,
     apiKeyPresent: Boolean(process.env.RESEND_API_KEY),
   });
 });
