@@ -2,10 +2,10 @@
 
 **Document ID:** `PRD-2026-V3-WAYBACK-MIGRATION`
 **Target Application:** `roryskagenart.com`
-**Current Baseline:** v2.9.0 (Supabase single source of truth; Cloudinary fully removed)
+**Current Baseline:** v2.10.0 (Supabase single source of truth; Cloudinary fully removed; schema reproducible from version control)
 **Target Milestone:** v3.0.0 (both archived predecessor sites merged into the Supabase catalog + media library)
 **Owner:** Rory Skagen Studio Engineering
-**Status:** 🔜 Planned — ready for implementation
+**Status:** ✅ Prerequisites satisfied — ready for Steps 0–4 (read-only)
 **Date:** September 13, 2026
 
 > Read [`../AGENTS.md`](../AGENTS.md) first. This PRD assumes its verified state.
@@ -16,14 +16,23 @@
 
 Do **not** start Step 5 (Apply) until this is satisfied:
 
-- [ ] **Baseline schema in version control.** `artworks`, `media_assets`, `pages`, and `inquiries`
-      are not `CREATE`d anywhere in the repo — the migrations only `ALTER` them. Introspect the live
-      DB and commit a baseline `CREATE TABLE IF NOT EXISTS` migration so a fresh project can be built
-      from the repo. (The only existing `CREATE TABLE artworks` is a **stale** block in the
-      superseded `DRAFT_FEATURE_PULL_REQUEST.md` — do not copy it.)
-- [ ] **Rollback path.** Document a catalog backup/restore procedure before the first write.
-- [ ] **Write-path tests.** `scripts/run-migrations.ts` idempotency is an acceptance criterion (§5.5)
-      but has no test today; add one before relying on it.
+- [x] **Baseline schema in version control.** ✅ **Done in `v2.10.0`** —
+      `supabase/migrations/2026_09_01_baseline_core_tables.sql` creates `artworks`, `media_assets`,
+      `pages`, and `inquiries` together with their indexes, RLS enablement, and policies, dated to
+      sort before every migration that `ALTER`s them. Derived from a live introspection
+      (`scripts/introspect-schema.ts` → `data/archive/schema_introspection.md`). Verified to be a
+      no-op against the existing database.
+- [x] **Rollback path.** ✅ **Done in `v2.10.0`** — `scripts/backup-catalog.ts` (read-only per-table
+      JSON snapshot with a self-describing manifest) plus
+      [`docs/runbooks/database-backup-restore.md`](../docs/runbooks/database-backup-restore.md)
+      (platform backup options, both restore procedures, pre-migration checklist).
+- [x] **Write-path tests.** ✅ **Done in `v2.10.0`** — `src/test/migrationPlan.test.ts` covers the
+      runner's ordering and skip-if-tracked decisions (via the extracted
+      `scripts/lib/migrationPlan.ts`); `src/test/migrationSafety.test.ts` asserts the idempotency and
+      reproducibility invariants across every migration file. Suite went 64 → 87 tests.
+
+**Status: all three prerequisites are satisfied.** Step 5 (Apply) is unblocked, subject to the
+read-only Steps 0–4 producing a clean schema-fit gap list.
 
 Steps 0–4 (validate / extract / reconcile / media / emit) are **read-only or emit-only** and may
 proceed now — Step 4's output is exactly what produces the schema-fit gap list ADR 0001 calls for.

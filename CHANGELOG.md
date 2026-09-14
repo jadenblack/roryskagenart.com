@@ -7,6 +7,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.10.0] - 2026-09-14
+
+> **Phase A of [ADR 0001](docs/adr/0001-schema-as-code-before-data-migration.md)** — the blocking
+> prerequisite set for the v3 data migration. The database becomes reproducible from version
+> control, a rollback path exists, and the migration runner's highest-consequence decisions gain
+> test coverage. Baseline: `v2.9.0` (`de294d0`).
+>
+> **No runtime, API, or UI changes.** The one schema-touching artifact is written to be a verified
+> no-op against the live database.
+
+### Added — Reproducible Schema
+- **Baseline schema migration (`supabase/migrations/2026_09_01_baseline_core_tables.sql`):** the four
+  core domain tables — `artworks`, `media_assets`, `pages`, `inquiries` — were created directly in
+  the Supabase project and were **never `CREATE`d anywhere in the repo**; every other migration only
+  `ALTER`ed them. This baseline captures them with all indexes, `ENABLE ROW LEVEL SECURITY`, and every
+  RLS policy. It is dated `2026_09_01` so the runner's lexicographic ordering applies it **before**
+  the `2026_09_12+` migrations that depend on it, and is `IF NOT EXISTS` /
+  `DROP POLICY IF EXISTS` throughout so it is a no-op against the existing database. Without it,
+  `run-migrations.ts` failed on a fresh project at the first `ALTER TABLE public.artworks`.
+- **Live schema introspection (`scripts/introspect-schema.ts`):** read-only dump of the `public`
+  schema — tables, columns, constraints, indexes, triggers, functions, RLS status, policies, row
+  counts, and the applied-migration ledger — written to `data/archive/schema_introspection.md`. The
+  baseline migration above is derived from this output rather than from the stale superseded draft.
+- **Catalog backup (`scripts/backup-catalog.ts`):** strictly read-only (`SELECT`-only) per-table JSON
+  snapshot of all 8 `public` tables plus a self-describing `manifest.json` (row counts, byte sizes,
+  target, Postgres version, recorded migrations). Output lands in the gitignored `data/backups/`.
+- **Backup & restore runbook (`docs/runbooks/database-backup-restore.md`):** the rollback path ADR
+  0001 found missing — Supabase platform backup tiers and retention, the PITR add-on, both restore
+  procedures, a pre-migration checklist, and an explicit list of known gaps.
+- **Write-path test coverage (`src/test/migrationPlan.test.ts`, `src/test/migrationSafety.test.ts`):**
+  23 new tests. `migrationPlan` locks down the runner's ordering and skip-if-tracked decisions;
+  `migrationSafety` asserts the idempotency and reproducibility invariants across every migration
+  file — including the invariant that would have caught this release's core bug: *RLS may only be
+  enabled on tables that some migration actually creates.* **Suite: 64 → 87 tests.**
+
+### Changed
+- **Migration runner refactor (`scripts/run-migrations.ts`):** the pure ordering/skip logic moved to
+  `scripts/lib/migrationPlan.ts` so it is unit-testable offline — the runner previously had zero
+  coverage because it opens a `pg` Pool at import. It now reads the `schema_migrations` ledger once
+  instead of per file. **Behaviour is unchanged**, including all console output.
+
+### Fixed — Documentation Accuracy
+- **ADR 0001 contained two unverified claims**, caught by re-reading the code against the live
+  introspection and corrected: the superseded draft's `CREATE TABLE` was said to use a column name
+  the code no longer uses (`series`), but `gallery_series` is in fact correct in both the live
+  database and `src/`; and `sort_order` was attributed to `artworks` when it belongs to `taxonomies`.
+  The stale doc's real defect is narrower and now stated precisely: it is missing exactly one column
+  (`draft`), every index, and all RLS objects.
+
+### Docs
+- **`AGENTS.md`:** §5 now records that the schema *is* reproducible (replacing the warning that it was
+  not), documents the new **ledger drift** finding, and corrects row counts to verified live values
+  (`profiles` 2 → 3; `inquiries`/`settings`/`taxonomies` added; `artwork_terms` is **empty**). §4
+  documents the introspection and backup commands; §6 adds `docs/runbooks/`, `scripts/lib/`, and
+  `src/test/`; §8 adds the baseline-ordering and back-up-before-you-write rules.
+- **`plan/PRD_V3_WAYBACK_DATA_MIGRATION.md`:** all three §0 blocking prerequisites ticked with
+  evidence; status advanced to *prerequisites satisfied, ready for read-only Steps 0–4*.
+- **`.gitignore`:** `data/backups/` ignored — logical dumps contain production data and studio
+  member email addresses, and must never be committed.
+
+### Findings recorded (not fixed in this release)
+- **The `artworks` public SELECT policy does not exclude drafts.** `USING (trashed = false)` would
+  expose draft rows to any holder of the anon key. It is not currently exploitable because the client
+  reads through the server API (`/api/artworks`), which filters drafts — but the policy is one
+  direct-PostgREST query away from leaking unpublished work. Deferred to the Phase A follow-up rather
+  than changed silently here.
+- **Storage objects are not covered by database backups** (Supabase backs up metadata only), and the
+  project's plan tier — which determines whether automatic backups exist at all — is unverified.
+  Tracked in the runbook's known-gaps table.
+
+### Validation
+- `npm run lint` (`tsc --noEmit`) clean. `npm test` — **87/87 passing across 11 files**, offline.
+- **Baseline migration proven to be a production no-op.** A read-only catalog backup was taken first
+  (`scripts/backup-catalog.ts` — 8 tables, 306 rows), the migration was applied to the live database,
+  and the schema was re-introspected and diffed against the pre-change report. The **only** deltas
+  were the migration's own ledger row and the report's generation timestamp — no column, index,
+  trigger, function, RLS, or policy difference.
+- **Ledger drift reconciled.** Re-running the runner then applied the two previously out-of-band
+  migrations and recorded them, so `public.schema_migrations` now holds **9 of 9** files. The same
+  introspection diff confirmed those re-applications changed nothing but the ledger — the drift was
+  bookkeeping, not schema.
+
+---
+
 ## [2.9.0] - 2026-09-13
 
 > **Delivered by commits:** `406def2` (Cloudinary residue cleanup, Supabase RLS hardening, server
