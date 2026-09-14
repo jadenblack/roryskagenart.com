@@ -60,6 +60,19 @@ async function main(): Promise<void> {
     )
   `);
 
+  // Lock the ledger down: RLS enabled with NO policies means only the table owner (this runner
+  // connects as `postgres`) and `service_role` can read it — the anon key sees zero rows.
+  //
+  // This lives here rather than in a migration on purpose. `src/test/migrationSafety.test.ts`
+  // asserts that RLS is enabled only on tables that a *migration* creates, and no migration
+  // creates this table — the runner does, so the runner owns its RLS state too.
+  //
+  // Found by building a database from version control and diffing it against production
+  // (2026-09-14): production already had RLS enabled here, but nothing in the repo said so, so a
+  // rebuilt database left the migration ledger readable with the anon key. Verified safe first —
+  // the owner bypasses RLS (no FORCE), so both the read and the write path above still work, and
+  // the statement is idempotent.
+  await pool.query('ALTER TABLE public.schema_migrations ENABLE ROW LEVEL SECURITY');
 
   // One read of the ledger, then decide in memory — the selection logic itself is pure
   // and unit-tested in src/test/migrationPlan.test.ts.
