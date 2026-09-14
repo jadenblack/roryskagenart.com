@@ -19,7 +19,18 @@ This document tracks all production and preview deployments for **`roryskagenart
 
 | Date (UTC) | Version | Deployment URL | Status | Build Time | Target | Associated Commits / Milestone |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **2026-09-12** | **v2.8.0** | [`roryskagen-5ugjqo1bo-ventureio.vercel.app`](https://roryskagen-5ugjqo1bo-ventureio.vercel.app) | `● Ready` | 22s | Production | `411138a`: Theme palette, PageHeader, design admin (Current Active) |
+| **2026-09-14** | **v2.11.0** | [`roryskagen-megh7ufrr-ventureio.vercel.app`](https://roryskagen-megh7ufrr-ventureio.vercel.app) | `● Ready` | 22s | Production | `5122812`: PR #5 — studio operations: user administration, branded email, catalog dossier, true-to-scale drawing, role-gated nav (Current Active) |
+| 2026-09-14 | v2.11.0-preview | [`roryskagen-ppaqvs6aa-ventureio.vercel.app`](https://roryskagen-ppaqvs6aa-ventureio.vercel.app) | `● Ready` | 21s | Preview | `467bd14`: `release/v2.11.0` preview |
+| **2026-09-14** | **v2.10.0** | [`roryskagen-janycb9ok-ventureio.vercel.app`](https://roryskagen-janycb9ok-ventureio.vercel.app) | `● Ready` | 22s | Production | `962587e`: PR #4 — schema as code, reproducibility & rollback path |
+| 2026-09-14 | v2.10.0-preview | [`roryskagen-ltwemien7-ventureio.vercel.app`](https://roryskagen-ltwemien7-ventureio.vercel.app) | `● Ready` | 20s | Preview | `48b01b9`: `release/v2.10.0` preview |
+| **2026-09-14** | **v2.9.0** | [`roryskagen-oup13vzfl-ventureio.vercel.app`](https://roryskagen-oup13vzfl-ventureio.vercel.app) | `● Ready` | 22s | Production | `de294d0`: PR #3 — v2.9.0 release-notes completion |
+| 2026-09-14 | v2.9.0-preview | [`roryskagen-luvktp6wq-ventureio.vercel.app`](https://roryskagen-luvktp6wq-ventureio.vercel.app) | `● Ready` | 21s | Preview | `40641d0`: `docs/v2.9.0-changelog` preview |
+| **2026-09-14** | **v2.9.0** | [`roryskagen-6bywenhlm-ventureio.vercel.app`](https://roryskagen-6bywenhlm-ventureio.vercel.app) | `● Ready` | 20s | Production | `fd2ff25`: PR #2 — documentation & context reconciliation |
+| 2026-09-14 | v2.9.0-preview | [`roryskagen-3fpbilkpx-ventureio.vercel.app`](https://roryskagen-3fpbilkpx-ventureio.vercel.app) | `● Ready` | 20s | Preview | `6b4be84`: `release/v2.9.0` preview |
+| **2026-09-14** | **v2.9.0** | [`roryskagen-kdewt7lyy-ventureio.vercel.app`](https://roryskagen-kdewt7lyy-ventureio.vercel.app) | `● Ready` | 22s | Production | `8e14fda`: Full-bleed home hero, profiles RLS 500 fix |
+| **2026-09-13** | **v2.9.0** | [`roryskagen-7l5crbs05-ventureio.vercel.app`](https://roryskagen-7l5crbs05-ventureio.vercel.app) | `● Ready` | 22s | Production | `a43fe40`: Artwork drafts, autosave, shadcn/ui primitives, test suite |
+| **2026-09-13** | **v2.9.0** | [`roryskagen-8exvnt9u9-ventureio.vercel.app`](https://roryskagen-8exvnt9u9-ventureio.vercel.app) | `● Ready` | 18s | Production | `406def2`: Cloudinary residue cleanup, RLS hardening, server modularization |
+| **2026-09-12** | **v2.8.0** | [`roryskagen-5ugjqo1bo-ventureio.vercel.app`](https://roryskagen-5ugjqo1bo-ventureio.vercel.app) | `● Ready` | 22s | Production | `411138a`: Theme palette, PageHeader, design admin |
 | **2026-09-12** | **v2.7.0** | [`roryskagen-fgsmx4fqk-ventureio.vercel.app`](https://roryskagen-fgsmx4fqk-ventureio.vercel.app) | `● Ready` | 20s | Production | `b5e6c3b`: Track `api/index.js` for remote Vercel CI |
 | **2026-09-12** | **v2.6.0** | [`roryskagen-i1ma7ozgd-ventureio.vercel.app`](https://roryskagen-i1ma7ozgd-ventureio.vercel.app) | `● Ready` | 20s | Production | `8db6c44`: Drag-and-drop uploader + media picker |
 | **2026-09-12** | **v2.5.0** | [`roryskagen-br83wfqzg-ventureio.vercel.app`](https://roryskagen-br83wfqzg-ventureio.vercel.app) | `● Ready` | 20s | Production | `7f040c4`: Supabase single source of truth |
@@ -54,5 +65,34 @@ This document tracks all production and preview deployments for **`roryskagenart
 4. **Phase IV: Studio Admin CMS with shadcn/ui (Sep 12, 2026)**
    - Modern administration dashboard at `/#/admin`.
    - Idempotent SQL migration pipeline and Supabase single source of truth.
-5. **Phase V: Design System & Theme Engine (Sep 12, 2026 - Present)**
+5. **Phase V: Design System & Theme Engine (Sep 12, 2026)**
    - Modernized editorial theme palette and PageHeader components live on `roryskagenart.com`.
+6. **Phase VI: Release Engineering & Schema-as-Code (Sep 14, 2026)**
+   - Releases now go through a PR gate: a Vercel preview deployment plus Socket Security and
+     Debricked checks must pass before merge to `main` (`v2.9.0` onward).
+   - Baseline schema migration (`2026_09_01_baseline_core_tables.sql`) makes the database
+     reproducible from version control; read-only schema introspection and a catalog
+     backup/restore runbook were added (`v2.10.0`).
+7. **Phase VII: Studio Operations (Sep 14, 2026 — Present)**
+   - Staff-management console (edit / invite / re-invite / reset), branded studio email from a
+     single shell, role-gated navigation and actions, and a true-to-scale Scale & Proportions
+     drawing (`v2.11.0`).
+
+---
+
+## Maintaining this log
+
+Rows are one per notable deployment. To refresh after a release, list deployments with their
+commit SHAs (this is how the `v2.9.0`–`v2.11.0` rows above were reconstructed):
+
+```bash
+vercel ls roryskagen --yes --json | node -e "
+let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{
+  for (const x of JSON.parse(s).deployments.slice(0,15))
+    console.log([new Date(x.createdAt).toISOString().slice(0,16),
+      (x.target||'-').padEnd(10), (x.meta.githubCommitSha||'').slice(0,7),
+      (x.meta.githubCommitRef||'?').padEnd(18), x.url].join('  '));
+});"
+```
+
+Do **not** invent a row. Every URL, commit and build time here came from the Vercel API.

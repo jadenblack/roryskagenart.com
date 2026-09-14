@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Docs
+- **`plan/BACKLOG_STUDIO_CMS.md` (new):** prioritised studio-CMS backlog written for a
+  non-technical operator — manual catalog/hero ordering, undo & revision history, inquiry spam
+  protection, per-artwork SEO, alt text, bulk actions, export, and inquiry follow-up. Every item was
+  verified against the code and the live schema; nothing is scheduled. Indexed in `plan/README.md`
+  as **Proposed**.
+- **`DEPLOYMENT_LOG.md` reconciled.** It had drifted to its last row being `v2.8.0` (2026-09-12),
+  omitting **seven production deployments** across `v2.9.0`, `v2.10.0` and `v2.11.0`, plus the PR
+  preview deployments the release gate now depends on. Rows were reconstructed from the Vercel API
+  (not invented), the stale `(Current Active)` marker moved to `v2.11.0`, the architecture milestones
+  extended through Phases VI–VII, and a "Maintaining this log" section added with the query that
+  rebuilds the table.
+- **`AGENTS.md` §8 gains a Releases section** — the PR gate and its three checks (Vercel preview,
+  Socket Security, Debricked), the "tag the merge commit on `main`" convention, the note that
+  `v2.9.0` deviates, the rule not to prune a release branch unless asked, and the
+  `DEPLOYMENT_LOG.md` obligation.
+
+---
+
 ## [2.11.0] - 2026-09-14
 
 > **Studio-operations release.** The Users screen becomes a real staff-management console (edit,

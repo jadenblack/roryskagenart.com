@@ -9,6 +9,7 @@ verified current state; these documents are historical specs and design records.
 | [`PRD_V2.9_CLEANUP_AND_OPTIMIZATION.md`](./PRD_V2.9_CLEANUP_AND_OPTIMIZATION.md) | ✅ **Implemented** | Cloudinary decommission, dead-code purge, RLS hardening, server modularization, bundle split | Delivered in `406def2` |
 | [`DRAFT_FEATURE_PULL_REQUEST.md`](./DRAFT_FEATURE_PULL_REQUEST.md) | ⛔ **Superseded** | Early Cloudinary-era Supabase sync proposal | Architecture since modularized; see `../AGENTS.md` |
 | [`PRD_V3_WAYBACK_DATA_MIGRATION.md`](./PRD_V3_WAYBACK_DATA_MIGRATION.md) | ✅ **Prerequisites satisfied** | Merge both archived predecessor sites into the Supabase catalog | Next milestone. §0 blocking prerequisites delivered in `v2.10.0` — see [ADR 0001](../docs/adr/0001-schema-as-code-before-data-migration.md) |
+| [`BACKLOG_STUDIO_CMS.md`](./BACKLOG_STUDIO_CMS.md) | 📋 **Proposed** | Prioritised studio-CMS backlog for a non-technical operator (ordering, undo, spam, SEO, a11y, export, inquiry follow-up) | Written against `v2.11.0`. Every item verified against code + live schema. **Not scheduled** |
 
 Related material outside this directory:
 
