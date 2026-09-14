@@ -26,25 +26,50 @@ inquiriesRouter.post("/", async (req, res) => {
 
     const savedInquiry = result.rows[0];
 
-    // Asynchronously dispatch Resend emails to Studio Admin and Collector
-    sendInquiryNotificationToStudio({
-      id: savedInquiry.id,
-      name,
-      email,
-      phone,
-      artwork_slug,
-      artwork_title,
-      inquiry_type,
-      message,
-    }).catch((err) => console.warn("[Resend Email] Notice sending studio notification:", err));
+    // Awaited, not fire-and-forget.
+    //
+    // WHY: this runs as a Vercel serverless function. Once the response is flushed the instance
+    // can be frozen, so a `.catch()`-ed promise left running after `res.json()` may never reach
+    // Resend — the inquiry would be stored, the collector would be told "sent", and no mail would
+    // ever leave. Awaiting both adds a few hundred milliseconds and makes the result true.
+    //
+    // `allSettled` because a mailer failure must never lose the inquiry: the row is already
+    // committed, and the studio can still read it in #/admin → Inquiries.
+    const [studioResult, collectorResult] = await Promise.allSettled([
+      sendInquiryNotificationToStudio({
+        id: savedInquiry.id,
+        name,
+        email,
+        phone,
+        artwork_slug,
+        artwork_title,
+        inquiry_type,
+        message,
+      }),
+      sendInquiryConfirmationToCollector({ name, email, artwork_title }),
+    ]);
 
-    sendInquiryConfirmationToCollector({
-      name,
-      email,
-      artwork_title,
-    }).catch((err) => console.warn("[Resend Email] Notice sending collector confirmation:", err));
+    const delivered = (r: PromiseSettledResult<{ success: boolean }>) =>
+      r.status === "fulfilled" && r.value?.success === true;
 
-    return res.status(201).json({ success: true, inquiry: savedInquiry, emailDispatched: true });
+    const studioSent = delivered(studioResult);
+    const collectorSent = delivered(collectorResult);
+
+    if (!studioSent) {
+      // This is the one that matters: an undelivered studio notification is a lost sales lead.
+      console.error(
+        "[inquiries] studio notification FAILED:",
+        studioResult.status === "rejected" ? studioResult.reason : studioResult.value
+      );
+    }
+
+    // 201 either way — the collector must not be punished for a mailer outage, and the inquiry is
+    // safely stored. `email` reports what actually happened instead of a hardcoded `true`.
+    return res.status(201).json({
+      success: true,
+      inquiry: savedInquiry,
+      email: { studio: studioSent, collector: collectorSent },
+    });
   } catch (err: any) {
     console.error("Save inquiry error:", err);
     return res.status(500).json({ error: err.message || "Failed to save inquiry" });

@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { applyEmailRouting, resolveEmailMode, resolveStudioRecipients } from './lib/emailRouting';
 import {
   BRAND,
   escapeHtml,
@@ -39,6 +40,9 @@ export function getEmailConfig() {
     adminEmail,
     fromAddress,
     siteUrl: resolveSiteUrl(),
+    // Surfaced so a deployment can be proven to be in the right mode at a glance. A preview that
+    // reports `live` is a preview that can mail a real collector.
+    mode: resolveEmailMode(),
   };
 }
 
@@ -60,13 +64,22 @@ async function deliver(params: {
   if (!client || !config.configured) {
     return { success: false, error: 'Resend API key is not configured' };
   }
+
+  // Route before handing anything to the provider: on a preview deployment the recipients are
+  // replaced, and a redirect with no destination suppresses the message instead of delivering it.
+  const routed = applyEmailRouting(params);
+  if (routed.suppressed) {
+    console.warn('[Resend Email] suppressed:', routed.reason);
+    return { success: false, error: routed.reason };
+  }
+
   try {
     const { data, error } = await client.emails.send({
       from: config.fromAddress,
-      to: params.to,
+      to: routed.to,
       replyTo: params.replyTo,
-      subject: params.subject,
-      html: params.html,
+      subject: routed.subject,
+      html: routed.html,
     });
     if (error) {
       return { success: false, error: error.message };
@@ -98,9 +111,8 @@ export async function sendInquiryNotificationToStudio(inquiry: {
     return { success: false, error: 'Resend API key is not configured' };
   }
 
-  const recipients = Array.from(
-    new Set([config.adminEmail, 'jaden@venturepilot.org'].filter(Boolean))
-  );
+  // Env-driven (`ADMIN_EMAIL` + `STUDIO_CC`) — see server/lib/emailRouting.ts.
+  const recipients = resolveStudioRecipients();
 
   const subject = `New Collector Inquiry: ${inquiry.artwork_title ? `"${inquiry.artwork_title}"` : (inquiry.inquiry_type || 'General Inquiry')} — from ${inquiry.name}`;
 

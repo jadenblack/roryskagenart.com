@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Email: inquiry delivery is now awaited and reported truthfully.** `POST /api/inquiries` used to
+  fire both Resend sends *after* `res.json()` and always answer `emailDispatched: true`. On Vercel the
+  instance can be frozen once the response is flushed, so mail could be lost while the collector was
+  told it had been sent. Both sends are now awaited (`Promise.allSettled`) and the response carries
+  `email: { studio, collector }` with the real outcome. An inquiry is still stored and still returns
+  `201` when mail fails — a mailer outage must not cost a lead.
+- **Email: no environment separation.** Added `EMAIL_MODE` (`live` / `redirect` / `off`) and
+  `EMAIL_REDIRECT_TO`, implemented once in the new `server/lib/emailRouting.ts`. A preview deployment
+  can no longer email a real collector: recipients are replaced, the subject is prefixed `[PREVIEW]`,
+  and a banner names who was originally addressed. `redirect` without a destination **suppresses**
+  rather than falling back to the real recipient.
+- **Email: hardcoded recipients.** Studio notifications now resolve from `ADMIN_EMAIL` + `STUDIO_CC`
+  (`resolveStudioRecipients`); behaviour is unchanged when neither is set.
+- **Email: public config leak.** `GET /api/email/status` published the studio's `adminEmail`. It now
+  returns only `configured` / `domain` / `mode` / `apiKeyPresent`.
+- **Cron: no way to tell a scheduled run from a manual one.** `GET /api/cron/backup` now logs the
+  `user-agent` (`vercel-cron/1.0`) and `x-vercel-cron-schedule` header — relevant because Hobby keeps
+  runtime logs for one hour.
+
+### Added
+
+- `server/lib/emailRouting.ts` — pure routing/recipient helpers, 16 new tests
+  (`src/test/emailRouting.test.ts`). Suite: **351 tests / 29 files** (was 335 / 28).
+- [`docs/runbooks/email-delivery.md`](docs/runbooks/email-delivery.md) — two-mailer architecture,
+  environment matrix, production go-live checklist, troubleshooting, and why Resend is the right
+  long-term mailer.
+- `EMAIL_MODE`, `EMAIL_REDIRECT_TO`, `STUDIO_CC` documented in `.env.example`.
+
 ---
 
 ## [2.13.0] - 2026-09-14

@@ -81,6 +81,15 @@ router.get('/backup', async (req, res) => {
     return res.status(auth.status).json({ success: false, error: auth.error });
   }
 
+  // Vercel Cron identifies itself with user-agent "vercel-cron/1.0" and an
+  // `x-vercel-cron-schedule` header holding the expression that fired. Logging both makes a
+  // scheduled run distinguishable from a manual curl — Hobby keeps runtime logs for one hour, so
+  // this line is often the only evidence a run happened at all.
+  console.log('[cron/backup] invoked', {
+    userAgent: req.get('user-agent') ?? null,
+    schedule: req.get('x-vercel-cron-schedule') ?? null,
+  });
+
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return res
       .status(503)
