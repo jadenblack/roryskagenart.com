@@ -31,7 +31,7 @@ import fs from 'fs';
 import path from 'path';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
-import { resolvePoolTarget } from './lib/pgTarget';
+import { describeTarget, resolvePoolTarget } from './lib/pgTarget';
 import { RESTORE_ORDER, TABLES as TABLE_SPECS } from './lib/restorePlan';
 import {
   buildManifest,
@@ -73,16 +73,6 @@ function getConnectionString(): string {
     '';
   if (!raw) throw new Error('PostgreSQL connection string missing from environment.');
   return raw.replace(/\?.*$/, '');
-}
-
-/** Connection target without credentials, safe to write into the manifest. */
-function describeTarget(raw: string): string {
-  try {
-    const u = new URL(raw);
-    return `${u.hostname}${u.port ? `:${u.port}` : ''}${u.pathname}`;
-  } catch {
-    return '(unparseable connection string)';
-  }
 }
 
 function resolveOutDir(): string {

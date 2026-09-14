@@ -81,6 +81,27 @@ export function stripQueryParams(rawUrl: string): string {
   return rawUrl.replace(/\?.*$/, '');
 }
 
+/**
+ * Describe a connection target **without any credentials**, safe to write into a backup manifest.
+ *
+ * WHY: a manifest travels with its dump — to `data/backups/` locally and to Blob off-site — and
+ * "which database did this come from?" is the first question asked during a restore. The
+ * connection string answers it but also carries the password, so only the host, port and database
+ * name are kept. `postgres://u:p@db.abc.supabase.co:5432/postgres` → `db.abc.supabase.co:5432/postgres`.
+ *
+ * Shared by both dump writers (`scripts/backup-catalog.ts` and `server/routes/cronBackup.ts`) so an
+ * on-disk dump and an off-site dump describe their origin in exactly the same way.
+ */
+export function describeTarget(rawUrl: string): string {
+  if (!rawUrl) return '(unknown)';
+  try {
+    const url = new URL(rawUrl);
+    return `${url.hostname}${url.port ? `:${url.port}` : ''}${url.pathname}`;
+  } catch {
+    return '(unparseable connection string)';
+  }
+}
+
 export interface PoolTarget extends TargetClassification {
   /** Connection string with query params stripped. Safe to pass straight to `pg`. */
   connectionString: string;

@@ -98,17 +98,30 @@ describe('buildCatalogDump', () => {
   });
 
   it('is deterministic — two runs over unchanged data produce identical bytes', async () => {
-    const a = await buildCatalogDump(fakeDb(COUNTS).run, new Date('2026-09-14T04:00:00.000Z'));
-    const b = await buildCatalogDump(fakeDb(COUNTS).run, new Date('2026-09-14T04:00:00.000Z'));
+    const a = await buildCatalogDump(fakeDb(COUNTS).run, { now: new Date('2026-09-14T04:00:00.000Z') });
+    const b = await buildCatalogDump(fakeDb(COUNTS).run, { now: new Date('2026-09-14T04:00:00.000Z') });
     expect(b.files).toEqual(a.files);
     expect(b.stamp).toBe(a.stamp);
   });
 
   it('names the dump with a path-safe stamp derived from its own timestamp', async () => {
     const { run } = fakeDb(COUNTS);
-    const dump = await buildCatalogDump(run, new Date('2026-09-14T17:27:10.591Z'));
+    const dump = await buildCatalogDump(run, { now: new Date('2026-09-14T17:27:10.591Z') });
     expect(dump.stamp).toBe('2026-09-14T17-27-10-591Z');
     expect(stampToIso(dump.stamp)).toBe(dump.manifest.createdAt);
+  });
+
+  it('records the source target the caller supplies, so a dump says which database it came from', async () => {
+    const { run } = fakeDb(COUNTS);
+    const dump = await buildCatalogDump(run, { target: 'db.abc123.supabase.co:5432/postgres' });
+    expect(dump.manifest.target).toBe('db.abc123.supabase.co:5432/postgres');
+  });
+
+  it('never invents a target — an unset one is recorded as unknown, not as a plausible host', async () => {
+    const { run } = fakeDb(COUNTS);
+    const dump = await buildCatalogDump(run);
+    expect(dump.manifest.target).toBe('(unknown)');
+    expect(dump.manifest.target).not.toContain('supabase');
   });
 
   it('keeps only the first line of the server version', async () => {
