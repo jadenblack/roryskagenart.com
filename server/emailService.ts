@@ -1,4 +1,15 @@
 import { Resend } from 'resend';
+import {
+  BRAND,
+  escapeHtml,
+  renderAccessChangedEmail,
+  renderBrandedEmail,
+  renderEmailChangedEmail,
+  renderInviteEmail,
+  renderPasswordResetEmail,
+  renderTestEmail,
+  resolveSiteUrl,
+} from './emailTemplates';
 
 let resendClient: Resend | null = null;
 
@@ -19,15 +30,51 @@ export function getEmailConfig() {
   const adminEmail = process.env.ADMIN_EMAIL || 'rory@ventureio.com';
   const configured = Boolean(apiKey && apiKey.trim().length > 0);
   const fromAddress = configured
-    ? `Rory Skagen Studio <studio@${domain}>`
-    : 'Rory Skagen Studio <onboarding@resend.dev>';
+    ? `${BRAND.studio} <studio@${domain}>`
+    : `${BRAND.studio} <onboarding@resend.dev>`;
 
   return {
     configured,
     domain,
     adminEmail,
     fromAddress,
+    siteUrl: resolveSiteUrl(),
   };
+}
+
+export interface SendResult {
+  success: boolean;
+  messageId?: string;
+  error?: string;
+}
+
+/** One place that turns a rendered template into a Resend call. */
+async function deliver(params: {
+  to: string | string[];
+  subject: string;
+  html: string;
+  replyTo?: string;
+}): Promise<SendResult> {
+  const client = getResendClient();
+  const config = getEmailConfig();
+  if (!client || !config.configured) {
+    return { success: false, error: 'Resend API key is not configured' };
+  }
+  try {
+    const { data, error } = await client.emails.send({
+      from: config.fromAddress,
+      to: params.to,
+      replyTo: params.replyTo,
+      subject: params.subject,
+      html: params.html,
+    });
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true, messageId: data?.id };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Email delivery failed' };
+  }
 }
 
 /**
@@ -42,9 +89,9 @@ export async function sendInquiryNotificationToStudio(inquiry: {
   inquiry_type?: string | null;
   message: string;
   id?: string;
-}): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  const client = getResendClient();
+}): Promise<SendResult> {
   const config = getEmailConfig();
+  const client = getResendClient();
 
   if (!client || !config.configured) {
     console.log('[Resend Email] API key not configured, skipping studio email dispatch.');
@@ -55,85 +102,58 @@ export async function sendInquiryNotificationToStudio(inquiry: {
     new Set([config.adminEmail, 'jaden@venturepilot.org'].filter(Boolean))
   );
 
-  const subject = `🎨 New Collector Inquiry: ${inquiry.artwork_title ? `"${inquiry.artwork_title}"` : (inquiry.inquiry_type || 'General Inquiry')} — from ${inquiry.name}`;
+  const subject = `New Collector Inquiry: ${inquiry.artwork_title ? `"${inquiry.artwork_title}"` : (inquiry.inquiry_type || 'General Inquiry')} — from ${inquiry.name}`;
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8f8f6; margin: 0; padding: 24px; color: #1a1a1a; }
-          .card { max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e5e0; border-radius: 4px; overflow: hidden; }
-          .header { background: #111111; color: #ffffff; padding: 24px; border-bottom: 3px solid #d4af37; }
-          .header h1 { margin: 0 0 4px; font-size: 18px; text-transform: uppercase; letter-spacing: 0.1em; font-family: monospace; }
-          .header p { margin: 0; font-size: 12px; color: #a0a0a0; font-family: monospace; }
-          .body { padding: 28px; }
-          .field { margin-bottom: 16px; border-bottom: 1px solid #f0f0ec; padding-bottom: 12px; }
-          .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #666666; font-family: monospace; margin-bottom: 4px; }
-          .value { font-size: 15px; color: #111111; font-weight: 500; }
-          .message-box { background: #fbfbf9; border-left: 3px solid #111111; padding: 16px; margin: 20px 0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
-          .footer { background: #f5f5f0; padding: 16px 28px; font-size: 11px; color: #888888; font-family: monospace; text-align: center; }
-        </style>
-      </head>
-      <body>
-        <div class="card">
-          <div class="header">
-            <h1>Rory Skagen Studio</h1>
-            <p>New Art Acquisition & Collector Inquiry</p>
-          </div>
-          <div class="body">
-            <div class="field">
-              <div class="label">Collector Name</div>
-              <div class="value">${escapeHtml(inquiry.name)}</div>
-            </div>
-            <div class="field">
-              <div class="label">Collector Email</div>
-              <div class="value"><a href="mailto:${escapeHtml(inquiry.email)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(inquiry.email)}</a></div>
-            </div>
-            ${inquiry.phone ? `
-            <div class="field">
-              <div class="label">Phone Number</div>
-              <div class="value"><a href="tel:${escapeHtml(inquiry.phone)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(inquiry.phone)}</a></div>
-            </div>` : ''}
-            <div class="field">
-              <div class="label">Target Artwork / Inquiry Type</div>
-              <div class="value"><strong>${escapeHtml(inquiry.artwork_title || 'General Studio Inquiry')}</strong> ${inquiry.artwork_slug ? `<span style="font-size: 12px; color: #888;">(Slug: ${escapeHtml(inquiry.artwork_slug)})</span>` : ''}</div>
-            </div>
-            <div class="label" style="margin-top: 20px;">Collector Message</div>
-            <div class="message-box">${escapeHtml(inquiry.message)}</div>
-            <p style="font-size: 12px; color: #777; margin-top: 20px;">
-              You can respond directly to this collector by replying to <strong>${escapeHtml(inquiry.email)}</strong>.
-            </p>
-          </div>
-          <div class="footer">
-            Rory Skagen Studio • Austin, Texas • roryskagenart.com
-          </div>
-        </div>
-      </body>
-    </html>
-  `;
+  const field = (label: string, value: string, href?: string) => `
+    <tr>
+      <td style="padding:0 0 12px;">
+        <div style="font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#666666;margin-bottom:4px;">${label}</div>
+        <div style="font-size:15px;font-weight:500;color:${BRAND.ink};">${
+          href
+            ? `<a href="${href}" style="color:#0066cc;text-decoration:none;">${value}</a>`
+            : value
+        }</div>
+      </td>
+    </tr>`;
 
-  try {
-    const { data, error } = await client.emails.send({
-      from: config.fromAddress,
-      to: recipients,
-      replyTo: inquiry.email,
-      subject,
-      html,
-    });
+  const html = renderBrandedEmail({
+    heading: 'New Art Acquisition &amp; Collector Inquiry',
+    eyebrow: 'Collector inquiry',
+    bodyHtml: `
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+        ${field('Collector name', escapeHtml(inquiry.name))}
+        ${field('Collector email', escapeHtml(inquiry.email), `mailto:${escapeHtml(inquiry.email)}`)}
+        ${inquiry.phone ? field('Phone number', escapeHtml(inquiry.phone), `tel:${escapeHtml(inquiry.phone)}`) : ''}
+        ${field(
+          'Target artwork / inquiry type',
+          `<strong>${escapeHtml(inquiry.artwork_title || 'General Studio Inquiry')}</strong>${
+            inquiry.artwork_slug
+              ? ` <span style="font-size:12px;color:#888;">(${escapeHtml(inquiry.artwork_slug)})</span>`
+              : ''
+          }`
+        )}
+      </table>
+      <div style="font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#666666;margin:8px 0 6px;">Collector message</div>
+      <div style="background:#fbfbf9;border-left:3px solid ${BRAND.ink};padding:16px;font-size:14px;line-height:1.6;white-space:pre-wrap;color:${BRAND.ink};">${escapeHtml(inquiry.message)}</div>
+      <p style="font-size:12px;color:#777;margin:20px 0 0;">
+        Reply directly to this email to answer <strong>${escapeHtml(inquiry.email)}</strong>.
+      </p>`,
+    note: inquiry.id ? `Inquiry reference: ${escapeHtml(inquiry.id)}` : undefined,
+  });
 
-    if (error) {
-      console.error('[Resend Email] Failed to send inquiry notification:', error);
-      return { success: false, error: error.message };
-    }
+  const result = await deliver({
+    to: recipients,
+    replyTo: inquiry.email,
+    subject,
+    html,
+  });
 
-    console.log('[Resend Email] Successfully sent studio inquiry notification. Message ID:', data?.id);
-    return { success: true, messageId: data?.id };
-  } catch (err: any) {
-    console.error('[Resend Email] Exception sending studio inquiry notification:', err);
-    return { success: false, error: err.message };
+  if (result.success) {
+    console.log('[Resend Email] Successfully sent studio inquiry notification. Message ID:', result.messageId);
+  } else {
+    console.error('[Resend Email] Failed to send inquiry notification:', result.error);
   }
+  return result;
 }
 
 /**
@@ -143,121 +163,126 @@ export async function sendInquiryConfirmationToCollector(inquiry: {
   name: string;
   email: string;
   artwork_title?: string | null;
-}): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  const client = getResendClient();
+}): Promise<SendResult> {
   const config = getEmailConfig();
+  const artworkMention = inquiry.artwork_title
+    ? `regarding “${escapeHtml(inquiry.artwork_title)}”`
+    : 'with our studio';
 
-  if (!client || !config.configured) {
-    return { success: false, error: 'Resend API key is not configured' };
+  const html = renderBrandedEmail({
+    heading: 'Thank you for your inquiry',
+    eyebrow: 'Message received',
+    intro: `Dear ${escapeHtml(inquiry.name)},`,
+    bodyHtml: `
+      <p style="margin:0 0 16px;">Thank you for contacting ${BRAND.studio} ${artworkMention}. We have received your inquiry and our studio team will review the details and get back to you shortly.</p>
+      <p style="margin:0 0 16px;">In the meantime, feel free to explore the master gallery catalog online.</p>
+      <p style="margin:24px 0 0;">Warm regards,<br><strong>${BRAND.studio}</strong><br><span style="font-size:12px;color:#777;">${BRAND.city}</span></p>`,
+    cta: { label: 'Browse the gallery', url: `${config.siteUrl}/#catalog` },
+    note: 'You are receiving this because you contacted us through roryskagenart.com.',
+  });
+
+  const result = await deliver({
+    to: [inquiry.email],
+    replyTo: config.adminEmail,
+    subject: `Thank you for your inquiry — ${BRAND.studio}`,
+    html,
+  });
+
+  if (!result.success) {
+    console.warn('[Resend Email] Notice sending collector confirmation:', result.error);
   }
+  return result;
+}
 
-  const subject = `Thank you for your inquiry — Rory Skagen Studio`;
-  const artworkMention = inquiry.artwork_title ? `regarding "${inquiry.artwork_title}"` : 'with our studio';
+/** Studio staff invitation — the branded replacement for Supabase's default mailer. */
+export async function sendInviteEmail(params: {
+  to: string;
+  name?: string | null;
+  role?: string | null;
+  actionUrl: string;
+  invitedBy?: string | null;
+}): Promise<SendResult> {
+  return deliver({
+    to: [params.to],
+    subject: `You're invited to the ${BRAND.name} studio`,
+    html: renderInviteEmail({
+      email: params.to,
+      name: params.name,
+      role: params.role,
+      actionUrl: params.actionUrl,
+      invitedBy: params.invitedBy,
+    }),
+  });
+}
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8f8f6; margin: 0; padding: 24px; color: #1a1a1a; }
-          .card { max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e5e0; border-radius: 4px; overflow: hidden; }
-          .header { background: #111111; color: #ffffff; padding: 24px; border-bottom: 3px solid #d4af37; }
-          .header h1 { margin: 0 0 4px; font-size: 18px; text-transform: uppercase; letter-spacing: 0.1em; font-family: monospace; }
-          .body { padding: 28px; font-size: 14px; line-height: 1.6; color: #333333; }
-          .footer { background: #f5f5f0; padding: 16px 28px; font-size: 11px; color: #888888; font-family: monospace; text-align: center; }
-        </style>
-      </head>
-      <body>
-        <div class="card">
-          <div class="header">
-            <h1>Rory Skagen Studio</h1>
-          </div>
-          <div class="body">
-            <p>Dear ${escapeHtml(inquiry.name)},</p>
-            <p>Thank you for contacting Rory Skagen Studio ${escapeHtml(artworkMention)}. We have received your inquiry and our studio team will review the details and get back to you shortly.</p>
-            <p>In the meantime, feel free to explore the master gallery catalog online at <a href="https://roryskagenart.com" style="color: #111111; font-weight: bold;">roryskagenart.com</a>.</p>
-            <p style="margin-top: 24px;">
-              Warm regards,<br>
-              <strong>Rory Skagen Studio</strong><br>
-              <span style="font-size: 12px; color: #777;">Austin, Texas</span>
-            </p>
-          </div>
-          <div class="footer">
-            Rory Skagen Studio • roryskagenart.com • Austin, Texas
-          </div>
-        </div>
-      </body>
-    </html>
-  `;
+/** Admin-triggered password reset. */
+export async function sendPasswordResetEmail(params: {
+  to: string;
+  name?: string | null;
+  actionUrl: string;
+  requestedBy?: string | null;
+}): Promise<SendResult> {
+  return deliver({
+    to: [params.to],
+    subject: `Reset your ${BRAND.name} studio password`,
+    html: renderPasswordResetEmail({
+      email: params.to,
+      name: params.name,
+      actionUrl: params.actionUrl,
+      requestedBy: params.requestedBy,
+    }),
+  });
+}
 
-  try {
-    const { data, error } = await client.emails.send({
-      from: config.fromAddress,
-      to: [inquiry.email],
-      replyTo: config.adminEmail,
-      subject,
-      html,
-    });
+/** Tell a user their role or active state changed. Best-effort. */
+export async function sendAccessChangedEmail(params: {
+  to: string;
+  name?: string | null;
+  role: string;
+  active: boolean;
+  changedBy?: string | null;
+}): Promise<SendResult> {
+  return deliver({
+    to: [params.to],
+    subject: params.active
+      ? `Your ${BRAND.name} studio access was updated`
+      : `Your ${BRAND.name} studio access was paused`,
+    html: renderAccessChangedEmail({
+      email: params.to,
+      name: params.name,
+      role: params.role,
+      active: params.active,
+      changedBy: params.changedBy,
+    }),
+  });
+}
 
-    if (error) {
-      console.warn('[Resend Email] Notice sending collector confirmation:', error.message);
-      return { success: false, error: error.message };
-    }
-
-    return { success: true, messageId: data?.id };
-  } catch (err: any) {
-    console.warn('[Resend Email] Exception sending collector confirmation:', err.message);
-    return { success: false, error: err.message };
-  }
+/** Tell a user their studio email address changed. Best-effort. */
+export async function sendEmailChangedEmail(params: {
+  to: string;
+  name?: string | null;
+  previousEmail?: string | null;
+  changedBy?: string | null;
+}): Promise<SendResult> {
+  return deliver({
+    to: [params.to],
+    subject: `Your ${BRAND.name} studio email address was updated`,
+    html: renderEmailChangedEmail({
+      email: params.to,
+      name: params.name,
+      previousEmail: params.previousEmail,
+      changedBy: params.changedBy,
+    }),
+  });
 }
 
 /**
  * Send a verification/test email via Resend to verify delivery.
- */
-export async function sendTestVerificationEmail(toEmail: string): Promise<{
-  success: boolean;
-  messageId?: string;
-  error?: string;
-}> {
-  const client = getResendClient();
+ */export async function sendTestVerificationEmail(toEmail: string): Promise<SendResult> {
   const config = getEmailConfig();
-
-  if (!client || !config.configured) {
-    return { success: false, error: 'Resend API key is not configured in environment' };
-  }
-
-  try {
-    const { data, error } = await client.emails.send({
-      from: config.fromAddress,
-      to: [toEmail],
-      subject: `✅ Resend API Verified — Rory Skagen Studio`,
-      html: `
-        <div style="font-family: monospace; padding: 24px; background: #f8f8f6; border: 1px solid #ddd; max-width: 500px;">
-          <h2 style="color: #111; margin-top: 0;">Rory Skagen Studio</h2>
-          <p style="color: #2e7d32; font-weight: bold;">✅ Resend Email API is successfully configured and active.</p>
-          <p><strong>Domain:</strong> ${escapeHtml(config.domain)}</p>
-          <p><strong>From:</strong> ${escapeHtml(config.fromAddress)}</p>
-          <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
-        </div>
-      `,
-    });
-
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
-    return { success: true, messageId: data?.id };
-  } catch (err: any) {
-    return { success: false, error: err.message };
-  }
-}
-
-function escapeHtml(str: string): string {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return deliver({
+    to: [toEmail],
+    subject: `${BRAND.name} — Resend delivery verified`,
+    html: renderTestEmail({ domain: config.domain, fromAddress: config.fromAddress }),
+  });
 }

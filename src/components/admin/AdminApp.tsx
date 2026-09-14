@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AdminLayout, ADMIN_NAV } from './AdminLayout';
 import { AdminLoginPage } from './AdminLoginPage';
+import { PasswordSetupView } from './PasswordSetupView';
 import { DashboardHome } from './DashboardHome';
 import { CatalogView } from './CatalogView';
 import { ArtworkEditDialog } from './ArtworkEditDialog';
@@ -14,6 +15,7 @@ import { MediaAdminView } from './MediaAdminView';
 import { useAuth } from '../../context/AuthContext';
 import { GalleryAppEngineInstance } from '../../engine/galleryStateEngine';
 import { api } from '../../lib/adminApi';
+import { parseAdminPath } from '../../lib/adminRoute';
 import { UserRole } from '../../types';
 
 interface AdminAppProps {
@@ -23,7 +25,7 @@ interface AdminAppProps {
 }
 
 export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, authHandoff, clearAuthHandoff } = useAuth();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingArtwork, setEditingArtwork] = useState<string | null>(null);
   const [newInquiryCount, setNewInquiryCount] = useState(0);
@@ -42,7 +44,41 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
   const role: UserRole = (user?.role as UserRole) || 'viewer';
   const canManageCatalog = role === 'admin' || role === 'editor';
   const normalizedPath = path.startsWith('/admin') ? path : '/admin';
-  const subPath = normalizedPath.replace(/^\/admin\/?/, '') || '';
+
+  // "#/admin/catalog?edit=<slug>" — the deep link the public dossier's
+  // "Edit in Studio" action uses, so it lands on that entry's editor rather
+  // than dumping the curator into the whole catalog list.
+  const { subPath, editSlug } = useMemo(() => parseAdminPath(path), [path]);
+
+  const showToast = (message: string) => {
+    setFlash(message);
+    window.setTimeout(() => setFlash(null), 3000);
+  };
+
+  // Open the editor for a deep-linked entry, once the engine has the record.
+  const deepLinkHandledRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!editSlug || subPath !== 'catalog') {
+      deepLinkHandledRef.current = null;
+      return;
+    }
+    if (deepLinkHandledRef.current === editSlug) return;
+
+    const found = artworks.some((a) => a.slug === editSlug);
+    if (!found) {
+      // The engine bootstraps from the bundled registry and replaces it when
+      // /api/artworks answers; a miss before hydration is not a miss.
+      if (!GalleryAppEngineInstance.hydrated) return;
+      deepLinkHandledRef.current = editSlug;
+      showToast(`No catalog entry matches “${editSlug}”.`);
+      return;
+    }
+
+    deepLinkHandledRef.current = editSlug;
+    setEditingArtwork(editSlug);
+    setEditDialogOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editSlug, subPath, artworks]);
 
   const showLogin = !isLoading && !isAuthenticated;
 
@@ -68,10 +104,17 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
     );
   }
 
-  const showToast = (message: string) => {
-    setFlash(message);
-    window.setTimeout(() => setFlash(null), 3000);
-  };
+  // Invitation / password-reset hand-off: Supabase already signed the user in
+  // from the emailed token, so the only thing left is choosing a password.
+  if (authHandoff) {
+    return (
+      <PasswordSetupView
+        reason={authHandoff}
+        onDone={clearAuthHandoff}
+        onBackToSite={() => onNavigate('/')}
+      />
+    );
+  }
 
   // ------- Artwork mutations (hit the protected API, then refresh engine) -------
   const refreshEngine = async () => {
@@ -183,6 +226,9 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
   ).sort();
 
   // ------- Route resolution -------
+  // Each guarded case mirrors the server's own `requireRole` on the matching
+  // API route, so a viewer never reaches a screen that answers 403.
+  const canEdit = canManageCatalog;
   const renderView = () => {
     switch (subPath) {
       case '':
@@ -191,6 +237,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
             artworks={artworks}
             catalogCount={catalogCount}
             onNavigate={onNavigate}
+            role={role}
           />
         );
       case 'catalog':
@@ -217,21 +264,21 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
           />
         );
       case 'inquiries':
-        return <InquiriesView onCountChange={setNewInquiryCount} />;
+        return canEdit ? <InquiriesView onCountChange={setNewInquiryCount} /> : <Forbidden required="editor" />;
       case 'pages':
-        return <PagesAdminView />;
+        return <PagesAdminView canEdit={canEdit} />;
       case 'media':
-        return <MediaAdminView />;
+        return canEdit ? <MediaAdminView /> : <Forbidden required="editor" />;
       case 'taxonomies':
-        return role === 'viewer' ? <Forbidden /> : <TaxonomiesAdminView />;
+        return canEdit ? <TaxonomiesAdminView /> : <Forbidden required="editor" />;
       case 'users':
-        return role === 'admin' ? <UsersAdminView currentUser={user} /> : <Forbidden />;
+        return role === 'admin' ? <UsersAdminView currentUser={user} /> : <Forbidden required="administrator" />;
       case 'settings':
-        return role === 'admin' ? <SettingsAdminView /> : <Forbidden />;
+        return role === 'admin' ? <SettingsAdminView /> : <Forbidden required="administrator" />;
       case 'design':
-        return role === 'admin' || role === 'editor' ? <DesignAdminView /> : <Forbidden />;
+        return canEdit ? <DesignAdminView /> : <Forbidden required="editor" />;
       case 'trash':
-        return (
+        return canEdit ? (
           <CatalogView
             artworks={artworks}
             role={role}
@@ -239,6 +286,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
             onPermanentDelete={handlePermanentDelete}
             onSetDraft={canManageCatalog ? handleSetDraft : undefined}
           />
+        ) : (
+          <Forbidden required="editor" />
         );
       default:
         return (
@@ -283,11 +332,13 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
   );
 };
 
-const Forbidden: React.FC = () => (
+const Forbidden: React.FC<{ required?: string }> = ({ required }) => (
   <div className="rounded-xl border border-border bg-card p-12 text-center">
     <p className="text-sm font-medium">Insufficient permissions</p>
     <p className="mt-1 text-sm text-muted-foreground">
-      Your role does not have access to this section.
+      {required
+        ? `This section requires ${required} access. Ask a studio administrator to upgrade your role.`
+        : 'Your role does not have access to this section.'}
     </p>
   </div>
 );

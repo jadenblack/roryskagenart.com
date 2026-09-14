@@ -1,0 +1,37 @@
+{
+  "generatedBy": "scripts/generate-auth-email-templates.ts",
+  "brand": "Rory Skagen Art",
+  "logo": "https://roryskagenart.com/android-chrome-192x192.png",
+  "templates": [
+    {
+      "file": "invite-user.html",
+      "dashboardName": "Invite user",
+      "subject": "You're invited to the Rory Skagen Art studio"
+    },
+    {
+      "file": "confirm-signup.html",
+      "dashboardName": "Confirm sign up",
+      "subject": "Confirm your Rory Skagen Art studio account"
+    },
+    {
+      "file": "magic-link.html",
+      "dashboardName": "Magic link or OTP",
+      "subject": "Your Rory Skagen Art sign-in link"
+    },
+    {
+      "file": "change-email.html",
+      "dashboardName": "Change email address",
+      "subject": "Confirm your new Rory Skagen Art email address"
+    },
+    {
+      "file": "reset-password.html",
+      "dashboardName": "Reset password",
+      "subject": "Reset your Rory Skagen Art studio password"
+    },
+    {
+      "file": "reauthentication.html",
+      "dashboardName": "Reauthentication",
+      "subject": "Your Rory Skagen Art verification code"
+    }
+  ]
+}

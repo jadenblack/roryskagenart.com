@@ -1,12 +1,24 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { AuthUser } from '../types';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import {
+  bareOrigin,
+  clearAuthHandoff as clearStoredAuthHandoff,
+  getAuthHandoff,
+  getAuthHandoffError,
+  type AuthHandoff,
+} from '../lib/authRedirect';
 
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   statusInfo: AuthStatusInfoLite | null;
+  /** Set when the visitor arrived from an invitation or password-reset email. */
+  authHandoff: AuthHandoff;
+  /** Supabase's reason when the emailed link failed (expired or already used). */
+  authHandoffError: string | null;
+  clearAuthHandoff: () => void;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   requestPasswordReset: (email: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   logout: () => Promise<void>;
@@ -67,11 +79,18 @@ async function mapSupabaseUser(sbUser: any): Promise<AuthUser> {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [authHandoff, setAuthHandoff] = useState<AuthHandoff>(() => getAuthHandoff());
+  const [authHandoffError] = useState<string | null>(() => getAuthHandoffError());
   const [statusInfo, setStatusInfo] = useState<AuthStatusInfo | null>({
     authenticated: false,
     authEngine: 'Supabase Auth',
     emailProvider: 'Resend',
   });
+
+  const clearAuthHandoff = useCallback(() => {
+    clearStoredAuthHandoff();
+    setAuthHandoff(null);
+  }, []);
 
   const refreshAuth = useCallback(async () => {
     setIsLoading(true);
@@ -163,7 +182,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const cleanEmail = email.trim().toLowerCase();
         const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-          redirectTo: `${window.location.origin}/#/admin/reset`,
+          // A bare origin: supabase-js reads the session from the URL fragment,
+          // so a redirect containing a hash route would drop it silently.
+          redirectTo: bareOrigin(window.location.origin),
         });
         if (error) {
           return { success: false, error: error.message };
@@ -196,6 +217,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         isLoading,
         statusInfo,
+        authHandoff,
+        authHandoffError,
+        clearAuthHandoff,
         login,
         requestPasswordReset,
         logout,
