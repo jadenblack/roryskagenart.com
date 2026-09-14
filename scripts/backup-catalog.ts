@@ -13,8 +13,16 @@
  *   npx tsx scripts/backup-catalog.ts                 # → data/backups/<timestamp>/
  *   npx tsx scripts/backup-catalog.ts --out ./tmp/bk  # explicit destination
  *
- * Output: one JSON file per table, plus manifest.json (row counts, applied migrations,
- * server version) so a snapshot is self-describing.
+ * Output: one JSON file per table, plus manifest.json (format version, per-table sha256 + row count
+ * + byte length, applied migrations, server version) so a snapshot is self-describing **and**
+ * verifiable.
+ *
+ * SELF-VERIFYING
+ * The manifest is format v2, which records a sha256 of each table file. After writing, this script
+ * re-reads the directory and checks it against the manifest before exiting. A truncated write, a
+ * disk error or a silently skipped table therefore fails *here*, at creation time, with a non-zero
+ * exit — rather than being discovered during a restore, when it is far too late. Re-check an
+ * existing dump at any time with `npx tsx scripts/verify-backup.ts`.
  *
  * ⚠️ The dump contains production data and `profiles` rows include studio member emails.
  * `data/backups/` is gitignored — keep it that way. See docs/runbooks/database-backup-restore.md.
@@ -25,6 +33,15 @@ import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import { resolvePoolTarget } from './lib/pgTarget';
 import { RESTORE_ORDER, TABLES as TABLE_SPECS } from './lib/restorePlan';
+import {
+  buildManifest,
+  buildTableEntry,
+  tableFileName,
+  verifyDump,
+  type MigrationEntry,
+  type TableEntry,
+} from './lib/backupManifest';
+import { readDumpDir } from './lib/dumpDir';
 
 dotenv.config();
 
@@ -94,56 +111,67 @@ async function main(): Promise<void> {
     'SELECT current_database() AS db, version() AS version'
   );
 
-  const manifest: {
-    createdAt: string;
-    target: string;
-    database: string;
-    serverVersion: string;
-    tables: Record<string, { rows: number; bytes: number }>;
-    appliedMigrations: { filename: string; applied_at: string }[];
-  } = {
-    createdAt: new Date().toISOString(),
-    target: describeTarget(connectionString),
-    database: info.rows[0].db,
-    // First line only — the full string carries the host's kernel details.
-    serverVersion: info.rows[0].version.split('\n')[0],
-    tables: {},
-    appliedMigrations: [],
-  };
+  const target = describeTarget(connectionString);
+  const database = info.rows[0].db;
+  // First line only — the full string carries the host's kernel details.
+  const serverVersion = info.rows[0].version.split('\n')[0];
 
-  console.log(`Backing up ${manifest.database} → ${path.relative(process.cwd(), outDir)}`);
+  console.log(`Backing up ${database} → ${path.relative(process.cwd(), outDir)}`);
 
-  let totalRows = 0;
-  for (const table of TABLES) {
-    // `table` comes from RESTORE_ORDER in scripts/lib/restorePlan.ts, never from user input.
-    // ORDER BY the primary key so two dumps of identical data are byte-identical — that is what
-    // makes the before/after diff in docs/runbooks/database-backup-restore.md §4a reliable.
-    const { rows } = await pool.query(`SELECT * FROM public.${table} ORDER BY ${orderByClause(table)}`);
-    const json = JSON.stringify(rows, null, 2);
-    fs.writeFileSync(path.join(outDir, `${table}.json`), json);
-    const bytes = Buffer.byteLength(json, 'utf8');
-    manifest.tables[table] = { rows: rows.length, bytes };
-    totalRows += rows.length;
-    console.log(`  ${table.padEnd(14)} ${String(rows.length).padStart(5)} rows  ${bytes} B`);
+  try {
+    const tables: Record<string, TableEntry> = {};
+
+    for (const table of TABLES) {
+      // `table` comes from RESTORE_ORDER in scripts/lib/restorePlan.ts, never from user input.
+      // ORDER BY the primary key so two dumps of identical data are byte-identical — that is what
+      // makes the before/after diff in docs/runbooks/database-backup-restore.md §4a reliable, and
+      // what lets a checksum comparison mean something.
+      const { rows } = await pool.query(`SELECT * FROM public.${table} ORDER BY ${orderByClause(table)}`);
+      const json = JSON.stringify(rows, null, 2);
+      fs.writeFileSync(path.join(outDir, tableFileName(table)), json);
+      // The row count comes from the query result, not from re-parsing the JSON, so a file that is
+      // valid JSON but structurally wrong cannot agree with the manifest by accident.
+      tables[table] = buildTableEntry(json, rows.length);
+      console.log(`  ${table.padEnd(14)} ${String(rows.length).padStart(5)} rows  ${tables[table].bytes} B`);
+    }
+
+    const migrations = await pool.query<MigrationEntry>(
+      'SELECT filename, applied_at FROM public.schema_migrations ORDER BY filename'
+    );
+
+    const manifest = buildManifest({
+      createdAt: new Date().toISOString(),
+      target,
+      database,
+      serverVersion,
+      tables,
+      appliedMigrations: migrations.rows,
+    });
+
+    fs.writeFileSync(path.join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+
+    // Self-check — see the header. Read the directory back from disk (not from memory) so this
+    // catches a short write, not just a bookkeeping mistake.
+    const problems = verifyDump(manifest, readDumpDir(outDir));
+    if (problems.length > 0) {
+      for (const problem of problems) {
+        console.error(`  ✗ [${problem.kind}]${problem.table ? ` ${problem.table}:` : ''} ${problem.detail}`);
+      }
+      throw new Error(
+        `Self-verification failed with ${problems.length} problem(s). The dump at ` +
+          `${path.relative(process.cwd(), outDir)} must NOT be used for a restore.`
+      );
+    }
+
+    console.log(
+      `Done — ${TABLES.length} tables, ${manifest.totalRows} rows, ` +
+        `${manifest.appliedMigrations.length} recorded migrations.`
+    );
+    console.log(`Verified — format v${manifest.formatVersion}, sha256 matched for all ${TABLES.length} tables.`);
+    console.log('Restore procedure: docs/runbooks/database-backup-restore.md');
+  } finally {
+    await pool.end();
   }
-
-  const migrations = await pool.query<{ filename: string; applied_at: string }>(
-    'SELECT filename, applied_at FROM public.schema_migrations ORDER BY filename'
-  );
-  manifest.appliedMigrations = migrations.rows;
-
-  fs.writeFileSync(
-    path.join(outDir, 'manifest.json'),
-    JSON.stringify(manifest, null, 2)
-  );
-
-  await pool.end();
-
-  console.log(
-    `Done — ${TABLES.length} tables, ${totalRows} rows, ` +
-      `${manifest.appliedMigrations.length} recorded migrations.`
-  );
-  console.log('Restore procedure: docs/runbooks/database-backup-restore.md');
 }
 
 main().catch((err) => {
