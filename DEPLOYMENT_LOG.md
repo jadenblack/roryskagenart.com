@@ -19,7 +19,12 @@ This document tracks all production and preview deployments for **`roryskagenart
 
 | Date (UTC) | Version | Deployment URL | Status | Build Time | Target | Associated Commits / Milestone |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **2026-09-14** | **v2.12.1** | [`roryskagen-ea803f82o-ventureio.vercel.app`](https://roryskagen-ea803f82o-ventureio.vercel.app) | `● Ready` | 22s | Production | `9466c90`: PR #9 — security patch: the four blanket `{authenticated}` RLS policies scoped to `is_admin_or_editor()` (Current Active) |
+| **2026-09-14** | **v2.13.0** | [`roryskagen-nw0o1dvkd-ventureio.vercel.app`](https://roryskagen-nw0o1dvkd-ventureio.vercel.app) | `● Ready` | 27s | Production | `0aab9b3`: PR #11 — backup durability: verifiable dumps (format v2 + self-check), scheduled off-site dump to Vercel Blob, media reconciliation (Current Active) |
+| 2026-09-14 | v2.13.0-preview | [`roryskagen-r7sgc8fca-ventureio.vercel.app`](https://roryskagen-r7sgc8fca-ventureio.vercel.app) | `● Ready` | 32s | Preview | `f97b262`: `release/v2.13.0` preview (PR #11) |
+| 2026-09-14 | v2.13.0-preview | [`roryskagen-75gdnmrt8-ventureio.vercel.app`](https://roryskagen-75gdnmrt8-ventureio.vercel.app) | `● Ready` | 27s | Preview | `0548783`: `release/v2.13.0` first push (PR #11) — verifiable dumps |
+| **2026-09-14** | post-v2.12.1 | [`roryskagen-mn0kyxxco-ventureio.vercel.app`](https://roryskagen-mn0kyxxco-ventureio.vercel.app) | `● Ready` | 21s | Production | `bd414c4`: PR #10 — deployment-log reconciliation for v2.12.1 (docs-only; no release cut) |
+| 2026-09-14 | post-v2.12.1-preview | [`roryskagen-i3d75q0ke-ventureio.vercel.app`](https://roryskagen-i3d75q0ke-ventureio.vercel.app) | `● Ready` | 24s | Preview | `2174bcb`: `docs/deployment-log-v2.12.1` preview (PR #10) |
+| **2026-09-14** | **v2.12.1** | [`roryskagen-ea803f82o-ventureio.vercel.app`](https://roryskagen-ea803f82o-ventureio.vercel.app) | `● Ready` | 22s | Production | `9466c90`: PR #9 — security patch: the four blanket `{authenticated}` RLS policies scoped to `is_admin_or_editor()` |
 | 2026-09-14 | v2.12.1-preview | [`roryskagen-618pmc6b2-ventureio.vercel.app`](https://roryskagen-618pmc6b2-ventureio.vercel.app) | `● Ready` | 21s | Preview | `f87a695`: `release/v2.12.1` preview (PR #9) |
 | **2026-09-14** | post-v2.12.0 | [`roryskagen-q2pyhmx7b-ventureio.vercel.app`](https://roryskagen-q2pyhmx7b-ventureio.vercel.app) | `● Ready` | 20s | Production | `e4c49c7`: PR #8 — deployment-log reconciliation for v2.12.0 (docs-only; no release cut) |
 | 2026-09-14 | post-v2.12.0-preview | [`roryskagen-cwuk2xcnn-ventureio.vercel.app`](https://roryskagen-cwuk2xcnn-ventureio.vercel.app) | `● Ready` | 21s | Preview | `eb21640`: `docs/deployment-log-v2.12.0` preview (PR #8) |
@@ -95,6 +100,16 @@ This document tracks all production and preview deployments for **`roryskagenart
      USING (true)` policies on `artworks`, `media_assets`, `pages` and `inquiries` are scoped to
      `public.is_admin_or_editor()`, so a `viewer` can no longer read or write through PostgREST.
      Verified with a temporary viewer session against production (`v2.12.1`).
+9. **Phase IX: Backup Durability (Sep 14, 2026 — Present)**
+   - The dump is now **verifiable**: manifest format v2 records a sha256 per table and
+     `scripts/backup-catalog.ts` self-verifies before exiting, so a bad dump fails at creation
+     rather than at restore.
+   - It is **off-site and scheduled**: a daily Vercel Cron invokes `GET /api/cron/backup`, which
+     writes to Vercel Blob under `catalog-backups/<stamp>/` with retention pruning. This closes the
+     gap where the only copy of the catalog lived on one machine — on a Supabase **Free** plan that
+     provides no platform backups at all (`v2.13.0`).
+   - Storage is **reconciled**: `scripts/verify-media-backup.ts` compares `media_assets` against the
+     `artwork-images` bucket in both directions, since database backups hold no object data.
 
 ---
 
