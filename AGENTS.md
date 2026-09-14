@@ -98,7 +98,10 @@ Two supported routes — prefer the first (it is already wired and idempotent):
    ```
    Files live in `supabase/migrations/`, are applied in filename order, and are tracked in
    `public.schema_migrations` (safe to re-run). Connection string comes from the env vars above
-   (`scripts/run-migrations.ts`).
+   (`scripts/run-migrations.ts`). The runner also **creates `public.schema_migrations` and enables
+   RLS on it** — with no policies, so the anon key sees zero rows. That belongs in the runner
+   rather than a migration because no migration creates the table, and
+   `src/test/migrationSafety.test.ts` asserts RLS is enabled only on tables a migration creates.
 
 2. **Supabase admin client** (programmatic upserts, bypasses RLS):
    `getSupabaseAdmin()` in `src/server/db.ts` uses `VRCL_SUPA_SUPABASE_SERVICE_ROLE_KEY`.
@@ -115,6 +118,32 @@ npx tsx scripts/backup-catalog.ts            # per-table JSON snapshot → data/
 ```
 See [`docs/runbooks/database-backup-restore.md`](docs/runbooks/database-backup-restore.md) for the
 rollback procedure and the pre-migration checklist.
+
+### Local scratch database — and why the Supabase CLI must not run migrations
+
+`supabase start` brings up a full local stack: Postgres on `127.0.0.1:54322`, REST/Studio on
+`:54321`/`:54323`. It is the only non-production database this project has, and the runbook's
+pre-migration checklist requires one before any live migration.
+
+```bash
+npx supabase start                       # requires Docker Desktop — see the PATH note below
+VRCL_SUPA_POSTGRES_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' \
+  npx tsx scripts/run-migrations.ts      # build the schema with THIS repo's runner
+npx tsx scripts/restore-catalog.ts --from data/backups/<ts> \
+  --db-url 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' --apply
+```
+
+⚠️ **`supabase/config.toml` sets `[db.migrations] enabled = false` and `[db.seed] enabled = false`.
+Do not re-enable them.** The CLI derives a migration's ledger `version` from the *leading digits* of
+the filename and requires `<14-digit timestamp>_name.sql`, so every file here (`2026_09_01_…`,
+`2026_09_12_…`) collapses to version `2026` and `supabase start` dies with
+`duplicate key value violates unique constraint "schema_migrations_pkey"`. **Do not rename the
+migration files to satisfy the CLI** — the repo runner keys on the full filename, and renaming would
+make all nine look unapplied. This is the two-ledger hazard in §5, confirmed empirically; see
+runbook §7a/§7b.
+
+Docker Desktop installs to a **per-user** path that is not on `PATH`:
+`%LOCALAPPDATA%\Programs\DockerDesktop\resources\bin`.
 
 > **No Supabase MCP server is configured in this repo.** Do not assume one exists.
 
@@ -133,6 +162,23 @@ Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwor
 > order) and is `IF NOT EXISTS` / `DROP POLICY IF EXISTS` throughout, so it is a no-op against the
 > existing database. That invariant is enforced by `src/test/migrationSafety.test.ts`.
 > See [`docs/adr/0001`](docs/adr/0001-schema-as-code-before-data-migration.md).
+>
+> ✅ **That claim is now verified empirically, not just asserted (2026-09-14).** Every table was
+> dropped from the local scratch database, the schema was rebuilt from `supabase/migrations/`
+> alone (**10/10 applied to a virgin database**), and the result was introspected and diffed
+> against production. **No structural differences remain** — tables, columns, types, defaults,
+> constraints, indexes, all 20 policies, both `artworks` guard triggers, all 7 functions and all
+> 9 RLS flags match. The exercise found one real gap, since fixed: production had RLS enabled on
+> `schema_migrations` and no migration created that state, so a rebuild left the migration ledger
+> readable with the anon key. `scripts/run-migrations.ts` now enables it — see §4.
+>
+> ✅ **Line endings are now pinned (2026-09-14).** `.gitattributes` sets `*.sql text eol=lf`, which
+> overrides the machine-global `core.autocrlf = true`. This matters because `pg_get_functiondef`
+> returns the stored source verbatim: two migration files had been checked out CRLF, so a database
+> built from that checkout carried 17 CR bytes inside its stored function bodies while production had
+> 0. The committed form was already LF, so no content rewrite was needed — the two files were simply
+> re-checked out, and a rebuild now reports **0 CR bytes in all 7 functions**. See
+> `plan/ROADMAP_V3.md` R-16.
 
 > ℹ️ **The migration ledger was reconciled in `v2.10.0`.** `public.schema_migrations` had recorded
 > only 6 of the 9 files, while the effects of the two unrecorded ones

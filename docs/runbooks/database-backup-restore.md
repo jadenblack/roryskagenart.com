@@ -53,12 +53,21 @@ columns, and answering "what did this table look like at 14:32?".
 
 ## 3. Layer 1 — Supabase platform backups
 
-Facts verified against the Supabase documentation, 2026-09-14. **Confirm the project's current plan
-in the dashboard before relying on any of this** — the tier is not recorded in the repo.
+> ✅ **RESOLVED 2026-09-14 — the project is on the FREE plan.** The tier was previously recorded
+> here as "unverified". It is now verified: the Vercel project's Storage integration page for
+> `roryskagen` states *"All projects created with the Supabase integration are currently on the
+> free plan."*
+>
+> **Consequence: there are NO platform backups, and no PITR.** The repo logical dump in §2 is
+> therefore the *only* recovery path this project has. Treat it as load-bearing, not a convenience.
+> The blocking action is: **take a dump and copy it off this machine before any write to the live
+> catalog.**
+
+Facts verified against the Supabase documentation, 2026-09-14.
 
 | Plan | Automatic backups | Retention |
 | :--- | :--- | :--- |
-| **Free** | **None** | — (export manually, see below) |
+| **Free ← this project** | **None** | — (export manually, see §2 and §4c) |
 | **Pro** | Daily | 7 days |
 | **Team** | Daily | 14 days |
 | **Enterprise** | Daily | up to 30 days |
@@ -97,9 +106,48 @@ in the dashboard before relying on any of this** — the tier is not recorded in
    new, idempotent SQL file — see `AGENTS.md` §4). Do **not** hand-edit production rows in a GUI.
 4. Re-run `npx tsx scripts/introspect-schema.ts` and confirm row counts in the new report.
 
-> **Not yet automated.** There is no scripted restore-from-dump. Phase C (the v3 load) will add one
-> and exercise it against a **non-production** database first — an untested restore script in the
-> critical path is a liability, not a safety net.
+> ✅ **Now scripted (2026-09-14).** `scripts/restore-catalog.ts` replays a dump back into a
+> database. It has a deliberate safety model: it writes nothing without `--apply`, it **refuses a
+> remote target** unless `--allow-remote` is passed, and it defaults to the catalog tables only
+> (`profiles`/`settings` are environment state — see below).
+>
+> ```bash
+> # Plan only — prints what would happen, writes nothing (the default)
+> npx tsx scripts/restore-catalog.ts --from data/backups/<ts> --db-url <url>
+>
+> # Rehearse against a scratch database
+> npx tsx scripts/restore-catalog.ts --from data/backups/<ts> --db-url <url> --apply
+>
+> # Deliberate production rollback of one table
+> npx tsx scripts/restore-catalog.ts --from <ts> --db-url "$PROD" \
+>   --tables artworks --mode repair --allow-remote --apply
+> ```
+>
+> `--mode load` (default) never overwrites an existing row; `--mode repair` upserts, and is the
+> actual rollback.
+>
+> ✅ **EXERCISED against a real database on 2026-09-14.** The safety net is no longer a document.
+> A full restore was rehearsed against the local scratch database (`supabase start`, §7b):
+>
+> | Step | Result |
+> | :--- | :--- |
+> | Plan-only run (no `--apply`) | printed the plan, **wrote nothing** |
+> | Restore into an empty schema | **294 inserted, 4 skipped, 0 failed** |
+> | Re-run the same restore | **0 inserted, 298 skipped, 0 failed** — idempotent |
+> | Re-dump the restored database and compare | 5 of 6 tables **byte-identical**; the 6th (`pages`) differed only in `updated_at` |
+>
+> The 4 skipped rows were `pages`: `--mode load` never overwrites, and the local database already
+> had those slugs from a migration seed. **That is the one thing to understand about `load` mode —
+> it cannot correct a row that already exists. Use `--mode repair` when you need the snapshot's
+> values to win.**
+>
+> The pure logic is also unit-tested offline (`src/test/restorePlan.test.ts`, 27 tests, including
+> one that generates SQL for every row of a real dump).
+>
+> **Known limitation — `profiles` cannot be restored into a fresh database.** `profiles.id`
+> foreign-keys to `auth.users(id)`, which is empty in a new project, and `settings.updated_by`
+> foreign-keys to `profiles`. That is why neither is in the default restore set. Recovering studio
+> staff accounts means recreating the auth users first.
 
 ### 4b. Whole-project restore from a platform backup
 
@@ -133,9 +181,90 @@ Copy this into the PR description for any migration that writes to the live cata
 
 ## 6. Known gaps
 
-| Gap | Impact | Owner / plan |
+| Gap | Impact | Status / plan |
 | :--- | :--- | :--- |
-| **Storage objects are not backed up** by database backups | Deleted `artwork-images` objects are unrecoverable from a DB restore | Phase C — decide between bucket versioning and a periodic object listing + copy |
-| **No scripted restore** from the repo dump | Row-level recovery is manual | Phase C, exercised on a scratch database |
-| **Backup plan tier is unverified** | Free tier means *no* automatic backups at all | Verify in the dashboard; if free, schedule `supabase db dump` |
-| **No scheduled/off-site dump** | A local-only dump is lost with the machine | Consider an automation once the write path is stable |
+| **Storage objects are not backed up** by database backups | Deleted `artwork-images` objects are unrecoverable from a DB restore | **Open.** Decide between bucket versioning and a periodic object listing + copy. Blocks the v3 media step. |
+| **No scheduled / off-site dump** | A dump that only exists on this machine is lost with the machine — and on a Free plan it is the *only* backup | **Open, and the top priority.** Copy `data/backups/<ts>/` somewhere off this machine, or automate it. |
+| **Backup plan tier** | — | ✅ **Resolved 2026-09-14: Free.** No automatic backups, no PITR. See §3. |
+| **No scripted restore** | Row-level recovery was manual | ✅ **Written and exercised 2026-09-14** — `scripts/restore-catalog.ts`, unit-tested, and rehearsed end-to-end against a scratch database. See §4a. |
+| **No native `pg_dump`** | `supabase db dump` shells out to a containerised `pg_dump`, so it fails with `docker: command not found`. Without it there is no restorable **schema** dump — only the per-table JSON in §2. | ✅ **Resolved 2026-09-14.** Docker Desktop 29.8.0 is installed and running. It lands at a **per-user** path (`%LOCALAPPDATA%\Programs\DockerDesktop\resources\bin`) that is *not* on `PATH` — export it first, or the CLI will not find `docker`. |
+| **No non-production database** | The pre-migration checklist requires a migration be applied to a non-production database first, and none existed | ✅ **Resolved 2026-09-14.** `supabase start` gives a local stack on `127.0.0.1:54322`. Note the CLI **cannot** apply this repo's migrations — see §7a — so `config.toml` disables them and the repo runner owns the schema (§7b). |
+| **The migration set did not reproduce production's `schema_migrations` RLS flag** | Building a database from version control left the migration ledger readable with the anon key, so "the schema is reproducible from version control" was not quite true | ✅ **Fixed 2026-09-14.** `scripts/run-migrations.ts` now enables RLS on `schema_migrations` when it creates it. Found by rebuilding a database from migrations and diffing it against production; a rebuilt database now matches production on all nine tables' RLS state. |
+| **Two migration files were checked out CRLF, and there was no `.gitattributes`** | `pg_get_functiondef` returns the stored source, so CR bytes from those files landed in stored function bodies — production had **0** CR bytes, a build from the affected checkout had **17**. The **committed** form of all ten files was already LF; only the checkout differed (`core.autocrlf = true` is set globally) | Functionally identical, but it made "reproduce the schema from version control" **checkout-dependent**, and it produced spurious diffs. | ✅ **Fixed 2026-09-14.** Added `.gitattributes` with `*.sql text eol=lf` (overrides `core.autocrlf`) and re-checked out the two files. **No content rewrite was needed** — the index was already LF. A rebuild now reports **0 CR bytes in all 7 stored functions**. ROADMAP_V3 R-16. |
+
+---
+
+## 7. ⚠️ Do NOT use the Supabase CLI's migration commands on this project
+
+Verified against the live database on 2026-09-14 — **this project has two different migration
+ledgers, and they disagree:**
+
+| Ledger | Owner | Rows |
+| :--- | :--- | :--- |
+| `public.schema_migrations` | **this repo** — `scripts/run-migrations.ts` | **9** |
+| `supabase_migrations.schema_migrations` | **the Supabase CLI** — `supabase db push` / `migration up` | **1** |
+
+`supabase db push` and `supabase migration up` consult the *CLI's* ledger, so they would see eight
+of this repo's nine migrations as unapplied and attempt to re-run them against production. That is
+precisely the ledger-drift failure mode recorded in `AGENTS.md` §5, which had to be reconciled once
+already.
+
+**Rule: schema changes go through `scripts/run-migrations.ts`, never through the Supabase CLI.**
+The CLI remains useful for `supabase start` (a local scratch database) and `supabase db dump`
+(read-only), but not for applying migrations.
+
+### 7a. This is not theoretical — `supabase start` fails because of it
+
+Confirmed empirically on 2026-09-14 (CLI 2.117.0). On a **fresh** local volume, `supabase start`
+tries to apply `supabase/migrations/` itself and dies:
+
+```
+Applying migration 2026_09_01_baseline_core_tables.sql...
+Applying migration 2026_09_12_cms_v1_1_slug_backfill.sql...
+Stopping containers...
+ERROR: duplicate key value violates unique constraint "schema_migrations_pkey" (SQLSTATE 23505)
+Key (version)=(2026) already exists.
+At statement: 6
+INSERT INTO supabase_migrations.schema_migrations(version, name, statements) VALUES($1, $2, $3)
+```
+
+**Cause.** The CLI derives a migration's ledger `version` from the **leading digits of the
+filename**, and it requires `<14-digit timestamp>_name.sql`. Every file in this repo starts
+`2026_…`, so the CLI parses each one as version `2026` and the second one collides on the primary
+key. The filenames are *correct* for this project (the repo runner keys on the full filename and
+sorts lexicographically — see `src/test/migrationSafety.test.ts`) and must **not** be renamed:
+renaming them would make all nine look unapplied to `public.schema_migrations`.
+
+**Resolution (applied).** `supabase/config.toml` sets:
+
+```toml
+[db.migrations]
+enabled = false
+
+[db.seed]
+enabled = false
+```
+
+With migrations disabled the CLI builds the base stack and leaves `public` empty, and this project
+owns its own schema. Do not re-enable either flag; the comment in `config.toml` explains why.
+
+### 7b. Bringing up a scratch database (the Phase 0 procedure)
+
+```bash
+npx supabase start                 # base stack; public schema is empty
+npx supabase status                # API URL :54321, DB :54322, Studio :54323
+```
+
+Then apply the schema with **this repo's runner**, not the CLI:
+
+```bash
+VRCL_SUPA_POSTGRES_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' \
+  npx tsx scripts/run-migrations.ts
+```
+
+That single command is also the **empirical test of ADR 0001 Phase A**: if the nine migrations
+reproduce the live schema, the "schema is reproducible from version control" claim holds. Compare
+the result against a `supabase db dump` schema dump to prove it.
+
+The default credentials above are the CLI's own well-known local defaults — they are not secrets
+and they never leave `127.0.0.1`.

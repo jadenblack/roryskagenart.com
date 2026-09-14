@@ -5,34 +5,52 @@
  * Usage:
  *   npx tsx scripts/run-migrations.ts                     # apply all not-yet-tracked
  *   npx tsx scripts/run-migrations.ts 2026_09_12_x.sql    # apply specific files
+ *
+ * Against the local scratch database (docs/runbooks/database-backup-restore.md §7b). This is
+ * also the empirical test of ADR 0001 Phase A — that the nine migrations reproduce the live
+ * schema from version control alone:
+ *   VRCL_SUPA_POSTGRES_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' \
+ *     npx tsx scripts/run-migrations.ts
  */
 import fs from 'fs';
 import path from 'path';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import { MIGRATIONS_DIR, assertExist, resolveTargets, selectPending } from './lib/migrationPlan';
+import { resolvePoolTarget, type PoolTarget } from './lib/pgTarget';
 
 dotenv.config();
 
-function getConnectionString(): string {
+/**
+ * Resolve the target database, including whether it needs TLS.
+ *
+ * The loopback rule lives in `./lib/pgTarget`. The local scratch database that `supabase start`
+ * serves on 127.0.0.1:54322 does not offer TLS, so a hardcoded
+ * `ssl: { rejectUnauthorized: false }` makes this script fail against it with
+ * "The server does not support SSL connections". Remote behaviour is unchanged.
+ */
+function getPoolTarget(): PoolTarget {
   const raw =
     process.env.VRCL_SUPA_POSTGRES_PRISMA_URL ||
     process.env.VRCL_SUPA_POSTGRES_URL ||
     process.env.VRCL_SUPA_POSTGRES_URL_NON_POOLING ||
     process.env.POSTGRES_URL ||
     '';
-  if (!raw) throw new Error('PostgreSQL connection string missing from environment.');
-  // Strip query params so pg SSL configuration is authoritative (matches src/server/db.ts)
-  return raw.replace(/\?.*$/, '');
+  return resolvePoolTarget(raw);
 }
 
 async function main(): Promise<void> {
   const files = resolveTargets(process.argv.slice(2));
   assertExist(files);
 
+  const target = getPoolTarget();
+  // Print the target before touching anything: this is the highest-consequence script in the
+  // repo, and an accidental production run should be obvious in the log.
+  console.log(`Target: ${target.host}${target.isRemote ? '  ⚠ REMOTE' : '  (local)'}`);
+
   const pool = new Pool({
-    connectionString: getConnectionString(),
-    ssl: { rejectUnauthorized: false },
+    connectionString: target.connectionString,
+    ssl: target.ssl,
   });
 
   await pool.query(`
@@ -41,6 +59,20 @@ async function main(): Promise<void> {
       applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
+
+  // Lock the ledger down: RLS enabled with NO policies means only the table owner (this runner
+  // connects as `postgres`) and `service_role` can read it — the anon key sees zero rows.
+  //
+  // This lives here rather than in a migration on purpose. `src/test/migrationSafety.test.ts`
+  // asserts that RLS is enabled only on tables that a *migration* creates, and no migration
+  // creates this table — the runner does, so the runner owns its RLS state too.
+  //
+  // Found by building a database from version control and diffing it against production
+  // (2026-09-14): production already had RLS enabled here, but nothing in the repo said so, so a
+  // rebuilt database left the migration ledger readable with the anon key. Verified safe first —
+  // the owner bypasses RLS (no FORCE), so both the read and the write path above still work, and
+  // the statement is idempotent.
+  await pool.query('ALTER TABLE public.schema_migrations ENABLE ROW LEVEL SECURITY');
 
   // One read of the ledger, then decide in memory — the selection logic itself is pure
   // and unit-tested in src/test/migrationPlan.test.ts.

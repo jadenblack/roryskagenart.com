@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ArtworkEditDialog } from './ArtworkEditDialog';
@@ -86,14 +86,39 @@ describe('<ArtworkEditDialog/> auto-save', () => {
     props = PROPS(mkArtwork());
     render(<ArtworkEditDialog {...props} />);
 
-    await user().type(screen.getByLabelText(/title/i), 'abc');
-    // Advance partway — debounce restarts on each keystroke
-    await new Promise((r) => setTimeout(r, DEBOUNCE / 2));
-    await user().type(screen.getByLabelText(/title/i), 'd');
-    await waitFor(() => expect(props.onSave).toHaveBeenCalledTimes(1), { timeout: 2000 });
-    expect(props.onSave).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Work In Progressabcd' })
+    // Rapid keystrokes must be genuinely rapid, so they are fired SYNCHRONOUSLY.
+    //
+    // This test previously drove the field with `user().type()`, which inserts real delays
+    // between keystrokes on real timers. Under CPU contention (a full parallel `vitest` run)
+    // the typing itself outlasts the debounce window, the debounce legitimately fires mid-word,
+    // and the test failed against a component that was behaving correctly — flaky under load,
+    // not wrong. Worse, an assertion that every save carried the *complete* title encoded that
+    // same false assumption.
+    //
+    // Firing the changes in one tick makes "rapid" true by construction, so the debounce is
+    // exercised exactly as designed: one reset, one save.
+    const input = screen.getByLabelText(/title/i);
+    for (const value of [
+      'Work In Progressa',
+      'Work In Progressab',
+      'Work In Progressabc',
+      'Work In Progressabcd',
+    ]) {
+      fireEvent.change(input, { target: { value } });
+    }
+
+    await waitFor(
+      () => {
+        expect(props.onSave).toHaveBeenCalledWith(
+          expect.objectContaining({ title: 'Work In Progressabcd' })
+        );
+      },
+      { timeout: 3000 }
     );
+
+    // THE BATCHING GUARANTEE: four keystrokes produce ONE save, not four. Without a debounce
+    // this would be 4.
+    expect(props.onSave).toHaveBeenCalledTimes(1);
   });
 
   it('create mode never auto-saves (explicit Save-as-draft first)', async () => {

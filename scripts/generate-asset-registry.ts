@@ -12,6 +12,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { Pool } from 'pg';
+import { resolvePoolTarget } from './lib/pgTarget';
 
 dotenv.config();
 
@@ -53,9 +54,12 @@ function publicUrl(relPath: string): string {
 }
 
 async function main(): Promise<void> {
+  // Loopback targets (the local scratch database on 127.0.0.1:54322) get no TLS — the SSL rule
+  // lives in scripts/lib/pgTarget.ts. Remote behaviour is unchanged.
+  const poolTarget = resolvePoolTarget(getConnectionString());
   const pool = new Pool({
-    connectionString: getConnectionString(),
-    ssl: { rejectUnauthorized: false },
+    connectionString: poolTarget.connectionString,
+    ssl: poolTarget.ssl,
   });
 
   const { rows } = await pool.query<RegistryRow>(

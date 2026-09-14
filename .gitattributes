@@ -1,0 +1,22 @@
+# Line-ending policy.
+#
+# WHY THIS FILE EXISTS
+# `core.autocrlf = true` is set globally on the primary development machine, and this repo had no
+# `.gitattributes`, so git checked text files out with CRLF. That is normally cosmetic, but it is not
+# here: `supabase/migrations/*.sql` defines PL/pgSQL functions, and `pg_get_functiondef` returns the
+# **stored source verbatim** — so CR bytes inside a migration file end up inside the function body in
+# the database.
+#
+# The effect was found on 2026-09-14 by building a database from this checkout and diffing it against
+# production (see `plan/ROADMAP_V3.md` Phase 0 item 8): the rebuilt `handle_new_user` and
+# `*_touch_updated_at` functions carried 17 CR bytes, while production had 0. Functionally identical,
+# but it made "the schema is reproducible from version control" true only on some machines, and it
+# produced spurious diffs. Tracked as risk R-16.
+#
+# The committed form of every migration was already LF, so this rule needs no content rewrite — the
+# two affected working-tree files normalise on the next checkout.
+*.sql text eol=lf
+
+# A repo-wide `* text=auto eol=lf` policy is a larger decision (it would touch every source file) and
+# is deliberately not taken here. Add it separately if the CRLF churn in `git status` becomes a
+# problem.
