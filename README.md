@@ -401,4 +401,9 @@ All major architectural proposals and feature branches are documented in the `/p
 ## License & Credits
 
 - **Artwork & Imagery**: © Rory Skagen. All rights reserved. Reproduction or distribution without prior written permission is strictly prohibited.
-- **Application Code**: Licensed under the **MIT License** — see [`LICENSE`](./LICENSE). The license covers the application code only; the artwork and imagery above are expressly excluded from it.
+- **Application Code**: Licensed under the **MIT License** — see [`LICENSE`](./LICENSE).
+  The licence covers the **application code only**. All artwork, photographs and other creative
+  works reproduced or catalogued by this application are expressly **excluded** from it and remain
+  © Rory Skagen, all rights reserved.
+  (`LICENSE` is left as the canonical, unmodified MIT text on purpose — appending a scope note to it
+  makes GitHub's licence detector return `NOASSERTION` instead of `MIT`.)
