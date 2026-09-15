@@ -123,6 +123,23 @@ roadmap** (`045788a`, PR #23) if it is still open; otherwise put it in your own 
 anything. If your numbers disagree with the table, **stop and say so** — the table came from a
 hand-rolled parser.
 
+**Corpus shape on disk — verified 2026-09-15, and the §3 media numbers are CONFIRMED.** The export's
+`files/` tree is mostly noise: of 9,029 files, **5,831 are bundled plugin code** and **893 are theme
+code** — neither is media. The real corpus is `files/wp-content/uploads/_/` **only**:
+
+| | count |
+| :--- | ---: |
+| files under `uploads/` | 1,834 |
+| JPGs under `uploads/` | **1,828** |
+| — of which `-<w>x<h>` derivatives | **1,478** |
+| — of which originals | **350** |
+
+That matches §3's *"1,828 JPGs … 1,478 of the 1,828 JPGs here are derivatives"* and *"~350 originals"*
+**exactly**, so the §3 media figures are trustworthy even though the prompt invites you to re-derive
+them. Uploads span `_/2010 … _/2018`, plus `quarantine/` which holds only an `index.php`.
+⚠️ **Scope every media walk to `uploads/`** — a naive `find files/` picks up plugin and theme sample
+images and inflates the counts (it returns 2,340 JPGs, not 1,828).
+
 **Reading the dump.** Do **not** stand up MariaDB unless you conclude it is genuinely necessary. The
 dump is plain, well-formed `INSERT INTO \`kZRTSN_table\` (cols) VALUES (...), (...) ;` spanning
 multiple lines, and parses cleanly in Python.
@@ -197,15 +214,21 @@ NextGEN pictures technically have an `alttext`, but that is not the same as a hu
 description. **Report the true coverage; do not present filename-derived strings as authored alt
 text.**
 
-### 8. ⚠️ Repository hazard you must not trip
+### 8. ⚠️ Repository hazard — now neutralised
 
-`wayback/centraltexasmuralsbyroryskagen-20231217234521/` is **currently untracked and NOT gitignored**
-— 509 MB across 9,027 files. `git status` shows it as `??`.
+`wayback/centraltexasmuralsbyroryskagen-20231217234521/` is **522 MB across 9,029 files**.
 
-- **Never `git add` it, and never use `git add -A` / `git add .` while it exists.** Committing it would
-  write 509 MB into git history permanently and there is no clean way to undo that.
-- Prefer adding an ignore rule for it (the same reasoning as `data/backups/` and `data/staging/`) so
-  the hazard cannot recur. If an ignore rule already exists when you start, say so.
+- ✅ **An ignore rule now exists** (added 2026-09-15, `.gitignore` line ~30):
+  `wayback/centraltexasmuralsbyroryskagen-*/`. It is timestamp-wildcarded so a re-export is covered
+  too. `git status` is clean and **`git add -A` can no longer stage it** — verified with
+  `git add -A --dry-run`.
+- ⚠️ **`git add -A` / `git add .` is now safe *for this path*, but stay disciplined** — stage explicit
+  paths anyway. Committing it would write 522 MB into git history permanently.
+- ⚠️ **The rest of `wayback/` is deliberately NOT ignored.** `centraltexasmurals.com-v1/` (147 files)
+  and `roryskagen.com-v1/` (404 files) are **tracked**, and they are the extraction inputs *and* the
+  diff baseline. **Do not "tidy" them into the ignore rule** — the diff against
+  `centraltexasmurals.com-v1` is the deliverable.
+- ⚠️ **`git clean -xfd` would now DELETE the export**, because it is ignored. Never run it here.
 - **`wayback/` must stay byte-identical** — it is an immutable archive. Verify with `git status`
   before and after your run.
 
@@ -242,13 +265,17 @@ Produce, as a **new PR** (never a push to `main`):
 - ⚠️ **Never push `main`.** Push only a feature or `release/x.y.z` branch. Pushing `main` first makes
   GitHub refuse the PR and lands commits in production ahead of the gates.
 - ⚠️ **Merge only when `mergeStateStatus=CLEAN`**, and use `gh pr merge --merge`, never `--squash`.
-- ⚠️ **PRs #23, #24 and #25 are open and unmerged by deliberate choice. Do not merge or rebase them.**
-- ⚠️ **Git ref plumbing is unreliable in this repo on this machine.** New branch refs can be created
-  then pruned, leaving an unborn `HEAD`; `git rev-parse HEAD` then fails while `git log <sha>` and
-  `git push origin <sha>:refs/heads/<branch>` still work. The reflog survives — recover the sha from
-  `.git/logs/refs/heads/<branch>`. **Never run `git checkout`/`switch` while `HEAD` is unborn** — that
-  once deleted nine tracked `plan/*.md` files. Full mechanism and ranked fixes:
-  `memory/2026-09-15.md`, or run the sibling prompt `PROMPT_GIT_REF_PLUMBING_FIX.md` first.
+- ⚠️ **PRs #23–#26 are open and unmerged by deliberate choice. Do not merge or rebase them.**
+- ⚠️ **Git ref plumbing — RESOLVED 2026-09-15: it is an agent-sandbox issue, NOT a machine or repo
+  defect.** Inside the agent sandbox a nested branch ref can be created then pruned, leaving an unborn
+  `HEAD` (`git rev-parse HEAD` fails while `git log <sha>` and
+  `git push origin <sha>:refs/heads/<branch>` still work). **In a normal terminal nothing is wrong.**
+  An agent must therefore **push by SHA** and must not rely on git creating a nested ref. **Never run
+  `git checkout`/`switch` while `HEAD` is unborn** — that once deleted nine tracked `plan/*.md` files.
+  **Never run `git refs migrate`** — it destroyed `.git`. Full evidence, including the out-of-tree
+  control test that settled it: `DIAGNOSIS_GIT_REF_PLUMBING_FIX.md`.
+  ⚠️ **Do NOT run `PROMPT_GIT_REF_PLUMBING_FIX.md`** — it is superseded, and all five of its fixes are
+  unnecessary (Defender, Google Drive, `rename()`, repo relocation and reftable are all discredited).
 
 ### 11. Stop and report before writing code
 

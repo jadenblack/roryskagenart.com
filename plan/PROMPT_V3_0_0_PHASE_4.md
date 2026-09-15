@@ -1,6 +1,8 @@
 # PROMPT — v3.0.0 Phase 4: the first write
 
-> **Status:** 📋 **Ready to run — but gated.** Written 2026-09-15, at the end of §3.D.
+> **Status:** ✅ **EXECUTED 2026-09-15 — shipped as `v3.0.0`.** Written 2026-09-15, at the end of §3.D.
+> See **§7** for the verified definition of done (and the two criteria the measurement sharpened) and
+> **§2.1** for the five owner decisions that were in force. §3.0 records what D2 actually required.
 > **Read first:** [`RECON_V3_0_0_RECOVERED_SOURCE.md`](./RECON_V3_0_0_RECOVERED_SOURCE.md) (the
 > reconnaissance this brief continues) and
 > [`data/archive/wayback_recovered_diff_report.md`](../data/archive/wayback_recovered_diff_report.md)
@@ -203,13 +205,47 @@ re-checks collisions against the live registry first.
 
 ## 7. Definition of done
 
-- [ ] All five decisions in §2 answered and recorded.
-- [ ] A verified pre-write backup exists, and its path is reported.
-- [ ] 60 artwork rows created; the 2 merges land as `EXISTS`, not as new rows.
-- [ ] 168 `media_assets` rows upserted; **`artwork_slug IS NULL` count returns to 0** after linking.
-- [ ] `findRegistryCollisions()` empty; `npm run lint` clean; `npm test` green.
-- [ ] The 4 Q5 candidates are **present** in the catalog and listed for the artist.
-- [ ] `data/archive/` artifacts regenerated and committed.
+✅ **All satisfied 2026-09-15** — except two items whose literal wording the measurement contradicted,
+both recorded below rather than quietly ticked. Pre-write dump: `data/backups/2026-09-15T20-01-19-582Z`.
+Post-write dump: `data/backups/2026-09-15T21-11-28-099Z` (both manifest format v2 and self-verified).
+
+- [x] All five decisions in §2 answered and recorded. (See §2.1.)
+- [x] A verified pre-write backup exists, and its path is reported.
+- [x] 60 artwork rows created; the 2 merges land as `EXISTS`, not as new rows. Measured: **67 INSERTs
+      (60 mural + 7 painting), 0 deletions**, with the 2 merges as `UPDATE`s on `austin-postcard` /
+      `marcia-ball`.
+- [x] 168 `media_assets` rows upserted; `artwork_slug IS NULL` returns to 0 after linking.
+      ⚠️ **Sharpened.** "0" is true of the **manifest's** rows — all 168 are linked. The database total
+      settles at **35**, because 35 `media_assets` rows predate the wayback load and the manifest never
+      mentions them; proven from the pre-write dump, which already held exactly 35 (this is R-17, and it
+      is pre-existing). `scripts/wayback-link.ts` now gates on *unlinked manifest rows = 0* instead of
+      printing the misleading "0 expected".
+- [x] `findRegistryCollisions()` empty; `npm run lint` clean; `npm test` green. **0 collisions** against
+      the live 320-row key space; lint clean; **717 tests / 43 files**.
+- [x] The 4 Q5 candidates are **present** in the catalog and listed for the artist:
+      `casino-el-camino-mural`, `aztec-mural-for-casino-el-camino`, `greetings-from-78752`,
+      `greetings-from-navasota-mural` — all 4 as separate `draft = true` rows.
+- [x] `data/archive/` artifacts regenerated and committed.
+
+### 7.1 The two `ROADMAP_V3.md` exit criteria that needed their own evidence
+
+- **Fine-art rows are untouched.** Diffed the pre-write dump against the post-write dump:
+  `artworks` 138 → 205 (**+67 −0**); **136 rows differ only by the 4 new schema columns**; **2 rows
+  carry a substantive change, and both are the mural merge targets, `year` only** (the D4 overwrite).
+  **Substantive changes on fine-art rows: 0.** The backfill's 118 fill-only-empty `UPDATE`s mutated
+  nothing visible, which is the R-04 guard holding rather than a coincidence.
+- **Anonymous access excludes the loaded murals.** Asked PostgREST with the **anon key** — a
+  service-role `count(*)` proves nothing about RLS. 138 rows visible: 116 painting, 20 kind-null, and
+  **2 murals** (`austin-postcard`, `marcia-ball`, the pre-existing live pair). `?draft=true` → **0
+  rows**; a loaded draft asked for by name → **0 rows**. R-02 satisfied.
+
+⚠️ **One roadmap criterion is not met, deliberately.** *"Every mural row is `draft = true` **and**
+`enabled = false`"* — 60 of 62 are. The 2 exceptions are the **merge targets**, which were already
+live; demoting them would unpublish live content, which a merge must not do. The criterion was written
+for a load of all-new rows.
+
+⚠️ **S1 is deferred by owner decision** ("Defer S1"), so the roadmap's *"605 → 454 objects"* criterion
+is out of scope for v3.0.0. Nothing else in Phase 4 depends on it.
 
 ---
 

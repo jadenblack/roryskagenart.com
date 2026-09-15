@@ -130,3 +130,58 @@ export function resolvePoolTarget(rawUrl: string): PoolTarget {
     ssl: target.isRemote ? { rejectUnauthorized: false } : undefined,
   };
 }
+
+/**
+ * The connection-string variables, in the order the scripts have always consulted them.
+ * `.env` uses the Vercel-integration names; `POSTGRES_URL` is kept last as a legacy fallback.
+ */
+export const CONNECTION_VARS = [
+  'VRCL_SUPA_POSTGRES_PRISMA_URL',
+  'VRCL_SUPA_POSTGRES_URL',
+  'VRCL_SUPA_POSTGRES_URL_NON_POOLING',
+  'POSTGRES_URL',
+] as const;
+
+/**
+ * Which connection variables are **already set**. Call this *before* `dotenv.config()` — that is
+ * the whole point of it.
+ */
+export function connectionVarsSetByOperator(env: Record<string, string | undefined>): string[] {
+  return CONNECTION_VARS.filter((name) => Boolean(env[name]));
+}
+
+/**
+ * Choose a connection string, letting a variable the **operator** exported beat one that only
+ * `.env` supplied.
+ *
+ * ⚠️ WHY THIS EXISTS — a real trap, measured 2026-09-15.
+ *
+ * `dotenv` does not overwrite a variable that is already set, but it *does* fill in one the
+ * operator did not set. `.env` defines `VRCL_SUPA_POSTGRES_PRISMA_URL` pointing at production, and
+ * that name is the first one consulted. So this documented scratch command:
+ *
+ *     VRCL_SUPA_POSTGRES_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' \
+ *       npx tsx scripts/run-migrations.ts
+ *
+ * exported the *second* name, `dotenv` then supplied the *first* one from `.env`, and the runner
+ * silently applied migrations to **production** while the operator believed they were rehearsing
+ * on the scratch database. That is R-07's exact nightmare: an unrehearsed, unbacked-up write, with
+ * a log line that says `⚠ REMOTE` only if you happen to be reading it.
+ *
+ * The fix is to prefer any variable the operator actually exported, in the historical order,
+ * before falling back to the `.env` order. With no operator variables set, behaviour is unchanged.
+ */
+export function pickConnectionString(
+  env: Record<string, string | undefined>,
+  operatorVars: readonly string[]
+): string {
+  const ordered = [
+    ...CONNECTION_VARS.filter((name) => operatorVars.includes(name)),
+    ...CONNECTION_VARS.filter((name) => !operatorVars.includes(name)),
+  ];
+  for (const name of ordered) {
+    const value = env[name];
+    if (value) return value;
+  }
+  return '';
+}

@@ -7,8 +7,9 @@
  *   npx tsx scripts/run-migrations.ts 2026_09_12_x.sql    # apply specific files
  *
  * Against the local scratch database (docs/runbooks/database-backup-restore.md §7b). This is
- * also the empirical test of ADR 0001 Phase A — that the nine migrations reproduce the live
- * schema from version control alone:
+ * also the empirical test of ADR 0001 Phase A — that the migrations reproduce the live schema
+ * from version control alone. Either connection-variable name works: an operator-exported variable
+ * now outranks the one `.env` supplies (see `pickConnectionString`).
  *   VRCL_SUPA_POSTGRES_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' \
  *     npx tsx scripts/run-migrations.ts
  */
@@ -17,8 +18,18 @@ import path from 'path';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import { MIGRATIONS_DIR, assertExist, resolveTargets, selectPending } from './lib/migrationPlan';
-import { resolvePoolTarget, type PoolTarget } from './lib/pgTarget';
+import {
+  connectionVarsSetByOperator,
+  pickConnectionString,
+  resolvePoolTarget,
+  type PoolTarget,
+} from './lib/pgTarget';
 
+// ⚠️ BEFORE `dotenv.config()`, deliberately: record which connection variables the operator
+// exported. `.env` supplies the production `VRCL_SUPA_POSTGRES_PRISMA_URL`, which outranks the
+// shorter name a scratch-database command sets — so without this the documented scratch command
+// applies migrations to **production**. See `pickConnectionString` for the full story.
+const operatorVars = connectionVarsSetByOperator(process.env);
 dotenv.config();
 
 /**
@@ -30,13 +41,7 @@ dotenv.config();
  * "The server does not support SSL connections". Remote behaviour is unchanged.
  */
 function getPoolTarget(): PoolTarget {
-  const raw =
-    process.env.VRCL_SUPA_POSTGRES_PRISMA_URL ||
-    process.env.VRCL_SUPA_POSTGRES_URL ||
-    process.env.VRCL_SUPA_POSTGRES_URL_NON_POOLING ||
-    process.env.POSTGRES_URL ||
-    '';
-  return resolvePoolTarget(raw);
+  return resolvePoolTarget(pickConnectionString(process.env, operatorVars));
 }
 
 async function main(): Promise<void> {

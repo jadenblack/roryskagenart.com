@@ -48,6 +48,9 @@ export const TABLES: Record<string, TableSpec> = {
   artworks: { name: 'artworks', conflictTarget: ['id'] },
   artwork_terms: { name: 'artwork_terms', conflictTarget: ['artwork_id', 'term_id'] },
   media_assets: { name: 'media_assets', conflictTarget: ['id'] },
+  // v3.0.0 Phase 4 (D3 / Q16). Composite PK, and it FKs to BOTH `artworks(slug)` and
+  // `media_assets(public_id)`, so it must be inserted after both.
+  artwork_images: { name: 'artwork_images', conflictTarget: ['artwork_slug', 'media_public_id'] },
   pages: { name: 'pages', conflictTarget: ['slug'] },
   inquiries: { name: 'inquiries', conflictTarget: ['id'] },
 };
@@ -58,6 +61,8 @@ export const TABLES: Record<string, TableSpec> = {
  *   settings.updated_by → profiles(id)
  *   artwork_terms.artwork_id → artworks(id)
  *   artwork_terms.term_id    → taxonomies(id)
+ *   artwork_images.artwork_slug     → artworks(slug)
+ *   artwork_images.media_public_id  → media_assets(public_id)
  *
  * CAVEAT: `profiles` references `auth.users`, which exists in Supabase but is **empty** in a
  * fresh local project. Restoring `profiles` there fails unless the matching auth users exist
@@ -70,6 +75,7 @@ export const RESTORE_ORDER: string[] = [
   'artworks',
   'artwork_terms',
   'media_assets',
+  'artwork_images',
   'pages',
   'inquiries',
 ];
@@ -87,6 +93,7 @@ export const CATALOG_TABLES: string[] = [
   'artworks',
   'artwork_terms',
   'media_assets',
+  'artwork_images',
   'pages',
   'inquiries',
 ];
