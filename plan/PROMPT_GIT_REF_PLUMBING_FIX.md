@@ -62,6 +62,47 @@ continued since the move. That makes a **sync-client / antivirus filesystem filt
 and raises the possibility that the path is still inside, or adjacent to, a reparse point, a synced
 folder, or a directory some agent still monitors.
 
+### 3.1 Evidence captured live, 2026-09-15 11:30 — while committing a PR in this repo
+
+The defect reproduced **while the hand-off prompts in this directory were being committed**, which
+sharpens the diagnosis considerably:
+
+```console
+$ git update-ref refs/heads/docs/v3-handoff-prompts e869ce7
+update-ref OK                                     # <-- exit code 0, no error printed
+$ git rev-parse docs/v3-handoff-prompts
+fatal: ambiguous argument 'docs/v3-handoff-prompts': unknown revision
+$ ls .git/refs/heads/docs/
+ls: cannot access '.git/refs/heads/docs/': No such file or directory
+```
+
+Three things follow, and all three matter:
+
+1. **The failure is SILENT.** `git update-ref` returned **exit 0** and printed nothing. Do not trust a
+   zero exit status anywhere in this diagnosis — **verify every ref write with `git rev-parse` or
+   `ls`**, not with the command's own exit code.
+2. **The ref directory is created and then removed**, and on the `update-ref` path **no reflog is
+   written at all** — unlike the `commit` path, which *does* leave a reflog behind. So the reflog is a
+   recovery route for a lost *commit object*, but **not** for a lost *ref creation*.
+3. **A direct file write survives where git's own ref write does not.** Immediately afterwards this
+   was written by hand and was still present minutes later:
+
+   ```bash
+   mkdir -p .git/refs/heads/docs
+   printf '%s\n' e869ce7 > .git/refs/heads/docs/v3-handoff-prompts
+   git rev-parse docs/v3-handoff-prompts      # -> e869ce7   OK, and it persisted
+   ```
+
+That asymmetry is the sharpest clue available: plain file creation under `.git/refs/heads/` **works
+and persists**, while git's **create-`.lock`-then-`rename()`** path does not. It points at the
+**rename step specifically** — not at the filesystem, the path, or `.git/` in general. Test `rename()`
+directly (step 2) and treat that as the primary target.
+
+⚠️ **Red herring — do not chase this.** `GIT_INDEX_FILE` set to an MSYS-style path (`/c/Users/...`)
+fails with `Unable to create '...lock': No such file or directory`, while the `C:/Users/...` form works
+fine. That is a **path-form quirk in git's lockfile handling, unrelated to the ref bug.** It was hit
+during this diagnosis and cost a detour. Use the `C:/` form.
+
 ### 4. Your task — diagnose read-only first, change nothing until step 3
 
 **Step 1 — diagnostics.** Run and report the output of each:
@@ -116,13 +157,15 @@ successful `git rev-parse HEAD`); (iv) anything you could not rule out.
 | :--- | :--- |
 | `.git/HEAD` | `ref: refs/heads/feat/v3-phase-3b-media-path` — currently **healthy** |
 | `git rev-parse HEAD` | `8895914` (resolves correctly) |
-| Refs present | `main`, `docs/v3-roadmap-rebaseline`, `feat/v3-phase-3a-extraction`, `feat/v3-phase-3b-media-path` |
-| Open PRs | #23, #24, #25 — all gates green, **all deliberately unmerged** |
+| Refs present | `main`, `docs/v3-roadmap-rebaseline`, `docs/v3-handoff-prompts`\*, `feat/v3-phase-3a-extraction`, `feat/v3-phase-3b-media-path` |
+| Open PRs | #23, #24, #25, **#26** — all gates green, **all deliberately unmerged** |
 | Latest release | **v2.16.0** |
+
+\* **Hand-written** via `mkdir -p` + `printf` — see §3.1. `git update-ref` refused to create it.
 
 ⚠️ The failure is **intermittent**: refs were restored by hand at the end of the last session and are
 currently intact. A clean `git rev-parse HEAD` today is therefore **not** evidence the defect is gone.
-Run the step-1 diagnostics regardless.
+Run the step-1 diagnostics regardless — §3.1 is a live reproduction from this very session.
 
 ### 6. Hard constraints — not negotiable
 
