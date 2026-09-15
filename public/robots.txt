@@ -1,0 +1,11 @@
+# roryskagenart.com — crawl policy
+#
+# No Sitemap: line yet, deliberately. The gallery is hash-routed (#/artwork/<slug>), so
+# individual artworks have no addressable URL for a crawler to fetch; a sitemap would have
+# to list one URL (the app shell) and would tell Google nothing. Per-artwork routes and a
+# real sitemap.xml are tracked as a v3.0.0 prerequisite — add the Sitemap: line when they
+# ship, not before.
+
+User-agent: *
+Allow: /
+Disallow: /api/

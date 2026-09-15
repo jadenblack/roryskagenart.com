@@ -10,7 +10,7 @@ Official digital gallery, catalog raisonné, and studio management application f
 
 This full-stack application provides both an elegant, collector-grade public presentation and a powerful virtual studio inventory engine.
 
-> **Current release:** `v2.9.0` · **Single vendor:** Supabase (database + storage + auth). Cloudinary has been fully decommissioned.
+> **Current release:** `v2.15.0` · **Single vendor:** Supabase (database + storage + auth). Cloudinary has been fully decommissioned.
 > **Working in this repo (human or AI)?** Read [`AGENTS.md`](./AGENTS.md) first — it is the verified source of truth for the stack, schema, env vars, and write path. See [`plan/README.md`](./plan/README.md) for the status of every planning document.
 
 ---
@@ -401,4 +401,4 @@ All major architectural proposals and feature branches are documented in the `/p
 ## License & Credits
 
 - **Artwork & Imagery**: © Rory Skagen. All rights reserved. Reproduction or distribution without prior written permission is strictly prohibited.
-- **Application Code**: Licensed under the Apache-2.0 License. *(No `LICENSE` file is currently present in the repository — add one to make this claim verifiable.)*
+- **Application Code**: Licensed under the **MIT License** — see [`LICENSE`](./LICENSE). The license covers the application code only; the artwork and imagery above are expressly excluded from it.
