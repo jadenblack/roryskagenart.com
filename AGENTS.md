@@ -252,15 +252,21 @@ M2M filter path is currently unexercised. Re-verify any of these with
 │   │                       # adminRoute.ts (hash-route parse), narrative.ts (record → parts),
 │   │                       # dimensions.ts (free-text size → inches)
 │   └── server/db.ts        # pg Pool + Supabase admin client
-├── supabase/migrations/    # 9 idempotent SQL migrations (the baseline sorts first)
+├── supabase/migrations/    # 13 idempotent SQL migrations (the baseline sorts first)
 ├── supabase/email-templates/  # generated Supabase Auth mailer templates + manifest.json
 ├── scripts/                # run-migrations, introspect-schema, backup-catalog, verify-backup,
-│   │                       # verify-media-backup, restore-catalog, generate-asset-registry,
-│   │                       # generate-auth-email-templates
+│   │                       # verify-media-backup (--out writes an object listing),
+│   │                       # restore-catalog, generate-asset-registry,
+│   │                       # generate-auth-email-templates,
+│   │                       # prerender-seo (Phase 2: per-artwork HTML + sitemap.xml into dist/,
+│   │                       #   runs between `vite build` and the esbuild step — see package.json
+│   │                       #   AND vercel.json, which are two separate strings that must agree)
 │   └── lib/                # pure, offline-tested logic: migrationPlan (ordering/skip),
 │                           # restorePlan (restore safety), backupManifest (v2 manifest +
 │                           # verification + retention), dumpDir (dump I/O edge),
-│                           # mediaReconcile (rows ↔ Storage), pgTarget (TLS rule)
+│                           # mediaReconcile (rows ↔ Storage), pgTarget (TLS rule),
+│                           # seoPlan (Phase 2: which rows are indexable, canonical/og tags,
+│                           #   sitemap XML, and the loopback-origin refusal)
 ├── src/test/               # vitest suites (incl. migrationSafety + migrationPlan + userAdmin)
 ├── data/archive/           # historical manifests + live schema introspection (provenance)
 ├── data/backups/           # gitignored logical dumps (see docs/runbooks/)

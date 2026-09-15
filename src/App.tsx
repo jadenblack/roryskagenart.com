@@ -16,6 +16,7 @@ import { ArtworkFocusView } from './components/ArtworkFocusView';
 import { PagesView } from './components/PagesView';
 import { useAuth } from './context/AuthContext';
 import { buildEditPath } from './lib/adminRoute';
+import { artworkPath, parseArtworkPath, parseLegacyArtworkHash, resolvePathArtwork } from './lib/artworkRoute';
 import { Lock, ShieldCheck } from 'lucide-react';
 
 const AdminApp = React.lazy(() =>
@@ -38,10 +39,22 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Hash-based client router listener
+  // Client router listener — canonical path route first, then the legacy hash routes.
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#\/?/, '');
+
+      /**
+       * Canonical artwork route: `/artwork/<slug>`, resolved from the pathname. `resolvePathArtwork`
+       * owns the pathname-vs-fragment precedence (see src/lib/artworkRoute.ts) — notably, a hash
+       * that names another route wins over a stale `/artwork/<slug>` in the path.
+       */
+      const pathArtworkSlug = resolvePathArtwork(window.location.pathname, window.location.hash);
+      if (pathArtworkSlug) {
+        setRoute('artwork');
+        setSelectedArtworkSlug(pathArtworkSlug);
+        return;
+      }
 
       // Admin dashboard section: #/admin, #/admin/catalog, #/admin/users, …
       if (hash === 'admin' || hash.startsWith('admin/') || hash.startsWith('/admin')) {
@@ -84,21 +97,46 @@ export default function App() {
       }
     };
 
+    /**
+     * Legacy fragment artwork links must keep resolving — old bookmarks, shares and any link a
+     * crawler already indexed. Rewrite the address bar to the canonical path *before* the first
+     * render, so the visitor sees `/artwork/<slug>` and the artwork renders from the path route
+     * rather than from the fragment.
+     *
+     * `replaceState`, not `pushState`: the legacy URL is an alias for this page, not a page the
+     * back button should return to.
+     */
+    const legacySlug = parseLegacyArtworkHash(window.location.hash);
+    if (legacySlug && !parseArtworkPath(window.location.pathname)) {
+      window.history.replaceState(null, '', artworkPath(legacySlug));
+    }
+
     // Initial check
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    // Back/forward across a `pushState` path change fires `popstate`, not `hashchange`.
+    window.addEventListener('popstate', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
+    };
   }, []);
 
-  // Sync route changes to window.location.hash
+  // Sync route changes to the address bar
   const navigateTo = (newRoute: string, param?: string) => {
-    // Artwork dossier paths like "/artwork/<slug>" (catalog row/menu View)
+    // Artwork dossier paths like "/artwork/<slug>" (catalog row/menu View).
+    // Canonical and crawlable, so it is a real path pushed into history — not a fragment.
     if (newRoute.startsWith('/artwork/')) {
       const slug = newRoute.replace('/artwork/', '');
-      window.location.hash = `#artwork/${slug}`;
+      window.history.pushState(null, '', artworkPath(slug));
       setRoute('artwork');
       setSelectedArtworkSlug(slug);
       return;
+    }
+    // Any non-artwork target must leave the path route behind. Without this the URL would become
+    // `/artwork/<slug>#about` and the router would resolve it as an artwork again.
+    if (parseArtworkPath(window.location.pathname) && !(newRoute === 'artwork' && param)) {
+      window.history.pushState(null, '', '/');
     }
     // Admin dashboard paths are full hash paths like "/admin/catalog"
     if (newRoute.startsWith('/admin') || newRoute === '/') {
@@ -131,7 +169,7 @@ export default function App() {
       setRoute('contact');
       setSelectedArtworkSlug(null);
     } else if (newRoute === 'artwork' && param) {
-      window.location.hash = `#artwork/${param}`;
+      window.history.pushState(null, '', artworkPath(param));
       setRoute('artwork');
       setSelectedArtworkSlug(param);
     } else if (newRoute === 'pages') {

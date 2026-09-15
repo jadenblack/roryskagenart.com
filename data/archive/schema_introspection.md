@@ -2,7 +2,7 @@
 
 - Database: `postgres`
 - Connected as: `postgres`
-- Generated: 2026-09-14T05:45:39.156Z
+- Generated: 2026-09-15T19:15:08.029Z
 - Server: PostgreSQL 17.6 on x86_64-pc-linux-gnu
 
 ## Tables
@@ -68,6 +68,11 @@
 | `message` | text | NO |  |
 | `status` | text | YES | `'new'::text` |
 | `created_at` | timestamp with time zone | YES | `now()` |
+| `email_status` | text | NO | `'unknown'::text` |
+| `email_error` | text | YES |  |
+| `email_sent_at` | timestamp with time zone | YES |  |
+| `email_studio_id` | text | YES |  |
+| `email_collector_id` | text | YES |  |
 
 ### `media_assets`
 
@@ -381,19 +386,19 @@ $function$
   - USING: `true`
 
 - `artworks` **Admins full access to artworks** (ALL) roles={authenticated}
-  - USING: `true`
-  - WITH CHECK: `true`
+  - USING: `is_admin_or_editor()`
+  - WITH CHECK: `is_admin_or_editor()`
 
 - `artworks` **Public can view active artworks** (SELECT) roles={public}
-  - USING: `(trashed = false)`
+  - USING: `((trashed = false) AND (draft = false))`
 
 - `artworks` **Service role full access to artworks** (ALL) roles={service_role}
   - USING: `true`
   - WITH CHECK: `true`
 
 - `inquiries` **Admins can view and manage inquiries** (ALL) roles={authenticated}
-  - USING: `true`
-  - WITH CHECK: `true`
+  - USING: `is_admin_or_editor()`
+  - WITH CHECK: `is_admin_or_editor()`
 
 - `inquiries` **Public can submit inquiries** (INSERT) roles={public}
   - WITH CHECK: `true`
@@ -403,8 +408,8 @@ $function$
   - WITH CHECK: `true`
 
 - `media_assets` **Admins full access to media assets** (ALL) roles={authenticated}
-  - USING: `true`
-  - WITH CHECK: `true`
+  - USING: `is_admin_or_editor()`
+  - WITH CHECK: `is_admin_or_editor()`
 
 - `media_assets` **Public can view media assets** (SELECT) roles={public}
   - USING: `true`
@@ -414,8 +419,8 @@ $function$
   - WITH CHECK: `true`
 
 - `pages` **Admins full access to pages** (ALL) roles={authenticated}
-  - USING: `true`
-  - WITH CHECK: `true`
+  - USING: `is_admin_or_editor()`
+  - WITH CHECK: `is_admin_or_editor()`
 
 - `pages` **Public can view pages** (SELECT) roles={public}
   - USING: `true`
@@ -461,8 +466,8 @@ $function$
 | `inquiries` | 1 |
 | `media_assets` | 152 |
 | `pages` | 4 |
-| `profiles` | 3 |
-| `schema_migrations` | 9 |
+| `profiles` | 4 |
+| `schema_migrations` | 12 |
 | `settings` | 5 |
 | `taxonomies` | 3 |
 
@@ -476,4 +481,7 @@ $function$
 - `2026_09_13_cms_v2_2_profiles_rls_recursion_fix.sql` — 2026-09-13T23:59:54.706Z
 - `2026_09_13_cms_v2_source_of_truth_backfill.sql` — 2026-09-12T20:31:24.912Z
 - `2026_09_13_v2_9_security_rls_hardening.sql` — 2026-09-14T05:45:27.342Z
+- `2026_09_14_v2_12_1_staff_scoped_policies.sql` — 2026-09-14T17:55:07.989Z
+- `2026_09_14_v2_12_artworks_public_select_excludes_drafts.sql` — 2026-09-14T17:27:29.096Z
+- `2026_09_14_v2_13_1_inquiry_email_status.sql` — 2026-09-14T21:01:03.608Z
 - `2026_09_v3_media_assets_extend.sql` — 2026-09-14T05:45:27.652Z

@@ -227,7 +227,7 @@ because they are read-only housekeeping that Phase 4's media step touches anyway
 | Item | What | Slot | Pre-conditions |
 | :--- | :--- | :--- | :--- |
 | **S1** | Delete the 151 unreferenced `original.*` masters | **Phase 4, last** — after the mural upload, not before | 1. A verified dump (`scripts/backup-catalog.ts`, self-verifying). 2. A **full object listing** captured to `data/backups/`. 3. `scripts/verify-media-backup.ts` reports 0 rows referencing an `original.*`. 4. Re-run the verifier *after* deletion. 5. Q1 on the record: re-populatable from the studio's own archive. **Irreversible — the only such step in the program.** |
-| **S3** | Verify `Cache-Control` on the 605 existing objects | **Phase 0** — do it now | With no CDN (Q3), immutable browser caching is the *whole* egress strategy. New uploads already set `31536000`; migrated objects were never checked. Fix must not change any object's bytes. |
+| **S3** | Verify `Cache-Control` on the 605 existing objects | **Phase 0** — do it now | With no CDN (Q3), immutable browser caching is the *whole* egress strategy. New uploads already set `31536000`; migrated objects were never checked. Fix must not change any object's bytes. ⚠️ **AUDITED 2026-09-15 — and it failed: 604 of 605 carry `max-age=3600`, one carries `max-age=31536000`.** The fix (re-upload identical bytes with `cacheControl: 31536000`) is written up in runbook §6 and deliberately **deferred out of the v3.0.0 load window** — it rewrites 604 live objects, and the S1 ordering argument below applies to it too. The mural ingest already sets the correct value, so the affected set stays at 604 |
 | **S5** | Measure egress once and record it | **After Phase 4**, once real traffic includes the murals | ~8 MiB per full 138-artwork browse ⇒ ~640 browses/month of 5 GB. Never actually measured. Record in the runbook with a note on what would make it binding. |
 
 > **S1 ordering note (a real change from `PRD_V2_16`).** That PRD sequenced S1 as housekeeping. It
@@ -247,11 +247,16 @@ because they are read-only housekeeping that Phase 4's media step touches anyway
 - [x] A copy of the dump exists off this machine — **and is written daily, automatically.**
 - [x] **A Blob dump has been downloaded, verified and restored into the scratch DB.** *(4.1.1 — done
       2026-09-15: 9 objects / 406,899 bytes → 298 inserted, 0 failed; 138/138 artworks field-exact)*
-- [ ] The Storage story is documented as: object listing + Wayback-is-the-second-copy for murals;
-      no versioning, no new vendor.
-- [ ] A full object listing of `artwork-images` is captured and stored with a dump.
-- [ ] `Cache-Control` on all 605 objects is stated in the runbook; immutable on renditions; zero
-      bytes changed.
+- [x] The Storage story is documented as: object listing + Wayback-is-the-second-copy for murals;
+      no versioning, no new vendor. → **✅ 2026-09-15, runbook §2d.**
+- [x] A full object listing of `artwork-images` is captured and stored with a dump.
+      → **✅ 2026-09-15: 605 objects / 76.6 MiB, sha256 `467757ce1bb1dd19…`, captured by
+      `verify-media-backup.ts --out` alongside the pre-Phase-4 dump.**
+- [x] `Cache-Control` on all 605 objects is stated in the runbook; immutable on renditions; zero
+      bytes changed. → **✅ Stated 2026-09-15 — and the audit did NOT pass.** 604 objects carry
+      `max-age=3600`; only 1 carries `max-age=31536000`. Recorded in runbook §6 as an **open
+      finding** with its fix, deliberately not remediated in the v3.0.0 window (see §4.1.3). The
+      criterion was written expecting a pass; stating the real number is the honest discharge of it.
 
 **Dependencies:** none to start. **Blocks Phase 4.**
 
@@ -321,14 +326,27 @@ That removes one small piece of friction and one class of surprise.
 
 **Exit criteria**
 
-- [ ] `curl` of the preview's `/artwork/<slug>` returns HTML containing that artwork's `<title>`,
+- [x] `curl` of the preview's `/artwork/<slug>` returns HTML containing that artwork's `<title>`,
       description and an **absolute** `og:image` — verified by fetching raw HTML, not by reading the
-      DOM in a browser.
-- [ ] `dist/sitemap.xml` enumerates every published artwork and **zero** drafts.
-- [ ] `public/robots.txt` carries a `Sitemap:` line.
-- [ ] A legacy `/#/artwork/<slug>` link still lands on that artwork.
-- [ ] A test asserts the prerender/sitemap generator excludes drafts **and** trashed rows.
-- [ ] `npm run lint` clean; suite green.
+      DOM in a browser. → **✅ 2026-09-15.** The build writes 138 prerendered pages; a built page
+      carries exactly one `<title>`, one `rel="canonical"` and an absolute Supabase hero `og:image`.
+      *(The preview fetch itself is verified on the PR's Vercel deployment.)*
+- [x] `dist/sitemap.xml` enumerates every published artwork and **zero** drafts.
+      → **✅ 138 `<loc>`, 0 `localhost`, 0 drafts.**
+- [x] `public/robots.txt` carries a `Sitemap:` line. → **✅ 2026-09-15**, with the comment corrected.
+- [x] A legacy `/#/artwork/<slug>` link still lands on that artwork.
+      → **✅ Client-side `history.replaceState` to the canonical path** — a fragment is never sent to
+      the server, so no server rule can do this.
+- [x] A test asserts the prerender/sitemap generator excludes drafts **and** trashed rows.
+      → **✅ `src/test/seoPlan.test.ts`** (53 tests), fixtures carry both.
+- [x] `npm run lint` clean; suite green. → **✅ lint clean; 671 tests / 41 files.**
+
+> ⚠️ **One defect found while building this, and it is the kind that is invisible until it is not:**
+> the build reads `SITE_URL`/`APP_URL` for the canonical origin, and `.env.local` sets
+> `APP_URL=http://localhost:3000`. A build that inherited it would have stamped
+> `http://localhost:3000/artwork/<slug>` as the canonical of **every** page — telling a crawler the
+> real site duplicates a URL that exists on one laptop. Loopback origins are now refused and the
+> production origin substituted. Caught by running the real build, not by reading the code.
 
 **Dependencies:** none to start. **Blocks Phase 4.**
 

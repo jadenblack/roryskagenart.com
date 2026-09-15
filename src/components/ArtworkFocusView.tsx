@@ -6,6 +6,7 @@ import { getArtworkSvg } from '../data/artAssets';
 import { parseArtworkNarrative } from '../lib/narrative';
 import { renderMarkdownWithWikiLinks } from '../lib/markdown';
 import { formatDimensions } from '../lib/dimensions';
+import { artworkPath } from '../lib/artworkRoute';
 import {
   ArrowLeft,
   ChevronLeft,
@@ -135,7 +136,9 @@ export const ArtworkFocusView: React.FC<ArtworkFocusViewProps> = ({
   };
 
   const copyShareLink = () => {
-    const url = `${window.location.origin}${window.location.pathname}#artwork/${artwork.slug}`;
+    // Canonical path, not the legacy `#artwork/<slug>` fragment: a fragment is not a distinct
+    // document to a crawler, so sharing one would hand out an unindexable URL.
+    const url = `${window.location.origin}${artworkPath(artwork.slug)}`;
     void navigator.clipboard?.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);

@@ -1,11 +1,16 @@
 # roryskagenart.com — crawl policy
 #
-# No Sitemap: line yet, deliberately. The gallery is hash-routed (#/artwork/<slug>), so
-# individual artworks have no addressable URL for a crawler to fetch; a sitemap would have
-# to list one URL (the app shell) and would tell Google nothing. Per-artwork routes and a
-# real sitemap.xml are tracked as a v3.0.0 prerequisite — add the Sitemap: line when they
-# ship, not before.
+# The Sitemap: line below is live as of v3.0.0. Individual artworks now have real, addressable
+# URLs — `/artwork/<slug>`, prerendered to a static file per published artwork at build time
+# (`scripts/prerender-seo.ts`) — so `sitemap.xml` enumerates distinct documents a crawler can
+# actually fetch. It is generated from `artworks` and excludes drafts and trashed rows, so an
+# unpublished mural is never advertised here.
+#
+# Note: the hash routes the site still uses for everything else (#/about, #/contact, #/admin, …)
+# remain fragments and are deliberately not listed — a fragment is not a distinct document.
 
 User-agent: *
 Allow: /
 Disallow: /api/
+
+Sitemap: https://roryskagenart.com/sitemap.xml

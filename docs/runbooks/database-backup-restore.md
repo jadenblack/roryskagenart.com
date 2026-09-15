@@ -155,12 +155,19 @@ deleted image. The `artwork-images` bucket needs its own check:
 npx tsx scripts/verify-media-backup.ts              # summary
 npx tsx scripts/verify-media-backup.ts --json       # machine-readable
 npx tsx scripts/verify-media-backup.ts --limit 100  # show more problem lines
+npx tsx scripts/verify-media-backup.ts --out <dir>  # also write an object listing
 ```
 
 Strictly read-only: one `SELECT` plus a paginated walk of the bucket. It reports both directions —
 a row whose object is gone (a broken image on the live gallery) and an object no row references.
 
 Exit codes: **0** no blocking problems · **1** blocking problems · **2** nothing to check.
+
+**`--out <dir>`** writes `<dir>/object-listing.json` — every object's path and size, plus a sha256
+over the canonical `path<TAB>size` lines, so two listings can be compared without diffing JSON.
+This is the artefact that makes *"what did we actually have?"* answerable, because a database dump
+describes Storage objects but does not contain them. **Capture one alongside any dump taken before
+a media write**, and again afterwards.
 
 **Verified against production 2026-09-14.** 152 rows ↔ 605 objects (76.6 MiB), **0 missing, 0
 unexpected orphans, 0 size mismatches**. The detection was also proven, not assumed: replaying the
@@ -175,6 +182,29 @@ was removed and `unreferenced: 1` when one stranger was added.
 > highest-resolution copies of every artwork in the catalogue, they are invisible to the catalog,
 > and if one disappeared nothing in the app would notice. They are the strongest argument for
 > keeping an off-site copy of the bucket, which remains open (§6).
+
+### 2d. The Storage story (closed 2026-09-15)
+
+Storage is **not** a survival risk on this project, and the owner's Q1 is the reason: the assets in
+`artwork-images` are **copies**, and the artist holds every original. What remains is a
+**recovery-speed** risk. So the answer is deliberately *not* bucket versioning and *not* a second
+vendor (Q3) — it is two things, both free:
+
+1. **A periodic object listing.** `verify-media-backup.ts --out <dir>` (§2c) captures the full
+   `storage.list()` manifest next to a dump. Cheap, scriptable, and it is the record of what
+   existed at a point in time. The first one was captured 2026-09-15 alongside the pre-Phase-4 dump
+   `data/backups/2026-09-15T19-14-02-283Z/` — **605 objects, 76.6 MiB, sha256 `467757ce1bb1dd19…`**.
+2. **`wayback/` is the second copy for every mural image.** The mural renditions are *derived* from
+   an immutable local archive that is committed to this repository, so any of them can be
+   re-rendered byte-identically by re-running `scripts/wayback-render.ts`. This is the strongest
+   Storage guarantee in the project, and it costs nothing.
+
+No bucket versioning. No second vendor. An off-site bucket copy stays **optional** — it buys
+recovery speed, not survival.
+
+> ⚠️ **The listing is not a backup either.** It records that an object existed and how large it was;
+> it cannot reconstruct one. Its job is to make *"what did we lose?"* answerable, and to be the
+> before/after reference for any bulk media change.
 
 ---
 
@@ -319,6 +349,7 @@ Copy this into the PR description for any migration that writes to the live cata
 | :--- | :--- | :--- |
 | **Storage objects are not backed up** by database backups | Deleted `artwork-images` objects are unrecoverable from a DB restore — including the 151 `original.*` masters no row references (§2c) | ✅ **Detected as of `v2.13.0`** — `scripts/verify-media-backup.ts` reconciles rows ↔ objects in both directions and is clean against production. ⚠️ **Detection is not backup.** An off-site *copy* of the 76.6 MiB bucket is still open; the whole image set is small enough that this is cheap. |
 | **No scheduled / off-site dump** | A dump that only exists on this machine is lost with the machine — and on a Free plan it is the *only* backup | ✅ **Closed in `v2.13.0`.** Vercel Cron → `GET /api/cron/backup` → Vercel Blob, daily, with retention (§2b). Watch the Hobby 1 GB allowance via the run's `allowanceUsed` field. |
+| **⚠️ 604 of 605 bucket objects are cached for one hour, not a year** | Measured 2026-09-15 (`storage.objects.metadata->>'cacheControl'`): **604 objects carry `max-age=3600`** and only **1** carries `max-age=31536000`. New uploads set the immutable year correctly (`server/lib/imageRenditions.ts` → `IMMUTABLE_CACHE_CONTROL`), so this is the **Cloudinary-era migration**, which never set it. With no CDN (Q3), immutable browser caching *is* the egress strategy: at one hour, a returning visitor re-fetches up to ~8 MiB per full catalog browse against a 5 GB/month allowance. | ⬜ **OPEN — measured, not yet fixed.** The fix is a re-upload of the same bytes with `cacheControl: 31536000` (bytes must be verified unchanged; the Storage API has no metadata-only update, so `upload(..., { upsert: true })` after a `download()` is the route). ⚠️ **Deliberately not bundled into the v3.0.0 load**: it rewrites 604 live objects, and the roadmap's S1 ordering note applies — do not spend a second bulk media rewrite in the same window as the largest one. The mural ingest already sets the correct value, so the affected set stays at these 604. |
 | **A dump that could not be checked** | `manifest.json` was written but never read back, so a truncated or corrupted dump would be found during a restore | ✅ **Closed in `v2.13.0`.** Manifest format v2 adds a sha256 per table; the writer self-verifies and `scripts/verify-backup.ts` re-checks any dump (§2a). |
 | **Backup plan tier** | — | ✅ **Resolved 2026-09-14: Free.** No automatic backups, no PITR. See §3. |
 | **No scripted restore** | Row-level recovery was manual | ✅ **Written and exercised 2026-09-14** — `scripts/restore-catalog.ts`, unit-tested, and rehearsed end-to-end against a scratch database. See §4a. |

@@ -30,11 +30,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   const handleNavClick = (id: string) => {
-    if (id.startsWith('/')) {
-      window.location.hash = `#${id}`;
-      setMobileMenuOpen(false);
-      return;
-    }
+    // Every link goes through the router. Writing `window.location.hash` directly here used to be
+    // harmless, but the canonical artwork route lives in the *pathname*: from `/artwork/<slug>`
+    // a direct hash write would leave the path in place and the router would keep rendering the
+    // artwork. `onNavigate` is what clears the path.
     onNavigate(id);
     setMobileMenuOpen(false);
   };
