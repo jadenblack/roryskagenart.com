@@ -124,6 +124,9 @@ function main(): void {
     const summary = {
       stamp: target.name,
       createdAt: target.createdAt,
+      // A3: the dump records which database it was taken from. `(unknown)` means the writer was
+      // given no connection string; `(serverless)` is the pre-v2.14.0 hardcoded placeholder.
+      target: (manifest?.target as string | undefined) ?? '(absent)',
       objects: paths.length,
       bytes: target.bytes,
       // `tables` is a Record<string, TableEntry>, not an array.
@@ -139,6 +142,7 @@ function main(): void {
     } else {
       console.log(`Dump ${summary.stamp}`);
       console.log(`  written      ${summary.createdAt}`);
+      console.log(`  target       ${summary.target}`);
       console.log(`  objects      ${summary.objects} (${summary.bytes} bytes)`);
       console.log(`  tables/rows  ${summary.tables} tables, ${summary.rows} rows`);
       console.log(`  migrations   ${summary.migrations}`);
