@@ -666,10 +666,18 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
       {
         generatedAt,
         archive,
+        // `canonical` and `pages` are here so this artifact satisfies the shared `ExtractionFile`
+        // contract, which is what lets `wayback-stage-sql.ts` consume it without a translation layer
+        // (D2). ⚠️ `pages` is not optional decoration: `buildBackfillPlan` reads `year`, `narrative`,
+        // `description`, `categories`, `wpPostId` and `publishedAt` from it. Without it every one of
+        // those reads as `undefined`, so the regenerated INSERTs land with all six fields null — and
+        // the script still exits 0. See `V3_PHASE4_D2.md`.
+        canonical: { capturedAt: canonical.capturedAt, source: canonical.source },
         stats: extraction.stats,
         summary: postMergeSummary,
         taxonomy: buildTaxonomyModel(extraction),
         records: merged.records,
+        pages,
         mediaPlan,
         dedupe,
       },

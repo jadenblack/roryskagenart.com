@@ -16,12 +16,25 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   buildBackfillPlan,
+  mergeSources,
   renderBackfillSql,
   type CanonicalArtwork,
   type ExtractionFile,
 } from './lib/waybackBackfill';
 
 const EXTRACTION_PATH = path.resolve(process.cwd(), 'data', 'archive', 'wayback_extraction.json');
+/**
+ * The mural half of the backfill comes from the recovered export, not the scrape (D2).
+ *
+ * ⚠️ It is a *second source*, not a replacement. This file covers two archives; the recovered export
+ * covers one. See `mergeSources()` in `./lib/waybackBackfill`.
+ */
+const RECOVERED_EXTRACTION_PATH = path.resolve(
+  process.cwd(),
+  'data',
+  'archive',
+  'wayback_recovered_extraction.json'
+);
 const CANONICAL_PATH = path.resolve(
   process.cwd(),
   'data',
@@ -55,8 +68,15 @@ export function main(argv: string[] = process.argv.slice(2)): void {
       ? path.resolve(argv[outIdx + 1])
       : path.join(STAGED_DIR, OUT_NAME);
 
-  const extraction = readJson<ExtractionFile>(EXTRACTION_PATH, 'Extraction output');
+  const scrape = readJson<ExtractionFile>(EXTRACTION_PATH, 'Extraction output');
+  const recovered = readJson<ExtractionFile>(
+    RECOVERED_EXTRACTION_PATH,
+    'Recovered extraction output'
+  );
   const canonical = readJson<CanonicalFile>(CANONICAL_PATH, 'Canonical snapshot');
+
+  // D2: murals from the recovered export, paintings from the scrape.
+  const extraction = mergeSources(scrape, recovered);
 
   const plan = buildBackfillPlan(extraction, canonical);
   const sql = renderBackfillSql(plan, {
@@ -72,7 +92,14 @@ export function main(argv: string[] = process.argv.slice(2)): void {
   console.log('Wayback backfill — STAGE (read-only; no DB writes, no uploads)');
   console.log('='.repeat(72));
   console.log(`  canonical snapshot : ${canonical.capturedAt} (${canonical.artworks.length} artworks)`);
-  console.log(`  extraction         : ${extraction.generatedAt}`);
+  console.log(`  scrape (paintings) : ${scrape.generatedAt} (${scrape.records.length} records)`);
+  console.log(
+    `  recovered (murals) : ${recovered.generatedAt} (${recovered.records.length} records, ` +
+      `${recovered.pages.length} pages)`
+  );
+  console.log(
+    `  merged             : ${extraction.records.length} records, ${extraction.pages.length} pages`
+  );
   console.log('');
   console.log(`  records            : ${s.records}`);
   console.log(`  INSERT  (NEW)      : ${s.inserted}`);
