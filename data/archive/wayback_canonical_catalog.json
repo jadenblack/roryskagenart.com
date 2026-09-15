@@ -1,0 +1,1872 @@
+{
+  "capturedAt": "2026-09-15T03:07:17.614Z",
+  "source": "aws-0-us-east-1.pooler.supabase.com (remote)",
+  "artworks": [
+    {
+      "slug": "2010-rendezvous-in-chinatown",
+      "title": "2010: Rendezvous in Chinatown",
+      "imageUrl": "2.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "a-trip-to-boozeville",
+      "title": "A Trip to Boozeville",
+      "imageUrl": "a-trip-to-boozeville-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "adventures-in-illustration",
+      "title": "Adventures in Illustration",
+      "imageUrl": "adventures-in-illustration-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "agave-patch",
+      "title": "Agave Patch",
+      "imageUrl": "e.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "an-insincere-call",
+      "title": "An Insincere Call",
+      "imageUrl": "sound-of-the-WB-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "arachforun",
+      "title": "Arachforun",
+      "imageUrl": "starwars-Recovered-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "austin-78704-south-austin-zip",
+      "title": "Austin 78704 (South Austin Zip)",
+      "imageUrl": "78704.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "austin-camouflage",
+      "title": "Austin Camouflage",
+      "imageUrl": "l.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "austin-carnival",
+      "title": "Austin Carnival",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "austin-postcard",
+      "title": "Austin Postcard",
+      "imageUrl": "austinpostcard.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "austin-skyline-2019",
+      "title": "Austin Skyline 2019",
+      "imageUrl": "austin2019-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "beat-bop",
+      "title": "Beat Bop",
+      "imageUrl": "beatbop.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "beaver-holiday",
+      "title": "Beaver Holiday",
+      "imageUrl": "Beaver-Holiday-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "blind-monkey",
+      "title": "Blind Monkey",
+      "imageUrl": "blind-monkey-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "blue-nile",
+      "title": "Blue Nile",
+      "imageUrl": "bluenilecropped-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "boyhood-explorers",
+      "title": "Boyhood Explorers",
+      "imageUrl": "boyhood-explorers-6.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "cave-dance",
+      "title": "Cave Dance",
+      "imageUrl": "cave-dance-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "chemico",
+      "title": "Chemico",
+      "imageUrl": "CHEMICO-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "chivonyx-and-ganzitodon",
+      "title": "Chivonyx and Ganzitodon",
+      "imageUrl": "d.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "closing-night",
+      "title": "Closing Night",
+      "imageUrl": "closing-night-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "clown-snacks",
+      "title": "Clown Snacks",
+      "imageUrl": "l.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "cocoa-bear-cereal",
+      "title": "Cocoa Bear Cereal",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "cornflower",
+      "title": "Cornflower",
+      "imageUrl": "cornflower-12.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "cry-sing-lon",
+      "title": "Cry Sing Lon",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "cyborg-robots-and-aliens",
+      "title": "Cyborg: Robots and Aliens",
+      "imageUrl": "robot-copy-1.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "dairy-gossip",
+      "title": "Dairy Gossip",
+      "imageUrl": "dairygossip-.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "dinosaur-land",
+      "title": "Dinosaur Land",
+      "imageUrl": "dinolandcropped-copy1.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "drebbles",
+      "title": "Drebbles",
+      "imageUrl": "drebbles-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "el-p-jaro-de-los-dulces-m-gicos",
+      "title": "El Pájaro de los Dulces Mágicos",
+      "imageUrl": "el-pajaro-de-los-dulces-magicos-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "empopatya",
+      "title": "Empopatya",
+      "imageUrl": "empopatya.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "frog-tea",
+      "title": "Frog Tea",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "gaurdon",
+      "title": "Gaurdon",
+      "imageUrl": "gaurdon.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "gianondor",
+      "title": "Gianondor",
+      "imageUrl": "gianondor.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "gleesnod-and-collasaur",
+      "title": "Gleesnod and Collasaur",
+      "imageUrl": "octodino-Recovered-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "gnarldred",
+      "title": "Gnarldred",
+      "imageUrl": "Steamy-the-flavor-genie-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "gondoleu",
+      "title": "Gondoleu",
+      "imageUrl": "gondeoleu.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "greasy-todd",
+      "title": "Greasy Todd",
+      "imageUrl": "greasytodd-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "greetings-from-austin",
+      "title": "Greetings from Austin",
+      "imageUrl": "GreetingsfromAustin.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "greetings-from-texas",
+      "title": "Greetings from Texas",
+      "imageUrl": "GreetingsfromTexas.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "harvest-orange",
+      "title": "Harvest Orange",
+      "imageUrl": "harvestorange-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "hatari-angani",
+      "title": "Hatari Angani",
+      "imageUrl": "hatari-angani.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "heartbreak-forest",
+      "title": "Heartbreak Forest",
+      "imageUrl": "heartbreak-forest-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "heavenly-ham",
+      "title": "Heavenly Ham",
+      "imageUrl": "heavenlyham-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "hell-party",
+      "title": "Hell Party",
+      "imageUrl": "Hell-Party-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "invasion-of-the-drunks",
+      "title": "Invasion of the Drunks",
+      "imageUrl": "invasion-of-the-drunks-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "issy-the-atomic-companion",
+      "title": "Issy: The Atomic Companion",
+      "imageUrl": "Issy-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "jigoku",
+      "title": "Jigoku",
+      "imageUrl": "jigoku.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "jobar",
+      "title": "Jobar",
+      "imageUrl": "jobar.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "jumbo-portions",
+      "title": "Jumbo Portions",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "junga-ray",
+      "title": "Junga Ray",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "jungle-bust",
+      "title": "Jungle Bust",
+      "imageUrl": "Jungle-bust-el-5-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "jungle-land",
+      "title": "Jungle Land",
+      "imageUrl": "l.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "jungle-tempo",
+      "title": "Jungle Tempo",
+      "imageUrl": "Jungle-Tempo-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "kelzon-v",
+      "title": "Kelzon V",
+      "imageUrl": "Jungle-bust-el-5-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "kemuri",
+      "title": "Kemuri",
+      "imageUrl": "kemuri.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "killagor",
+      "title": "Killagor",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "kirunam",
+      "title": "Kirunam",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "kondowari",
+      "title": "Kondowari",
+      "imageUrl": "kondowari.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "leisure-time",
+      "title": "Leisure Time",
+      "imageUrl": "leisuretimecropped-copy1.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "long-beach-short-stop",
+      "title": "Long Beach Short Stop",
+      "imageUrl": "long-beach-short-stop-6.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "maakclops",
+      "title": "Maakclops",
+      "imageUrl": "maakclops.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "mao-mao-ting",
+      "title": "Mao Mao Ting",
+      "imageUrl": "mao-mao-ting.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "marcia-ball",
+      "title": "Marcia Ball",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "marooned",
+      "title": "Marooned",
+      "imageUrl": "marooned-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "marshmallow-pops",
+      "title": "Marshmallow Pops",
+      "imageUrl": "marshmallowpops-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "masons",
+      "title": "Masons",
+      "imageUrl": "masonscropped-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "meiwaku",
+      "title": "Meiwaku",
+      "imageUrl": "meiwaku.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "mid-flight-connection",
+      "title": "Mid-Flight Connection",
+      "imageUrl": "midflight-connection-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "misakimo",
+      "title": "Misakimo",
+      "imageUrl": "k.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "mogul-cigarettes",
+      "title": "Mogul Cigarettes",
+      "imageUrl": "mogul-cigarettes-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "monkey-sunset",
+      "title": "Monkey Sunset",
+      "imageUrl": "Monkey-Sunset-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "nangon-and-sadas",
+      "title": "Nangon and Sadas",
+      "imageUrl": "nangon-and-sadas.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "near-arrangement",
+      "title": "Near Arrangement",
+      "imageUrl": "near-arrangement-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "normal-gods",
+      "title": "Normal Gods",
+      "imageUrl": "normal-gods-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "ocamehocta",
+      "title": "Ocamehocta",
+      "imageUrl": "ocamehocta.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "odoroita-sakana",
+      "title": "Odoroita Sakana",
+      "imageUrl": "OdoritaSakana.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "old-salt",
+      "title": "Old Salt",
+      "imageUrl": "oldsalt-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "osore",
+      "title": "Osore",
+      "imageUrl": "osore.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "pollack-jr",
+      "title": "Pollack Jr.",
+      "imageUrl": "pollockjr.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "quadroclops",
+      "title": "Quadroclops",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "quo-quan-dang",
+      "title": "Quo Quan Dang",
+      "imageUrl": "d.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "raintree-county",
+      "title": "Raintree County",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "random-house",
+      "title": "Random House",
+      "imageUrl": "random-house-6.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "regador-v",
+      "title": "Regador V",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "ring-of-horns",
+      "title": "Ring of Horns",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "rothko-jr",
+      "title": "Rothko Jr.",
+      "imageUrl": "rothmonster-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "scaramouche",
+      "title": "Scaramouche",
+      "imageUrl": "Scaramouche-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "silent-flute",
+      "title": "Silent Flute",
+      "imageUrl": "l.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "south-congress-dusk",
+      "title": "South Congress Dusk",
+      "imageUrl": null,
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "southern-belle",
+      "title": "Southern Belle",
+      "imageUrl": "southern-belle-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "square-eggs",
+      "title": "Square Eggs",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "steamy-the-flavor-genie",
+      "title": "Steamy the Flavor Genie",
+      "imageUrl": "Steamy-the-flavor-genie-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "strange-delights",
+      "title": "Strange Delights",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "takodon",
+      "title": "Takodon",
+      "imageUrl": "k.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "tales-of-a-chinese-sailor",
+      "title": "Tales of a Chinese Sailor",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "terrordon",
+      "title": "Terrordon",
+      "imageUrl": "terrordon.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-18-000th-hole",
+      "title": "The 18,000th Hole",
+      "imageUrl": "l.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-aquarium",
+      "title": "The Aquarium",
+      "imageUrl": "the-aquarium-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-balloon-cats-ii",
+      "title": "The Balloon Cats II",
+      "imageUrl": "l.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-blue-elephant-lounge",
+      "title": "The Blue Elephant Lounge",
+      "imageUrl": "The-blue-elephant-lounge-.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-blue-hour",
+      "title": "The Blue Hour",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-brimstone-club",
+      "title": "The Brimstone Club",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-broken-record",
+      "title": "The Broken Record",
+      "imageUrl": "brokenrecord-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-butter-and-egg-man",
+      "title": "The Butter and Egg Man",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-carters",
+      "title": "The Carters",
+      "imageUrl": "thecarters.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-cat-bird-seat",
+      "title": "The Cat Bird Seat",
+      "imageUrl": "the-catbird-seat-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-cats-of-the-colosseum",
+      "title": "The Cats of the Colosseum",
+      "imageUrl": "the-cats-of-the-colloseum-copy3.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-copper-state",
+      "title": "The Copper State",
+      "imageUrl": "the-copper-state-6.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-dawn-of-the-dinosaur",
+      "title": "The Dawn of the Dinosaur",
+      "imageUrl": "dinolandtwocropped-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-drunkenville-carnival",
+      "title": "The Drunkenville Carnival",
+      "imageUrl": "The-Drunkeville-Carnival-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-end-of-austin",
+      "title": "The End of Austin",
+      "imageUrl": "f.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-film-student",
+      "title": "The Film Student",
+      "imageUrl": "l.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-great-all-stars",
+      "title": "The Great All Stars",
+      "imageUrl": "THE-GREAT-ALL-STARS-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-greeting-card-machine",
+      "title": "The Greeting Card Machine",
+      "imageUrl": "greetingcardmachine-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-hell-that-is-monkey-island",
+      "title": "The Hell that is Monkey Island",
+      "imageUrl": "l.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-hunger-artist",
+      "title": "The Hunger Artist",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-hunting-accident",
+      "title": "The Hunting Accident",
+      "imageUrl": "the-hunting-accident-13-x-16-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-martian",
+      "title": "The Martian",
+      "imageUrl": "themartian1-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-martian-ii",
+      "title": "The Martian II",
+      "imageUrl": "themartian2-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-midwood-seamstress",
+      "title": "The Midwood Seamstress",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-narrative",
+      "title": "The Narrative",
+      "imageUrl": "the-narrative.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-niece-of-murder-she-wrote",
+      "title": "The Niece of 'Murder, She Wrote'",
+      "imageUrl": "the-niece-of-murder-she-wrote-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-northern-friend",
+      "title": "The Northern Friend",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-persistence-of-cats",
+      "title": "The Persistence of Cats",
+      "imageUrl": "2019cats-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-production",
+      "title": "The Production",
+      "imageUrl": "the-production-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-red-mood",
+      "title": "The Red Mood",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-sound-of-the-wb",
+      "title": "The Sound of the WB",
+      "imageUrl": "f.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-teapot-ride",
+      "title": "The Teapot Ride",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "the-watering-hole",
+      "title": "The Watering Hole",
+      "imageUrl": "The-watering-hole-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "today-atomic-sunrise",
+      "title": "Today (Atomic Sunrise)",
+      "imageUrl": "2019today-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "tonga-joy",
+      "title": "Tonga Joy",
+      "imageUrl": "a.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "trimegadon",
+      "title": "Trimegadon",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "tuesday-charmer",
+      "title": "Tuesday Charmer",
+      "imageUrl": "Tuesday-Charmer6.5-x8.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "tuffy-and-the-imaginary-flying-cat-head",
+      "title": "Tuffy and the Imaginary Flying Cat Head",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "utaho",
+      "title": "Utaho",
+      "imageUrl": "utaho.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "wisdom-coffee",
+      "title": "Wisdom Coffee",
+      "imageUrl": "f.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "wise-bird",
+      "title": "Wise Bird",
+      "imageUrl": "wisebirdcropped-copy.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    },
+    {
+      "slug": "women-and-ladders",
+      "title": "Women and Ladders",
+      "imageUrl": "r.jpg",
+      "gallerySeries": "Neon Americana",
+      "year": "2024",
+      "draft": false
+    }
+  ],
+  "media": [
+    {
+      "publicId": "2",
+      "artworkSlug": null,
+      "basename": "2"
+    },
+    {
+      "publicId": "2019cats-copy",
+      "artworkSlug": "the-persistence-of-cats",
+      "basename": "2019cats-copy"
+    },
+    {
+      "publicId": "2019today-copy",
+      "artworkSlug": "today",
+      "basename": "2019today-copy"
+    },
+    {
+      "publicId": "3-eyes-perculator-he4599AA-copy",
+      "artworkSlug": "chivonyx-and-ganzitodon",
+      "basename": "3-eyes-perculator-he4599aa-copy"
+    },
+    {
+      "publicId": "78704",
+      "artworkSlug": "austin-78704-south-austin-zip",
+      "basename": "78704"
+    },
+    {
+      "publicId": "a",
+      "artworkSlug": null,
+      "basename": "a"
+    },
+    {
+      "publicId": "a-trip-to-boozeville-copy",
+      "artworkSlug": "a-trip-to-boozeville",
+      "basename": "a-trip-to-boozeville-copy"
+    },
+    {
+      "publicId": "a1",
+      "artworkSlug": "the-teapot-ride",
+      "basename": "a1"
+    },
+    {
+      "publicId": "Abstract001-copy",
+      "artworkSlug": "women-and-ladders",
+      "basename": "abstract001-copy"
+    },
+    {
+      "publicId": "adventures-in-illustration-copy",
+      "artworkSlug": "adventures-in-illustration",
+      "basename": "adventures-in-illustration-copy"
+    },
+    {
+      "publicId": "Agave-Patch-Mescal-copy",
+      "artworkSlug": "agave-patch",
+      "basename": "agave-patch-mescal-copy"
+    },
+    {
+      "publicId": "austin",
+      "artworkSlug": "austin-carnival",
+      "basename": "austin"
+    },
+    {
+      "publicId": "austin-Recovered-copy",
+      "artworkSlug": "gnarldred",
+      "basename": "austin-recovered-copy"
+    },
+    {
+      "publicId": "austin2019-copy",
+      "artworkSlug": "austin-2019",
+      "basename": "austin2019-copy"
+    },
+    {
+      "publicId": "austinpostcard",
+      "artworkSlug": "austin-postcard",
+      "basename": "austinpostcard"
+    },
+    {
+      "publicId": "b",
+      "artworkSlug": "the-end-of-austin",
+      "basename": "b"
+    },
+    {
+      "publicId": "bar-copy",
+      "artworkSlug": "the-red-mood",
+      "basename": "bar-copy"
+    },
+    {
+      "publicId": "beatbop",
+      "artworkSlug": "beat-bop",
+      "basename": "beatbop"
+    },
+    {
+      "publicId": "Beaver-Holiday-copy",
+      "artworkSlug": "beaver-holiday",
+      "basename": "beaver-holiday-copy"
+    },
+    {
+      "publicId": "blind-monkey-copy",
+      "artworkSlug": "blind-monkey",
+      "basename": "blind-monkey-copy"
+    },
+    {
+      "publicId": "bluenilecropped-copy",
+      "artworkSlug": "blue-nile",
+      "basename": "bluenilecropped-copy"
+    },
+    {
+      "publicId": "boyhood-explorers-6",
+      "artworkSlug": "jungle-tempo",
+      "basename": "boyhood-explorers-6"
+    },
+    {
+      "publicId": "brimstone-club-",
+      "artworkSlug": "the-brimstone-club",
+      "basename": "brimstone-club-"
+    },
+    {
+      "publicId": "brokenrecord-copy",
+      "artworkSlug": null,
+      "basename": "brokenrecord-copy"
+    },
+    {
+      "publicId": "buffalo-copy",
+      "artworkSlug": "ring-of-horns",
+      "basename": "buffalo-copy"
+    },
+    {
+      "publicId": "Butter-and-Egg-Man-6.5-x-8",
+      "artworkSlug": "the-butter-and-egg-man",
+      "basename": "butter-and-egg-man-6.5-x-8"
+    },
+    {
+      "publicId": "cave-dance-copy",
+      "artworkSlug": "cave-dance",
+      "basename": "cave-dance-copy"
+    },
+    {
+      "publicId": "CHEMICO-copy",
+      "artworkSlug": "chemico",
+      "basename": "chemico-copy"
+    },
+    {
+      "publicId": "closing-night-copy",
+      "artworkSlug": "closing-night",
+      "basename": "closing-night-copy"
+    },
+    {
+      "publicId": "clownwframe-copy",
+      "artworkSlug": "clown-snacks",
+      "basename": "clownwframe-copy"
+    },
+    {
+      "publicId": "cocoabear-copy",
+      "artworkSlug": "cocoa-bear-cereal",
+      "basename": "cocoabear-copy"
+    },
+    {
+      "publicId": "cornflower-12",
+      "artworkSlug": "cornflower",
+      "basename": "cornflower-12"
+    },
+    {
+      "publicId": "crab-copy",
+      "artworkSlug": "tonga-joy",
+      "basename": "crab-copy"
+    },
+    {
+      "publicId": "Cyclosquid-6353-copy",
+      "artworkSlug": "junga-ray",
+      "basename": "cyclosquid-6353-copy"
+    },
+    {
+      "publicId": "Cyclosquid-6353-copy1",
+      "artworkSlug": null,
+      "basename": "cyclosquid-6353-copy1"
+    },
+    {
+      "publicId": "d",
+      "artworkSlug": "austin-camouflage",
+      "basename": "d"
+    },
+    {
+      "publicId": "dairygossip-",
+      "artworkSlug": "dairy-gossip",
+      "basename": "dairygossip-"
+    },
+    {
+      "publicId": "dinolandcropped-copy1",
+      "artworkSlug": null,
+      "basename": "dinolandcropped-copy1"
+    },
+    {
+      "publicId": "dinolandtwocropped-copy",
+      "artworkSlug": null,
+      "basename": "dinolandtwocropped-copy"
+    },
+    {
+      "publicId": "drebbles-copy",
+      "artworkSlug": "drebbles",
+      "basename": "drebbles-copy"
+    },
+    {
+      "publicId": "e",
+      "artworkSlug": null,
+      "basename": "e"
+    },
+    {
+      "publicId": "el-pajaro-de-los-dulces-magicos-copy",
+      "artworkSlug": "el-pajaro-de-los-dulces-magicos",
+      "basename": "el-pajaro-de-los-dulces-magicos-copy"
+    },
+    {
+      "publicId": "empopatya",
+      "artworkSlug": "empopatya",
+      "basename": "empopatya"
+    },
+    {
+      "publicId": "eye-copy",
+      "artworkSlug": "takodon",
+      "basename": "eye-copy"
+    },
+    {
+      "publicId": "f",
+      "artworkSlug": "marcia-ball",
+      "basename": "f"
+    },
+    {
+      "publicId": "film-student-copy",
+      "artworkSlug": "the-film-student",
+      "basename": "film-student-copy"
+    },
+    {
+      "publicId": "final-image-three-ideas-hunger-artist-copy",
+      "artworkSlug": "the-hunger-artist",
+      "basename": "final-image-three-ideas-hunger-artist-copy"
+    },
+    {
+      "publicId": "Four-Eyes-6337-copy",
+      "artworkSlug": "quadroclops",
+      "basename": "four-eyes-6337-copy"
+    },
+    {
+      "publicId": "gaurdon",
+      "artworkSlug": "gaurdon",
+      "basename": "gaurdon"
+    },
+    {
+      "publicId": "gianondor",
+      "artworkSlug": null,
+      "basename": "gianondor"
+    },
+    {
+      "publicId": "gianondor/1789246328894-upload-test.png",
+      "artworkSlug": "gianondor",
+      "basename": "1789246328894-upload-test"
+    },
+    {
+      "publicId": "gondeoleu",
+      "artworkSlug": "gondoleu",
+      "basename": "gondeoleu"
+    },
+    {
+      "publicId": "greasytodd-copy",
+      "artworkSlug": "greasy-todd",
+      "basename": "greasytodd-copy"
+    },
+    {
+      "publicId": "greetingcardmachine-copy",
+      "artworkSlug": null,
+      "basename": "greetingcardmachine-copy"
+    },
+    {
+      "publicId": "GreetingsfromAustin",
+      "artworkSlug": "the-greeting-card-machine",
+      "basename": "greetingsfromaustin"
+    },
+    {
+      "publicId": "GreetingsfromTexas",
+      "artworkSlug": null,
+      "basename": "greetingsfromtexas"
+    },
+    {
+      "publicId": "harvestorange-copy",
+      "artworkSlug": "harvest-orange",
+      "basename": "harvestorange-copy"
+    },
+    {
+      "publicId": "heartbreak-forest-copy",
+      "artworkSlug": "heartbreak-forest",
+      "basename": "heartbreak-forest-copy"
+    },
+    {
+      "publicId": "heavenlyham-copy",
+      "artworkSlug": "heavenly-ham",
+      "basename": "heavenlyham-copy"
+    },
+    {
+      "publicId": "Hell-Party-copy",
+      "artworkSlug": "hell-party",
+      "basename": "hell-party-copy"
+    },
+    {
+      "publicId": "image-wp-flutesnake-copy",
+      "artworkSlug": "silent-flute",
+      "basename": "image-wp-flutesnake-copy"
+    },
+    {
+      "publicId": "invasion-of-the-drunks-copy",
+      "artworkSlug": "invasion-of-the-drunks",
+      "basename": "invasion-of-the-drunks-copy"
+    },
+    {
+      "publicId": "Issy-copy",
+      "artworkSlug": "issy",
+      "basename": "issy-copy"
+    },
+    {
+      "publicId": "jackalcropped-copy",
+      "artworkSlug": null,
+      "basename": "jackalcropped-copy"
+    },
+    {
+      "publicId": "jigoku",
+      "artworkSlug": "jigoku",
+      "basename": "jigoku"
+    },
+    {
+      "publicId": "JIMMYS-DILEMMA-copy",
+      "artworkSlug": null,
+      "basename": "jimmys-dilemma-copy"
+    },
+    {
+      "publicId": "jobar",
+      "artworkSlug": "jobar",
+      "basename": "jobar"
+    },
+    {
+      "publicId": "jumbo",
+      "artworkSlug": null,
+      "basename": "jumbo"
+    },
+    {
+      "publicId": "jumbop",
+      "artworkSlug": "jumbo-portions",
+      "basename": "jumbop"
+    },
+    {
+      "publicId": "Jungle-bust-el-5-copy",
+      "artworkSlug": "jungle-bust",
+      "basename": "jungle-bust-el-5-copy"
+    },
+    {
+      "publicId": "Jungle-Tempo-copy",
+      "artworkSlug": null,
+      "basename": "jungle-tempo-copy"
+    },
+    {
+      "publicId": "junglelandcropped-copy",
+      "artworkSlug": "jungle-land",
+      "basename": "junglelandcropped-copy"
+    },
+    {
+      "publicId": "k",
+      "artworkSlug": "quo-quan-dang",
+      "basename": "k"
+    },
+    {
+      "publicId": "kemuri",
+      "artworkSlug": "kemuri",
+      "basename": "kemuri"
+    },
+    {
+      "publicId": "kirunan",
+      "artworkSlug": "kirunam",
+      "basename": "kirunan"
+    },
+    {
+      "publicId": "kondowari",
+      "artworkSlug": "kondowari",
+      "basename": "kondowari"
+    },
+    {
+      "publicId": "l",
+      "artworkSlug": "tales-of-a-chinese-sailor",
+      "basename": "l"
+    },
+    {
+      "publicId": "leisuretimecropped-copy1",
+      "artworkSlug": null,
+      "basename": "leisuretimecropped-copy1"
+    },
+    {
+      "publicId": "long-beach-short-stop-6",
+      "artworkSlug": "long-beach-short-stop",
+      "basename": "long-beach-short-stop-6"
+    },
+    {
+      "publicId": "marooned-copy",
+      "artworkSlug": "marooned",
+      "basename": "marooned-copy"
+    },
+    {
+      "publicId": "marshmallowpops-copy",
+      "artworkSlug": "marshmallow-pops",
+      "basename": "marshmallowpops-copy"
+    },
+    {
+      "publicId": "masonscropped-copy",
+      "artworkSlug": "masons",
+      "basename": "masonscropped-copy"
+    },
+    {
+      "publicId": "meiwaku",
+      "artworkSlug": "meiwaku",
+      "basename": "meiwaku"
+    },
+    {
+      "publicId": "MESHU-TORA",
+      "artworkSlug": null,
+      "basename": "meshu-tora"
+    },
+    {
+      "publicId": "midflight-connection-copy",
+      "artworkSlug": "mid-flight-connection",
+      "basename": "midflight-connection-copy"
+    },
+    {
+      "publicId": "misakamo",
+      "artworkSlug": "misakimo",
+      "basename": "misakamo"
+    },
+    {
+      "publicId": "mogul-cigarettes-copy",
+      "artworkSlug": "mogul-cigarettes",
+      "basename": "mogul-cigarettes-copy"
+    },
+    {
+      "publicId": "Monkey-Sunset-copy",
+      "artworkSlug": "monkey-sunset",
+      "basename": "monkey-sunset-copy"
+    },
+    {
+      "publicId": "moo-goo-gai-pan-copy",
+      "artworkSlug": null,
+      "basename": "moo-goo-gai-pan-copy"
+    },
+    {
+      "publicId": "mouth-copy",
+      "artworkSlug": "killagor",
+      "basename": "mouth-copy"
+    },
+    {
+      "publicId": "NANGON-AND-PATACHI",
+      "artworkSlug": null,
+      "basename": "nangon-and-patachi"
+    },
+    {
+      "publicId": "near-arrangement-copy",
+      "artworkSlug": "near-arrangement",
+      "basename": "near-arrangement-copy"
+    },
+    {
+      "publicId": "near-arrangement-copy1",
+      "artworkSlug": null,
+      "basename": "near-arrangement-copy1"
+    },
+    {
+      "publicId": "NEKKOMATU",
+      "artworkSlug": null,
+      "basename": "nekkomatu"
+    },
+    {
+      "publicId": "NOMAKA-",
+      "artworkSlug": null,
+      "basename": "nomaka-"
+    },
+    {
+      "publicId": "normal-gods-copy",
+      "artworkSlug": "normal-gods",
+      "basename": "normal-gods-copy"
+    },
+    {
+      "publicId": "northernfriend-copy",
+      "artworkSlug": "the-northern-friend",
+      "basename": "northernfriend-copy"
+    },
+    {
+      "publicId": "oblong-copy",
+      "artworkSlug": null,
+      "basename": "oblong-copy"
+    },
+    {
+      "publicId": "octodino-Recovered-copy",
+      "artworkSlug": null,
+      "basename": "octodino-recovered-copy"
+    },
+    {
+      "publicId": "octodino-Recovered-copy-1",
+      "artworkSlug": "gleesnod-and-collasaur",
+      "basename": "octodino-recovered-copy-1"
+    },
+    {
+      "publicId": "OdoritaSakana",
+      "artworkSlug": "odoroita-sakana",
+      "basename": "odoritasakana"
+    },
+    {
+      "publicId": "oldsalt-copy",
+      "artworkSlug": "old-salt",
+      "basename": "oldsalt-copy"
+    },
+    {
+      "publicId": "osore",
+      "artworkSlug": "osore",
+      "basename": "osore"
+    },
+    {
+      "publicId": "person-to-person-copy",
+      "artworkSlug": null,
+      "basename": "person-to-person-copy"
+    },
+    {
+      "publicId": "pollockjr",
+      "artworkSlug": "pollack-jr",
+      "basename": "pollockjr"
+    },
+    {
+      "publicId": "r",
+      "artworkSlug": null,
+      "basename": "r"
+    },
+    {
+      "publicId": "raintree-wallpaper-6.5-x-8",
+      "artworkSlug": "raintree-county",
+      "basename": "raintree-wallpaper-6.5-x-8"
+    },
+    {
+      "publicId": "random-house-6",
+      "artworkSlug": "random-house",
+      "basename": "random-house-6"
+    },
+    {
+      "publicId": "Red-Eye-Mantasaurus-6348-copy",
+      "artworkSlug": "regador-5",
+      "basename": "red-eye-mantasaurus-6348-copy"
+    },
+    {
+      "publicId": "robot-copy-1",
+      "artworkSlug": "kelzon-5",
+      "basename": "robot-copy-1"
+    },
+    {
+      "publicId": "Rory-Skagen-Photo",
+      "artworkSlug": null,
+      "basename": "rory-skagen-photo"
+    },
+    {
+      "publicId": "rothmonster-copy",
+      "artworkSlug": "cry-sing-lon",
+      "basename": "rothmonster-copy"
+    },
+    {
+      "publicId": "Scaramouche-copy",
+      "artworkSlug": "scaramouche",
+      "basename": "scaramouche-copy"
+    },
+    {
+      "publicId": "sound-of-the-WB-copy",
+      "artworkSlug": "the-sound-of-the-wb",
+      "basename": "sound-of-the-wb-copy"
+    },
+    {
+      "publicId": "southern-belle-copy",
+      "artworkSlug": "southern-belle",
+      "basename": "southern-belle-copy"
+    },
+    {
+      "publicId": "spot-copy",
+      "artworkSlug": null,
+      "basename": "spot-copy"
+    },
+    {
+      "publicId": "starwars-copy",
+      "artworkSlug": null,
+      "basename": "starwars-copy"
+    },
+    {
+      "publicId": "starwars-Recovered-copy",
+      "artworkSlug": "cyborg-robots-and-aliens",
+      "basename": "starwars-recovered-copy"
+    },
+    {
+      "publicId": "Steamy-the-flavor-genie-copy",
+      "artworkSlug": "steamy-the-flavor-genie",
+      "basename": "steamy-the-flavor-genie-copy"
+    },
+    {
+      "publicId": "stewed-gorilla-copy",
+      "artworkSlug": null,
+      "basename": "stewed-gorilla-copy"
+    },
+    {
+      "publicId": "stormyweather-copy",
+      "artworkSlug": null,
+      "basename": "stormyweather-copy"
+    },
+    {
+      "publicId": "stormyweather-copy-1",
+      "artworkSlug": "an-insincere-call",
+      "basename": "stormyweather-copy-1"
+    },
+    {
+      "publicId": "strange-delight-6",
+      "artworkSlug": "strange-delights",
+      "basename": "strange-delight-6"
+    },
+    {
+      "publicId": "teacropped-copy",
+      "artworkSlug": "frog-tea",
+      "basename": "teacropped-copy"
+    },
+    {
+      "publicId": "terrordon",
+      "artworkSlug": "terrordon",
+      "basename": "terrordon"
+    },
+    {
+      "publicId": "the-180000-hole-copy",
+      "artworkSlug": "the-18000th-whole",
+      "basename": "the-180000-hole-copy"
+    },
+    {
+      "publicId": "the-aquarium-copy",
+      "artworkSlug": "the-aquarium",
+      "basename": "the-aquarium-copy"
+    },
+    {
+      "publicId": "the-aquarium-copy1",
+      "artworkSlug": null,
+      "basename": "the-aquarium-copy1"
+    },
+    {
+      "publicId": "The-blue-elephant-lounge-",
+      "artworkSlug": "the-blue-elephant-lounge",
+      "basename": "the-blue-elephant-lounge-"
+    },
+    {
+      "publicId": "the-catbird-seat-copy",
+      "artworkSlug": "the-cat-bird-seat",
+      "basename": "the-catbird-seat-copy"
+    },
+    {
+      "publicId": "the-cats-of-the-colloseum-copy3",
+      "artworkSlug": "the-cats-of-the-colloseum",
+      "basename": "the-cats-of-the-colloseum-copy3"
+    },
+    {
+      "publicId": "the-copper-state-6",
+      "artworkSlug": "the-copper-state",
+      "basename": "the-copper-state-6"
+    },
+    {
+      "publicId": "The-Drunkeville-Carnival-copy",
+      "artworkSlug": null,
+      "basename": "the-drunkeville-carnival-copy"
+    },
+    {
+      "publicId": "THE-GREAT-ALL-STARS-copy",
+      "artworkSlug": "the-great-all-stars",
+      "basename": "the-great-all-stars-copy"
+    },
+    {
+      "publicId": "THE-HELL-THAT-IS-MONK11C8D-copy",
+      "artworkSlug": "the-hell-that-is-monkey-island",
+      "basename": "the-hell-that-is-monk11c8d-copy"
+    },
+    {
+      "publicId": "the-hunting-accident-13-x-16-copy",
+      "artworkSlug": "the-hunting-accident",
+      "basename": "the-hunting-accident-13-x-16-copy"
+    },
+    {
+      "publicId": "the-narrative",
+      "artworkSlug": "the-narrative",
+      "basename": "the-narrative"
+    },
+    {
+      "publicId": "the-niece-of-murder-she-wrote-copy",
+      "artworkSlug": "the-niece-of-murder-she-wrote",
+      "basename": "the-niece-of-murder-she-wrote-copy"
+    },
+    {
+      "publicId": "the-production-copy",
+      "artworkSlug": "the-production",
+      "basename": "the-production-copy"
+    },
+    {
+      "publicId": "The-watering-hole-copy",
+      "artworkSlug": "the-watering-hole",
+      "basename": "the-watering-hole-copy"
+    },
+    {
+      "publicId": "thecarters",
+      "artworkSlug": "the-carters",
+      "basename": "thecarters"
+    },
+    {
+      "publicId": "themartian1-copy",
+      "artworkSlug": "the-martian-2",
+      "basename": "themartian1-copy"
+    },
+    {
+      "publicId": "themartian2-copy",
+      "artworkSlug": null,
+      "basename": "themartian2-copy"
+    },
+    {
+      "publicId": "tipsy-island-copy-2",
+      "artworkSlug": null,
+      "basename": "tipsy-island-copy-2"
+    },
+    {
+      "publicId": "Trisaurusmouth-6341-copy",
+      "artworkSlug": "trimegadon",
+      "basename": "trisaurusmouth-6341-copy"
+    },
+    {
+      "publicId": "Tuesday-Charmer6.5-x8",
+      "artworkSlug": "tuesday-charmer",
+      "basename": "tuesday-charmer6.5-x8"
+    },
+    {
+      "publicId": "Tuffy-and-the-imaginary-fly-cat-head-copy",
+      "artworkSlug": "tuffy-and-the-imaginary-flying-cat-head",
+      "basename": "tuffy-and-the-imaginary-fly-cat-head-copy"
+    },
+    {
+      "publicId": "Untitled-1-copy",
+      "artworkSlug": "the-blue-hour",
+      "basename": "untitled-1-copy"
+    },
+    {
+      "publicId": "utaho",
+      "artworkSlug": "utaho",
+      "basename": "utaho"
+    },
+    {
+      "publicId": "wisdom-coffee-copy",
+      "artworkSlug": "wisdom-cofee",
+      "basename": "wisdom-coffee-copy"
+    },
+    {
+      "publicId": "wisebirdcropped-copy",
+      "artworkSlug": "wise-bird",
+      "basename": "wisebirdcropped-copy"
+    },
+    {
+      "publicId": "YOKAI",
+      "artworkSlug": null,
+      "basename": "yokai"
+    }
+  ]
+}
