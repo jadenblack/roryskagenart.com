@@ -1,0 +1,4411 @@
+{
+  "generatedAt": "2026-09-15T17:16:37.071Z",
+  "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+  "stats": {
+    "tablesRead": [
+      "kZRTSN_aioseo_posts",
+      "kZRTSN_ngg_gallery",
+      "kZRTSN_ngg_pictures",
+      "kZRTSN_postmeta",
+      "kZRTSN_posts",
+      "kZRTSN_term_relationships",
+      "kZRTSN_term_taxonomy",
+      "kZRTSN_terms"
+    ],
+    "postRows": 728,
+    "posts": 62,
+    "drafts": 0,
+    "postsWithBody": 62,
+    "postsWithImages": 62,
+    "multiImagePosts": 38,
+    "maxImagesOnOnePost": 21,
+    "distinctImageRefs": 174,
+    "postsWithAuthoredAlt": 5,
+    "attachments": 358,
+    "attachmentsWithAlt": 2,
+    "nextgenPictures": 25,
+    "nextgenPicturesWithAuthoredAlt": 13,
+    "nextgenPicturesLinkedToPost": 13,
+    "nextgenGalleries": 6,
+    "categoriesInUse": 10,
+    "termRelationships": 600,
+    "seoRows": 423,
+    "seoRowsWithAuthoredText": 0
+  },
+  "summary": {
+    "total": 62,
+    "NEW": 60,
+    "EXISTS": 2,
+    "COLLISION": 0,
+    "withNeedsUpload": 61,
+    "needsUploadCount": 168,
+    "unavailableCount": 0,
+    "withoutImage": 0,
+    "mergedByDedupe": 2
+  },
+  "taxonomy": [
+    {
+      "slug": "interior",
+      "name": "Interior",
+      "role": "project-type",
+      "postCount": 40,
+      "note": "describes what the work is — belongs in a `project_type` dimension"
+    },
+    {
+      "slug": "business",
+      "name": "Business",
+      "role": "project-type",
+      "postCount": 32,
+      "note": "describes what the work is — belongs in a `project_type` dimension"
+    },
+    {
+      "slug": "exterior",
+      "name": "Exterior",
+      "role": "project-type",
+      "postCount": 20,
+      "note": "describes what the work is — belongs in a `project_type` dimension"
+    },
+    {
+      "slug": "restaurant",
+      "name": "Restaurant",
+      "role": "project-type",
+      "postCount": 13,
+      "note": "describes what the work is — belongs in a `project_type` dimension"
+    },
+    {
+      "slug": "event",
+      "name": "Event",
+      "role": "project-type",
+      "postCount": 12,
+      "note": "describes what the work is — belongs in a `project_type` dimension"
+    },
+    {
+      "slug": "retail",
+      "name": "Retail",
+      "role": "project-type",
+      "postCount": 8,
+      "note": "describes what the work is — belongs in a `project_type` dimension"
+    },
+    {
+      "slug": "featured",
+      "name": "Featured",
+      "role": "curation",
+      "postCount": 6,
+      "note": "describes where the work is shown — a curation flag, not a project type"
+    },
+    {
+      "slug": "signage",
+      "name": "Signage",
+      "role": "project-type",
+      "postCount": 5,
+      "note": "describes what the work is — belongs in a `project_type` dimension"
+    },
+    {
+      "slug": "home",
+      "name": "Home",
+      "role": "curation",
+      "postCount": 3,
+      "note": "describes where the work is shown — a curation flag, not a project type"
+    },
+    {
+      "slug": "museum",
+      "name": "Museum",
+      "role": "project-type",
+      "postCount": 3,
+      "note": "describes what the work is — belongs in a `project_type` dimension"
+    }
+  ],
+  "records": [
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/360-condominiums/index.html",
+      "title": "360 Condominiums",
+      "category": "business",
+      "slugCandidate": "360-condominiums",
+      "canonicalSlug": null,
+      "proposedSlug": "360-condominiums",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "bluewall-copy-e1423422381396",
+          "ref": "2015/02/bluewall-copy-e1423422381396.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/bluewall-copy-e1423422381396.jpg"
+        },
+        {
+          "basename": "bluewall-copy",
+          "ref": "2015/02/bluewall-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/bluewall-copy.jpg"
+        },
+        {
+          "basename": "redwall-copy-e1423422992497",
+          "ref": "2015/02/redwall-copy-e1423422992497.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/redwall-copy-e1423422992497.jpg"
+        },
+        {
+          "basename": "redwall-copy",
+          "ref": "2015/02/redwall-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/redwall-copy.jpg"
+        },
+        {
+          "basename": "rwall-e1423423163269",
+          "ref": "2015/02/rwall-e1423423163269.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/rwall-e1423423163269.jpg"
+        },
+        {
+          "basename": "rwall",
+          "ref": "2015/02/rwall.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/rwall.jpg"
+        },
+        {
+          "basename": "willie-copy-e1423423231417",
+          "ref": "2015/02/willie-copy-e1423423231417.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/willie-copy-e1423423231417.jpg"
+        },
+        {
+          "basename": "willie-copy",
+          "ref": "2015/02/willie-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/willie-copy.jpg"
+        },
+        {
+          "basename": "yellowwall-copy-e1423422899567",
+          "ref": "2015/02/yellowwall-copy-e1423422899567.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/yellowwall-copy-e1423422899567.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/70s-mural/index.html",
+      "title": "70's Mural",
+      "category": "event",
+      "slugCandidate": "70s-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "70s-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "70s_mural_1",
+          "ref": "2010/03/70s_mural_1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/70s_mural_1.jpg"
+        },
+        {
+          "basename": "70s_mural_2",
+          "ref": "2010/03/70s_mural_2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/70s_mural_2.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "home/andy-roddick-mural/index.html",
+      "title": "Andy Roddick Mural",
+      "category": "home",
+      "slugCandidate": "andy-roddick-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "andy-roddick-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "andy_roddick_blue_wall",
+          "ref": "2010/03/andy_roddick_blue_wall.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_blue_wall.jpg"
+        },
+        {
+          "basename": "andy_roddick_di",
+          "ref": "2010/03/andy_roddick_di.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_di.jpg"
+        },
+        {
+          "basename": "andy_roddick_elton",
+          "ref": "2010/03/andy_roddick_elton.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_elton.jpg"
+        },
+        {
+          "basename": "andy_roddick_mj-copy",
+          "ref": "2010/03/andy_roddick_mj-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_mj-copy.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/austin-childrens-museum/index.html",
+      "title": "Austin Children's Museum",
+      "category": "business",
+      "slugCandidate": "austin-childrens-museum",
+      "canonicalSlug": null,
+      "proposedSlug": "austin-childrens-museum",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "austin_childrens_museum_mural",
+          "ref": "2010/03/austin_childrens_museum_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/austin_childrens_museum_mural.jpg"
+        },
+        {
+          "basename": "austin_childrens_museum_mural_2",
+          "ref": "2010/03/austin_childrens_museum_mural_2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/austin_childrens_museum_mural_2.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/austin-postcard-mural/index.html",
+      "title": "Austin Postcard Mural",
+      "category": "featured",
+      "slugCandidate": "austin-postcard-mural",
+      "canonicalSlug": "austin-postcard",
+      "proposedSlug": null,
+      "classification": "EXISTS",
+      "matchKind": "known-dedupe",
+      "confidence": 1,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "austin_postcard_xmascard1",
+          "ref": "2011/01/austin_postcard_xmascard1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/austin_postcard_xmascard1.jpg"
+        },
+        {
+          "basename": "greetingstopper_1462-copy",
+          "ref": "2011/01/greetingsTOPPER_1462-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/greetingsTOPPER_1462-copy.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image",
+        "merged into `austin-postcard` by PRD_V3 §2 dedupe knowledge — the fuzzy matcher scored this below its gate and had classified it NEW"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/aztec-mural-for-casino-el-camino/index.html",
+      "title": "Aztec Mural for Casino El Camino",
+      "category": "restaurant",
+      "slugCandidate": "aztec-mural-for-casino-el-camino",
+      "canonicalSlug": null,
+      "proposedSlug": "aztec-mural-for-casino-el-camino",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "aztec_mural_22",
+          "ref": "2010/03/aztec_mural_22.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_22.jpg"
+        },
+        {
+          "basename": "aztec_mural_center3",
+          "ref": "2010/03/aztec_mural_center3.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_center3.jpg"
+        },
+        {
+          "basename": "aztec_mural_left3",
+          "ref": "2010/03/aztec_mural_left3.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_left3.jpg"
+        },
+        {
+          "basename": "aztec_mural_right3",
+          "ref": "2010/03/aztec_mural_right3.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_right3.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/beerland-mural/index.html",
+      "title": "Beerland Mural",
+      "category": "business",
+      "slugCandidate": "beerland-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "beerland-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "beerland_mural_lg1",
+          "ref": "2010/03/beerland_mural_lg1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/beerland_mural_lg1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/blue-ribbon-day-mural/index.html",
+      "title": "Blue Ribbon Day Mural",
+      "category": "event",
+      "slugCandidate": "blue-ribbon-day-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "blue-ribbon-day-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "blue_ribbon_day_mural1",
+          "ref": "2010/03/blue_ribbon_day_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/blue_ribbon_day_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/camp-bow-wow/index.html",
+      "title": "Camp Bow Wow",
+      "category": "business",
+      "slugCandidate": "camp-bow-wow",
+      "canonicalSlug": null,
+      "proposedSlug": "camp-bow-wow",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "camp_bow_wow_mural",
+          "ref": "2011/01/camp_bow_wow_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/camp_bow_wow_mural.jpg"
+        },
+        {
+          "basename": "camp_bow_wow_mural_2",
+          "ref": "2011/01/camp_bow_wow_mural_2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/camp_bow_wow_mural_2.jpg"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/capstar-mural/index.html",
+      "title": "Capstar Mural",
+      "category": "business",
+      "slugCandidate": "capstar-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "capstar-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "capstar_mural_lg2",
+          "ref": "2010/03/capstar_mural_lg2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/capstar_mural_lg2.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/casino-el-camino-mural/index.html",
+      "title": "Casino El Camino Mural",
+      "category": "restaurant",
+      "slugCandidate": "casino-el-camino-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "casino-el-camino-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "aztec_mural1",
+          "ref": "2010/03/aztec_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural1.jpg"
+        },
+        {
+          "basename": "aztec_mural_21",
+          "ref": "2010/03/aztec_mural_21.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_21.jpg"
+        },
+        {
+          "basename": "aztec_mural_center1",
+          "ref": "2010/03/aztec_mural_center1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_center1.jpg"
+        },
+        {
+          "basename": "aztec_mural_left1",
+          "ref": "2010/03/aztec_mural_left1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_left1.jpg"
+        },
+        {
+          "basename": "aztec_mural_right1",
+          "ref": "2010/03/aztec_mural_right1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_right1.jpg"
+        },
+        {
+          "basename": "casino_el_camino_2_mural1",
+          "ref": "2010/03/casino_el_camino_2_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/casino_el_camino_2_mural1.jpg"
+        },
+        {
+          "basename": "el_camino_mural_detail1",
+          "ref": "2010/03/el_camino_mural_detail1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/el_camino_mural_detail1.jpg"
+        },
+        {
+          "basename": "el_camino_mural_detail_21",
+          "ref": "2010/03/el_camino_mural_detail_21.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/el_camino_mural_detail_21.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/cezanne-mural/index.html",
+      "title": "Cezanne Mural",
+      "category": "business",
+      "slugCandidate": "cezanne-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "cezanne-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "central_market_site1",
+          "ref": "2010/03/central_market_site1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/central_market_site1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/cowboy-mural/index.html",
+      "title": "Cowboy Mural",
+      "category": "business",
+      "slugCandidate": "cowboy-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "cowboy-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "cowboy_mural_lg",
+          "ref": "2010/03/cowboy_mural_lg.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/cowboy_mural_lg.jpg"
+        },
+        {
+          "basename": "cowboy-room-copy",
+          "ref": "2011/01/COWBOY-ROOM-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/COWBOY-ROOM-copy.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/duluth-theater/index.html",
+      "title": "Duluth Theater Mural",
+      "category": "featured",
+      "slugCandidate": "duluth-theater",
+      "canonicalSlug": null,
+      "proposedSlug": "duluth-theater",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "bond-copy",
+          "ref": "2011/01/bond-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/bond-copy.jpg"
+        },
+        {
+          "basename": "mifune-copy",
+          "ref": "2011/01/mifune-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/mifune-copy.jpg"
+        },
+        {
+          "basename": "mural-copy",
+          "ref": "2011/01/mural-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/mural-copy.jpg"
+        },
+        {
+          "basename": "process",
+          "ref": "2011/01/process.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/process.jpg"
+        },
+        {
+          "basename": "starwars-copy",
+          "ref": "2011/01/starwars-copy.jpg",
+          "action": "exists",
+          "matchedPublicId": "starwars-copy"
+        },
+        {
+          "basename": "theshining-copy",
+          "ref": "2011/01/theshining-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/theshining-copy.jpg"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/facebook-2/index.html",
+      "title": "Facebook",
+      "category": "featured",
+      "slugCandidate": "facebook-2",
+      "canonicalSlug": null,
+      "proposedSlug": "facebook-2",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "bee",
+          "ref": "2015/09/bee.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/bee.jpg"
+        },
+        {
+          "basename": "bird",
+          "ref": "2015/09/bird.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/bird.jpg"
+        },
+        {
+          "basename": "couple",
+          "ref": "2015/09/couple.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/couple.jpg"
+        },
+        {
+          "basename": "full",
+          "ref": "2015/09/full.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/full.jpg"
+        },
+        {
+          "basename": "hack",
+          "ref": "2015/09/hack.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/hack.jpg"
+        },
+        {
+          "basename": "person",
+          "ref": "2015/09/person.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/person.jpg"
+        },
+        {
+          "basename": "person2",
+          "ref": "2015/09/person2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/person2.jpg"
+        },
+        {
+          "basename": "projector",
+          "ref": "2015/09/projector.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/projector.jpg"
+        },
+        {
+          "basename": "saucer",
+          "ref": "2015/09/saucer.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/saucer.jpg"
+        },
+        {
+          "basename": "wall",
+          "ref": "2015/09/wall.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/09/wall.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/flosports/index.html",
+      "title": "Flosports",
+      "category": "business",
+      "slugCandidate": "flosports",
+      "canonicalSlug": null,
+      "proposedSlug": "flosports",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "unnamed-e1423425151204",
+          "ref": "2015/02/unnamed-e1423425151204.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-e1423425151204.jpg"
+        },
+        {
+          "basename": "unnamed",
+          "ref": "2015/02/unnamed.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamed.jpg"
+        },
+        {
+          "basename": "unnameda-e1423425494863",
+          "ref": "2015/02/unnameda-e1423425494863.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnameda-e1423425494863.jpg"
+        },
+        {
+          "basename": "unnameda",
+          "ref": "2015/02/unnameda.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnameda.jpg"
+        },
+        {
+          "basename": "unnamedb-e1423425559281",
+          "ref": "2015/02/unnamedb-e1423425559281.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamedb-e1423425559281.jpg"
+        },
+        {
+          "basename": "unnamedb",
+          "ref": "2015/02/unnamedb.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamedb.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/fresh-planet/index.html",
+      "title": "Fresh Planet",
+      "category": "restaurant",
+      "slugCandidate": "fresh-planet",
+      "canonicalSlug": null,
+      "proposedSlug": "fresh-planet",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "fresh-planet",
+          "ref": "2010/04/fresh-planet.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/04/fresh-planet.jpg"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/gaylord-christmas/index.html",
+      "title": "Gaylord Christmas",
+      "category": "event",
+      "slugCandidate": "gaylord-christmas",
+      "canonicalSlug": null,
+      "proposedSlug": "gaylord-christmas",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "cantina1",
+          "ref": "2010/04/cantina1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/04/cantina1.jpg"
+        },
+        {
+          "basename": "giftshop1",
+          "ref": "2010/04/giftshop1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/04/giftshop1.jpg"
+        },
+        {
+          "basename": "sauna1",
+          "ref": "2010/04/sauna1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/04/sauna1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/good-morning-austin-mural/index.html",
+      "title": "Good Morning Austin",
+      "category": "featured",
+      "slugCandidate": "good-morning-austin-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "good-morning-austin-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "good_morning_mural",
+          "ref": "2010/03/good_morning_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/04/good_morning_mural.jpg"
+        },
+        {
+          "basename": "good-morning-austin-jpg-copy",
+          "ref": "2011/01/good-morning-austin-jpg-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/good-morning-austin-jpg-copy.jpg"
+        }
+      ],
+      "warnings": [
+        "resolved 1 image(s) by basename after the declared upload path proved wrong (WordPress records the upload month, not the month the post was edited in)"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/govalle-elementary-school/index.html",
+      "title": "Govalle Elementary School",
+      "category": "event",
+      "slugCandidate": "govalle-elementary-school",
+      "canonicalSlug": null,
+      "proposedSlug": "govalle-elementary-school",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "govalle",
+          "ref": "2011/07/GOVALLE.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/07/GOVALLE.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/greetings-from-78752/index.html",
+      "title": "Greetings from 78752",
+      "category": "business",
+      "slugCandidate": "greetings-from-78752",
+      "canonicalSlug": null,
+      "proposedSlug": "greetings-from-78752",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "78752cropped",
+          "ref": "2017/06/78752cropped.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2017/06/78752cropped.jpg"
+        },
+        {
+          "basename": "78752people",
+          "ref": "2017/06/78752people.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2017/06/78752people.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/greetings-from-navasota-mural/index.html",
+      "title": "Greetings from Navasota mural",
+      "category": "business",
+      "slugCandidate": "greetings-from-navasota-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "greetings-from-navasota-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "mural2",
+          "ref": "2016/10/mural2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2016/10/mural2.jpg"
+        },
+        {
+          "basename": "mural3",
+          "ref": "2016/10/mural3.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2016/10/mural3.jpg"
+        },
+        {
+          "basename": "murals1",
+          "ref": "2016/10/murals1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2016/10/murals1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/h-e-b-austin/index.html",
+      "title": "H-E-B & Austin",
+      "category": "business",
+      "slugCandidate": "h-e-b-austin",
+      "canonicalSlug": null,
+      "proposedSlug": "h-e-b-austin",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "h-e-b_austin_mural1",
+          "ref": "2010/03/h-e-b_austin_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/h-e-b_austin_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/heb-print-mural/index.html",
+      "title": "HEB Print Mural",
+      "category": "business",
+      "slugCandidate": "heb-print-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "heb-print-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "heb1",
+          "ref": "2011/07/HEB1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/07/HEB1.jpg"
+        },
+        {
+          "basename": "heb2",
+          "ref": "2011/07/HEB2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/07/HEB2.jpg"
+        },
+        {
+          "basename": "hebversion1c10mb-copy1",
+          "ref": "2011/07/HEBversion1C10mb-copy1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/07/HEBversion1C10mb-copy1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "museum/hello-world/index.html",
+      "title": "Lunar Lander Mural",
+      "category": "museum",
+      "slugCandidate": "hello-world",
+      "canonicalSlug": null,
+      "proposedSlug": "hello-world",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "lunar_lander",
+          "ref": "2011/01/lunar_lander.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/lunar_lander.jpg"
+        },
+        {
+          "basename": "lunar_landing1",
+          "ref": "2011/01/lunar_landing1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/lunar_landing1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/high-5-bowling-mural/index.html",
+      "title": "High 5 Bowling Mural",
+      "category": "business",
+      "slugCandidate": "high-5-bowling-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "high-5-bowling-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "newaustinmurala",
+          "ref": "2016/08/newaustinmurala.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2016/08/newaustinmurala.jpg"
+        },
+        {
+          "basename": "newaustinmuralb",
+          "ref": "2016/08/newaustinmuralb.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2016/08/newaustinmuralb.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/hill-country-food-and-wine-tasting/index.html",
+      "title": "Hill Country Food and Wine Tasting",
+      "category": "event",
+      "slugCandidate": "hill-country-food-and-wine-tasting",
+      "canonicalSlug": null,
+      "proposedSlug": "hill-country-food-and-wine-tasting",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "food-and-wine-3",
+          "ref": "2010/04/food-and-wine-3.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/04/food-and-wine-3.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/home-slice-pizza-mural/index.html",
+      "title": "Home Slice Pizza Mural",
+      "category": "restaurant",
+      "slugCandidate": "home-slice-pizza-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "home-slice-pizza-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "home_slice_pizza_mural",
+          "ref": "2011/01/home_slice_pizza_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/home_slice_pizza_mural.jpg"
+        },
+        {
+          "basename": "home_slice_pizza_mural_2",
+          "ref": "2011/01/home_slice_pizza_mural_2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/home_slice_pizza_mural_2.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/independence-brewery-mural/index.html",
+      "title": "Independence Brewery Mural",
+      "category": "business",
+      "slugCandidate": "independence-brewery-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "independence-brewery-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "independence_brewery_mural1",
+          "ref": "2010/03/independence_brewery_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/independence_brewery_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/jack-nicholson-mural/index.html",
+      "title": "Jack Nicholson Mural",
+      "category": "business",
+      "slugCandidate": "jack-nicholson-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "jack-nicholson-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "jack_nicholson_mural_lg-copy1",
+          "ref": "2010/03/jack_nicholson_mural_lg-copy1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/jack_nicholson_mural_lg-copy1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/lotus-flower-mural/index.html",
+      "title": "Lotus Flower Mural",
+      "category": "business",
+      "slugCandidate": "lotus-flower-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "lotus-flower-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "lotus_flower_mural1",
+          "ref": "2010/03/lotus_flower_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/lotus_flower_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/lululemon-mural/index.html",
+      "title": "Lululemon Mural",
+      "category": "business",
+      "slugCandidate": "lululemon-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "lululemon-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "lululemon_mural1",
+          "ref": "2010/03/lululemon_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/lululemon_mural1.jpg"
+        },
+        {
+          "basename": "lululemon_mural_21",
+          "ref": "2010/03/lululemon_mural_21.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/lululemon_mural_21.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/magazine-illustration-for-life-and-letters/index.html",
+      "title": "Magazine Illustration for Life and Letters",
+      "category": "business",
+      "slugCandidate": "magazine-illustration-for-life-and-letters",
+      "canonicalSlug": null,
+      "proposedSlug": "magazine-illustration-for-life-and-letters",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "b-e1423423373816",
+          "ref": "2015/02/b-e1423423373816.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/b-e1423423373816.jpg"
+        },
+        {
+          "basename": "b",
+          "ref": "2015/02/b.jpg",
+          "action": "exists",
+          "matchedPublicId": "b"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/mandala-trading/index.html",
+      "title": "Mandala Trading",
+      "category": "business",
+      "slugCandidate": "mandala-trading",
+      "canonicalSlug": null,
+      "proposedSlug": "mandala-trading",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "chenrizig-e1423426447506",
+          "ref": "2015/02/chenrizig-e1423426447506.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/chenrizig-e1423426447506.jpg"
+        },
+        {
+          "basename": "chenrizig",
+          "ref": "2015/02/chenrizig.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/chenrizig.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/marcia-ball-cd-cover/index.html",
+      "title": "Marcia Ball CD Cover",
+      "category": "business",
+      "slugCandidate": "marcia-ball-cd-cover",
+      "canonicalSlug": "marcia-ball",
+      "proposedSlug": null,
+      "classification": "EXISTS",
+      "matchKind": "known-dedupe",
+      "confidence": 1,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "f-e1423423465404",
+          "ref": "2015/02/f-e1423423465404.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/f-e1423423465404.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image",
+        "merged into `marcia-ball` by PRD_V3 §2 dedupe knowledge — the fuzzy matcher scored this below its gate and had classified it NEW"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/mellow-mushroom-murals/index.html",
+      "title": "Mellow Mushroom Murals",
+      "category": "featured",
+      "slugCandidate": "mellow-mushroom-murals",
+      "canonicalSlug": null,
+      "proposedSlug": "mellow-mushroom-murals",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "crab-copy",
+          "ref": "2011/01/crab-copy.jpg",
+          "action": "exists",
+          "matchedPublicId": "crab-copy"
+        },
+        {
+          "basename": "eye-copy",
+          "ref": "2011/01/eye-copy.jpg",
+          "action": "exists",
+          "matchedPublicId": "eye-copy"
+        },
+        {
+          "basename": "mouth-copy",
+          "ref": "2011/01/mouth-copy.jpg",
+          "action": "exists",
+          "matchedPublicId": "mouth-copy"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/mjm-texas-stampede-for-children/index.html",
+      "title": "MJ&M Texas Stampede for Children",
+      "category": "event",
+      "slugCandidate": "mjm-texas-stampede-for-children",
+      "canonicalSlug": null,
+      "proposedSlug": "mjm-texas-stampede-for-children",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "steer3-e1423427851245",
+          "ref": "2015/02/steer3-e1423427851245.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer3-e1423427851245.jpg"
+        },
+        {
+          "basename": "steer4-e1423428146136",
+          "ref": "2015/02/steer4-e1423428146136.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer4-e1423428146136.jpg"
+        },
+        {
+          "basename": "steer4",
+          "ref": "2015/02/steer4.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer4.jpg"
+        },
+        {
+          "basename": "steer6-e1423428013529",
+          "ref": "2015/02/steer6-e1423428013529.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer6-e1423428013529.jpg"
+        },
+        {
+          "basename": "steer6",
+          "ref": "2015/02/steer6.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer6.jpg"
+        },
+        {
+          "basename": "steer7a-e1423427679279",
+          "ref": "2015/02/steer7a-e1423427679279.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer7a-e1423427679279.jpg"
+        },
+        {
+          "basename": "unnamed-11-e1423428343941",
+          "ref": "2015/02/unnamed-11-e1423428343941.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-11-e1423428343941.jpg"
+        },
+        {
+          "basename": "unnamed-11",
+          "ref": "2015/02/unnamed-11.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-11.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/more-home-slice/index.html",
+      "title": "More Home Slice",
+      "category": "restaurant",
+      "slugCandidate": "more-home-slice",
+      "canonicalSlug": null,
+      "proposedSlug": "more-home-slice",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "morehomeslice-copy-21",
+          "ref": "2010/03/morehomeslice-copy-21.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/morehomeslice-copy-21.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "home/motorcycle-mural-—-california-dreamin/index.html",
+      "title": "Motorcycle Mural — \"California Dreamin\"",
+      "category": "home",
+      "slugCandidate": "motorcycle-mural-—-california-dreamin",
+      "canonicalSlug": null,
+      "proposedSlug": "motorcycle-mural-california-dreamin",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "motorcycle_mural",
+          "ref": "2010/03/motorcycle_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/motorcycle_mural.jpg"
+        },
+        {
+          "basename": "motorcycle_mural1",
+          "ref": "2010/03/motorcycle_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/motorcycle_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/mural-for-junior-league/index.html",
+      "title": "Mural for Junior League",
+      "category": "event",
+      "slugCandidate": "mural-for-junior-league",
+      "canonicalSlug": null,
+      "proposedSlug": "mural-for-junior-league",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "junior_league_mural_21",
+          "ref": "2010/03/junior_league_mural_21.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/junior_league_mural_21.jpg"
+        },
+        {
+          "basename": "junior_league_mural_full2",
+          "ref": "2010/03/junior_league_mural_full2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/junior_league_mural_full2.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/mural-for-manny-hattans-deli/index.html",
+      "title": "Mural for Manny Hattan’s Deli",
+      "category": "restaurant",
+      "slugCandidate": "mural-for-manny-hattans-deli",
+      "canonicalSlug": null,
+      "proposedSlug": "mural-for-manny-hattans-deli",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "guggenheim-copy",
+          "ref": "2011/01/guggenheim-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/guggenheim-copy.jpg"
+        },
+        {
+          "basename": "liberty_flag",
+          "ref": "2011/01/liberty_flag.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/liberty_flag.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/napoleon-crossing-the-alps-mural/index.html",
+      "title": "Napoleon Crossing the Alps Mural",
+      "category": "event",
+      "slugCandidate": "napoleon-crossing-the-alps-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "napoleon-crossing-the-alps-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "napoleon_mural1",
+          "ref": "2010/03/napoleon_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/napoleon_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/nvidia/index.html",
+      "title": "NVIDIA",
+      "category": "business",
+      "slugCandidate": "nvidia",
+      "canonicalSlug": null,
+      "proposedSlug": "nvidia",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "nvidia1",
+          "ref": "2011/07/nvidia1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/07/nvidia1.jpg"
+        },
+        {
+          "basename": "nvidia2-copy",
+          "ref": "2011/07/nvidia2-copy.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/07/nvidia2-copy.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/old-coffee-mural/index.html",
+      "title": "Old Coffee Mural",
+      "category": "business",
+      "slugCandidate": "old-coffee-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "old-coffee-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "old_coffee_mural_lg1",
+          "ref": "2010/03/old_coffee_mural_lg1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/old_coffee_mural_lg1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/positivenegative-mural/index.html",
+      "title": "Positive/Negative Mural",
+      "category": "event",
+      "slugCandidate": "positivenegative-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "positivenegative-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "posnegmural1",
+          "ref": "2010/03/posnegmural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/posnegmural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/pulte-homes-murals/index.html",
+      "title": "Pulte Homes Murals",
+      "category": "business",
+      "slugCandidate": "pulte-homes-murals",
+      "canonicalSlug": null,
+      "proposedSlug": "pulte-homes-murals",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "pulte_homes_awards_mural",
+          "ref": "2010/03/pulte_homes_awards_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_awards_mural.jpg"
+        },
+        {
+          "basename": "pulte_homes_awards_mural1",
+          "ref": "2010/03/pulte_homes_awards_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_awards_mural1.jpg"
+        },
+        {
+          "basename": "pulte_homes_flag_mural",
+          "ref": "2010/03/pulte_homes_flag_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_flag_mural.jpg"
+        },
+        {
+          "basename": "pulte_homes_flag_mural1",
+          "ref": "2010/03/pulte_homes_flag_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_flag_mural1.jpg"
+        },
+        {
+          "basename": "pulte_homes_postcard_mural1",
+          "ref": "2010/03/pulte_homes_postcard_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_postcard_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/rgm-advisors-mural/index.html",
+      "title": "RGM Advisors Mural",
+      "category": "featured",
+      "slugCandidate": "rgm-advisors-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "rgm-advisors-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "rgm_mural",
+          "ref": "2010/03/rgm_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/rgm_mural.jpg"
+        },
+        {
+          "basename": "rgm_mural4",
+          "ref": "2011/01/rgm_mural4.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural4.jpg"
+        },
+        {
+          "basename": "rgm_mural_installed3",
+          "ref": "2011/01/rgm_mural_installed3.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural_installed3.jpg"
+        },
+        {
+          "basename": "rgm_mural_installed_23",
+          "ref": "2011/01/rgm_mural_installed_23.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural_installed_23.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/romantic-scenes-mural/index.html",
+      "title": "Romantic Scenes Mural",
+      "category": "restaurant",
+      "slugCandidate": "romantic-scenes-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "romantic-scenes-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "rs",
+          "ref": "2010/03/rs.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/rs.jpg"
+        },
+        {
+          "basename": "rs1",
+          "ref": "2010/03/rs1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/rs1.jpg"
+        },
+        {
+          "basename": "rs2",
+          "ref": "2010/03/rs2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/rs2.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/rooster-teeth-mural/index.html",
+      "title": "Rooster Teeth Mural",
+      "category": "business",
+      "slugCandidate": "rooster-teeth-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "rooster-teeth-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "rt2",
+          "ref": "2011/01/rt2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/rt2.jpg"
+        },
+        {
+          "basename": "rt4",
+          "ref": "2011/01/rt4.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/rt4.jpg"
+        },
+        {
+          "basename": "rtmillionaire",
+          "ref": "2011/01/rtmillionaire.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/rtmillionaire.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/schlotzskys-deli-murals/index.html",
+      "title": "Schlotzsky’s Deli Murals",
+      "category": "restaurant",
+      "slugCandidate": "schlotzskys-deli-murals",
+      "canonicalSlug": null,
+      "proposedSlug": "schlotzskys-deli-murals",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "schlotzskys_mural",
+          "ref": "2010/03/schlotzskys_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/schlotzskys_mural.jpg"
+        },
+        {
+          "basename": "schlotzskys_mural",
+          "ref": "2011/01/schlotzskys_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/schlotzskys_mural.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/shady-grove-mural-at-dell-childrens-medical-center/index.html",
+      "title": "Shady Grove mural at Dell Children’s Medical Center",
+      "category": "business",
+      "slugCandidate": "shady-grove-mural-at-dell-childrens-medical-center",
+      "canonicalSlug": null,
+      "proposedSlug": "shady-grove-mural-at-dell-childrens-medical-center",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "shady_grove_dell_mural",
+          "ref": "2011/01/shady_grove_dell_mural.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/shady_grove_dell_mural.jpg"
+        },
+        {
+          "basename": "shady_grove_dell_mural_2",
+          "ref": "2011/01/shady_grove_dell_mural_2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/shady_grove_dell_mural_2.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/spaghetti-western-mural/index.html",
+      "title": "Spaghetti Western Mural",
+      "category": "restaurant",
+      "slugCandidate": "spaghetti-western-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "spaghetti-western-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "spaghetti_western_mural_lg1",
+          "ref": "2010/03/spaghetti_western_mural_lg1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/spaghetti_western_mural_lg1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/stage-backdrop/index.html",
+      "title": "Stage Backdrop",
+      "category": "event",
+      "slugCandidate": "stage-backdrop",
+      "canonicalSlug": null,
+      "proposedSlug": "stage-backdrop",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "stage_backdrop_mural2",
+          "ref": "2010/03/stage_backdrop_mural2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/stage_backdrop_mural2.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "retail/storyville/index.html",
+      "title": "Storyville",
+      "category": "retail",
+      "slugCandidate": "storyville",
+      "canonicalSlug": null,
+      "proposedSlug": "storyville",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "building1",
+          "ref": "2011/01/building1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/building1.jpg"
+        },
+        {
+          "basename": "fox",
+          "ref": "2011/01/fox.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/fox.jpg"
+        },
+        {
+          "basename": "hangingsign",
+          "ref": "2011/01/hangingsign.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/hangingsign.jpg"
+        },
+        {
+          "basename": "lion",
+          "ref": "2011/01/lion.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/lion.jpg"
+        },
+        {
+          "basename": "storyville-main-sign-copy1",
+          "ref": "2011/01/storyville-main-sign-copy1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/storyville-main-sign-copy1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/sweet-spot/index.html",
+      "title": "Sweet Spot",
+      "category": "business",
+      "slugCandidate": "sweet-spot",
+      "canonicalSlug": null,
+      "proposedSlug": "sweet-spot",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "dsc_0173-1",
+          "ref": "2011/01/DSC_0173-1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/DSC_0173-1.jpg"
+        },
+        {
+          "basename": "driverandcurbside",
+          "ref": "2011/01/driverandcurbside.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/driverandcurbside.jpg"
+        },
+        {
+          "basename": "sugarbarnside2",
+          "ref": "2011/01/sugarbarnside2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/sugarbarnside2.jpg"
+        },
+        {
+          "basename": "sweet",
+          "ref": "2011/01/sweet.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/sweet.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/texas-childrens-urgent-care/index.html",
+      "title": "Texas Children's Urgent Care",
+      "category": "business",
+      "slugCandidate": "texas-childrens-urgent-care",
+      "canonicalSlug": null,
+      "proposedSlug": "texas-childrens-urgent-care",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "calientetacos",
+          "ref": "2018/03/calientetacos.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/calientetacos.jpg"
+        },
+        {
+          "basename": "dogeating",
+          "ref": "2018/03/dogeating.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/dogeating.jpg"
+        },
+        {
+          "basename": "dogfood",
+          "ref": "2018/03/dogfood.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/dogfood.jpg"
+        },
+        {
+          "basename": "eletricfire",
+          "ref": "2018/03/eletricfire.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/eletricfire.jpg"
+        },
+        {
+          "basename": "exam10a",
+          "ref": "2018/03/exam10a.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam10a.jpg"
+        },
+        {
+          "basename": "exam3",
+          "ref": "2018/03/exam3.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam3.jpg"
+        },
+        {
+          "basename": "exam4a",
+          "ref": "2018/03/exam4a.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam4a.jpg"
+        },
+        {
+          "basename": "exam9a",
+          "ref": "2018/03/exam9a.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam9a.jpg"
+        },
+        {
+          "basename": "exam9b",
+          "ref": "2018/03/exam9b.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam9b.jpg"
+        },
+        {
+          "basename": "facepainting2",
+          "ref": "2018/03/facepainting2.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/facepainting2.jpg"
+        },
+        {
+          "basename": "folkstage",
+          "ref": "2018/03/folkstage.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/folkstage.jpg"
+        },
+        {
+          "basename": "illustration-1",
+          "ref": "2018/03/illustration-1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/illustration-1.jpg"
+        },
+        {
+          "basename": "musicfest-1",
+          "ref": "2018/03/musicfest-1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/musicfest-1.jpg"
+        },
+        {
+          "basename": "pedicab",
+          "ref": "2018/03/pedicab.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/pedicab.jpg"
+        },
+        {
+          "basename": "portopotty",
+          "ref": "2018/03/portopotty.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/portopotty.jpg"
+        },
+        {
+          "basename": "security",
+          "ref": "2018/03/security.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/security.jpg"
+        },
+        {
+          "basename": "taco3",
+          "ref": "2018/03/taco3.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/taco3.jpg"
+        },
+        {
+          "basename": "theanimals",
+          "ref": "2018/03/theanimals.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/theanimals.jpg"
+        },
+        {
+          "basename": "tshirt",
+          "ref": "2018/03/tshirt.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/tshirt.jpg"
+        },
+        {
+          "basename": "waiting1",
+          "ref": "2018/03/waiting1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/waiting1.jpg"
+        },
+        {
+          "basename": "willie",
+          "ref": "2018/03/willie.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2018/03/willie.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "museum/the-lorax/index.html",
+      "title": "The Lorax",
+      "category": "museum",
+      "slugCandidate": "the-lorax",
+      "canonicalSlug": null,
+      "proposedSlug": "the-lorax",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "lorax-1",
+          "ref": "2011/01/lorax-1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/lorax-1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "signage/the-peoples-pool-hall/index.html",
+      "title": "The People's Pool Hall",
+      "category": "signage",
+      "slugCandidate": "the-peoples-pool-hall",
+      "canonicalSlug": null,
+      "proposedSlug": "the-peoples-pool-hall",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "thepeoples",
+          "ref": "2016/10/thepeoples.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2016/10/thepeoples.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "museum/theater-backdrop-mural/index.html",
+      "title": "Theater Backdrop Mural",
+      "category": "museum",
+      "slugCandidate": "theater-backdrop-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "theater-backdrop-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "theater_backdrop_mural_lg1",
+          "ref": "2010/03/theater_backdrop_mural_lg1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/theater_backdrop_mural_lg1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/threadgills-mural/index.html",
+      "title": "Threadgill's Mural",
+      "category": "restaurant",
+      "slugCandidate": "threadgills-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "threadgills-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "threadgills_mural_lg1",
+          "ref": "2010/03/threadgills_mural_lg1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/threadgills_mural_lg1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/tiki-masks/index.html",
+      "title": "Tiki Masks",
+      "category": "restaurant",
+      "slugCandidate": "tiki-masks",
+      "canonicalSlug": null,
+      "proposedSlug": "tiki-masks",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "tiki_masks_signage",
+          "ref": "2011/01/tiki_masks_signage.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2011/01/tiki_masks_signage.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/tx-burger-mural/index.html",
+      "title": "Texas Burger Mural",
+      "category": "restaurant",
+      "slugCandidate": "tx-burger-mural",
+      "canonicalSlug": null,
+      "proposedSlug": "tx-burger-mural",
+      "classification": "NEW",
+      "matchKind": "none",
+      "confidence": 0,
+      "collidesWith": [],
+      "knownDedupe": false,
+      "media": [
+        {
+          "basename": "tx_burger_mural1",
+          "ref": "2010/03/tx_burger_mural1.jpg",
+          "action": "needs_upload",
+          "archivePath": "files/wp-content/uploads/_/2010/03/tx_burger_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    }
+  ],
+  "mediaPlan": {
+    "items": [
+      {
+        "basename": "bluewall-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/bluewall-copy.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--bluewall-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "bluewall-copy-e1423422381396",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/bluewall-copy-e1423422381396.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--bluewall-copy-e1423422381396",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "redwall-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/redwall-copy.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--redwall-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "redwall-copy-e1423422992497",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/redwall-copy-e1423422992497.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--redwall-copy-e1423422992497",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rwall",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/rwall.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--rwall",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rwall-e1423423163269",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/rwall-e1423423163269.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--rwall-e1423423163269",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "willie-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/willie-copy.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--willie-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "willie-copy-e1423423231417",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/willie-copy-e1423423231417.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--willie-copy-e1423423231417",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "yellowwall-copy-e1423422899567",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/yellowwall-copy-e1423422899567.jpg",
+        "sourcePath": "business/360-condominiums",
+        "artworkSlug": "360-condominiums",
+        "publicId": "360-condominiums--yellowwall-copy-e1423422899567",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "70s_mural_1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/70s_mural_1.jpg",
+        "sourcePath": "event/70s-mural",
+        "artworkSlug": "70s-mural",
+        "publicId": "70s-mural--70s_mural_1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "70s_mural_2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/70s_mural_2.jpg",
+        "sourcePath": "event/70s-mural",
+        "artworkSlug": "70s-mural",
+        "publicId": "70s-mural--70s_mural_2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "andy_roddick_blue_wall",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_blue_wall.jpg",
+        "sourcePath": "home/andy-roddick-mural",
+        "artworkSlug": "andy-roddick-mural",
+        "publicId": "andy-roddick-mural--andy_roddick_blue_wall",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "andy_roddick_di",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_di.jpg",
+        "sourcePath": "home/andy-roddick-mural",
+        "artworkSlug": "andy-roddick-mural",
+        "publicId": "andy-roddick-mural--andy_roddick_di",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "andy_roddick_elton",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_elton.jpg",
+        "sourcePath": "home/andy-roddick-mural",
+        "artworkSlug": "andy-roddick-mural",
+        "publicId": "andy-roddick-mural--andy_roddick_elton",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "andy_roddick_mj-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_mj-copy.jpg",
+        "sourcePath": "home/andy-roddick-mural",
+        "artworkSlug": "andy-roddick-mural",
+        "publicId": "andy-roddick-mural--andy_roddick_mj-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "austin_childrens_museum_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/austin_childrens_museum_mural.jpg",
+        "sourcePath": "business/austin-childrens-museum",
+        "artworkSlug": "austin-childrens-museum",
+        "publicId": "austin-childrens-museum--austin_childrens_museum_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "austin_childrens_museum_mural_2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/austin_childrens_museum_mural_2.jpg",
+        "sourcePath": "business/austin-childrens-museum",
+        "artworkSlug": "austin-childrens-museum",
+        "publicId": "austin-childrens-museum--austin_childrens_museum_mural_2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "austin_postcard_xmascard1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/austin_postcard_xmascard1.jpg",
+        "sourcePath": "featured/austin-postcard-mural",
+        "artworkSlug": "austin-postcard",
+        "publicId": "austin-postcard--austin_postcard_xmascard1",
+        "linkable": true,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "greetingstopper_1462-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/greetingsTOPPER_1462-copy.jpg",
+        "sourcePath": "featured/austin-postcard-mural",
+        "artworkSlug": "austin-postcard",
+        "publicId": "austin-postcard--greetingstopper_1462-copy",
+        "linkable": true,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural_22",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_22.jpg",
+        "sourcePath": "restaurant/aztec-mural-for-casino-el-camino",
+        "artworkSlug": "aztec-mural-for-casino-el-camino",
+        "publicId": "aztec-mural-for-casino-el-camino--aztec_mural_22",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural_center3",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_center3.jpg",
+        "sourcePath": "restaurant/aztec-mural-for-casino-el-camino",
+        "artworkSlug": "aztec-mural-for-casino-el-camino",
+        "publicId": "aztec-mural-for-casino-el-camino--aztec_mural_center3",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural_left3",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_left3.jpg",
+        "sourcePath": "restaurant/aztec-mural-for-casino-el-camino",
+        "artworkSlug": "aztec-mural-for-casino-el-camino",
+        "publicId": "aztec-mural-for-casino-el-camino--aztec_mural_left3",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural_right3",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_right3.jpg",
+        "sourcePath": "restaurant/aztec-mural-for-casino-el-camino",
+        "artworkSlug": "aztec-mural-for-casino-el-camino",
+        "publicId": "aztec-mural-for-casino-el-camino--aztec_mural_right3",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "beerland_mural_lg1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/beerland_mural_lg1.jpg",
+        "sourcePath": "business/beerland-mural",
+        "artworkSlug": "beerland-mural",
+        "publicId": "beerland-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "blue_ribbon_day_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/blue_ribbon_day_mural1.jpg",
+        "sourcePath": "event/blue-ribbon-day-mural",
+        "artworkSlug": "blue-ribbon-day-mural",
+        "publicId": "blue-ribbon-day-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "camp_bow_wow_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/camp_bow_wow_mural.jpg",
+        "sourcePath": "business/camp-bow-wow",
+        "artworkSlug": "camp-bow-wow",
+        "publicId": "camp-bow-wow--camp_bow_wow_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "camp_bow_wow_mural_2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/camp_bow_wow_mural_2.jpg",
+        "sourcePath": "business/camp-bow-wow",
+        "artworkSlug": "camp-bow-wow",
+        "publicId": "camp-bow-wow--camp_bow_wow_mural_2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "capstar_mural_lg2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/capstar_mural_lg2.jpg",
+        "sourcePath": "business/capstar-mural",
+        "artworkSlug": "capstar-mural",
+        "publicId": "capstar-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural_21",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_21.jpg",
+        "sourcePath": "restaurant/casino-el-camino-mural",
+        "artworkSlug": "casino-el-camino-mural",
+        "publicId": "casino-el-camino-mural--aztec_mural_21",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural_center1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_center1.jpg",
+        "sourcePath": "restaurant/casino-el-camino-mural",
+        "artworkSlug": "casino-el-camino-mural",
+        "publicId": "casino-el-camino-mural--aztec_mural_center1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural_left1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_left1.jpg",
+        "sourcePath": "restaurant/casino-el-camino-mural",
+        "artworkSlug": "casino-el-camino-mural",
+        "publicId": "casino-el-camino-mural--aztec_mural_left1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural_right1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_right1.jpg",
+        "sourcePath": "restaurant/casino-el-camino-mural",
+        "artworkSlug": "casino-el-camino-mural",
+        "publicId": "casino-el-camino-mural--aztec_mural_right1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "aztec_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural1.jpg",
+        "sourcePath": "restaurant/casino-el-camino-mural",
+        "artworkSlug": "casino-el-camino-mural",
+        "publicId": "casino-el-camino-mural--aztec_mural1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "casino_el_camino_2_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/casino_el_camino_2_mural1.jpg",
+        "sourcePath": "restaurant/casino-el-camino-mural",
+        "artworkSlug": "casino-el-camino-mural",
+        "publicId": "casino-el-camino-mural--casino_el_camino_2_mural1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "el_camino_mural_detail_21",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/el_camino_mural_detail_21.jpg",
+        "sourcePath": "restaurant/casino-el-camino-mural",
+        "artworkSlug": "casino-el-camino-mural",
+        "publicId": "casino-el-camino-mural--el_camino_mural_detail_21",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "el_camino_mural_detail1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/el_camino_mural_detail1.jpg",
+        "sourcePath": "restaurant/casino-el-camino-mural",
+        "artworkSlug": "casino-el-camino-mural",
+        "publicId": "casino-el-camino-mural--el_camino_mural_detail1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "central_market_site1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/central_market_site1.jpg",
+        "sourcePath": "business/cezanne-mural",
+        "artworkSlug": "cezanne-mural",
+        "publicId": "cezanne-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "cowboy_mural_lg",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/cowboy_mural_lg.jpg",
+        "sourcePath": "business/cowboy-mural",
+        "artworkSlug": "cowboy-mural",
+        "publicId": "cowboy-mural--cowboy_mural_lg",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "cowboy-room-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/COWBOY-ROOM-copy.jpg",
+        "sourcePath": "business/cowboy-mural",
+        "artworkSlug": "cowboy-mural",
+        "publicId": "cowboy-mural--cowboy-room-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "bond-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/bond-copy.jpg",
+        "sourcePath": "featured/duluth-theater",
+        "artworkSlug": "duluth-theater",
+        "publicId": "duluth-theater--bond-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "mifune-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/mifune-copy.jpg",
+        "sourcePath": "featured/duluth-theater",
+        "artworkSlug": "duluth-theater",
+        "publicId": "duluth-theater--mifune-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "mural-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/mural-copy.jpg",
+        "sourcePath": "featured/duluth-theater",
+        "artworkSlug": "duluth-theater",
+        "publicId": "duluth-theater--mural-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "process",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/process.jpg",
+        "sourcePath": "featured/duluth-theater",
+        "artworkSlug": "duluth-theater",
+        "publicId": "duluth-theater--process",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "theshining-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/theshining-copy.jpg",
+        "sourcePath": "featured/duluth-theater",
+        "artworkSlug": "duluth-theater",
+        "publicId": "duluth-theater--theshining-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "bee",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/bee.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--bee",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "bird",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/bird.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--bird",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "couple",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/couple.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--couple",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "full",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/full.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--full",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "hack",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/hack.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--hack",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "person",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/person.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--person",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "person2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/person2.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--person2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "projector",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/projector.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--projector",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "saucer",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/saucer.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--saucer",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "wall",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/09/wall.jpg",
+        "sourcePath": "featured/facebook-2",
+        "artworkSlug": "facebook-2",
+        "publicId": "facebook-2--wall",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "unnamed",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/unnamed.jpg",
+        "sourcePath": "business/flosports",
+        "artworkSlug": "flosports",
+        "publicId": "flosports--unnamed",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "unnamed-e1423425151204",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-e1423425151204.jpg",
+        "sourcePath": "business/flosports",
+        "artworkSlug": "flosports",
+        "publicId": "flosports--unnamed-e1423425151204",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "unnameda",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/unnameda.jpg",
+        "sourcePath": "business/flosports",
+        "artworkSlug": "flosports",
+        "publicId": "flosports--unnameda",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "unnameda-e1423425494863",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/unnameda-e1423425494863.jpg",
+        "sourcePath": "business/flosports",
+        "artworkSlug": "flosports",
+        "publicId": "flosports--unnameda-e1423425494863",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "unnamedb",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/unnamedb.jpg",
+        "sourcePath": "business/flosports",
+        "artworkSlug": "flosports",
+        "publicId": "flosports--unnamedb",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "unnamedb-e1423425559281",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/unnamedb-e1423425559281.jpg",
+        "sourcePath": "business/flosports",
+        "artworkSlug": "flosports",
+        "publicId": "flosports--unnamedb-e1423425559281",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "fresh-planet",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/04/fresh-planet.jpg",
+        "sourcePath": "restaurant/fresh-planet",
+        "artworkSlug": "fresh-planet",
+        "publicId": "fresh-planet",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "cantina1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/04/cantina1.jpg",
+        "sourcePath": "event/gaylord-christmas",
+        "artworkSlug": "gaylord-christmas",
+        "publicId": "gaylord-christmas--cantina1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "giftshop1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/04/giftshop1.jpg",
+        "sourcePath": "event/gaylord-christmas",
+        "artworkSlug": "gaylord-christmas",
+        "publicId": "gaylord-christmas--giftshop1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "sauna1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/04/sauna1.jpg",
+        "sourcePath": "event/gaylord-christmas",
+        "artworkSlug": "gaylord-christmas",
+        "publicId": "gaylord-christmas--sauna1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "good_morning_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/04/good_morning_mural.jpg",
+        "sourcePath": "featured/good-morning-austin-mural",
+        "artworkSlug": "good-morning-austin-mural",
+        "publicId": "good-morning-austin-mural--good_morning_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "good-morning-austin-jpg-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/good-morning-austin-jpg-copy.jpg",
+        "sourcePath": "featured/good-morning-austin-mural",
+        "artworkSlug": "good-morning-austin-mural",
+        "publicId": "good-morning-austin-mural--good-morning-austin-jpg-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "govalle",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/07/GOVALLE.jpg",
+        "sourcePath": "event/govalle-elementary-school",
+        "artworkSlug": "govalle-elementary-school",
+        "publicId": "govalle-elementary-school",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "78752cropped",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2017/06/78752cropped.jpg",
+        "sourcePath": "business/greetings-from-78752",
+        "artworkSlug": "greetings-from-78752",
+        "publicId": "greetings-from-78752--78752cropped",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "78752people",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2017/06/78752people.jpg",
+        "sourcePath": "business/greetings-from-78752",
+        "artworkSlug": "greetings-from-78752",
+        "publicId": "greetings-from-78752--78752people",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "mural2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2016/10/mural2.jpg",
+        "sourcePath": "business/greetings-from-navasota-mural",
+        "artworkSlug": "greetings-from-navasota-mural",
+        "publicId": "greetings-from-navasota-mural--mural2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "mural3",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2016/10/mural3.jpg",
+        "sourcePath": "business/greetings-from-navasota-mural",
+        "artworkSlug": "greetings-from-navasota-mural",
+        "publicId": "greetings-from-navasota-mural--mural3",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "murals1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2016/10/murals1.jpg",
+        "sourcePath": "business/greetings-from-navasota-mural",
+        "artworkSlug": "greetings-from-navasota-mural",
+        "publicId": "greetings-from-navasota-mural--murals1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "h-e-b_austin_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/h-e-b_austin_mural1.jpg",
+        "sourcePath": "business/h-e-b-austin",
+        "artworkSlug": "h-e-b-austin",
+        "publicId": "h-e-b-austin",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "heb1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/07/HEB1.jpg",
+        "sourcePath": "business/heb-print-mural",
+        "artworkSlug": "heb-print-mural",
+        "publicId": "heb-print-mural--heb1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "heb2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/07/HEB2.jpg",
+        "sourcePath": "business/heb-print-mural",
+        "artworkSlug": "heb-print-mural",
+        "publicId": "heb-print-mural--heb2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "hebversion1c10mb-copy1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/07/HEBversion1C10mb-copy1.jpg",
+        "sourcePath": "business/heb-print-mural",
+        "artworkSlug": "heb-print-mural",
+        "publicId": "heb-print-mural--hebversion1c10mb-copy1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "lunar_lander",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/lunar_lander.jpg",
+        "sourcePath": "museum/hello-world",
+        "artworkSlug": "hello-world",
+        "publicId": "hello-world--lunar_lander",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "lunar_landing1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/lunar_landing1.jpg",
+        "sourcePath": "museum/hello-world",
+        "artworkSlug": "hello-world",
+        "publicId": "hello-world--lunar_landing1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "newaustinmurala",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2016/08/newaustinmurala.jpg",
+        "sourcePath": "business/high-5-bowling-mural",
+        "artworkSlug": "high-5-bowling-mural",
+        "publicId": "high-5-bowling-mural--newaustinmurala",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "newaustinmuralb",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2016/08/newaustinmuralb.jpg",
+        "sourcePath": "business/high-5-bowling-mural",
+        "artworkSlug": "high-5-bowling-mural",
+        "publicId": "high-5-bowling-mural--newaustinmuralb",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "food-and-wine-3",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/04/food-and-wine-3.jpg",
+        "sourcePath": "event/hill-country-food-and-wine-tasting",
+        "artworkSlug": "hill-country-food-and-wine-tasting",
+        "publicId": "hill-country-food-and-wine-tasting",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "home_slice_pizza_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/home_slice_pizza_mural.jpg",
+        "sourcePath": "restaurant/home-slice-pizza-mural",
+        "artworkSlug": "home-slice-pizza-mural",
+        "publicId": "home-slice-pizza-mural--home_slice_pizza_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "home_slice_pizza_mural_2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/home_slice_pizza_mural_2.jpg",
+        "sourcePath": "restaurant/home-slice-pizza-mural",
+        "artworkSlug": "home-slice-pizza-mural",
+        "publicId": "home-slice-pizza-mural--home_slice_pizza_mural_2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "independence_brewery_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/independence_brewery_mural1.jpg",
+        "sourcePath": "business/independence-brewery-mural",
+        "artworkSlug": "independence-brewery-mural",
+        "publicId": "independence-brewery-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "jack_nicholson_mural_lg-copy1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/jack_nicholson_mural_lg-copy1.jpg",
+        "sourcePath": "business/jack-nicholson-mural",
+        "artworkSlug": "jack-nicholson-mural",
+        "publicId": "jack-nicholson-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "lotus_flower_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/lotus_flower_mural1.jpg",
+        "sourcePath": "business/lotus-flower-mural",
+        "artworkSlug": "lotus-flower-mural",
+        "publicId": "lotus-flower-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "lululemon_mural_21",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/lululemon_mural_21.jpg",
+        "sourcePath": "business/lululemon-mural",
+        "artworkSlug": "lululemon-mural",
+        "publicId": "lululemon-mural--lululemon_mural_21",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "lululemon_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/lululemon_mural1.jpg",
+        "sourcePath": "business/lululemon-mural",
+        "artworkSlug": "lululemon-mural",
+        "publicId": "lululemon-mural--lululemon_mural1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "b-e1423423373816",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/b-e1423423373816.jpg",
+        "sourcePath": "business/magazine-illustration-for-life-and-letters",
+        "artworkSlug": "magazine-illustration-for-life-and-letters",
+        "publicId": "magazine-illustration-for-life-and-letters",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "chenrizig",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/chenrizig.jpg",
+        "sourcePath": "business/mandala-trading",
+        "artworkSlug": "mandala-trading",
+        "publicId": "mandala-trading--chenrizig",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "chenrizig-e1423426447506",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/chenrizig-e1423426447506.jpg",
+        "sourcePath": "business/mandala-trading",
+        "artworkSlug": "mandala-trading",
+        "publicId": "mandala-trading--chenrizig-e1423426447506",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "f-e1423423465404",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/f-e1423423465404.jpg",
+        "sourcePath": "business/marcia-ball-cd-cover",
+        "artworkSlug": "marcia-ball",
+        "publicId": "marcia-ball--f-e1423423465404",
+        "linkable": true,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "steer3-e1423427851245",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/steer3-e1423427851245.jpg",
+        "sourcePath": "event/mjm-texas-stampede-for-children",
+        "artworkSlug": "mjm-texas-stampede-for-children",
+        "publicId": "mjm-texas-stampede-for-children--steer3-e1423427851245",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "steer4",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/steer4.jpg",
+        "sourcePath": "event/mjm-texas-stampede-for-children",
+        "artworkSlug": "mjm-texas-stampede-for-children",
+        "publicId": "mjm-texas-stampede-for-children--steer4",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "steer4-e1423428146136",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/steer4-e1423428146136.jpg",
+        "sourcePath": "event/mjm-texas-stampede-for-children",
+        "artworkSlug": "mjm-texas-stampede-for-children",
+        "publicId": "mjm-texas-stampede-for-children--steer4-e1423428146136",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "steer6",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/steer6.jpg",
+        "sourcePath": "event/mjm-texas-stampede-for-children",
+        "artworkSlug": "mjm-texas-stampede-for-children",
+        "publicId": "mjm-texas-stampede-for-children--steer6",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "steer6-e1423428013529",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/steer6-e1423428013529.jpg",
+        "sourcePath": "event/mjm-texas-stampede-for-children",
+        "artworkSlug": "mjm-texas-stampede-for-children",
+        "publicId": "mjm-texas-stampede-for-children--steer6-e1423428013529",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "steer7a-e1423427679279",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/steer7a-e1423427679279.jpg",
+        "sourcePath": "event/mjm-texas-stampede-for-children",
+        "artworkSlug": "mjm-texas-stampede-for-children",
+        "publicId": "mjm-texas-stampede-for-children--steer7a-e1423427679279",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "unnamed-11",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-11.jpg",
+        "sourcePath": "event/mjm-texas-stampede-for-children",
+        "artworkSlug": "mjm-texas-stampede-for-children",
+        "publicId": "mjm-texas-stampede-for-children--unnamed-11",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "unnamed-11-e1423428343941",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-11-e1423428343941.jpg",
+        "sourcePath": "event/mjm-texas-stampede-for-children",
+        "artworkSlug": "mjm-texas-stampede-for-children",
+        "publicId": "mjm-texas-stampede-for-children--unnamed-11-e1423428343941",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "morehomeslice-copy-21",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/morehomeslice-copy-21.jpg",
+        "sourcePath": "restaurant/more-home-slice",
+        "artworkSlug": "more-home-slice",
+        "publicId": "more-home-slice",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "motorcycle_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/motorcycle_mural.jpg",
+        "sourcePath": "home/motorcycle-mural-—-california-dreamin",
+        "artworkSlug": "motorcycle-mural-california-dreamin",
+        "publicId": "motorcycle-mural-california-dreamin--motorcycle_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "motorcycle_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/motorcycle_mural1.jpg",
+        "sourcePath": "home/motorcycle-mural-—-california-dreamin",
+        "artworkSlug": "motorcycle-mural-california-dreamin",
+        "publicId": "motorcycle-mural-california-dreamin--motorcycle_mural1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "junior_league_mural_21",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/junior_league_mural_21.jpg",
+        "sourcePath": "event/mural-for-junior-league",
+        "artworkSlug": "mural-for-junior-league",
+        "publicId": "mural-for-junior-league--junior_league_mural_21",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "junior_league_mural_full2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/junior_league_mural_full2.jpg",
+        "sourcePath": "event/mural-for-junior-league",
+        "artworkSlug": "mural-for-junior-league",
+        "publicId": "mural-for-junior-league--junior_league_mural_full2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "guggenheim-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/guggenheim-copy.jpg",
+        "sourcePath": "restaurant/mural-for-manny-hattans-deli",
+        "artworkSlug": "mural-for-manny-hattans-deli",
+        "publicId": "mural-for-manny-hattans-deli--guggenheim-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "liberty_flag",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/liberty_flag.jpg",
+        "sourcePath": "restaurant/mural-for-manny-hattans-deli",
+        "artworkSlug": "mural-for-manny-hattans-deli",
+        "publicId": "mural-for-manny-hattans-deli--liberty_flag",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "napoleon_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/napoleon_mural1.jpg",
+        "sourcePath": "event/napoleon-crossing-the-alps-mural",
+        "artworkSlug": "napoleon-crossing-the-alps-mural",
+        "publicId": "napoleon-crossing-the-alps-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "nvidia1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/07/nvidia1.jpg",
+        "sourcePath": "business/nvidia",
+        "artworkSlug": "nvidia",
+        "publicId": "nvidia--nvidia1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "nvidia2-copy",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/07/nvidia2-copy.jpg",
+        "sourcePath": "business/nvidia",
+        "artworkSlug": "nvidia",
+        "publicId": "nvidia--nvidia2-copy",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "old_coffee_mural_lg1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/old_coffee_mural_lg1.jpg",
+        "sourcePath": "business/old-coffee-mural",
+        "artworkSlug": "old-coffee-mural",
+        "publicId": "old-coffee-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "posnegmural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/posnegmural1.jpg",
+        "sourcePath": "event/positivenegative-mural",
+        "artworkSlug": "positivenegative-mural",
+        "publicId": "positivenegative-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "pulte_homes_awards_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_awards_mural.jpg",
+        "sourcePath": "business/pulte-homes-murals",
+        "artworkSlug": "pulte-homes-murals",
+        "publicId": "pulte-homes-murals--pulte_homes_awards_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "pulte_homes_awards_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_awards_mural1.jpg",
+        "sourcePath": "business/pulte-homes-murals",
+        "artworkSlug": "pulte-homes-murals",
+        "publicId": "pulte-homes-murals--pulte_homes_awards_mural1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "pulte_homes_flag_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_flag_mural.jpg",
+        "sourcePath": "business/pulte-homes-murals",
+        "artworkSlug": "pulte-homes-murals",
+        "publicId": "pulte-homes-murals--pulte_homes_flag_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "pulte_homes_flag_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_flag_mural1.jpg",
+        "sourcePath": "business/pulte-homes-murals",
+        "artworkSlug": "pulte-homes-murals",
+        "publicId": "pulte-homes-murals--pulte_homes_flag_mural1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "pulte_homes_postcard_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_postcard_mural1.jpg",
+        "sourcePath": "business/pulte-homes-murals",
+        "artworkSlug": "pulte-homes-murals",
+        "publicId": "pulte-homes-murals--pulte_homes_postcard_mural1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rgm_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/rgm_mural.jpg",
+        "sourcePath": "featured/rgm-advisors-mural",
+        "artworkSlug": "rgm-advisors-mural",
+        "publicId": "rgm-advisors-mural--rgm_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rgm_mural_installed_23",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural_installed_23.jpg",
+        "sourcePath": "featured/rgm-advisors-mural",
+        "artworkSlug": "rgm-advisors-mural",
+        "publicId": "rgm-advisors-mural--rgm_mural_installed_23",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rgm_mural_installed3",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural_installed3.jpg",
+        "sourcePath": "featured/rgm-advisors-mural",
+        "artworkSlug": "rgm-advisors-mural",
+        "publicId": "rgm-advisors-mural--rgm_mural_installed3",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rgm_mural4",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural4.jpg",
+        "sourcePath": "featured/rgm-advisors-mural",
+        "artworkSlug": "rgm-advisors-mural",
+        "publicId": "rgm-advisors-mural--rgm_mural4",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rs",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/rs.jpg",
+        "sourcePath": "restaurant/romantic-scenes-mural",
+        "artworkSlug": "romantic-scenes-mural",
+        "publicId": "romantic-scenes-mural--rs",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rs1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/rs1.jpg",
+        "sourcePath": "restaurant/romantic-scenes-mural",
+        "artworkSlug": "romantic-scenes-mural",
+        "publicId": "romantic-scenes-mural--rs1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rs2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/rs2.jpg",
+        "sourcePath": "restaurant/romantic-scenes-mural",
+        "artworkSlug": "romantic-scenes-mural",
+        "publicId": "romantic-scenes-mural--rs2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rt2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/rt2.jpg",
+        "sourcePath": "business/rooster-teeth-mural",
+        "artworkSlug": "rooster-teeth-mural",
+        "publicId": "rooster-teeth-mural--rt2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rt4",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/rt4.jpg",
+        "sourcePath": "business/rooster-teeth-mural",
+        "artworkSlug": "rooster-teeth-mural",
+        "publicId": "rooster-teeth-mural--rt4",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "rtmillionaire",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/rtmillionaire.jpg",
+        "sourcePath": "business/rooster-teeth-mural",
+        "artworkSlug": "rooster-teeth-mural",
+        "publicId": "rooster-teeth-mural--rtmillionaire",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "schlotzskys_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/schlotzskys_mural.jpg",
+        "sourcePath": "restaurant/schlotzskys-deli-murals",
+        "artworkSlug": "schlotzskys-deli-murals",
+        "publicId": "schlotzskys-deli-murals",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "shady_grove_dell_mural",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/shady_grove_dell_mural.jpg",
+        "sourcePath": "business/shady-grove-mural-at-dell-childrens-medical-center",
+        "artworkSlug": "shady-grove-mural-at-dell-childrens-medical-center",
+        "publicId": "shady-grove-mural-at-dell-childrens-medical-center--shady_grove_dell_mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "shady_grove_dell_mural_2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/shady_grove_dell_mural_2.jpg",
+        "sourcePath": "business/shady-grove-mural-at-dell-childrens-medical-center",
+        "artworkSlug": "shady-grove-mural-at-dell-childrens-medical-center",
+        "publicId": "shady-grove-mural-at-dell-childrens-medical-center--shady_grove_dell_mural_2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "spaghetti_western_mural_lg1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/spaghetti_western_mural_lg1.jpg",
+        "sourcePath": "restaurant/spaghetti-western-mural",
+        "artworkSlug": "spaghetti-western-mural",
+        "publicId": "spaghetti-western-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "stage_backdrop_mural2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/stage_backdrop_mural2.jpg",
+        "sourcePath": "event/stage-backdrop",
+        "artworkSlug": "stage-backdrop",
+        "publicId": "stage-backdrop",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "building1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/building1.jpg",
+        "sourcePath": "retail/storyville",
+        "artworkSlug": "storyville",
+        "publicId": "storyville--building1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "fox",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/fox.jpg",
+        "sourcePath": "retail/storyville",
+        "artworkSlug": "storyville",
+        "publicId": "storyville--fox",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "hangingsign",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/hangingsign.jpg",
+        "sourcePath": "retail/storyville",
+        "artworkSlug": "storyville",
+        "publicId": "storyville--hangingsign",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "lion",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/lion.jpg",
+        "sourcePath": "retail/storyville",
+        "artworkSlug": "storyville",
+        "publicId": "storyville--lion",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "storyville-main-sign-copy1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/storyville-main-sign-copy1.jpg",
+        "sourcePath": "retail/storyville",
+        "artworkSlug": "storyville",
+        "publicId": "storyville--storyville-main-sign-copy1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "driverandcurbside",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/driverandcurbside.jpg",
+        "sourcePath": "business/sweet-spot",
+        "artworkSlug": "sweet-spot",
+        "publicId": "sweet-spot--driverandcurbside",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "dsc_0173-1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/DSC_0173-1.jpg",
+        "sourcePath": "business/sweet-spot",
+        "artworkSlug": "sweet-spot",
+        "publicId": "sweet-spot--dsc_0173-1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "sugarbarnside2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/sugarbarnside2.jpg",
+        "sourcePath": "business/sweet-spot",
+        "artworkSlug": "sweet-spot",
+        "publicId": "sweet-spot--sugarbarnside2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "sweet",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/sweet.jpg",
+        "sourcePath": "business/sweet-spot",
+        "artworkSlug": "sweet-spot",
+        "publicId": "sweet-spot--sweet",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "calientetacos",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/calientetacos.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--calientetacos",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "dogeating",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/dogeating.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--dogeating",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "dogfood",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/dogfood.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--dogfood",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "eletricfire",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/eletricfire.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--eletricfire",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "exam10a",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/exam10a.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--exam10a",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "exam3",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/exam3.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--exam3",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "exam4a",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/exam4a.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--exam4a",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "exam9a",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/exam9a.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--exam9a",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "exam9b",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/exam9b.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--exam9b",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "facepainting2",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/facepainting2.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--facepainting2",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "folkstage",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/folkstage.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--folkstage",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "illustration-1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/illustration-1.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--illustration-1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "musicfest-1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/musicfest-1.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--musicfest-1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "pedicab",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/pedicab.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--pedicab",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "portopotty",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/portopotty.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--portopotty",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "security",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/security.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--security",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "taco3",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/taco3.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--taco3",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "theanimals",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/theanimals.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--theanimals",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "tshirt",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/tshirt.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--tshirt",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "waiting1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/waiting1.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--waiting1",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "willie",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2018/03/willie.jpg",
+        "sourcePath": "business/texas-childrens-urgent-care",
+        "artworkSlug": "texas-childrens-urgent-care",
+        "publicId": "texas-childrens-urgent-care--willie",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "lorax-1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/lorax-1.jpg",
+        "sourcePath": "museum/the-lorax",
+        "artworkSlug": "the-lorax",
+        "publicId": "the-lorax",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "thepeoples",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2016/10/thepeoples.jpg",
+        "sourcePath": "signage/the-peoples-pool-hall",
+        "artworkSlug": "the-peoples-pool-hall",
+        "publicId": "the-peoples-pool-hall",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "theater_backdrop_mural_lg1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/theater_backdrop_mural_lg1.jpg",
+        "sourcePath": "museum/theater-backdrop-mural",
+        "artworkSlug": "theater-backdrop-mural",
+        "publicId": "theater-backdrop-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "threadgills_mural_lg1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/threadgills_mural_lg1.jpg",
+        "sourcePath": "restaurant/threadgills-mural",
+        "artworkSlug": "threadgills-mural",
+        "publicId": "threadgills-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "tiki_masks_signage",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2011/01/tiki_masks_signage.jpg",
+        "sourcePath": "restaurant/tiki-masks",
+        "artworkSlug": "tiki-masks",
+        "publicId": "tiki-masks",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      },
+      {
+        "basename": "tx_burger_mural1",
+        "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+        "archivePath": "files/wp-content/uploads/_/2010/03/tx_burger_mural1.jpg",
+        "sourcePath": "restaurant/tx-burger-mural",
+        "artworkSlug": "tx-burger-mural",
+        "publicId": "tx-burger-mural",
+        "linkable": false,
+        "kind": "original",
+        "derivativeOf": null
+      }
+    ],
+    "skipped": [],
+    "artworkCount": 61,
+    "linkableCount": 3
+  },
+  "dedupe": {
+    "candidates": [
+      {
+        "kind": "known-pair",
+        "score": 1,
+        "winner": {
+          "side": "canonical",
+          "id": "marcia-ball",
+          "title": "Marcia Ball"
+        },
+        "loser": {
+          "side": "source",
+          "id": "business/marcia-ball-cd-cover",
+          "title": "Marcia Ball CD Cover"
+        },
+        "reason": "PRD_V3 §2 records `business/marcia-ball-cd-cover` and `commissions-misc/marcia-ball` as the same work. The counterpart resolves to live slug `marcia-ball`, so this is a merge, not an insert. The fuzzy matcher scores this pair below its 0.85 gate and would classify it NEW.",
+        "needsReview": false
+      },
+      {
+        "kind": "known-pair",
+        "score": 1,
+        "winner": {
+          "side": "canonical",
+          "id": "austin-postcard",
+          "title": "Austin Postcard"
+        },
+        "loser": {
+          "side": "source",
+          "id": "featured/austin-postcard-mural",
+          "title": "Austin Postcard Mural"
+        },
+        "reason": "PRD_V3 §2 records `featured/austin-postcard-mural` and `commissions-misc/austin-postcard` as the same work. The counterpart resolves to live slug `austin-postcard`, so this is a merge, not an insert. The fuzzy matcher scores this pair below its 0.85 gate and would classify it NEW.",
+        "needsReview": false
+      },
+      {
+        "kind": "shared-image",
+        "score": 1,
+        "winner": {
+          "side": "source",
+          "id": "restaurant/casino-el-camino-mural",
+          "title": "Casino El Camino Mural"
+        },
+        "loser": {
+          "side": "source",
+          "id": "restaurant/aztec-mural-for-casino-el-camino",
+          "title": "Aztec Mural for Casino El Camino"
+        },
+        "reason": "`restaurant/aztec-mural-for-casino-el-camino` and `restaurant/casino-el-camino-mural` hold 4 image(s) in common (100% of the smaller set), ignoring WordPress's duplicate-upload digit suffix: `aztec_mural_22` ↔ `aztec_mural_21`, `aztec_mural_center3` ↔ `aztec_mural_center1`, `aztec_mural_left3` ↔ `aztec_mural_left1`, `aztec_mural_right3` ↔ `aztec_mural_right1`. Corroborating only — a shared image is not proof of a shared artwork.",
+        "needsReview": true,
+        "sharedImages": [
+          [
+            "aztec_mural_22",
+            "aztec_mural_21"
+          ],
+          [
+            "aztec_mural_center3",
+            "aztec_mural_center1"
+          ],
+          [
+            "aztec_mural_left3",
+            "aztec_mural_left1"
+          ],
+          [
+            "aztec_mural_right3",
+            "aztec_mural_right1"
+          ]
+        ]
+      },
+      {
+        "kind": "intra-source",
+        "score": 0.7143,
+        "winner": {
+          "side": "source",
+          "id": "restaurant/casino-el-camino-mural",
+          "title": "Casino El Camino Mural"
+        },
+        "loser": {
+          "side": "source",
+          "id": "restaurant/aztec-mural-for-casino-el-camino",
+          "title": "Aztec Mural for Casino El Camino"
+        },
+        "reason": "Both records are in the ingested corpus and score 0.714 against each other. Neither can be found by a source-vs-canonical matcher. Recommended survivor is `restaurant/casino-el-camino-mural` (8 image(s) vs 4), and they hold 4 image(s) in common (100% of the smaller set): `aztec_mural_22` ↔ `aztec_mural_21`, `aztec_mural_center3` ↔ `aztec_mural_center1`, `aztec_mural_left3` ↔ `aztec_mural_left1` …. Image overlap of this size is the signature of one commission posted twice, not of two artworks.",
+        "needsReview": true,
+        "sharedImages": [
+          [
+            "aztec_mural_22",
+            "aztec_mural_21"
+          ],
+          [
+            "aztec_mural_center3",
+            "aztec_mural_center1"
+          ],
+          [
+            "aztec_mural_left3",
+            "aztec_mural_left1"
+          ],
+          [
+            "aztec_mural_right3",
+            "aztec_mural_right1"
+          ]
+        ]
+      },
+      {
+        "kind": "near-miss",
+        "score": 0.7143,
+        "winner": {
+          "side": "canonical",
+          "id": "greetings-from-texas",
+          "title": "Greetings from Texas"
+        },
+        "loser": {
+          "side": "source",
+          "id": "business/greetings-from-78752",
+          "title": "Greetings from 78752"
+        },
+        "reason": "`business/greetings-from-78752` scores 0.714 against live `greetings-from-texas` — inside the 0.6–0.85 review band, so the matcher classifies it NEW. ⚠️ The overlap is a shared leading run (`greetings from`) that *both* names continue past — the shape of a series sibling, not a duplicate. Check the images before merging; on this corpus every hit of this shape has been a false positive. (1 other live row(s) also scored in-band.) A human decides.",
+        "needsReview": true,
+        "likelySeries": true
+      },
+      {
+        "kind": "near-miss",
+        "score": 0.6275,
+        "winner": {
+          "side": "canonical",
+          "id": "greetings-from-texas",
+          "title": "Greetings from Texas"
+        },
+        "loser": {
+          "side": "source",
+          "id": "business/greetings-from-navasota-mural",
+          "title": "Greetings from Navasota mural"
+        },
+        "reason": "`business/greetings-from-navasota-mural` scores 0.627 against live `greetings-from-texas` — inside the 0.6–0.85 review band, so the matcher classifies it NEW. ⚠️ The overlap is a shared leading run (`greetings from`) that *both* names continue past — the shape of a series sibling, not a duplicate. Check the images before merging; on this corpus every hit of this shape has been a false positive. A human decides.",
+        "needsReview": true,
+        "likelySeries": true
+      }
+    ],
+    "byKind": {
+      "known-pair": 2,
+      "alias-match": 0,
+      "near-miss": 2,
+      "intra-source": 1,
+      "shared-image": 1,
+      "slug-clash": 0
+    },
+    "mergeInto": {
+      "business/marcia-ball-cd-cover": "marcia-ball",
+      "featured/austin-postcard-mural": "austin-postcard"
+    },
+    "blockedSourceIds": [
+      "business/marcia-ball-cd-cover",
+      "featured/austin-postcard-mural"
+    ],
+    "insertableSourceIds": [
+      "business/360-condominiums",
+      "business/austin-childrens-museum",
+      "business/beerland-mural",
+      "business/camp-bow-wow",
+      "business/capstar-mural",
+      "business/cezanne-mural",
+      "business/cowboy-mural",
+      "business/flosports",
+      "business/greetings-from-78752",
+      "business/greetings-from-navasota-mural",
+      "business/h-e-b-austin",
+      "business/heb-print-mural",
+      "business/high-5-bowling-mural",
+      "business/independence-brewery-mural",
+      "business/jack-nicholson-mural",
+      "business/lotus-flower-mural",
+      "business/lululemon-mural",
+      "business/magazine-illustration-for-life-and-letters",
+      "business/mandala-trading",
+      "business/nvidia",
+      "business/old-coffee-mural",
+      "business/pulte-homes-murals",
+      "business/rooster-teeth-mural",
+      "business/shady-grove-mural-at-dell-childrens-medical-center",
+      "business/sweet-spot",
+      "business/texas-childrens-urgent-care",
+      "event/70s-mural",
+      "event/blue-ribbon-day-mural",
+      "event/gaylord-christmas",
+      "event/govalle-elementary-school",
+      "event/hill-country-food-and-wine-tasting",
+      "event/mjm-texas-stampede-for-children",
+      "event/mural-for-junior-league",
+      "event/napoleon-crossing-the-alps-mural",
+      "event/positivenegative-mural",
+      "event/stage-backdrop",
+      "featured/duluth-theater",
+      "featured/facebook-2",
+      "featured/good-morning-austin-mural",
+      "featured/mellow-mushroom-murals",
+      "featured/rgm-advisors-mural",
+      "home/andy-roddick-mural",
+      "home/motorcycle-mural-—-california-dreamin",
+      "museum/hello-world",
+      "museum/the-lorax",
+      "museum/theater-backdrop-mural",
+      "restaurant/aztec-mural-for-casino-el-camino",
+      "restaurant/casino-el-camino-mural",
+      "restaurant/fresh-planet",
+      "restaurant/home-slice-pizza-mural",
+      "restaurant/more-home-slice",
+      "restaurant/mural-for-manny-hattans-deli",
+      "restaurant/romantic-scenes-mural",
+      "restaurant/schlotzskys-deli-murals",
+      "restaurant/spaghetti-western-mural",
+      "restaurant/threadgills-mural",
+      "restaurant/tiki-masks",
+      "restaurant/tx-burger-mural",
+      "retail/storyville",
+      "signage/the-peoples-pool-hall"
+    ],
+    "warnings": [
+      "2 source record(s) sit in the 0.6–0.85 review band. They are NOT blocked — a false merge silently destroys an artwork, so each needs a human call. ⚠️ 2 of them share a leading run with the live title and both names continue past it, which is the shape of a series sibling rather than a duplicate.",
+      "1 pair(s) of records inside the ingested corpus resemble each other. A source-vs-canonical matcher cannot detect these."
+    ]
+  }
+}

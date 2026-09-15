@@ -51,7 +51,13 @@ import type { RenditionName } from '../../server/lib/imageRenditions';
  * row that links where the artwork backfill refuses to write would be linking to a row the backfill
  * never created, or to one it flagged for review.
  */
-export const TRUSTED_MATCH_KINDS = ['exact-slug', 'divergence-map'] as const;
+/**
+ * ⚠️ DUPLICATED IN `waybackBackfill.ts` — the two lists must be changed together.
+ *
+ * `known-dedupe` is trusted because PRD_V3 §2 *establishes* the pair; the confidence comes from
+ * authored knowledge, not from a similarity score, so the linkage may be written immediately.
+ */
+export const TRUSTED_MATCH_KINDS = ['exact-slug', 'divergence-map', 'known-dedupe'] as const;
 
 /** `e1-590x410` → stem `e1`. Anchored at the end, so `square-eggs-16x13-copy` is not a derivative. */
 export const WORDPRESS_DERIVATIVE_RE = /^(.+?)-(\d+)x(\d+)$/;
@@ -235,8 +241,23 @@ interface Candidate {
  *
  * Deterministic: the same extraction always yields the same plan, in the same order, so a re-run
  * can be diffed against the previous one.
+ *
+ * `existingMediaByArtwork` maps an artwork slug to how many rows it **already** has in
+ * `media_assets`. It exists because sibling counting used to look only at the plan:
+ *
+ * ⚠️ `derivePublicId` mints `public_id = slug` when an artwork has one image, and that is the
+ * convention the 152 migrated rows follow. But "one image" was being read as "one image *in this
+ * plan*", so an artwork that already had media and gained a single new image was planned as
+ * `public_id = <slug>` — the exact key its existing row holds. `findRegistryCollisions` catches it
+ * and refuses the write (which is why the recovered run reported 2 collisions rather than writing
+ * them), but the correct plan is the suffixed form, and it needs the live count to know that.
+ *
+ * Optional and defaulted, so every existing caller and test keeps its current behaviour.
  */
-export function buildMediaPlan(records: ReconciledRecord[]): MediaPlan {
+export function buildMediaPlan(
+  records: ReconciledRecord[],
+  existingMediaByArtwork: Map<string, number> = new Map()
+): MediaPlan {
   const skipped: MediaPlanSkip[] = [];
   const candidates: Candidate[] = [];
 
@@ -376,8 +397,14 @@ export function buildMediaPlan(records: ReconciledRecord[]): MediaPlan {
   }
 
   // --- Pass 3: derive public_id once the sibling count per artwork is known ---------------------
+  // "Siblings" means every image the artwork will have after this run, not just the ones this run
+  // adds — otherwise a single new image on an artwork that already has media reclaims the
+  // artwork's existing `public_id` (see this function's doc comment).
   const siblingCount = new Map<string, number>();
   for (const c of deduped) siblingCount.set(c.artworkSlug, (siblingCount.get(c.artworkSlug) ?? 0) + 1);
+
+  const totalSiblings = (artworkSlug: string): number =>
+    (siblingCount.get(artworkSlug) ?? 1) + (existingMediaByArtwork.get(artworkSlug) ?? 0);
 
   const items: MediaPlanItem[] = deduped
     .map((c) => {
@@ -388,7 +415,7 @@ export function buildMediaPlan(records: ReconciledRecord[]): MediaPlan {
         archivePath: c.archivePath,
         sourcePath: c.sourcePath,
         artworkSlug: c.artworkSlug,
-        publicId: derivePublicId(c.artworkSlug, c.basename, siblingCount.get(c.artworkSlug) ?? 1),
+        publicId: derivePublicId(c.artworkSlug, c.basename, totalSiblings(c.artworkSlug)),
         linkable: c.linkable,
         kind: derivative ? ('derivative-only' as const) : ('original' as const),
         derivativeOf: derivative ? derivative.stem : null,

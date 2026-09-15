@@ -1,0 +1,220 @@
+{
+  "candidates": [
+    {
+      "kind": "known-pair",
+      "score": 1,
+      "winner": {
+        "side": "canonical",
+        "id": "marcia-ball",
+        "title": "Marcia Ball"
+      },
+      "loser": {
+        "side": "source",
+        "id": "business/marcia-ball-cd-cover",
+        "title": "Marcia Ball CD Cover"
+      },
+      "reason": "PRD_V3 §2 records `business/marcia-ball-cd-cover` and `commissions-misc/marcia-ball` as the same work. The counterpart resolves to live slug `marcia-ball`, so this is a merge, not an insert. The fuzzy matcher scores this pair below its 0.85 gate and would classify it NEW.",
+      "needsReview": false
+    },
+    {
+      "kind": "known-pair",
+      "score": 1,
+      "winner": {
+        "side": "canonical",
+        "id": "austin-postcard",
+        "title": "Austin Postcard"
+      },
+      "loser": {
+        "side": "source",
+        "id": "featured/austin-postcard-mural",
+        "title": "Austin Postcard Mural"
+      },
+      "reason": "PRD_V3 §2 records `featured/austin-postcard-mural` and `commissions-misc/austin-postcard` as the same work. The counterpart resolves to live slug `austin-postcard`, so this is a merge, not an insert. The fuzzy matcher scores this pair below its 0.85 gate and would classify it NEW.",
+      "needsReview": false
+    },
+    {
+      "kind": "shared-image",
+      "score": 1,
+      "winner": {
+        "side": "source",
+        "id": "restaurant/casino-el-camino-mural",
+        "title": "Casino El Camino Mural"
+      },
+      "loser": {
+        "side": "source",
+        "id": "restaurant/aztec-mural-for-casino-el-camino",
+        "title": "Aztec Mural for Casino El Camino"
+      },
+      "reason": "`restaurant/aztec-mural-for-casino-el-camino` and `restaurant/casino-el-camino-mural` hold 4 image(s) in common (100% of the smaller set), ignoring WordPress's duplicate-upload digit suffix: `aztec_mural_22` ↔ `aztec_mural_21`, `aztec_mural_center3` ↔ `aztec_mural_center1`, `aztec_mural_left3` ↔ `aztec_mural_left1`, `aztec_mural_right3` ↔ `aztec_mural_right1`. Corroborating only — a shared image is not proof of a shared artwork.",
+      "needsReview": true,
+      "sharedImages": [
+        [
+          "aztec_mural_22",
+          "aztec_mural_21"
+        ],
+        [
+          "aztec_mural_center3",
+          "aztec_mural_center1"
+        ],
+        [
+          "aztec_mural_left3",
+          "aztec_mural_left1"
+        ],
+        [
+          "aztec_mural_right3",
+          "aztec_mural_right1"
+        ]
+      ]
+    },
+    {
+      "kind": "intra-source",
+      "score": 0.7143,
+      "winner": {
+        "side": "source",
+        "id": "restaurant/casino-el-camino-mural",
+        "title": "Casino El Camino Mural"
+      },
+      "loser": {
+        "side": "source",
+        "id": "restaurant/aztec-mural-for-casino-el-camino",
+        "title": "Aztec Mural for Casino El Camino"
+      },
+      "reason": "Both records are in the ingested corpus and score 0.714 against each other. Neither can be found by a source-vs-canonical matcher. Recommended survivor is `restaurant/casino-el-camino-mural` (8 image(s) vs 4), and they hold 4 image(s) in common (100% of the smaller set): `aztec_mural_22` ↔ `aztec_mural_21`, `aztec_mural_center3` ↔ `aztec_mural_center1`, `aztec_mural_left3` ↔ `aztec_mural_left1` …. Image overlap of this size is the signature of one commission posted twice, not of two artworks.",
+      "needsReview": true,
+      "sharedImages": [
+        [
+          "aztec_mural_22",
+          "aztec_mural_21"
+        ],
+        [
+          "aztec_mural_center3",
+          "aztec_mural_center1"
+        ],
+        [
+          "aztec_mural_left3",
+          "aztec_mural_left1"
+        ],
+        [
+          "aztec_mural_right3",
+          "aztec_mural_right1"
+        ]
+      ]
+    },
+    {
+      "kind": "near-miss",
+      "score": 0.7143,
+      "winner": {
+        "side": "canonical",
+        "id": "greetings-from-texas",
+        "title": "Greetings from Texas"
+      },
+      "loser": {
+        "side": "source",
+        "id": "business/greetings-from-78752",
+        "title": "Greetings from 78752"
+      },
+      "reason": "`business/greetings-from-78752` scores 0.714 against live `greetings-from-texas` — inside the 0.6–0.85 review band, so the matcher classifies it NEW. ⚠️ The overlap is a shared leading run (`greetings from`) that *both* names continue past — the shape of a series sibling, not a duplicate. Check the images before merging; on this corpus every hit of this shape has been a false positive. (1 other live row(s) also scored in-band.) A human decides.",
+      "needsReview": true,
+      "likelySeries": true
+    },
+    {
+      "kind": "near-miss",
+      "score": 0.6275,
+      "winner": {
+        "side": "canonical",
+        "id": "greetings-from-texas",
+        "title": "Greetings from Texas"
+      },
+      "loser": {
+        "side": "source",
+        "id": "business/greetings-from-navasota-mural",
+        "title": "Greetings from Navasota mural"
+      },
+      "reason": "`business/greetings-from-navasota-mural` scores 0.627 against live `greetings-from-texas` — inside the 0.6–0.85 review band, so the matcher classifies it NEW. ⚠️ The overlap is a shared leading run (`greetings from`) that *both* names continue past — the shape of a series sibling, not a duplicate. Check the images before merging; on this corpus every hit of this shape has been a false positive. A human decides.",
+      "needsReview": true,
+      "likelySeries": true
+    }
+  ],
+  "byKind": {
+    "known-pair": 2,
+    "alias-match": 0,
+    "near-miss": 2,
+    "intra-source": 1,
+    "shared-image": 1,
+    "slug-clash": 0
+  },
+  "mergeInto": {
+    "business/marcia-ball-cd-cover": "marcia-ball",
+    "featured/austin-postcard-mural": "austin-postcard"
+  },
+  "blockedSourceIds": [
+    "business/marcia-ball-cd-cover",
+    "featured/austin-postcard-mural"
+  ],
+  "insertableSourceIds": [
+    "business/360-condominiums",
+    "business/austin-childrens-museum",
+    "business/beerland-mural",
+    "business/camp-bow-wow",
+    "business/capstar-mural",
+    "business/cezanne-mural",
+    "business/cowboy-mural",
+    "business/flosports",
+    "business/greetings-from-78752",
+    "business/greetings-from-navasota-mural",
+    "business/h-e-b-austin",
+    "business/heb-print-mural",
+    "business/high-5-bowling-mural",
+    "business/independence-brewery-mural",
+    "business/jack-nicholson-mural",
+    "business/lotus-flower-mural",
+    "business/lululemon-mural",
+    "business/magazine-illustration-for-life-and-letters",
+    "business/mandala-trading",
+    "business/nvidia",
+    "business/old-coffee-mural",
+    "business/pulte-homes-murals",
+    "business/rooster-teeth-mural",
+    "business/shady-grove-mural-at-dell-childrens-medical-center",
+    "business/sweet-spot",
+    "business/texas-childrens-urgent-care",
+    "event/70s-mural",
+    "event/blue-ribbon-day-mural",
+    "event/gaylord-christmas",
+    "event/govalle-elementary-school",
+    "event/hill-country-food-and-wine-tasting",
+    "event/mjm-texas-stampede-for-children",
+    "event/mural-for-junior-league",
+    "event/napoleon-crossing-the-alps-mural",
+    "event/positivenegative-mural",
+    "event/stage-backdrop",
+    "featured/duluth-theater",
+    "featured/facebook-2",
+    "featured/good-morning-austin-mural",
+    "featured/mellow-mushroom-murals",
+    "featured/rgm-advisors-mural",
+    "home/andy-roddick-mural",
+    "home/motorcycle-mural-—-california-dreamin",
+    "museum/hello-world",
+    "museum/the-lorax",
+    "museum/theater-backdrop-mural",
+    "restaurant/aztec-mural-for-casino-el-camino",
+    "restaurant/casino-el-camino-mural",
+    "restaurant/fresh-planet",
+    "restaurant/home-slice-pizza-mural",
+    "restaurant/more-home-slice",
+    "restaurant/mural-for-manny-hattans-deli",
+    "restaurant/romantic-scenes-mural",
+    "restaurant/schlotzskys-deli-murals",
+    "restaurant/spaghetti-western-mural",
+    "restaurant/threadgills-mural",
+    "restaurant/tiki-masks",
+    "restaurant/tx-burger-mural",
+    "retail/storyville",
+    "signage/the-peoples-pool-hall"
+  ],
+  "warnings": [
+    "2 source record(s) sit in the 0.6–0.85 review band. They are NOT blocked — a false merge silently destroys an artwork, so each needs a human call. ⚠️ 2 of them share a leading run with the live title and both names continue past it, which is the shape of a series sibling rather than a duplicate.",
+    "1 pair(s) of records inside the ingested corpus resemble each other. A source-vs-canonical matcher cannot detect these."
+  ]
+}

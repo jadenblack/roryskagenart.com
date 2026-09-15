@@ -23,13 +23,31 @@
  * HTML fixtures instead of the 557-file archive.
  */
 
-export type ArchiveId = 'centraltexasmurals.com-v1' | 'roryskagen.com-v1';
+/** The two HTML scrape directories. These are the ones `wayback-extract.ts` walks by default. */
+export type ScrapeArchiveId = 'centraltexasmurals.com-v1' | 'roryskagen.com-v1';
 
-export const ARCHIVE_IDS: ArchiveId[] = ['centraltexasmurals.com-v1', 'roryskagen.com-v1'];
+/**
+ * Any archive directory under `wayback/`.
+ *
+ * Deliberately open-ended rather than a closed union: v3 gained a **third** source — the recovered
+ * WordPress export (`wayback/centraltexasmuralsbyroryskagen-<stamp>/`) — and its directory name
+ * carries the export timestamp, so it cannot be a literal type without breaking on a re-export.
+ * Every consumer joins `wayback/<archive>/<archivePath>`, so the value is a directory name first
+ * and a label second.
+ */
+export type ArchiveId = ScrapeArchiveId | (string & {});
 
-/** Which site a page came from, in the words the studio uses. */
+export const ARCHIVE_IDS: ScrapeArchiveId[] = ['centraltexasmurals.com-v1', 'roryskagen.com-v1'];
+
+/**
+ * Which site a source came from, in the words the studio uses.
+ *
+ * Keyed off the site name rather than an allow-list so a newly-discovered source is classified the
+ * moment it is named — the recovered WordPress export is the mural site, and a default of
+ * `fine-art` would have mislabelled all 62 of its posts.
+ */
 export function archiveKind(archive: ArchiveId): 'mural' | 'fine-art' {
-  return archive === 'centraltexasmurals.com-v1' ? 'mural' : 'fine-art';
+  return archive.startsWith('roryskagen.com') ? 'fine-art' : 'mural';
 }
 
 export interface ExtractedImage {
