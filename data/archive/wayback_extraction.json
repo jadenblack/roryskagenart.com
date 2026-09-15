@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T12:57:26.767Z",
+  "generatedAt": "2026-09-15T13:34:03.999Z",
   "canonical": {
     "capturedAt": "2026-09-15T03:07:17.614Z",
     "source": "aws-0-us-east-1.pooler.supabase.com (remote)"
@@ -9,10 +9,10 @@
     "NEW": 68,
     "EXISTS": 127,
     "COLLISION": 2,
-    "withNeedsUpload": 28,
-    "needsUploadCount": 32,
-    "unavailableCount": 11,
-    "withoutImage": 121
+    "withNeedsUpload": 10,
+    "needsUploadCount": 14,
+    "unavailableCount": 29,
+    "withoutImage": 138
   },
   "collisionGroups": [
     {
@@ -84,7 +84,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/moo-goo-gai-pan-copy.jpg",
-          "basename": "moo-goo-gai-pan-copy"
+          "basename": "moo-goo-gai-pan-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -110,7 +111,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/near-arrangement-copy.jpg",
-          "basename": "near-arrangement-copy"
+          "basename": "near-arrangement-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -136,10 +138,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/normal-gods-copy.jpg",
-          "basename": "normal-gods-copy"
+          "basename": "normal-gods-copy",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: normal-gods-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -162,7 +167,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/the-cats-of-the-colloseum-copy3.jpg",
-          "basename": "the-cats-of-the-colloseum-copy3"
+          "basename": "the-cats-of-the-colloseum-copy3",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -188,7 +194,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/the-production-copy.jpg",
-          "basename": "the-production-copy"
+          "basename": "the-production-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -234,7 +241,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/Beaver-Holiday-copy.jpg",
-          "basename": "beaver-holiday-copy"
+          "basename": "beaver-holiday-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -280,7 +288,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/dairygossip-.jpg",
-          "basename": "dairygossip-"
+          "basename": "dairygossip-",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -306,7 +315,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/Issy-copy.jpg",
-          "basename": "issy-copy"
+          "basename": "issy-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -352,10 +362,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/Monkey-Sunset-copy.jpg",
-          "basename": "monkey-sunset-copy"
+          "basename": "monkey-sunset-copy",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: monkey-sunset-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -378,7 +391,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/square-eggs-16x13-copy.jpg",
-          "basename": "square-eggs-16x13-copy"
+          "basename": "square-eggs-16x13-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -404,10 +418,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/Steamy-the-flavor-genie-copy.jpg",
-          "basename": "steamy-the-flavor-genie-copy"
+          "basename": "steamy-the-flavor-genie-copy",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: steamy-the-flavor-genie-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -430,7 +447,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/THE-GREAT-ALL-STARS-copy.jpg",
-          "basename": "the-great-all-stars-copy"
+          "basename": "the-great-all-stars-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -456,7 +474,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/THE-HELL-THAT-IS-MONK11C8D-copy.jpg",
-          "basename": "the-hell-that-is-monk11c8d-copy"
+          "basename": "the-hell-that-is-monk11c8d-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -502,7 +521,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/bluenilecropped-copy.jpg",
-          "basename": "bluenilecropped-copy"
+          "basename": "bluenilecropped-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -588,7 +608,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/leisuretimecropped-copy1.jpg",
-          "basename": "leisuretimecropped-copy1"
+          "basename": "leisuretimecropped-copy1",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -716,7 +737,8 @@
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2015/02/bluewall-copy.jpg",
-          "basename": "bluewall-copy"
+          "basename": "bluewall-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -937,7 +959,8 @@
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2011/07/HEB2.jpg",
-          "basename": "heb2"
+          "basename": "heb2",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -964,14 +987,16 @@
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2016/08/newaustinmurala.jpg",
-          "basename": "newaustinmurala"
+          "basename": "newaustinmurala",
+          "presentOnDisk": true
         },
         {
           "ref": "../../wp-content/uploads/2016/08/newaustinmuralb.jpg",
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2016/08/newaustinmuralb.jpg",
-          "basename": "newaustinmuralb"
+          "basename": "newaustinmuralb",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -1298,7 +1323,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/78704.jpg",
-          "basename": "78704"
+          "basename": "78704",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -1371,10 +1397,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2017/06/stormyweather-copy-1-590x443.jpg",
-          "basename": "stormyweather-copy-1-590x443"
+          "basename": "stormyweather-copy-1-590x443",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: stormyweather-copy-1-590x443"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1397,10 +1426,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2019/07/austin2019-copy-590x412.jpg",
-          "basename": "austin2019-copy-590x412"
+          "basename": "austin2019-copy-590x412",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: austin2019-copy-590x412"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1423,10 +1455,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/01/d.jpg",
-          "basename": "d"
+          "basename": "d",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: d"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1449,14 +1484,16 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/01/austin.jpg",
-          "basename": "austin"
+          "basename": "austin",
+          "presentOnDisk": true
         },
         {
           "ref": "../../art/wp-content/uploads/2015/01/austin-590x412.jpg",
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/01/austin-590x412.jpg",
-          "basename": "austin-590x412"
+          "basename": "austin-590x412",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -1482,7 +1519,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/austinpostcard.jpg",
-          "basename": "austinpostcard"
+          "basename": "austinpostcard",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -1508,10 +1546,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2019/07/starwars-copy-590x429.jpg",
-          "basename": "starwars-copy-590x429"
+          "basename": "starwars-copy-590x429",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: starwars-copy-590x429"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1534,7 +1575,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/GreetingsfromAustin.jpg",
-          "basename": "greetingsfromaustin"
+          "basename": "greetingsfromaustin",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -1560,10 +1602,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/GreetingsfromTexas.jpg",
-          "basename": "greetingsfromtexas"
+          "basename": "greetingsfromtexas",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: greetingsfromtexas"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1626,17 +1671,21 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/01/f.jpg",
-          "basename": "f"
+          "basename": "f",
+          "presentOnDisk": true
         },
         {
           "ref": "../../art/wp-content/uploads/2015/01/f-590x590.jpg?w=1400",
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/01/f-590x590.jpg",
-          "basename": "f-590x590"
+          "basename": "f-590x590",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: f-590x590"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1713,10 +1762,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/02/r-590x773.jpg",
-          "basename": "r-590x773"
+          "basename": "r-590x773",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: r-590x773"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1739,10 +1791,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2017/06/Scaramouche-copy-590x443.jpg",
-          "basename": "scaramouche-copy-590x443"
+          "basename": "scaramouche-copy-590x443",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: scaramouche-copy-590x443"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1765,14 +1820,16 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/01/e1.jpg",
-          "basename": "e1"
+          "basename": "e1",
+          "presentOnDisk": true
         },
         {
           "ref": "../../art/wp-content/uploads/2015/01/e1-590x410.jpg",
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/01/e1-590x410.jpg",
-          "basename": "e1-590x410"
+          "basename": "e1-590x410",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -1818,10 +1875,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2018/03/thecarters-590x354.jpg",
-          "basename": "thecarters-590x354"
+          "basename": "thecarters-590x354",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: thecarters-590x354"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1891,10 +1951,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2019/07/themartian2-copy-590x429.jpg",
-          "basename": "themartian2-copy-590x429"
+          "basename": "themartian2-copy-590x429",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: themartian2-copy-590x429"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1917,10 +1980,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2019/07/themartian1-copy-590x427.jpg",
-          "basename": "themartian1-copy-590x427"
+          "basename": "themartian1-copy-590x427",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: themartian1-copy-590x427"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -1943,7 +2009,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/the-narrative.jpg",
-          "basename": "the-narrative"
+          "basename": "the-narrative",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -1969,7 +2036,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/northernfriend-copy.jpg",
-          "basename": "northernfriend-copy"
+          "basename": "northernfriend-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -1995,10 +2063,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2019/07/2019cats-copy-590x405.jpg",
-          "basename": "2019cats-copy-590x405"
+          "basename": "2019cats-copy-590x405",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: 2019cats-copy-590x405"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -2061,10 +2132,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/01/Abstract001-copy-590x471.jpg",
-          "basename": "abstract001-copy-590x471"
+          "basename": "abstract001-copy-590x471",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: abstract001-copy-590x471"
+      ]
     },
     {
       "archive": "centraltexasmurals.com-v1",
@@ -2130,10 +2204,13 @@
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2010/04/giftshop1.jpg",
-          "basename": "giftshop1"
+          "basename": "giftshop1",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: giftshop1"
+      ]
     },
     {
       "archive": "centraltexasmurals.com-v1",
@@ -2348,21 +2425,24 @@
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2015/09/full.jpg",
-          "basename": "full"
+          "basename": "full",
+          "presentOnDisk": true
         },
         {
           "ref": "../../wp-content/uploads/2015/09/hack.jpg",
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2015/09/hack.jpg",
-          "basename": "hack"
+          "basename": "hack",
+          "presentOnDisk": true
         },
         {
           "ref": "../../wp-content/uploads/2015/09/saucer.jpg",
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2015/09/saucer.jpg",
-          "basename": "saucer"
+          "basename": "saucer",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -2557,10 +2637,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/slimathon.jpg",
-          "basename": "slimathon"
+          "basename": "slimathon",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: slimathon"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -2603,10 +2686,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2017/06/austin-Recovered-copy-590x413.jpg",
-          "basename": "austin-recovered-copy-590x413"
+          "basename": "austin-recovered-copy-590x413",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: austin-recovered-copy-590x413"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -2629,7 +2715,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/jigoku.jpg",
-          "basename": "jigoku"
+          "basename": "jigoku",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -2715,10 +2802,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2019/07/kemuri-590x414.jpg",
-          "basename": "kemuri-590x414"
+          "basename": "kemuri-590x414",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: kemuri-590x414"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -2761,10 +2851,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/kirunan.jpg",
-          "basename": "kirunan"
+          "basename": "kirunan",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: kirunan"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -2787,10 +2880,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2017/06/oblong-copy-590x409.jpg",
-          "basename": "oblong-copy-590x409"
+          "basename": "oblong-copy-590x409",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: oblong-copy-590x409"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -2813,7 +2909,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/09/MESHU-TORA-590x409.jpg",
-          "basename": "meshu-tora-590x409"
+          "basename": "meshu-tora-590x409",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -2839,10 +2936,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/misakamo.jpg",
-          "basename": "misakamo"
+          "basename": "misakamo",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: misakamo"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -2885,7 +2985,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/09/NEKKOMATU.jpg",
-          "basename": "nekkomatu"
+          "basename": "nekkomatu",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -2911,7 +3012,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/09/NOMAKA-.jpg",
-          "basename": "nomaka-"
+          "basename": "nomaka-",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3044,7 +3146,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/terrordon.jpg",
-          "basename": "terrordon"
+          "basename": "terrordon",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3117,7 +3220,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2015/06/utaho.jpg",
-          "basename": "utaho"
+          "basename": "utaho",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3143,7 +3247,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/09/YOKAI1.jpg",
-          "basename": "yokai1"
+          "basename": "yokai1",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3365,10 +3470,13 @@
           "local": true,
           "remote": false,
           "archivePath": "wp-content/uploads/2010/03/rs.jpg",
-          "basename": "rs"
+          "basename": "rs",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: rs"
+      ]
     },
     {
       "archive": "centraltexasmurals.com-v1",
@@ -3586,7 +3694,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/cave-dance-copy.jpg",
-          "basename": "cave-dance-copy"
+          "basename": "cave-dance-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3612,7 +3721,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/closing-night-copy.jpg",
-          "basename": "closing-night-copy"
+          "basename": "closing-night-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3698,7 +3808,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/stewed-gorilla-copy.jpg",
-          "basename": "stewed-gorilla-copy"
+          "basename": "stewed-gorilla-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3724,7 +3835,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/the-180000-hole-copy.jpg",
-          "basename": "the-180000-hole-copy"
+          "basename": "the-180000-hole-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3797,7 +3909,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/Untitled-1-copy.jpg",
-          "basename": "untitled-1-copy"
+          "basename": "untitled-1-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3823,10 +3936,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/brimstone-club-1.jpg",
-          "basename": "brimstone-club-1"
+          "basename": "brimstone-club-1",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: brimstone-club-1"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -3876,7 +3992,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/bar-copy.jpg",
-          "basename": "bar-copy"
+          "basename": "bar-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3902,7 +4019,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/blind-monkey-copy.jpg",
-          "basename": "blind-monkey-copy"
+          "basename": "blind-monkey-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3928,7 +4046,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/mogul-cigarettes-copy.jpg",
-          "basename": "mogul-cigarettes-copy"
+          "basename": "mogul-cigarettes-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3954,7 +4073,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/image-wp-flutesnake-copy.jpg",
-          "basename": "image-wp-flutesnake-copy"
+          "basename": "image-wp-flutesnake-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -3980,7 +4100,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/wisdom-coffee-copy.jpg",
-          "basename": "wisdom-coffee-copy"
+          "basename": "wisdom-coffee-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4186,7 +4307,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/cornflower-12.jpg",
-          "basename": "cornflower-12"
+          "basename": "cornflower-12",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4239,7 +4361,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/Jungle-Tempo-copy1.jpg",
-          "basename": "jungle-tempo-copy1"
+          "basename": "jungle-tempo-copy1",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4305,7 +4428,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/random-house-6.jpg",
-          "basename": "random-house-6"
+          "basename": "random-house-6",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4331,7 +4455,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/southern-belle-copy.jpg",
-          "basename": "southern-belle-copy"
+          "basename": "southern-belle-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4357,10 +4482,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/strange-delight-6.jpg",
-          "basename": "strange-delight-6"
+          "basename": "strange-delight-6",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: strange-delight-6"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -4383,7 +4511,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/Butter-and-Egg-Man-6.5-x-8.jpg",
-          "basename": "butter-and-egg-man-6.5-x-8"
+          "basename": "butter-and-egg-man-6.5-x-8",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4449,7 +4578,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/Tuesday-Charmer6.5-x8.jpg",
-          "basename": "tuesday-charmer6.5-x8"
+          "basename": "tuesday-charmer6.5-x8",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4475,7 +4605,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/clownwframe-copy.jpg",
-          "basename": "clownwframe-copy"
+          "basename": "clownwframe-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4501,7 +4632,8 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/cocoabear-copy.jpg",
-          "basename": "cocoabear-copy"
+          "basename": "cocoabear-copy",
+          "presentOnDisk": true
         }
       ],
       "warnings": []
@@ -4527,10 +4659,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/drebbles-copy.jpg",
-          "basename": "drebbles-copy"
+          "basename": "drebbles-copy",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: drebbles-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -4553,10 +4688,13 @@
           "local": true,
           "remote": false,
           "archivePath": "art/wp-content/uploads/2011/01/greasytodd-copy.jpg",
-          "basename": "greasytodd-copy"
+          "basename": "greasytodd-copy",
+          "presentOnDisk": false
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: greasytodd-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -4727,7 +4865,9 @@
           "matchedPublicId": "normal-gods-copy"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: normal-gods-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -4921,7 +5061,9 @@
           "matchedPublicId": "Monkey-Sunset-copy"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: monkey-sunset-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -4967,7 +5109,9 @@
           "matchedPublicId": "Steamy-the-flavor-genie-copy"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: steamy-the-flavor-genie-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -5770,7 +5914,8 @@
         {
           "basename": "adventures-in-illustration-copy",
           "ref": "https://i1.wp.com/roryskagen.com/wp-content/uploads/2011/01/adventures-in-illustration-copy.jpg?fit=576%2C402&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -5794,11 +5939,13 @@
         {
           "basename": "stormyweather-copy-1-590x443",
           "ref": "../../art/wp-content/uploads/2017/06/stormyweather-copy-1-590x443.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2017/06/stormyweather-copy-1-590x443.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: stormyweather-copy-1-590x443"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -5817,11 +5964,13 @@
         {
           "basename": "austin2019-copy-590x412",
           "ref": "../../art/wp-content/uploads/2019/07/austin2019-copy-590x412.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2019/07/austin2019-copy-590x412.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: austin2019-copy-590x412"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -5844,7 +5993,9 @@
           "matchedPublicId": "d"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: d"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -5915,11 +6066,13 @@
         {
           "basename": "starwars-copy-590x429",
           "ref": "../../art/wp-content/uploads/2019/07/starwars-copy-590x429.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2019/07/starwars-copy-590x429.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: starwars-copy-590x429"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -5965,7 +6118,9 @@
           "matchedPublicId": "GreetingsfromTexas"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: greetingsfromtexas"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6026,11 +6181,13 @@
         {
           "basename": "f-590x590",
           "ref": "../../art/wp-content/uploads/2015/01/f-590x590.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2015/01/f-590x590.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: f-590x590"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6049,7 +6206,8 @@
         {
           "basename": "midflight-connection-copy",
           "ref": "https://i0.wp.com/roryskagen.com/wp-content/uploads/2011/01/midflight-connection-copy.jpg?fit=576%2C579&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -6073,7 +6231,8 @@
         {
           "basename": "pollockjr",
           "ref": "https://i0.wp.com/roryskagen.com/art/wp-content/uploads/2015/01/pollockjr.jpg?fit=922%2C687&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -6097,11 +6256,13 @@
         {
           "basename": "r-590x773",
           "ref": "../../art/wp-content/uploads/2015/02/r-590x773.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2015/02/r-590x773.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: r-590x773"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6120,11 +6281,13 @@
         {
           "basename": "scaramouche-copy-590x443",
           "ref": "../../art/wp-content/uploads/2017/06/Scaramouche-copy-590x443.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2017/06/Scaramouche-copy-590x443.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: scaramouche-copy-590x443"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6190,11 +6353,13 @@
         {
           "basename": "thecarters-590x354",
           "ref": "../../art/wp-content/uploads/2018/03/thecarters-590x354.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2018/03/thecarters-590x354.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: thecarters-590x354"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6213,7 +6378,8 @@
         {
           "basename": "the-catbird-seat-copy",
           "ref": "https://i2.wp.com/roryskagen.com/art/wp-content/uploads/2011/01/the-catbird-seat-copy.jpg?fit=576%2C760&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -6255,11 +6421,13 @@
         {
           "basename": "themartian2-copy-590x429",
           "ref": "../../art/wp-content/uploads/2019/07/themartian2-copy-590x429.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2019/07/themartian2-copy-590x429.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: themartian2-copy-590x429"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6278,11 +6446,13 @@
         {
           "basename": "themartian1-copy-590x427",
           "ref": "../../art/wp-content/uploads/2019/07/themartian1-copy-590x427.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2019/07/themartian1-copy-590x427.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: themartian1-copy-590x427"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6347,11 +6517,13 @@
         {
           "basename": "2019cats-copy-590x405",
           "ref": "../../art/wp-content/uploads/2019/07/2019cats-copy-590x405.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2019/07/2019cats-copy-590x405.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: 2019cats-copy-590x405"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6406,11 +6578,13 @@
         {
           "basename": "abstract001-copy-590x471",
           "ref": "../../art/wp-content/uploads/2015/01/Abstract001-copy-590x471.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2015/01/Abstract001-copy-590x471.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: abstract001-copy-590x471"
+      ]
     },
     {
       "archive": "centraltexasmurals.com-v1",
@@ -6465,11 +6639,13 @@
         {
           "basename": "giftshop1",
           "ref": "../../wp-content/uploads/2010/04/giftshop1.jpg",
-          "action": "needs_upload",
-          "archivePath": "wp-content/uploads/2010/04/giftshop1.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: giftshop1"
+      ]
     },
     {
       "archive": "centraltexasmurals.com-v1",
@@ -6829,11 +7005,13 @@
         {
           "basename": "slimathon",
           "ref": "../../art/wp-content/uploads/2015/06/slimathon.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2015/06/slimathon.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: slimathon"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6870,11 +7048,13 @@
         {
           "basename": "austin-recovered-copy-590x413",
           "ref": "../../art/wp-content/uploads/2017/06/austin-Recovered-copy-590x413.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2017/06/austin-Recovered-copy-590x413.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: austin-recovered-copy-590x413"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -6970,11 +7150,13 @@
         {
           "basename": "kemuri-590x414",
           "ref": "../../art/wp-content/uploads/2019/07/kemuri-590x414.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2019/07/kemuri-590x414.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: kemuri-590x414"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -7015,7 +7197,9 @@
           "matchedPublicId": "kirunan"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: kirunan"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -7034,11 +7218,13 @@
         {
           "basename": "oblong-copy-590x409",
           "ref": "../../art/wp-content/uploads/2017/06/oblong-copy-590x409.jpg?w=1400",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2017/06/oblong-copy-590x409.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: oblong-copy-590x409"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -7086,7 +7272,9 @@
           "matchedPublicId": "misakamo"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: misakamo"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -7228,7 +7416,8 @@
         {
           "basename": "red-eye-mantasaurus-6348-copy",
           "ref": "https://i0.wp.com/roryskagen.com/wp-content/uploads/2011/01/Red-Eye-Mantasaurus-6348-copy.jpg?fit=576%2C405&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -7311,7 +7500,8 @@
         {
           "basename": "trisaurusmouth-6341-copy3",
           "ref": "https://i1.wp.com/roryskagen.com/wp-content/uploads/2011/01/Trisaurusmouth-6341-copy3.jpg?fit=576%2C399&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -7473,7 +7663,8 @@
         {
           "basename": "fresh-planet",
           "ref": "https://web.archive.org/web/20220523103118im_/https://i1.wp.com/centraltexasmurals.com/wp-content/uploads/2010/04/fresh-planet.jpg?resize=309%2C453",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -7551,11 +7742,13 @@
         {
           "basename": "rs",
           "ref": "../../wp-content/uploads/2010/03/rs.jpg",
-          "action": "needs_upload",
-          "archivePath": "wp-content/uploads/2010/03/rs.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: rs"
+      ]
     },
     {
       "archive": "centraltexasmurals.com-v1",
@@ -7700,7 +7893,8 @@
         {
           "basename": "a-trip-to-boozeville-copy2",
           "ref": "https://i0.wp.com/roryskagen.com/art/wp-content/uploads/2011/01/a-trip-to-boozeville-copy2.jpg?fit=1200%2C437&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -7908,7 +8102,8 @@
         {
           "basename": "the-blue-elephant-lounge-2",
           "ref": "https://i1.wp.com/roryskagen.com/art/wp-content/uploads/2011/01/The-blue-elephant-lounge-2.jpg?fit=1152%2C415&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -7955,11 +8150,13 @@
         {
           "basename": "brimstone-club-1",
           "ref": "../../art/wp-content/uploads/2011/01/brimstone-club-1.jpg?w=640",
-          "action": "needs_upload",
-          "archivePath": "art/wp-content/uploads/2011/01/brimstone-club-1.jpg"
+          "action": "unavailable",
+          "reason": "missing-from-archive"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: brimstone-club-1"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -7978,7 +8175,8 @@
         {
           "basename": "the-drunkeville-carnival-copy",
           "ref": "https://i0.wp.com/roryskagen.com/art/wp-content/uploads/2011/01/The-Drunkeville-Carnival-copy.jpg?fit=1152%2C421&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -8305,7 +8503,8 @@
         {
           "basename": "jungle-bust-el-5-copy",
           "ref": "https://i1.wp.com/roryskagen.com/art/wp-content/uploads/2011/01/Jungle-bust-el-5-copy.jpg?fit=624%2C780&amp;ssl=1&amp;w=640",
-          "action": "unavailable"
+          "action": "unavailable",
+          "reason": "cdn-only"
         }
       ],
       "warnings": [
@@ -8446,7 +8645,9 @@
           "matchedPublicId": "strange-delight-6"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: strange-delight-6"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -8597,7 +8798,9 @@
           "matchedPublicId": "drebbles-copy"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: drebbles-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
@@ -8620,7 +8823,9 @@
           "matchedPublicId": "greasytodd-copy"
         }
       ],
-      "warnings": []
+      "warnings": [
+        "references 1 site-local image(s) the archive does not contain: greasytodd-copy"
+      ]
     },
     {
       "archive": "roryskagen.com-v1",
