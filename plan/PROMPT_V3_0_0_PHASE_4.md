@@ -76,7 +76,7 @@ them, and every one of them changes what Phase 4 writes.
 
 | # | Decision | What it means for the write |
 | :--- | :--- | :--- |
-| **D2** | **Regenerate.** | The mural half of `supabase/staged/2026_09_15_v3_wayback_backfill.sql` is rebuilt from the **recovered** export. Do **not** layer on 3.A: that leaves two sources of truth for the same 60 records, and the 3.A mural rows would contradict the export that superseded them. ⚠️ `scripts/wayback-stage-sql.ts` still reads `data/archive/wayback_extraction.json` (the **scrape**, hardcoded at lines 24–30) — repointing it at `wayback_recovered_extraction.json` is the first task of the Phase 4 branch. |
+| **D2** | **Regenerate.** | The mural half of `supabase/staged/2026_09_15_v3_wayback_backfill.sql` is rebuilt from the **recovered** export. Do **not** layer on 3.A: that leaves two sources of truth for the same 60 records, and the 3.A mural rows would contradict the export that superseded them. ✅ **Implemented 2026-09-15 — but as a merge, not the "repoint" this cell originally prescribed.** See §3.0. |
 | **D3 / Q16** | **Adopt the `artwork_images` join** — `(artwork_slug, media_public_id, position)`. | Phase 4 carries a schema extension. It makes "which image is the cover" answerable, and it is what makes images 2..N reachable at all (R-18). `generate-asset-registry.ts` must stop being silently first-wins. |
 | **D4 / Q18** | **The archive `post_date` is authoritative for the mural rows.** | This is an **overwrite** of `artworks.year`, not a fill-only-empty pass — all 138 rows hold `'2024'` (the `POST /api/artworks` default) and 79 disagree with the archive. It needs its own reviewed migration and its own dump, and it stays **out** of the staged backfill. |
 | **D5 / Q6** | **`taxonomies.type = 'project_type'`** for the 8 project types; `Featured` / `Home` become `curation` flags. | Unblocks the schema extension and the 144 `artwork_terms` rows. Filing a mural as both `interior` and `featured` would put it in two contradictory buckets. |
@@ -86,12 +86,34 @@ them, and every one of them changes what Phase 4 writes.
 
 ## 3. What Phase 4 has to do
 
-0. **Regenerate the staged backfill (D2).** `scripts/wayback-stage-sql.ts` still reads the **scrape**
-   (`data/archive/wayback_extraction.json`, hardcoded at lines 24–30) and therefore still emits the
-   two duplicate mural INSERTs the recovered path merges away. Repoint it at
-   `data/archive/wayback_recovered_extraction.json` and regenerate
-   `supabase/staged/2026_09_15_v3_wayback_backfill.sql`. ⚠️ The stager emits **no** media rows and
-   **no** `artwork_terms` — steps 2–4 below need new code, not just a regeneration.
+0. ✅ **Regenerate the staged backfill (D2) — DONE, see §3.0 below.** No longer a task.
+
+### 3.0 D2 — what "regenerate" actually required (done 2026-09-15)
+
+The earlier framing of this step — "repoint `scripts/wayback-stage-sql.ts` at
+`wayback_recovered_extraction.json`" — was **wrong, and wrong in a way that exits 0.** The stager covers
+**two** archives; the recovered export covers **one**. Repointing the source drops all **136 painting
+records** silently. D2 is a **merge**, not a swap. Four coordinated changes were needed:
+
+| # | Change | Without it |
+| :-- | :--- | :--- |
+| 1 | `mergeSources()` in `scripts/lib/waybackBackfill.ts` — drop the scrape's mural records, inject the recovered ones **at the first scrape-mural position** | paintings vanish (swap) or reorder (append) |
+| 2 | Map `RECOVERED_MURAL_ARCHIVE` in `ARCHIVE_SITE` / `ARCHIVE_KIND` | murals land as `kind = 'other'`, `sourceSite` = the archive *directory* name — untyped, so nothing catches it |
+| 3 | Refine the `KNOWN_DEDUPE_PAIRS` hold to skip records the recovered path **already merged** (`EXISTS` + `known-dedupe`) | the 2 merges become HELD rows and emit **no statement** — the merge is silently discarded |
+| 4 | Emit `canonical` + `pages` from `wayback-recovered-extract.ts` | `buildBackfillPlan` reads `year`/`narrative`/`description`/`categories`/`wpPostId`/`publishedAt` from `pages`; without it all six are null and the file still renders |
+
+⚠️ Change 3 is **conditional, not a removal** — the hold still fires for the scrape side, where the same
+two pairs are still `NEW`. That is the R-01 guard. Both halves are asserted in
+`src/test/waybackSourceMerge.test.ts` (16 tests). Invariant proven by statement-level diff: **0 painting
+statements changed**, 59 scrape-mural INSERTs out, 62 recovered INSERTs in, 2 mural UPDATEs added.
+
+⚠️ `publishedAt` from the two sources is **not** the same instant shape and **not** a uniform offset
+(0 h or 6 h across the 60 overlapping murals). It is inert provenance inside `metadata.wayback` — never
+cast it. Year is unaffected: **0 of 60 disagree**. Detail at `InsertRow.publishedAt`.
+
+⚠️ D2 changes **only** the artwork INSERT/UPDATE half of the staged file. The stager still emits **no**
+media rows and **no** `artwork_terms` — steps 2–4 below need new code, not another regeneration.
+
 1. **Create the artwork rows** (60 NEW; 2 merge into live rows).
 2. **Register the media** — `wayback-register.ts --apply` is the only write that exists today. It
    writes 504 objects and upserts 168 `media_assets` rows, most **unlinked**.

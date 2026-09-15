@@ -1,6 +1,10 @@
 {
-  "generatedAt": "2026-09-15T17:16:37.071Z",
+  "generatedAt": "2026-09-15T18:48:19.241Z",
   "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+  "canonical": {
+    "capturedAt": "2026-09-15T03:07:17.614Z",
+    "source": "aws-0-us-east-1.pooler.supabase.com (remote)"
+  },
   "stats": {
     "tablesRead": [
       "kZRTSN_aioseo_posts",
@@ -2326,6 +2330,2774 @@
           "ref": "2010/03/tx_burger_mural1.jpg",
           "action": "needs_upload",
           "archivePath": "files/wp-content/uploads/_/2010/03/tx_burger_mural1.jpg"
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/360-condominiums/index.html",
+      "category": "business",
+      "slugCandidate": "360-condominiums",
+      "title": "360 Condominiums",
+      "description": "",
+      "narrative": "These panels were created for the 360 Condominiums in Austin, TX. Panels are a great way to cover the walls without the cost of on site painting. Also, they can be removed after relocation and be used elsewhere.",
+      "categories": [
+        "Business",
+        "Home",
+        "Interior"
+      ],
+      "publishedAt": "2015-02-08 14:03:16",
+      "modifiedAt": "2015-02-08 14:18:25",
+      "year": "2015",
+      "wpPostId": "894",
+      "images": [
+        {
+          "ref": "2015/02/bluewall-copy-e1423422381396.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/bluewall-copy-e1423422381396.jpg",
+          "basename": "bluewall-copy-e1423422381396",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/bluewall-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/bluewall-copy.jpg",
+          "basename": "bluewall-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/redwall-copy-e1423422992497.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/redwall-copy-e1423422992497.jpg",
+          "basename": "redwall-copy-e1423422992497",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/redwall-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/redwall-copy.jpg",
+          "basename": "redwall-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/rwall-e1423423163269.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/rwall-e1423423163269.jpg",
+          "basename": "rwall-e1423423163269",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/rwall.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/rwall.jpg",
+          "basename": "rwall",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/willie-copy-e1423423231417.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/willie-copy-e1423423231417.jpg",
+          "basename": "willie-copy-e1423423231417",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/willie-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/willie-copy.jpg",
+          "basename": "willie-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/yellowwall-copy-e1423422899567.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/yellowwall-copy-e1423422899567.jpg",
+          "basename": "yellowwall-copy-e1423422899567",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/70s-mural/index.html",
+      "category": "event",
+      "slugCandidate": "70s-mural",
+      "title": "70's Mural",
+      "description": "",
+      "narrative": "These cutouts and backdrops were painted for a 70's themed wedding anniversary party. These groovy paintings with their black light style imagery went great with the band playing that night — Cool and the Gang .",
+      "categories": [
+        "Event",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:36:20",
+      "modifiedAt": "2011-01-30 16:05:27",
+      "year": "2010",
+      "wpPostId": "101",
+      "images": [
+        {
+          "ref": "2010/03/70s_mural_1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/70s_mural_1.jpg",
+          "basename": "70s_mural_1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/70s_mural_2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/70s_mural_2.jpg",
+          "basename": "70s_mural_2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "home/andy-roddick-mural/index.html",
+      "category": "home",
+      "slugCandidate": "andy-roddick-mural",
+      "title": "Andy Roddick Mural",
+      "description": "",
+      "narrative": "This mural was painted for tennis champion, Andy Roddick. Andy wanted an inspirational mural for his home gym. Andy's interior decorator, Sandy Senter, called us, and after consultation and a design stage, this was the mural decided upon. The mural includes Andy's personal heroes, his foundation logo, and personal slogans. For an even more personal touch, the lettering is a scaled version of Andy's own handwriting. When designing the mural considerations had to be made for the placement of the athletic and entertainment equipment.",
+      "categories": [
+        "Home",
+        "Interior"
+      ],
+      "publishedAt": "2011-01-24 16:21:48",
+      "modifiedAt": "2015-02-08 13:32:12",
+      "year": "2011",
+      "wpPostId": "69",
+      "images": [
+        {
+          "ref": "2010/03/andy_roddick_blue_wall.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_blue_wall.jpg",
+          "basename": "andy_roddick_blue_wall",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/andy_roddick_di.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_di.jpg",
+          "basename": "andy_roddick_di",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/andy_roddick_elton.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_elton.jpg",
+          "basename": "andy_roddick_elton",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/andy_roddick_mj-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/andy_roddick_mj-copy.jpg",
+          "basename": "andy_roddick_mj-copy",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/austin-childrens-museum/index.html",
+      "category": "business",
+      "slugCandidate": "austin-childrens-museum",
+      "title": "Austin Children's Museum",
+      "description": "",
+      "narrative": "The people at Milk Shake Media designed a new exterior look for the Austin Children's Museum. The Museum then called on us to execute this really fun design.",
+      "categories": [
+        "Business",
+        "Exterior"
+      ],
+      "publishedAt": "2010-03-19 16:12:47",
+      "modifiedAt": "2011-01-30 16:14:55",
+      "year": "2010",
+      "wpPostId": "57",
+      "images": [
+        {
+          "ref": "2010/03/austin_childrens_museum_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/austin_childrens_museum_mural.jpg",
+          "basename": "austin_childrens_museum_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/austin_childrens_museum_mural_2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/austin_childrens_museum_mural_2.jpg",
+          "basename": "austin_childrens_museum_mural_2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/austin-postcard-mural/index.html",
+      "category": "featured",
+      "slugCandidate": "austin-postcard-mural",
+      "title": "Austin Postcard Mural",
+      "description": "",
+      "narrative": "This mural, painted 10 feet tall and 20 feet wide on the side of Roadhouse Relics , has garnered a considerable amount of attention. Countless Christmas cards (bottom photo), band photos and local magazines have used this as a backdrop. It can also can be seen on the back cover of a coffee table book about Austin, and in a Russell Crowe video. This kind of attention is great for business.",
+      "categories": [
+        "Business",
+        "Exterior",
+        "Featured"
+      ],
+      "publishedAt": "2011-01-28 16:22:33",
+      "modifiedAt": "2014-02-16 14:50:00",
+      "year": "2011",
+      "wpPostId": "71",
+      "images": [
+        {
+          "ref": "2011/01/austin_postcard_xmascard1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/austin_postcard_xmascard1.jpg",
+          "basename": "austin_postcard_xmascard1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/greetingsTOPPER_1462-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/greetingsTOPPER_1462-copy.jpg",
+          "basename": "greetingstopper_1462-copy",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/aztec-mural-for-casino-el-camino/index.html",
+      "category": "restaurant",
+      "slugCandidate": "aztec-mural-for-casino-el-camino",
+      "title": "Aztec Mural for Casino El Camino",
+      "description": "",
+      "narrative": "This mural created to finalize the look of the Casino El Camino patio had many challenges. \"Casino\", the owner, wanted to open up his enclosed patio with \"windows\" that look out onto an Aztec landscape. The red stucco wall, that matched the tile, already had the skull light sconces in place which we created years earlier. Furthermore, the texture of the wall was such, that we couldn't just paint the scene convincingly on the wall. Therefore, it was decided we would cut into the wall to create openings for the mural to fit into, creating the illusion of architecture in front of a landscape. The landscape imagery, inspired by 19th century explorer and artist Frederick Catherwood , was painted on wooden panels at the shop using outdoor quality sign paint. During this process, we also had our team cutting into the wall, framing out the openings, and finally match the existing stucco. The wall itself was then painted to resemble an ancient stone wall, matching the rest of the walls in the patio.",
+      "categories": [
+        "Restaurant"
+      ],
+      "publishedAt": "2010-03-19 16:16:38",
+      "modifiedAt": "2014-02-16 16:29:31",
+      "year": "2010",
+      "wpPostId": "62",
+      "images": [
+        {
+          "ref": "2010/03/aztec_mural_22.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_22.jpg",
+          "basename": "aztec_mural_22",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/aztec_mural_center3.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_center3.jpg",
+          "basename": "aztec_mural_center3",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/aztec_mural_left3.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_left3.jpg",
+          "basename": "aztec_mural_left3",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/aztec_mural_right3.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_right3.jpg",
+          "basename": "aztec_mural_right3",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/beerland-mural/index.html",
+      "category": "business",
+      "slugCandidate": "beerland-mural",
+      "title": "Beerland Mural",
+      "description": "",
+      "narrative": "This mural for Beerland Texas was painted on the wall behind this nightclubs stage. It's hard to tell this mural has not been on the wall for decades. This faux painting effect is very convincing and lends a rustic charm to any atmosphere.",
+      "categories": [
+        "Business",
+        "Event",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:35:40",
+      "modifiedAt": "2014-02-16 16:03:24",
+      "year": "2010",
+      "wpPostId": "99",
+      "images": [
+        {
+          "ref": "2010/03/beerland_mural_lg1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/beerland_mural_lg1.jpg",
+          "basename": "beerland_mural_lg1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/blue-ribbon-day-mural/index.html",
+      "category": "event",
+      "slugCandidate": "blue-ribbon-day-mural",
+      "title": "Blue Ribbon Day Mural",
+      "description": "",
+      "narrative": "This upbeat 20' x 30' mural was created using a boom lift. By using the right equipment a mural this scale took only 3 days to paint.",
+      "categories": [
+        "Event",
+        "Exterior"
+      ],
+      "publishedAt": "2010-03-19 16:30:02",
+      "modifiedAt": "2014-02-16 16:20:40",
+      "year": "2010",
+      "wpPostId": "85",
+      "images": [
+        {
+          "ref": "2010/03/blue_ribbon_day_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/blue_ribbon_day_mural1.jpg",
+          "basename": "blue_ribbon_day_mural1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/camp-bow-wow/index.html",
+      "category": "business",
+      "slugCandidate": "camp-bow-wow",
+      "title": "Camp Bow Wow",
+      "description": "",
+      "narrative": "This 8' x 8' mural was created for Camp Bow Wow, a new kennel in Round Rock, TX. The owners of this business wanted dogs playing in a camp area with a view of Austin, TX in the background. For fun, we added portraits of their own dogs at either side of the mural. To keep the cost down, this mural was painted on two 4' x 8' panels in our shop, and then installed at the kennel. Also, when murals are painted on panels, they can easily be relocated if the business moves to another location.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2011-01-23 14:31:58",
+      "modifiedAt": "2014-02-16 15:37:58",
+      "year": "2011",
+      "wpPostId": "23",
+      "images": [
+        {
+          "ref": "2011/01/camp_bow_wow_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/camp_bow_wow_mural.jpg",
+          "basename": "camp_bow_wow_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/camp_bow_wow_mural_2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/camp_bow_wow_mural_2.jpg",
+          "basename": "camp_bow_wow_mural_2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/capstar-mural/index.html",
+      "category": "business",
+      "slugCandidate": "capstar-mural",
+      "title": "Capstar Mural",
+      "description": "",
+      "narrative": "This 4 ft. x 13 ft. mural was part of an interior decor scheme designed by us for Capstar Broadcasting's radio stations. This mural for their break room continued the off beat and hip style that was carried thoughout the rest of the rooms. We hired Guy Juke , of poster art fame, to create the design of the mural.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:37:01",
+      "modifiedAt": "2014-02-16 15:58:17",
+      "year": "2010",
+      "wpPostId": "103",
+      "images": [
+        {
+          "ref": "2010/03/capstar_mural_lg2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/capstar_mural_lg2.jpg",
+          "basename": "capstar_mural_lg2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/casino-el-camino-mural/index.html",
+      "category": "restaurant",
+      "slugCandidate": "casino-el-camino-mural",
+      "title": "Casino El Camino Mural",
+      "description": "",
+      "narrative": "These murals were created for Casino El Camino in Austin, Texas. These Aztec-themed murals dress up the back and side walls of the patio area. Painted with high-quality sign paint, these murals are sure to last.",
+      "categories": [
+        "Exterior",
+        "Restaurant"
+      ],
+      "publishedAt": "2010-03-19 16:30:48",
+      "modifiedAt": "2014-02-16 16:17:38",
+      "year": "2010",
+      "wpPostId": "87",
+      "images": [
+        {
+          "ref": "2010/03/aztec_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural1.jpg",
+          "basename": "aztec_mural1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/aztec_mural_21.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_21.jpg",
+          "basename": "aztec_mural_21",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/aztec_mural_center1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_center1.jpg",
+          "basename": "aztec_mural_center1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/aztec_mural_left1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_left1.jpg",
+          "basename": "aztec_mural_left1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/aztec_mural_right1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/aztec_mural_right1.jpg",
+          "basename": "aztec_mural_right1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/casino_el_camino_2_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/casino_el_camino_2_mural1.jpg",
+          "basename": "casino_el_camino_2_mural1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/el_camino_mural_detail1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/el_camino_mural_detail1.jpg",
+          "basename": "el_camino_mural_detail1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/el_camino_mural_detail_21.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/el_camino_mural_detail_21.jpg",
+          "basename": "el_camino_mural_detail_21",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/cezanne-mural/index.html",
+      "category": "business",
+      "slugCandidate": "cezanne-mural",
+      "title": "Cezanne Mural",
+      "description": "",
+      "narrative": "This mural was comissioned by Central Market, a high end grocery store. They wanted to have some fruit in the scene since the space for the mural is over the fruit bins. The idea of using a classic painting seemed like a good choice. Based on several different Cezanne still lifes, this 50 foot by 10 foot mural is actually a bas-relief sculpture made up of 26 pieces.",
+      "categories": [
+        "Business",
+        "Interior",
+        "Retail"
+      ],
+      "publishedAt": "2010-03-19 16:31:36",
+      "modifiedAt": "2014-02-16 16:10:30",
+      "year": "2010",
+      "wpPostId": "89",
+      "images": [
+        {
+          "ref": "2010/03/central_market_site1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/central_market_site1.jpg",
+          "basename": "central_market_site1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/cowboy-mural/index.html",
+      "category": "business",
+      "slugCandidate": "cowboy-mural",
+      "title": "Cowboy Mural",
+      "description": "",
+      "narrative": "This 11 ft. long cow and 12 ft. long Cowboy are part of an interior that included a mural on all four walls of one of G.S.D. & M.'s tower rooms. This is just one of the many pieces we did for their truly unique building.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2011-01-23 16:26:56",
+      "modifiedAt": "2011-01-30 18:50:55",
+      "year": "2011",
+      "wpPostId": "79",
+      "images": [
+        {
+          "ref": "2010/03/cowboy_mural_lg.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/cowboy_mural_lg.jpg",
+          "basename": "cowboy_mural_lg",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/COWBOY-ROOM-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/COWBOY-ROOM-copy.jpg",
+          "basename": "cowboy-room-copy",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/duluth-theater/index.html",
+      "category": "featured",
+      "slugCandidate": "duluth-theater",
+      "title": "Duluth Theater Mural",
+      "description": "This 20' x 31' mural was done for a new theatre in Duluth, Minnesota.",
+      "narrative": "This 20' x 31' mural was done for a new theatre in Duluth, Minnesota. After the design was approved, we painted the mural on panels and shipped it to them. It was then installed by their contractors. The photos show individual panels from the mural, the entire composition, and a process shot in the studio.",
+      "categories": [
+        "Business",
+        "Featured",
+        "Interior"
+      ],
+      "publishedAt": "2011-01-29 22:51:15",
+      "modifiedAt": "2011-01-30 22:18:01",
+      "year": "2011",
+      "wpPostId": "5",
+      "images": [
+        {
+          "ref": "2011/01/bond-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/bond-copy.jpg",
+          "basename": "bond-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/mifune-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/mifune-copy.jpg",
+          "basename": "mifune-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/mural-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/mural-copy.jpg",
+          "basename": "mural-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/process.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/process.jpg",
+          "basename": "process",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/starwars-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/starwars-copy.jpg",
+          "basename": "starwars-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/theshining-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/theshining-copy.jpg",
+          "basename": "theshining-copy",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/facebook-2/index.html",
+      "category": "featured",
+      "slugCandidate": "facebook-2",
+      "title": "Facebook",
+      "description": "",
+      "narrative": "Facebook approached us in 2015 to create a new 64' long mural for a new floor they added to their office. Located in downtown Austin, TX this mural was painted off site and installed in one evening. This allowed the office to work without interruption while the mural was being produced, and get a fun surprise the morning after installation. Metaphorically, this mural explores the ups and downs of the creative process, and some of Facebook's key phrases. Photos by Gino Barasa",
+      "categories": [
+        "Business",
+        "Featured",
+        "Interior"
+      ],
+      "publishedAt": "2015-09-17 16:25:40",
+      "modifiedAt": "2015-09-18 15:47:13",
+      "year": "2015",
+      "wpPostId": "957",
+      "images": [
+        {
+          "ref": "2015/09/bee.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/bee.jpg",
+          "basename": "bee",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/bird.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/bird.jpg",
+          "basename": "bird",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/couple.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/couple.jpg",
+          "basename": "couple",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/full.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/full.jpg",
+          "basename": "full",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/hack.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/hack.jpg",
+          "basename": "hack",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/person.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/person.jpg",
+          "basename": "person",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/person2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/person2.jpg",
+          "basename": "person2",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/projector.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/projector.jpg",
+          "basename": "projector",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/saucer.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/saucer.jpg",
+          "basename": "saucer",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/09/wall.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/09/wall.jpg",
+          "basename": "wall",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/flosports/index.html",
+      "category": "business",
+      "slugCandidate": "flosports",
+      "title": "Flosports",
+      "description": "",
+      "narrative": "Flosports contacted us to update some of their outdoor signage and ad some flare to a huge wall in their interior.",
+      "categories": [
+        "Business",
+        "Interior",
+        "Signage"
+      ],
+      "publishedAt": "2015-02-08 13:59:47",
+      "modifiedAt": "2015-02-08 14:07:51",
+      "year": "2015",
+      "wpPostId": "913",
+      "images": [
+        {
+          "ref": "2015/02/unnamed-e1423425151204.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-e1423425151204.jpg",
+          "basename": "unnamed-e1423425151204",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/unnamed.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamed.jpg",
+          "basename": "unnamed",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/unnameda-e1423425494863.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnameda-e1423425494863.jpg",
+          "basename": "unnameda-e1423425494863",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/unnameda.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnameda.jpg",
+          "basename": "unnameda",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/unnamedb-e1423425559281.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamedb-e1423425559281.jpg",
+          "basename": "unnamedb-e1423425559281",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/unnamedb.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamedb.jpg",
+          "basename": "unnamedb",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/fresh-planet/index.html",
+      "category": "restaurant",
+      "slugCandidate": "fresh-planet",
+      "title": "Fresh Planet",
+      "description": "",
+      "narrative": "This mural based on an old Italian poster, was painted for the Fresh Planet restaurant in Austin, Texas.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2010-04-12 21:04:19",
+      "modifiedAt": "2011-01-30 15:59:11",
+      "year": "2010",
+      "wpPostId": "431",
+      "images": [
+        {
+          "ref": "2010/04/fresh-planet.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/04/fresh-planet.jpg",
+          "basename": "fresh-planet",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/gaylord-christmas/index.html",
+      "category": "event",
+      "slugCandidate": "gaylord-christmas",
+      "title": "Gaylord Christmas",
+      "description": "",
+      "narrative": "These cut out murals were part of a bigger holiday decor program for The Gaylord Resort in Dallas, Texas.",
+      "categories": [
+        "Event",
+        "Exterior"
+      ],
+      "publishedAt": "2010-04-12 21:02:35",
+      "modifiedAt": "2011-07-08 14:22:20",
+      "year": "2010",
+      "wpPostId": "425",
+      "images": [
+        {
+          "ref": "2010/04/cantina1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/04/cantina1.jpg",
+          "basename": "cantina1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/04/giftshop1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/04/giftshop1.jpg",
+          "basename": "giftshop1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/04/sauna1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/04/sauna1.jpg",
+          "basename": "sauna1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/good-morning-austin-mural/index.html",
+      "category": "featured",
+      "slugCandidate": "good-morning-austin-mural",
+      "title": "Good Morning Austin",
+      "description": "This playful mural was commissioned by the architect Hugh Randolph for the outside of his downtown office.",
+      "narrative": "This playful mural was commissioned by the architect Hugh Randolph for the outside of his downtown office. Hugh wanted something that greeted the morning commuters on their way to work. This 14' tall by 32' wide mural also gives homage to another once popular mural painted in downtown Austin by us, \"Blue Ribbon Day\", that was unfortunately painted over in 2001.",
+      "categories": [
+        "Business",
+        "Exterior",
+        "Featured"
+      ],
+      "publishedAt": "2011-01-29 17:46:21",
+      "modifiedAt": "2011-07-08 14:17:49",
+      "year": "2011",
+      "wpPostId": "419",
+      "images": [
+        {
+          "ref": "2010/03/good_morning_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/04/good_morning_mural.jpg",
+          "basename": "good_morning_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/good-morning-austin-jpg-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/good-morning-austin-jpg-copy.jpg",
+          "basename": "good-morning-austin-jpg-copy",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "resolved 1 image(s) by basename after the declared upload path proved wrong (WordPress records the upload month, not the month the post was edited in)"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/govalle-elementary-school/index.html",
+      "category": "event",
+      "slugCandidate": "govalle-elementary-school",
+      "title": "Govalle Elementary School",
+      "description": "",
+      "narrative": "In coordination with Blue Genie Art, Rory Skagen volunteered to design this mural for a warehouse wall facing a neighborhood elementary school. Members of the Blue Genie Art Staff, individuals from the neighborhood, and students and faculty helped paint the mural. The mural culminated in a school dedication of the mural with refreshments being provided by the building owner.",
+      "categories": [
+        "Event"
+      ],
+      "publishedAt": "2011-07-08 14:16:09",
+      "modifiedAt": "2011-07-08 14:16:09",
+      "year": "2011",
+      "wpPostId": "738",
+      "images": [
+        {
+          "ref": "2011/07/GOVALLE.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/07/GOVALLE.jpg",
+          "basename": "govalle",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/greetings-from-78752/index.html",
+      "category": "business",
+      "slugCandidate": "greetings-from-78752",
+      "title": "Greetings from 78752",
+      "description": "",
+      "narrative": "Some good folks from this business wanted to instill pride in their neighborhood. It might be considered a new definition of humble-brag.",
+      "categories": [
+        "Business",
+        "Exterior"
+      ],
+      "publishedAt": "2015-06-07 13:02:10",
+      "modifiedAt": "2017-06-07 13:07:24",
+      "year": "2015",
+      "wpPostId": "989",
+      "images": [
+        {
+          "ref": "2017/06/78752cropped.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2017/06/78752cropped.jpg",
+          "basename": "78752cropped",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2017/06/78752people.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2017/06/78752people.jpg",
+          "basename": "78752people",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/greetings-from-navasota-mural/index.html",
+      "category": "business",
+      "slugCandidate": "greetings-from-navasota-mural",
+      "title": "Greetings from Navasota mural",
+      "description": "",
+      "narrative": "The Good people of Navasota contacted me about getting their own \"Greetings from\" mural for their town. I was happy to oblige. The bottom photo includes the city council and staff.",
+      "categories": [
+        "Business",
+        "Exterior"
+      ],
+      "publishedAt": "2015-10-05 12:25:23",
+      "modifiedAt": "2016-10-05 12:40:06",
+      "year": "2015",
+      "wpPostId": "970",
+      "images": [
+        {
+          "ref": "2016/10/mural2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2016/10/mural2.jpg",
+          "basename": "mural2",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2016/10/mural3.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2016/10/mural3.jpg",
+          "basename": "mural3",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2016/10/murals1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2016/10/murals1.jpg",
+          "basename": "murals1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/h-e-b-austin/index.html",
+      "category": "business",
+      "slugCandidate": "h-e-b-austin",
+      "title": "H-E-B & Austin",
+      "description": "",
+      "narrative": "To celebrate their 50th anniversary at this location on Oltorf Rd. and Congress Ave. in Austin, Texas, H-E-B supermarket had us paint this 30 foot long mural on the side of their building. Included in the design is an idealized representation of the Skyline of Austin, and a bat . . . the unofficial city mascot. This project was done in coordination with First Night Austin , a city program that supports the arts during New Years.",
+      "categories": [
+        "Business",
+        "Exterior",
+        "Retail"
+      ],
+      "publishedAt": "2010-03-19 16:14:46",
+      "modifiedAt": "2015-02-08 13:35:23",
+      "year": "2010",
+      "wpPostId": "60",
+      "images": [
+        {
+          "ref": "2010/03/h-e-b_austin_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/h-e-b_austin_mural1.jpg",
+          "basename": "h-e-b_austin_mural1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/heb-print-mural/index.html",
+      "category": "business",
+      "slugCandidate": "heb-print-mural",
+      "title": "HEB Print Mural",
+      "description": "",
+      "narrative": "After the success of the first mural painted for them, HEB's art director Kenny Duggin contacted Rory in May of 2011. They decided they wanted another mural on one of their stores that was being redecorated. Kenny was interested in one of Rory's fine art paintings, The Narrative , as a point of inspiration. In this case, to be more economical, Rory painted a 4' x 10' painting that was then photographed and printed out to be 33' long. It was mounted between their doors at their location on Congress Ave. in Austin, TX.",
+      "categories": [
+        "Business",
+        "Exterior",
+        "Retail"
+      ],
+      "publishedAt": "2011-07-08 13:55:45",
+      "modifiedAt": "2011-07-08 14:40:12",
+      "year": "2011",
+      "wpPostId": "725",
+      "images": [
+        {
+          "ref": "2011/07/HEB1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/07/HEB1.jpg",
+          "basename": "heb1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/07/HEB2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/07/HEB2.jpg",
+          "basename": "heb2",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/07/HEBversion1C10mb-copy1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/07/HEBversion1C10mb-copy1.jpg",
+          "basename": "hebversion1c10mb-copy1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "museum/hello-world/index.html",
+      "category": "museum",
+      "slugCandidate": "hello-world",
+      "title": "Lunar Lander Mural",
+      "description": "",
+      "narrative": "This 33' long space mural was created for the Lyndon Baines Johnson Presidential Library and Museum. According to the astronauts that had been to the moon, no stars could be seen due to the reflected light on the moon's surface. We helped with several of the museums exhibits and was part of the Museum's To the Moon exhibit celebrating the 40th anniversary of the Apollo 11 moon landing.",
+      "categories": [
+        "Interior",
+        "Museum"
+      ],
+      "publishedAt": "2011-01-26 22:31:32",
+      "modifiedAt": "2014-02-16 14:53:09",
+      "year": "2011",
+      "wpPostId": "1",
+      "images": [
+        {
+          "ref": "2011/01/lunar_lander.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/lunar_lander.jpg",
+          "basename": "lunar_lander",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/lunar_landing1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/lunar_landing1.jpg",
+          "basename": "lunar_landing1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/high-5-bowling-mural/index.html",
+      "category": "business",
+      "slugCandidate": "high-5-bowling-mural",
+      "title": "High 5 Bowling Mural",
+      "description": "",
+      "narrative": "The good folks at High 5 bowling and entertainment center contacted us for a feature mural at their business. They liked the original Austin mural painted by Rory Skagen in 2007. To keep it original, Rory designed a new Austin mural design to set their business apart.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2015-08-08 15:57:33",
+      "modifiedAt": "2016-08-08 16:07:48",
+      "year": "2015",
+      "wpPostId": "965",
+      "images": [
+        {
+          "ref": "2016/08/newaustinmurala.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2016/08/newaustinmurala.jpg",
+          "basename": "newaustinmurala",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2016/08/newaustinmuralb.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2016/08/newaustinmuralb.jpg",
+          "basename": "newaustinmuralb",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/hill-country-food-and-wine-tasting/index.html",
+      "category": "event",
+      "slugCandidate": "hill-country-food-and-wine-tasting",
+      "title": "Hill Country Food and Wine Tasting",
+      "description": "",
+      "narrative": "This cut out was made for a annual party involving food and wine.",
+      "categories": [
+        "Event",
+        "Interior"
+      ],
+      "publishedAt": "2010-04-12 21:07:41",
+      "modifiedAt": "2011-01-30 18:54:53",
+      "year": "2010",
+      "wpPostId": "435",
+      "images": [
+        {
+          "ref": "2010/04/food-and-wine-3.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/04/food-and-wine-3.jpg",
+          "basename": "food-and-wine-3",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/home-slice-pizza-mural/index.html",
+      "category": "restaurant",
+      "slugCandidate": "home-slice-pizza-mural",
+      "title": "Home Slice Pizza Mural",
+      "description": "",
+      "narrative": "This newly opened eatery on Austin's famed South Congress Avenue contacted Blue Genie to create a feature mural to complement their truly unique decor. This 9' tall by 32' long mural was created after an extensive design phase at our shop on 4' x 8' panels. The owners wanted a mural that looked like an old sign that had been reinstalled in their restaurant. If they ever decide to change locations, these panels can be removed and used elsewhere. However, due to their amazing success, it is doubtful they will be relocating any time soon.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2011-01-25 16:20:50",
+      "modifiedAt": "2014-02-16 14:58:10",
+      "year": "2011",
+      "wpPostId": "67",
+      "images": [
+        {
+          "ref": "2011/01/home_slice_pizza_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/home_slice_pizza_mural.jpg",
+          "basename": "home_slice_pizza_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/home_slice_pizza_mural_2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/home_slice_pizza_mural_2.jpg",
+          "basename": "home_slice_pizza_mural_2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/independence-brewery-mural/index.html",
+      "category": "business",
+      "slugCandidate": "independence-brewery-mural",
+      "title": "Independence Brewery Mural",
+      "description": "",
+      "narrative": "This 8' x 12' mural was created for the brewery's tasting area by using the illustration on one of their beer labels.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:38:22",
+      "modifiedAt": "2014-02-16 15:56:45",
+      "year": "2010",
+      "wpPostId": "107",
+      "images": [
+        {
+          "ref": "2010/03/independence_brewery_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/independence_brewery_mural1.jpg",
+          "basename": "independence_brewery_mural1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/jack-nicholson-mural/index.html",
+      "category": "business",
+      "slugCandidate": "jack-nicholson-mural",
+      "title": "Jack Nicholson Mural",
+      "description": "",
+      "narrative": "A uniquely rendered Jack Nicholson from the movie \"The Shining\" and a Mexican wrestler are the highlights of the outside decor on this business.",
+      "categories": [
+        "Business",
+        "Exterior",
+        "Retail"
+      ],
+      "publishedAt": "2010-03-19 16:33:17",
+      "modifiedAt": "2014-02-16 16:07:29",
+      "year": "2010",
+      "wpPostId": "93",
+      "images": [
+        {
+          "ref": "2010/03/jack_nicholson_mural_lg-copy1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/jack_nicholson_mural_lg-copy1.jpg",
+          "basename": "jack_nicholson_mural_lg-copy1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/lotus-flower-mural/index.html",
+      "category": "business",
+      "slugCandidate": "lotus-flower-mural",
+      "title": "Lotus Flower Mural",
+      "description": "",
+      "narrative": "After a lengthy design process, we hit upon this Lotus flower concept. The building located in San Marcos, Texas, has locations for three separate businesses. We also provided the owner with different sign concepts that would fit with the mural as tenants lease the building.",
+      "categories": [
+        "Business",
+        "Exterior",
+        "Retail",
+        "Signage"
+      ],
+      "publishedAt": "2010-03-19 16:43:04",
+      "modifiedAt": "2014-02-16 15:45:27",
+      "year": "2010",
+      "wpPostId": "116",
+      "images": [
+        {
+          "ref": "2010/03/lotus_flower_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/lotus_flower_mural1.jpg",
+          "basename": "lotus_flower_mural1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/lululemon-mural/index.html",
+      "category": "business",
+      "slugCandidate": "lululemon-mural",
+      "title": "Lululemon Mural",
+      "description": "",
+      "narrative": "The people from corporate contacted us about their new location in Austin, TX. This hip yoga attire shop wanted something \"Austin\" for their new location. We talked about several possibilities, and they brought up their list of company/life slogans. At that point, after they picked the slogans they wanted, we created this design. Then, after making patterns, we went to the building and painted the lettering.",
+      "categories": [
+        "Business",
+        "Exterior",
+        "Retail"
+      ],
+      "publishedAt": "2010-03-18 17:30:28",
+      "modifiedAt": "2014-02-16 16:32:52",
+      "year": "2010",
+      "wpPostId": "34",
+      "images": [
+        {
+          "ref": "2010/03/lululemon_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/lululemon_mural1.jpg",
+          "basename": "lululemon_mural1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/lululemon_mural_21.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/lululemon_mural_21.jpg",
+          "basename": "lululemon_mural_21",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/magazine-illustration-for-life-and-letters/index.html",
+      "category": "business",
+      "slugCandidate": "magazine-illustration-for-life-and-letters",
+      "title": "Magazine Illustration for Life and Letters",
+      "description": "",
+      "narrative": "This 6' x 4' painting was designed and painted as an illustration for the publication, Life and Letters. After finishing the painting a high resolution photo was taken and scanned. This photo was then used by the magazine to illustrate their articale, The End of Austin. This painting is available for purchase. $3000.00",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2015-02-06 16:55:14",
+      "modifiedAt": "2015-02-08 13:23:06",
+      "year": "2015",
+      "wpPostId": "883",
+      "images": [
+        {
+          "ref": "2015/02/b-e1423423373816.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/b-e1423423373816.jpg",
+          "basename": "b-e1423423373816",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/b.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/b.jpg",
+          "basename": "b",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/mandala-trading/index.html",
+      "category": "business",
+      "slugCandidate": "mandala-trading",
+      "title": "Mandala Trading",
+      "description": "",
+      "narrative": "Mandala Trading in Austin, TX was looking to grab some attention in their parking lot. This 8' x 8' mural did the trick.",
+      "categories": [
+        "Business",
+        "Exterior",
+        "Retail"
+      ],
+      "publishedAt": "2015-02-08 14:14:23",
+      "modifiedAt": "2015-02-08 14:14:23",
+      "year": "2015",
+      "wpPostId": "926",
+      "images": [
+        {
+          "ref": "2015/02/chenrizig-e1423426447506.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/chenrizig-e1423426447506.jpg",
+          "basename": "chenrizig-e1423426447506",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/chenrizig.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/chenrizig.jpg",
+          "basename": "chenrizig",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/marcia-ball-cd-cover/index.html",
+      "category": "business",
+      "slugCandidate": "marcia-ball-cd-cover",
+      "title": "Marcia Ball CD Cover",
+      "description": "",
+      "narrative": "This 4' x 4' painting was commissioned by Marcia Ball in 2014 for a CD cover for her album the \"Tattooed Lady and the Alligator Man\". After discussing the theme the image was designed, approved and then painted. This painting is available for purchase. $2000.00",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2015-02-06 16:48:20",
+      "modifiedAt": "2015-02-08 13:30:34",
+      "year": "2015",
+      "wpPostId": "879",
+      "images": [
+        {
+          "ref": "2015/02/f-e1423423465404.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/f-e1423423465404.jpg",
+          "basename": "f-e1423423465404",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/mellow-mushroom-murals/index.html",
+      "category": "featured",
+      "slugCandidate": "mellow-mushroom-murals",
+      "title": "Mellow Mushroom Murals",
+      "description": "",
+      "narrative": "These three 5' x 12' paintings on panel were painted for the Mellow Mushroom, a pizza restaurant near the University of Texas, in Austin, TX. The art director for this chain of restaurants, approached us for something different. We showed him examples of other monster paintings we have done and he then had us create three to fit in between the TV sets on their long 64' wall.",
+      "categories": [
+        "Featured",
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2011-01-29 22:42:42",
+      "modifiedAt": "2011-01-30 22:18:22",
+      "year": "2011",
+      "wpPostId": "16",
+      "images": [
+        {
+          "ref": "2011/01/crab-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/crab-copy.jpg",
+          "basename": "crab-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/eye-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/eye-copy.jpg",
+          "basename": "eye-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/mouth-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/mouth-copy.jpg",
+          "basename": "mouth-copy",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/mjm-texas-stampede-for-children/index.html",
+      "category": "event",
+      "slugCandidate": "mjm-texas-stampede-for-children",
+      "title": "MJ&M Texas Stampede for Children",
+      "description": "",
+      "narrative": "This 2014 joint fundraiser effort of Mack Brown, Jack Ingram, and Matthew McConaughey and presented by Milton Verret, asked Rory Skagen to participate by painting one of the six full sized life-size steers to be auctioned off at their gala event. After a planning session it was decided that neon artist Todd Sanders and Rory Skagen would team up to create a nostalgic icon to Austin Texas. Including the famous Austin mural by Rory Skagen and Bill Brakhage, and and one of Todd Sander's vintage neon signs. This steer sold at the auction for an impressive $100,000.00. These photos include pictures of the finished steer and process shots at the shop. Photos by Gino Barasa.",
+      "categories": [
+        "Event",
+        "Exterior"
+      ],
+      "publishedAt": "2015-02-08 14:45:55",
+      "modifiedAt": "2015-02-16 10:16:08",
+      "year": "2015",
+      "wpPostId": "932",
+      "images": [
+        {
+          "ref": "2015/02/steer3-e1423427851245.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer3-e1423427851245.jpg",
+          "basename": "steer3-e1423427851245",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/steer4-e1423428146136.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer4-e1423428146136.jpg",
+          "basename": "steer4-e1423428146136",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/steer4.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer4.jpg",
+          "basename": "steer4",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/steer6-e1423428013529.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer6-e1423428013529.jpg",
+          "basename": "steer6-e1423428013529",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/steer6.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer6.jpg",
+          "basename": "steer6",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/steer7a-e1423427679279.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/steer7a-e1423427679279.jpg",
+          "basename": "steer7a-e1423427679279",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/unnamed-11-e1423428343941.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-11-e1423428343941.jpg",
+          "basename": "unnamed-11-e1423428343941",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2015/02/unnamed-11.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2015/02/unnamed-11.jpg",
+          "basename": "unnamed-11",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/more-home-slice/index.html",
+      "category": "restaurant",
+      "slugCandidate": "more-home-slice",
+      "title": "More Home Slice",
+      "description": "",
+      "narrative": "After their initial success, the people at Home Slice Pizza opened a second take out business in the building next to their original location. Since we had done the mural for the original location, they called us with this concept for their second restaurant.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2010-03-22 18:02:44",
+      "modifiedAt": "2014-02-16 15:41:49",
+      "year": "2010",
+      "wpPostId": "321",
+      "images": [
+        {
+          "ref": "2010/03/morehomeslice-copy-21.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/morehomeslice-copy-21.jpg",
+          "basename": "morehomeslice-copy-21",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "home/motorcycle-mural-—-california-dreamin/index.html",
+      "category": "home",
+      "slugCandidate": "motorcycle-mural-—-california-dreamin",
+      "title": "Motorcycle Mural — \"California Dreamin\"",
+      "description": "",
+      "narrative": "This 9' tall by 10' wide mural was painted for a child's room in a private residence.The boy, Evan, who is now in third grade, asked his mother if he could have a motorcycle mural in his room, but, \"he wanted a professional to paint it.\"The family contacted us, and based upon Evan's toy motorcycle we created this painting.After an initial design phase, Evan described the scene you see here, with a motorcycle by the ocean at sunset with the moon just beginning to appear.",
+      "categories": [
+        "Home",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:40:40",
+      "modifiedAt": "2015-02-08 13:32:58",
+      "year": "2010",
+      "wpPostId": "111",
+      "images": [
+        {
+          "ref": "2010/03/motorcycle_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/motorcycle_mural.jpg",
+          "basename": "motorcycle_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/motorcycle_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/motorcycle_mural1.jpg",
+          "basename": "motorcycle_mural1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/mural-for-junior-league/index.html",
+      "category": "event",
+      "slugCandidate": "mural-for-junior-league",
+      "title": "Mural for Junior League",
+      "description": "",
+      "narrative": "These Renaissance inspired murals were made for Strong Productions, for an annual Christmas event thrown by the Junior League.",
+      "categories": [
+        "Event",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:23:28",
+      "modifiedAt": "2014-02-16 16:25:32",
+      "year": "2010",
+      "wpPostId": "73",
+      "images": [
+        {
+          "ref": "2010/03/junior_league_mural_21.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/junior_league_mural_21.jpg",
+          "basename": "junior_league_mural_21",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/junior_league_mural_full2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/junior_league_mural_full2.jpg",
+          "basename": "junior_league_mural_full2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/mural-for-manny-hattans-deli/index.html",
+      "category": "restaurant",
+      "slugCandidate": "mural-for-manny-hattans-deli",
+      "title": "Mural for Manny Hattan’s Deli",
+      "description": "",
+      "narrative": "This 4.5' by 84' mural was designed for a New York-style deli in Austin, Texas. The color scheme was chosen to match the rest of the decor in the restaurant, including tile and furniture. The graphic imagery and striking, but subtle palette, make the mural commanding, but not overpowering. The owners called us just a month before the restaurant's opening date. Being accustomed to deadlines of this nature, we were able to design and complete the giant mural in just three and a half weeks.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2011-01-26 16:24:47",
+      "modifiedAt": "2014-02-16 18:14:47",
+      "year": "2011",
+      "wpPostId": "75",
+      "images": [
+        {
+          "ref": "2011/01/guggenheim-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/guggenheim-copy.jpg",
+          "basename": "guggenheim-copy",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/liberty_flag.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/liberty_flag.jpg",
+          "basename": "liberty_flag",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/napoleon-crossing-the-alps-mural/index.html",
+      "category": "event",
+      "slugCandidate": "napoleon-crossing-the-alps-mural",
+      "title": "Napoleon Crossing the Alps Mural",
+      "description": "",
+      "narrative": "This mural, based on Jacques Louis David's Neoclassical painting of Napoleon Crossing the Alps, was created for Flatfork Studio . This 10' tall x 8' wide painting was used as part of a stage set for the Austin Symphony with a fine art museum motif.",
+      "categories": [
+        "Event",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:17:36",
+      "modifiedAt": "2014-02-16 16:26:44",
+      "year": "2010",
+      "wpPostId": "64",
+      "images": [
+        {
+          "ref": "2010/03/napoleon_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/napoleon_mural1.jpg",
+          "basename": "napoleon_mural1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/nvidia/index.html",
+      "category": "business",
+      "slugCandidate": "nvidia",
+      "title": "NVIDIA",
+      "description": "",
+      "narrative": "Gensler architects came to Rory Skagen looking for a mural for NVIDIA's lunch room for their new headquarters in Austin, TX. For this 33' long mural, Rory created a shallow wood framing device spelling out \"Austin\" which frames painted versions of NVIDIA fan art.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2011-07-08 14:06:38",
+      "modifiedAt": "2011-07-08 14:18:49",
+      "year": "2011",
+      "wpPostId": "732",
+      "images": [
+        {
+          "ref": "2011/07/nvidia1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/07/nvidia1.jpg",
+          "basename": "nvidia1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/07/nvidia2-copy.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/07/nvidia2-copy.jpg",
+          "basename": "nvidia2-copy",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/old-coffee-mural/index.html",
+      "category": "business",
+      "slugCandidate": "old-coffee-mural",
+      "title": "Old Coffee Mural",
+      "description": "",
+      "narrative": "Styled after an old fashioned coffee logo, this mural looks as if it's been there for decades. This kind of faux weathering technique can add a charming authenticity to your project.",
+      "categories": [
+        "Business",
+        "Exterior"
+      ],
+      "publishedAt": "2010-03-19 16:32:28",
+      "modifiedAt": "2014-02-16 16:08:40",
+      "year": "2010",
+      "wpPostId": "91",
+      "images": [
+        {
+          "ref": "2010/03/old_coffee_mural_lg1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/old_coffee_mural_lg1.jpg",
+          "basename": "old_coffee_mural_lg1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/positivenegative-mural/index.html",
+      "category": "event",
+      "slugCandidate": "positivenegative-mural",
+      "title": "Positive/Negative Mural",
+      "description": "",
+      "narrative": "This freestanding interactive mural drew a lot of attention at the Austin Fine Arts Festival. Especially since people could actually draw on it!",
+      "categories": [
+        "Event",
+        "Exterior"
+      ],
+      "publishedAt": "2010-03-19 16:37:45",
+      "modifiedAt": "2014-02-16 16:02:19",
+      "year": "2010",
+      "wpPostId": "105",
+      "images": [
+        {
+          "ref": "2010/03/posnegmural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/posnegmural1.jpg",
+          "basename": "posnegmural1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/pulte-homes-murals/index.html",
+      "category": "business",
+      "slugCandidate": "pulte-homes-murals",
+      "title": "Pulte Homes Murals",
+      "description": "",
+      "narrative": "Pulte Homes called us to redo their conference room in their local Austin headquarters. They wanted to add excitement and corporate identity to their decor without making it look \"like a carnival\". After a lengthy design process they decided on this look. The flag mural was designed to have employee award plaques added over time under the different categories. The 6' tall by 9' long Austin Postcard mural has photos of employees enjoying recreational activities mounted to the surface. These were designed to be easily replaced with new images over time. All of the work was done during the evenings and weekends to avoid interruption of the company's routine.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:42:24",
+      "modifiedAt": "2014-02-16 15:47:46",
+      "year": "2010",
+      "wpPostId": "114",
+      "images": [
+        {
+          "ref": "2010/03/pulte_homes_awards_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_awards_mural.jpg",
+          "basename": "pulte_homes_awards_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/pulte_homes_awards_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_awards_mural1.jpg",
+          "basename": "pulte_homes_awards_mural1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/pulte_homes_flag_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_flag_mural.jpg",
+          "basename": "pulte_homes_flag_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/pulte_homes_flag_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_flag_mural1.jpg",
+          "basename": "pulte_homes_flag_mural1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/pulte_homes_postcard_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/pulte_homes_postcard_mural1.jpg",
+          "basename": "pulte_homes_postcard_mural1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "featured/rgm-advisors-mural/index.html",
+      "category": "featured",
+      "slugCandidate": "rgm-advisors-mural",
+      "title": "RGM Advisors Mural",
+      "description": "",
+      "narrative": "Gensler, an architecture firm, was remodeling two stories of the Chase building in downtown Austin for their client, RGM Advisors (an investment bank). They had seen our \"Good Morning Austin\" mural\" on 5th street, and came to us to design a mural which would be placed in the lounge dining area of the building. They knew they wanted robots, so we came up with this design. We decided to paint the mural on Sintra Board which would then be attached to the wall, allowing us to work at the shop (and out of the way of our clients), and also save on cost and time. The mural covers one wall, and two parts of a wall that hangs from the ceiling. The top image is a picture of the original design. The other two photos show the completed mural installed in the building.",
+      "categories": [
+        "Business",
+        "Featured",
+        "Interior"
+      ],
+      "publishedAt": "2011-01-29 17:36:23",
+      "modifiedAt": "2014-02-16 14:43:12",
+      "year": "2011",
+      "wpPostId": "44",
+      "images": [
+        {
+          "ref": "2010/03/rgm_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/rgm_mural.jpg",
+          "basename": "rgm_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/rgm_mural4.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural4.jpg",
+          "basename": "rgm_mural4",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/rgm_mural_installed3.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural_installed3.jpg",
+          "basename": "rgm_mural_installed3",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/rgm_mural_installed_23.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/rgm_mural_installed_23.jpg",
+          "basename": "rgm_mural_installed_23",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/romantic-scenes-mural/index.html",
+      "category": "restaurant",
+      "slugCandidate": "romantic-scenes-mural",
+      "title": "Romantic Scenes Mural",
+      "description": "",
+      "narrative": "These small interior murals decorated an italian restaurant. The color and imagery impart a romantic mood.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2010-03-19 16:33:51",
+      "modifiedAt": "2011-01-30 18:31:34",
+      "year": "2010",
+      "wpPostId": "95",
+      "images": [
+        {
+          "ref": "2010/03/rs.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/rs.jpg",
+          "basename": "rs",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/rs1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/rs1.jpg",
+          "basename": "rs1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2010/03/rs2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/rs2.jpg",
+          "basename": "rs2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/rooster-teeth-mural/index.html",
+      "category": "business",
+      "slugCandidate": "rooster-teeth-mural",
+      "title": "Rooster Teeth Mural",
+      "description": "",
+      "narrative": "The incredible guys at roosterteeth.com asked us to design and create this mural about consumerism and politics for their new office in downtown Austin. The 8' x 32' mural was painted on 8 panels and installed at their location. The Latin phrase above the mural reads Laboris Voro Ingemino , which roughly translated means: \"work hard, consume, continue with increased effort\". They came to us with a general concept and we worked out the composition. The sayings on the mural were provided by Roosterteeth. Seems they understand capitalism, better than most.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2011-01-24 17:37:33",
+      "modifiedAt": "2014-02-16 15:30:35",
+      "year": "2011",
+      "wpPostId": "47",
+      "images": [
+        {
+          "ref": "2011/01/rt2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/rt2.jpg",
+          "basename": "rt2",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/rt4.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/rt4.jpg",
+          "basename": "rt4",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/rtmillionaire.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/rtmillionaire.jpg",
+          "basename": "rtmillionaire",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/schlotzskys-deli-murals/index.html",
+      "category": "restaurant",
+      "slugCandidate": "schlotzskys-deli-murals",
+      "title": "Schlotzsky’s Deli Murals",
+      "description": "",
+      "narrative": "Dimensions: 5' x 9' The Schlotzsky's Deli Sandwich murals — commissioned by Schlotzsky's and featured in their sandwich shops. We painted seventeen of these in locations throughout the nation.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2011-01-23 16:29:03",
+      "modifiedAt": "2014-02-16 15:36:24",
+      "year": "2011",
+      "wpPostId": "83",
+      "images": [
+        {
+          "ref": "2010/03/schlotzskys_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/schlotzskys_mural.jpg",
+          "basename": "schlotzskys_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/schlotzskys_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/schlotzskys_mural.jpg",
+          "basename": "schlotzskys_mural",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/shady-grove-mural-at-dell-childrens-medical-center/index.html",
+      "category": "business",
+      "slugCandidate": "shady-grove-mural-at-dell-childrens-medical-center",
+      "title": "Shady Grove mural at Dell Children’s Medical Center",
+      "description": "",
+      "narrative": "The Shady Grove restaurant people called us to create a mural for one of the examination rooms at Dell Children's Medical Center. They wanted a stencil and spray paint mural featuring some icons from the restaurant. We designed and painted this cheerful mural in record time before the Medical Center's grand opening.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2011-01-22 16:11:35",
+      "modifiedAt": "2014-02-16 15:40:30",
+      "year": "2011",
+      "wpPostId": "54",
+      "images": [
+        {
+          "ref": "2011/01/shady_grove_dell_mural.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/shady_grove_dell_mural.jpg",
+          "basename": "shady_grove_dell_mural",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/shady_grove_dell_mural_2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/shady_grove_dell_mural_2.jpg",
+          "basename": "shady_grove_dell_mural_2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/spaghetti-western-mural/index.html",
+      "category": "restaurant",
+      "slugCandidate": "spaghetti-western-mural",
+      "title": "Spaghetti Western Mural",
+      "description": "",
+      "narrative": "This 7' by 13' mural was created for an Italian restaurant with a contemporary feel. This is just another example of the range of styles we are capable of here at Skagen Art.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2010-03-19 16:28:14",
+      "modifiedAt": "2014-02-16 16:21:53",
+      "year": "2010",
+      "wpPostId": "81",
+      "images": [
+        {
+          "ref": "2010/03/spaghetti_western_mural_lg1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/spaghetti_western_mural_lg1.jpg",
+          "basename": "spaghetti_western_mural_lg1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "event/stage-backdrop/index.html",
+      "category": "event",
+      "slugCandidate": "stage-backdrop",
+      "title": "Stage Backdrop",
+      "description": "",
+      "narrative": "This 12' x 16' canvas stage back drop was designed and painted for events thrown at Blue Genie Art. The unusual motif was inspired by liquor labels, and 19th century American artists.",
+      "categories": [
+        "Event",
+        "Interior"
+      ],
+      "publishedAt": "2010-03-19 16:43:49",
+      "modifiedAt": "2014-02-16 15:43:40",
+      "year": "2010",
+      "wpPostId": "118",
+      "images": [
+        {
+          "ref": "2010/03/stage_backdrop_mural2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/stage_backdrop_mural2.jpg",
+          "basename": "stage_backdrop_mural2",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "retail/storyville/index.html",
+      "category": "retail",
+      "slugCandidate": "storyville",
+      "title": "Storyville",
+      "description": "",
+      "narrative": "The owners of this small store called looking for something that fit the mood of their interior and the merchandise they sold. They were delighted by the results.",
+      "categories": [
+        "Exterior",
+        "Retail",
+        "Signage"
+      ],
+      "publishedAt": "2011-01-26 22:54:08",
+      "modifiedAt": "2011-01-30 18:22:11",
+      "year": "2011",
+      "wpPostId": "548",
+      "images": [
+        {
+          "ref": "2011/01/building1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/building1.jpg",
+          "basename": "building1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/fox.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/fox.jpg",
+          "basename": "fox",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/hangingsign.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/hangingsign.jpg",
+          "basename": "hangingsign",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/lion.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/lion.jpg",
+          "basename": "lion",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/storyville-main-sign-copy1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/storyville-main-sign-copy1.jpg",
+          "basename": "storyville-main-sign-copy1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/sweet-spot/index.html",
+      "category": "business",
+      "slugCandidate": "sweet-spot",
+      "title": "Sweet Spot",
+      "description": "",
+      "narrative": "Brandon and Kat Petrie wanted to update the theme on their vendor wagon. I designed the new look for their trailer and a vinyl company was hired to apply the design. These photos show the two trailers and the mock up design for the Sugar Barn.",
+      "categories": [
+        "Business",
+        "Event",
+        "Exterior",
+        "Signage"
+      ],
+      "publishedAt": "2011-02-08 02:04:49",
+      "modifiedAt": "2015-02-08 14:08:50",
+      "year": "2011",
+      "wpPostId": "329",
+      "images": [
+        {
+          "ref": "2011/01/DSC_0173-1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/DSC_0173-1.jpg",
+          "basename": "dsc_0173-1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/driverandcurbside.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/driverandcurbside.jpg",
+          "basename": "driverandcurbside",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/sugarbarnside2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/sugarbarnside2.jpg",
+          "basename": "sugarbarnside2",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2011/01/sweet.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/sweet.jpg",
+          "basename": "sweet",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "business/texas-childrens-urgent-care/index.html",
+      "category": "business",
+      "slugCandidate": "texas-childrens-urgent-care",
+      "title": "Texas Children's Urgent Care",
+      "description": "",
+      "narrative": "We were entrusted to design and paint the murals for the new Texas Children's Urgent Care in Austin, TX: this included the waiting room, eleven exam rooms, and all the hallways. Because this clinic is located in Austin, TX the theme they picked was \"a day at a music festival.\" This is a small sampling of the mural.",
+      "categories": [
+        "Business",
+        "Interior"
+      ],
+      "publishedAt": "2018-03-16 13:51:27",
+      "modifiedAt": "2018-03-16 14:02:21",
+      "year": "2018",
+      "wpPostId": "996",
+      "images": [
+        {
+          "ref": "2018/03/calientetacos.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/calientetacos.jpg",
+          "basename": "calientetacos",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/dogeating.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/dogeating.jpg",
+          "basename": "dogeating",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/dogfood.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/dogfood.jpg",
+          "basename": "dogfood",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/eletricfire.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/eletricfire.jpg",
+          "basename": "eletricfire",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/exam10a.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam10a.jpg",
+          "basename": "exam10a",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/exam3.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam3.jpg",
+          "basename": "exam3",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/exam4a.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam4a.jpg",
+          "basename": "exam4a",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/exam9a.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam9a.jpg",
+          "basename": "exam9a",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/exam9b.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/exam9b.jpg",
+          "basename": "exam9b",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/facepainting2.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/facepainting2.jpg",
+          "basename": "facepainting2",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/folkstage.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/folkstage.jpg",
+          "basename": "folkstage",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/illustration-1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/illustration-1.jpg",
+          "basename": "illustration-1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/musicfest-1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/musicfest-1.jpg",
+          "basename": "musicfest-1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/pedicab.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/pedicab.jpg",
+          "basename": "pedicab",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/portopotty.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/portopotty.jpg",
+          "basename": "portopotty",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/security.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/security.jpg",
+          "basename": "security",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/taco3.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/taco3.jpg",
+          "basename": "taco3",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/theanimals.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/theanimals.jpg",
+          "basename": "theanimals",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/tshirt.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/tshirt.jpg",
+          "basename": "tshirt",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/waiting1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/waiting1.jpg",
+          "basename": "waiting1",
+          "presentOnDisk": true
+        },
+        {
+          "ref": "2018/03/willie.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2018/03/willie.jpg",
+          "basename": "willie",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "museum/the-lorax/index.html",
+      "category": "museum",
+      "slugCandidate": "the-lorax",
+      "title": "The Lorax",
+      "description": "",
+      "narrative": "Another job we did for the LBJ Museum here in Austin, Texas was this cut out back drop for their exhibit featuring the printing plates from Dr. Suess' The Lorax .",
+      "categories": [
+        "Interior",
+        "Museum"
+      ],
+      "publishedAt": "2010-03-17 23:21:33",
+      "modifiedAt": "2011-01-30 17:18:51",
+      "year": "2010",
+      "wpPostId": "566",
+      "images": [
+        {
+          "ref": "2011/01/lorax-1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/lorax-1.jpg",
+          "basename": "lorax-1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "signage/the-peoples-pool-hall/index.html",
+      "category": "signage",
+      "slugCandidate": "the-peoples-pool-hall",
+      "title": "The People's Pool Hall",
+      "description": "",
+      "narrative": "My friend, renowned neon artist Todd Sanders , asked me to collaborate on The people's pool hall sign. So, I painted Chairman Mao according to his design. It was fun to collaborate with such a great artist.",
+      "categories": [
+        "Interior",
+        "Signage"
+      ],
+      "publishedAt": "2015-08-05 12:53:41",
+      "modifiedAt": "2016-10-05 13:05:04",
+      "year": "2015",
+      "wpPostId": "979",
+      "images": [
+        {
+          "ref": "2016/10/thepeoples.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2016/10/thepeoples.jpg",
+          "basename": "thepeoples",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "museum/theater-backdrop-mural/index.html",
+      "category": "museum",
+      "slugCandidate": "theater-backdrop-mural",
+      "title": "Theater Backdrop Mural",
+      "description": "",
+      "narrative": "This 10 foot by 12 foot mural was designed as a 19th century theater backdrop, and was part of an exhibit about Davy Crockett at the Bob Bullock History Museum. Both the mural at top and the split log cabin backdrop below were painted in our shop on canvas. The canvases were then taken to the museum and applied to the walls by professional wallpaper hangers.",
+      "categories": [
+        "Interior",
+        "Museum"
+      ],
+      "publishedAt": "2010-03-19 16:25:42",
+      "modifiedAt": "2014-02-16 16:23:08",
+      "year": "2010",
+      "wpPostId": "77",
+      "images": [
+        {
+          "ref": "2010/03/theater_backdrop_mural_lg1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/theater_backdrop_mural_lg1.jpg",
+          "basename": "theater_backdrop_mural_lg1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/threadgills-mural/index.html",
+      "category": "restaurant",
+      "slugCandidate": "threadgills-mural",
+      "title": "Threadgill's Mural",
+      "description": "",
+      "narrative": "This mural was painted in homage to Kenneth Threadgill the inspiration behind Threadgill's Restaurant.",
+      "categories": [
+        "Exterior",
+        "Restaurant"
+      ],
+      "publishedAt": "2010-03-19 16:34:46",
+      "modifiedAt": "2014-02-16 16:05:49",
+      "year": "2010",
+      "wpPostId": "97",
+      "images": [
+        {
+          "ref": "2010/03/threadgills_mural_lg1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/threadgills_mural_lg1.jpg",
+          "basename": "threadgills_mural_lg1",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/tiki-masks/index.html",
+      "category": "restaurant",
+      "slugCandidate": "tiki-masks",
+      "title": "Tiki Masks",
+      "description": "",
+      "narrative": "These masks painted on VW Bug Trunk lids were designed in coordination with Road House Relics for a restaurant with an island theme.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2010-03-17 22:58:09",
+      "modifiedAt": "2011-01-30 17:18:25",
+      "year": "2010",
+      "wpPostId": "557",
+      "images": [
+        {
+          "ref": "2011/01/tiki_masks_signage.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2011/01/tiki_masks_signage.jpg",
+          "basename": "tiki_masks_signage",
+          "presentOnDisk": true
+        }
+      ],
+      "warnings": [
+        "no authored alt text for any image"
+      ]
+    },
+    {
+      "archive": "centraltexasmuralsbyroryskagen-20231217234521",
+      "relPath": "restaurant/tx-burger-mural/index.html",
+      "category": "restaurant",
+      "slugCandidate": "tx-burger-mural",
+      "title": "Texas Burger Mural",
+      "description": "",
+      "narrative": "The advertising agency designing the renovated look of this well established restaurant in Madisonville, TX. approached us for a mural behind their ice cream counter. We designed this cartoon for them, and then traveled to Madisonville to paint it behind the counter. These photos were taken during the renovation, before the menu board was secured to the wall. The blue tape indicates where the menu board was finally placed.",
+      "categories": [
+        "Interior",
+        "Restaurant"
+      ],
+      "publishedAt": "2010-03-18 17:34:35",
+      "modifiedAt": "2014-02-16 16:31:14",
+      "year": "2010",
+      "wpPostId": "40",
+      "images": [
+        {
+          "ref": "2010/03/tx_burger_mural1.jpg",
+          "local": true,
+          "remote": false,
+          "archivePath": "files/wp-content/uploads/_/2010/03/tx_burger_mural1.jpg",
+          "basename": "tx_burger_mural1",
+          "presentOnDisk": true
         }
       ],
       "warnings": [

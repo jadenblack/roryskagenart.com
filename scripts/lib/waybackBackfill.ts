@@ -89,16 +89,97 @@ export interface CanonicalArtwork {
   year?: string | null;
 }
 
+/**
+ * The recovered WordPress export's archive id.
+ *
+ * ⚠️ Deliberately a **different** id from `centraltexasmurals.com-v1`: they are separate corpora (a
+ * scrape vs. a full WP Migrate dump) and diffing them is the point of §3.D. But both describe the
+ * *same live site*, so both must resolve to the same `sourceSite` and `kind`. Without the two map
+ * rows below, a regenerated mural lands as `kind = 'other'` under a `sourceSite` that is the archive
+ * *directory* name — silently wrong, and not caught by any type (the archive field is a plain
+ * `string`).
+ */
+export const RECOVERED_MURAL_ARCHIVE = 'centraltexasmuralsbyroryskagen-20231217234521';
+
 /** Source site + default `kind` per archive. The two archives are categorically different work. */
 export const ARCHIVE_SITE: Record<string, string> = {
   'centraltexasmurals.com-v1': 'centraltexasmurals.com',
   'roryskagen.com-v1': 'roryskagen.com',
+  [RECOVERED_MURAL_ARCHIVE]: 'centraltexasmurals.com',
 };
 
 export const ARCHIVE_KIND: Record<string, ArtworkKind> = {
   'centraltexasmurals.com-v1': 'mural',
   'roryskagen.com-v1': 'painting',
+  [RECOVERED_MURAL_ARCHIVE]: 'mural',
 };
+
+/** The scrape's mural archive id — the one the recovered export supersedes (D2). */
+export const SCRAPE_MURAL_ARCHIVE = 'centraltexasmurals.com-v1';
+
+/**
+ * Merge the two extractions into the single shape `buildBackfillPlan` expects (D2).
+ *
+ * **Murals come from the recovered export; paintings stay on the scrape.** The scrape's mural
+ * records are dropped and the recovered ones are injected at the position of the first scrape mural,
+ * so the painting records keep their original relative order — which is what makes "the painting half
+ * did not move" a checkable claim rather than a hope.
+ *
+ * ⚠️ This is a **merge, not a swap**. The staged file covers two archives; the recovered export covers
+ * one. Repointing the source instead would silently drop every painting record.
+ */
+export function mergeSources(scrape: ExtractionFile, recovered: ExtractionFile): ExtractionFile {
+  // The guard that matters. Without `pages` the planner reads every authored field as `undefined` and
+  // emits INSERTs whose year/narrative/description/categories/wpPostId/publishedAt are all null — and
+  // still exits 0. Fail loudly here rather than staging a quietly gutted file.
+  if (!Array.isArray(recovered.pages) || recovered.pages.length === 0) {
+    throw new Error(
+      'The recovered extraction has no `pages` array. Regenerate it with ' +
+        '`npx tsx scripts/wayback-recovered-extract.ts`.\n' +
+        '⚠️ Without pages every authored field in the mural INSERTs would be null.'
+    );
+  }
+
+  const records: ExtractionRecord[] = [];
+  let injected = false;
+  for (const r of scrape.records) {
+    if (r.archive === SCRAPE_MURAL_ARCHIVE) {
+      if (!injected) {
+        records.push(...recovered.records);
+        injected = true;
+      }
+      continue; // superseded by the recovered export
+    }
+    records.push(r);
+  }
+  if (!injected) {
+    throw new Error(
+      `No \`${SCRAPE_MURAL_ARCHIVE}\` record found in the scrape — refusing to stage a file whose ` +
+        'mural half would be missing entirely.'
+    );
+  }
+
+  const pages: ExtractionPage[] = [
+    ...scrape.pages.filter((p) => p.archive !== SCRAPE_MURAL_ARCHIVE),
+    ...recovered.pages,
+  ];
+
+  const count = (c: string) => records.filter((r) => r.classification === c).length;
+
+  return {
+    generatedAt: `${scrape.generatedAt} (paintings) + ${recovered.generatedAt} (murals)`,
+    canonical: scrape.canonical,
+    summary: {
+      total: records.length,
+      NEW: count('NEW'),
+      EXISTS: count('EXISTS'),
+      COLLISION: count('COLLISION'),
+      fromRecovered: recovered.records.length,
+    },
+    records,
+    pages,
+  };
+}
 
 /**
  * Match kinds trusted enough to act on without a human.
@@ -128,6 +209,19 @@ export interface InsertRow {
   description: string;
   categories: string[];
   wpPostId: string | null;
+  /**
+   * The archive's own publication string, carried through **verbatim** into `metadata.wayback`.
+   *
+   * ⚠️ Not a `timestamptz`, and the two sources do not agree on its shape or its zone. The scrape
+   * yields UTC ISO (`2015-02-08T20:03:16+00:00`); the recovered WP dump yields the bare site-local
+   * `post_date` (`2015-02-08 14:03:16`). Measured across the 60 murals present in both, the offset is
+   * **not uniform** — 0 h for some, 6 h for others — so neither source can be normalised by assuming a
+   * zone. It is provenance text only; nothing casts it, and it must stay that way.
+   *
+   * The one thing that would matter is a year flip, since `year` is derived from this value on both
+   * paths (`YEAR_RE` over the scrape's ISO string; `yearOf(post_date)` over the dump's local string).
+   * Checked: **0 of the 60 disagree**, and no post falls on Dec 30–31. See D4/Q18.
+   */
   publishedAt: string | null;
 }
 
@@ -258,7 +352,14 @@ export function buildBackfillPlan(
       continue;
     }
 
-    if (r.knownDedupe || dedupePaths.has(sourcePath)) {
+    // ⚠️ A record the recovered path has *already* merged is not a candidate for holding — the merge
+    // **is** the resolution, and holding it emits no statement at all. `applyDedupeMerges()` rewrites
+    // such a record to EXISTS with `matchKind: 'known-dedupe'` (a trusted kind), so it belongs in the
+    // EXISTS branch below. The scrape never produces that combination: there the same two pairs are
+    // still NEW, which is precisely why the path-based hold exists. Both behaviours are required, so
+    // the hold is conditional rather than removed. See R-01 and `V3_PHASE4_D2.md`.
+    const alreadyMerged = r.classification === 'EXISTS' && r.matchKind === 'known-dedupe';
+    if (!alreadyMerged && (r.knownDedupe || dedupePaths.has(sourcePath))) {
       held.push({
         reason: 'KNOWN-DEDUPE',
         archive: r.archive,
@@ -438,7 +539,9 @@ export function renderBackfillSql(plan: BackfillPlan, opts: RenderOptions): stri
   L.push(
     '-- v3.0.0 — Wayback backfill (STAGED — NOT APPLIED BY THE MIGRATION RUNNER)',
     '--',
-    '-- Generated by scripts/wayback-stage-sql.ts from data/archive/wayback_extraction.json.',
+    '-- Generated by scripts/wayback-stage-sql.ts from TWO sources (D2):',
+    '--   paintings — data/archive/wayback_extraction.json (the scrape)',
+    '--   murals    — data/archive/wayback_recovered_extraction.json (the recovered WP export, §3.D)',
     '-- Regenerate with:  npx tsx scripts/wayback-stage-sql.ts',
     '--',
     '-- WHY THIS FILE LIVES IN supabase/staged/ AND NOT supabase/migrations/',

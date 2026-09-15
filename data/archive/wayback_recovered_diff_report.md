@@ -1,6 +1,6 @@
 # Recovered WordPress export — §3.D extraction, diff and dedupe
 
-- **Generated:** 2026-09-15T17:16:37.103Z
+- **Generated:** 2026-09-15T18:48:19.286Z
 - **Source:** `wayback/centraltexasmuralsbyroryskagen-20231217234521/` — WP Migrate 2.6.9 export of the live WordPress 6.4.2 site
 - **Diff baseline:** `centraltexasmurals.com-v1` (the scrape this supersedes)
 - **Canonical snapshot:** 138 artworks · 152 media assets
