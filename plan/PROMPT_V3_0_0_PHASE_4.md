@@ -6,8 +6,11 @@
 > [`data/archive/wayback_recovered_diff_report.md`](../data/archive/wayback_recovered_diff_report.md)
 > (the current measured run). `AGENTS.md` is canonical for stack, schema and conventions.
 >
-> ⚠️ **Read `ROADMAP_V3.md` as `git show 045788a:plan/ROADMAP_V3.md` until PR #23 merges.** The
-> working-tree copy is the *old* one — PR #23 is a **sibling** of #24, not an ancestor.
+> ✅ **`ROADMAP_V3.md` is current on `main`.** PRs #23–#27 all merged on 2026-09-15 (`main` =
+> `d078f0a`); read the working-tree copy normally. The earlier warning — *"read it as
+> `git show 045788a:plan/ROADMAP_V3.md` until PR #23 merges"* — no longer applies.
+>
+> ✅ **The five gating decisions are answered** — see §2.1. Phase 4 is no longer blocked on the owner.
 
 ---
 
@@ -29,7 +32,7 @@ single most expensive failure mode here is acting on a stale premise while holdi
 | :--- | :--- | :--- |
 | 3.A extraction + reconcile + staged backfill | ✅ done (PR #24) | `data/archive/wayback_extraction.json` |
 | 3.B bulk media registration path | ✅ done (PR #25) | `scripts/wayback-register.ts` |
-| §3.D recovered WordPress export | ✅ done (this release) | 60 NEW + 2 merges, 168 images |
+| §3.D recovered WordPress export | ✅ done (PR #27 → **v2.17.0**, merged) | 60 NEW + 2 merges, 168 images |
 | **Phase 4 — the writes** | ⛔ **not started** | this brief |
 
 **§3.D produced, and this is the input Phase 4 consumes:**
@@ -66,10 +69,29 @@ Answer these **before** writing anything. Each one changes the schema or the dat
 | **D5 / Q6** | `taxonomies.type='project_type'` for the 8 project types, with `Featured`/`Home` as curation flags? | Blocks the schema extension; 144 new `artwork_terms` rows | **Yes.** `curation` terms describe *where* a work is shown; filing a mural under both `interior` and `featured` as types puts it in two contradictory buckets |
 | **D7 / Q14** | Free or Pro **before** Phase 4? | **R-14 / R-17** — the top risk in the program | Decide with the real number in hand: ~**519 objects**, not the 33 the original PRD assumed |
 
+### 2.1 ✅ Answered by the owner — 2026-09-15
+
+All five gates are **settled**. They are recorded here because a fresh session cannot reconstruct
+them, and every one of them changes what Phase 4 writes.
+
+| # | Decision | What it means for the write |
+| :--- | :--- | :--- |
+| **D2** | **Regenerate.** | The mural half of `supabase/staged/2026_09_15_v3_wayback_backfill.sql` is rebuilt from the **recovered** export. Do **not** layer on 3.A: that leaves two sources of truth for the same 60 records, and the 3.A mural rows would contradict the export that superseded them. ⚠️ `scripts/wayback-stage-sql.ts` still reads `data/archive/wayback_extraction.json` (the **scrape**, hardcoded at lines 24–30) — repointing it at `wayback_recovered_extraction.json` is the first task of the Phase 4 branch. |
+| **D3 / Q16** | **Adopt the `artwork_images` join** — `(artwork_slug, media_public_id, position)`. | Phase 4 carries a schema extension. It makes "which image is the cover" answerable, and it is what makes images 2..N reachable at all (R-18). `generate-asset-registry.ts` must stop being silently first-wins. |
+| **D4 / Q18** | **The archive `post_date` is authoritative for the mural rows.** | This is an **overwrite** of `artworks.year`, not a fill-only-empty pass — all 138 rows hold `'2024'` (the `POST /api/artworks` default) and 79 disagree with the archive. It needs its own reviewed migration and its own dump, and it stays **out** of the staged backfill. |
+| **D5 / Q6** | **`taxonomies.type = 'project_type'`** for the 8 project types; `Featured` / `Home` become `curation` flags. | Unblocks the schema extension and the 144 `artwork_terms` rows. Filing a mural as both `interior` and `featured` would put it in two contradictory buckets. |
+| **D7 / Q14** | **Stay on Supabase Free.** | Against this brief's own §2 recommendation. The roadmap's fallback condition is therefore binding — *"the minimum is the daily keep-alive plus the proven-Blob-restore from §4.1.1"* — and **both now hold**: §4.1.1 was closed 2026-09-15 (a Blob dump was checksum-verified and restored into the scratch DB — 298 rows inserted, 0 failed, 138/138 artworks field-exact). ⚠️ **R-07 is unchanged**: the repo dump is still the only recovery path, so back up *and verify* before the first write. |
+
 ---
 
 ## 3. What Phase 4 has to do
 
+0. **Regenerate the staged backfill (D2).** `scripts/wayback-stage-sql.ts` still reads the **scrape**
+   (`data/archive/wayback_extraction.json`, hardcoded at lines 24–30) and therefore still emits the
+   two duplicate mural INSERTs the recovered path merges away. Repoint it at
+   `data/archive/wayback_recovered_extraction.json` and regenerate
+   `supabase/staged/2026_09_15_v3_wayback_backfill.sql`. ⚠️ The stager emits **no** media rows and
+   **no** `artwork_terms` — steps 2–4 below need new code, not just a regeneration.
 1. **Create the artwork rows** (60 NEW; 2 merge into live rows).
 2. **Register the media** — `wayback-register.ts --apply` is the only write that exists today. It
    writes 504 objects and upserts 168 `media_assets` rows, most **unlinked**.
@@ -197,19 +219,22 @@ was itself a known defect); git authenticates through `gh` as a credential helpe
 
 ## 9. Branch topology — read this before you push
 
-The open PRs are **stacked**, and getting this wrong produces a PR that duplicates another one:
+✅ **The stack is closed.** All five PRs merged to `main` on 2026-09-15 — **there are no open PRs**,
+and the Phase 4 branch is a plain branch off `main`:
 
 ```
-main 9b4eb91
- ├── #23 docs/v3-roadmap-rebaseline      045788a
- ├── #24 feat/v3-phase-3a-extraction     2748aed
- │    └── #25 feat/v3-phase-3b-media-path 8895914
- │         └── release/v2.17.0 (this release, §3.D)
- └── #26 docs/v3-handoff-prompts         5ea20e6
+main d078f0a   ← #27 (release/v2.17.0, §3.D) is the tip
+ ├── #26 docs/v3-handoff-prompts        05472dd → d23feb0
+ ├── #24 feat/v3-phase-3a-extraction    2748aed → ec1d12b
+ ├── #23 docs/v3-roadmap-rebaseline     045788a → e8cad05
+ └── #25 feat/v3-phase-3b-media-path    8895914 → f8ac24d
+     └── #27 release/v2.17.0            ff4a21a → d078f0a
 ```
 
-⚠️ **#23 is a *sibling* of #24, not an ancestor.** A new §3.D/Phase 4 branch must be based on the
-**immediate parent's branch**, never on `main` — otherwise its PR diff re-includes 3.A and 3.B.
+⚠️ **The historical trap, kept because it will recur:** the stack was merged with `gh pr merge`,
+which merges into a PR's **base** — and merging a parent does **not** retarget its child. #25 and #27
+both had to be retargeted by hand (`gh pr edit <n> --base main`) before `main` could receive them.
+If you stack a branch again, base it on the **immediate parent**, never on `main`.
 
 ⚠️ **Push by SHA, never by branch name:** `git push origin <sha>:refs/heads/<branch>`. Inside the
 agent sandbox a nested ref write is silently pruned, and **a zero exit status is not evidence** —
