@@ -17,9 +17,18 @@ This document tracks all production and preview deployments for **`roryskagenart
 
 ## Deployment History (Latest to Earliest)
 
+> **Note on `n/a` build times (2026-09-15 00:59Z onward):** build durations come from
+> `vercel ls --json`, which needs a Vercel token that is not configured in this environment. Those
+> rows were reconciled from **GitHub's Deployments API** instead, so the URL, target, status and
+> commit are exact — only the duration is missing.
+
 | Date (UTC) | Version | Deployment URL | Status | Build Time | Target | Associated Commits / Milestone |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **2026-09-15** | **v2.15.0** | [`roryskagen-mhjkpcdcf-ventureio.vercel.app`](https://roryskagen-mhjkpcdcf-ventureio.vercel.app) | `● Ready` | 29s | Production | `0c1e2e5`: PR #19 — close-out: `robots.txt`, MIT `LICENSE`, B6/B7 backup-cron docs, `scripts/delete-inquiries.ts` **(Current Active)** |
+| **2026-09-15** | **v2.16.0** | [`roryskagen-3opl3rped-ventureio.vercel.app`](https://roryskagen-3opl3rped-ventureio.vercel.app) | `● Ready` | n/a | Production | `95e3967`: PR #21 — **media upload ladder** (`POST /api/media/upload` now renders thumb/hero/full + lqip) and **dialog header spacing** (`--dialog-pad`) **(Current Active)** |
+| 2026-09-15 | v2.16.0-preview | [`roryskagen-80qokoqnh-ventureio.vercel.app`](https://roryskagen-80qokoqnh-ventureio.vercel.app) | `● Ready` | n/a | Preview | `cdf5ce6`: `release/v2.16.0` preview (PR #21) |
+| 2026-09-15 | post-v2.15.0 | [`roryskagen-j9ads6rw4-ventureio.vercel.app`](https://roryskagen-j9ads6rw4-ventureio.vercel.app) | `● Ready` | n/a | Production | `28fa775`: PR #20 — canonical (unmodified) MIT `LICENSE` text, `DEPLOYMENT_LOG` reconciliation for v2.15.0 |
+| 2026-09-15 | post-v2.15.0-preview | [`roryskagen-magujvk3w-ventureio.vercel.app`](https://roryskagen-magujvk3w-ventureio.vercel.app) | `● Ready` | n/a | Preview | `fabc546`: `docs/deployment-log-v2.15.0` preview (PR #20) |
+| 2026-09-15 | v2.15.0 | [`roryskagen-mhjkpcdcf-ventureio.vercel.app`](https://roryskagen-mhjkpcdcf-ventureio.vercel.app) | `● Ready` | 29s | Production | `0c1e2e5`: PR #19 — close-out: `robots.txt`, MIT `LICENSE`, B6/B7 backup-cron docs, `scripts/delete-inquiries.ts` |
 | 2026-09-15 | v2.15.0-preview | [`roryskagen-qsxizptfv-ventureio.vercel.app`](https://roryskagen-qsxizptfv-ventureio.vercel.app) | `● Ready` | 22s | Preview | `4d26808`: `release/v2.15.0` preview (PR #19) |
 | 2026-09-15 | pre-v2.15.0 ⚠️ | [`roryskagen-lzfgy4tht-ventureio.vercel.app`](https://roryskagen-lzfgy4tht-ventureio.vercel.app) | `● Ready` | 21s | Production | `4d26808`: **process error — `main` was pushed before the PR was opened.** Put the v2.15.0 commits into production ~10 min ahead of the gates; corrected by force-pushing `main` back to `ddd68e9`. No commit was lost (`release/v2.15.0` held all six) and the code is identical to `0c1e2e5`, but the release flow was inverted. |
 | 2026-09-14 | v2.14.0 | [`roryskagen-acpbha6hs-ventureio.vercel.app`](https://roryskagen-acpbha6hs-ventureio.vercel.app) | `● Ready` | 27s | Production | `ddd68e9`: PR #18 — deployment-log reconciliation for v2.14.0 |
