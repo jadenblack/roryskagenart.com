@@ -67,7 +67,9 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ artwork, isOpen, onC
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-lg bg-card border-line p-6 sm:p-8 rounded-xs"
+        // `sm:[--dialog-pad:2rem]` rather than `sm:p-8`: the dialog derives its padding from the
+        // variable, so the header (and anything else that insets to the content edge) moves with it.
+        className="max-w-lg bg-card border-line sm:[--dialog-pad:2rem] rounded-xs"
       >
         <DialogTitle className="sr-only">
           {artwork ? `Inquire: ${artwork.title}` : 'Studio and Commission Inquiry'}
