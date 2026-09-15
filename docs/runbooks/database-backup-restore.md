@@ -355,8 +355,11 @@ Copy this into the PR description for any migration that writes to the live cata
 | **No scripted restore** | Row-level recovery was manual | ✅ **Written and exercised 2026-09-14** — `scripts/restore-catalog.ts`, unit-tested, and rehearsed end-to-end against a scratch database. See §4a. |
 | **No native `pg_dump`** | `supabase db dump` shells out to a containerised `pg_dump`, so it fails with `docker: command not found`. Without it there is no restorable **schema** dump — only the per-table JSON in §2. | ✅ **Resolved 2026-09-14.** Docker Desktop 29.8.0 is installed and running. It lands at a **per-user** path (`%LOCALAPPDATA%\Programs\DockerDesktop\resources\bin`) that is *not* on `PATH` — export it first, or the CLI will not find `docker`. |
 | **No non-production database** | The pre-migration checklist requires a migration be applied to a non-production database first, and none existed | ✅ **Resolved 2026-09-14.** `supabase start` gives a local stack on `127.0.0.1:54322`. Note the CLI **cannot** apply this repo's migrations — see §7a — so `config.toml` disables them and the repo runner owns the schema (§7b). |
-| **The migration set did not reproduce production's `schema_migrations` RLS flag** | Building a database from version control left the migration ledger readable with the anon key, so "the schema is reproducible from version control" was not quite true | ✅ **Fixed 2026-09-14.** `scripts/run-migrations.ts` now enables RLS on `schema_migrations` when it creates it. Found by rebuilding a database from migrations and diffing it against production; a rebuilt database now matches production on all nine tables' RLS state. |
+| **The migration set did not reproduce production's `schema_migrations` RLS flag** | Building a database from version control left the migration ledger readable with the anon key, so "the schema is reproducible from version control" was not quite true | ✅ **Fixed 2026-09-14.** `scripts/run-migrations.ts` now enables RLS on `schema_migrations` when it creates it. Found by rebuilding a database from migrations and diffing it against production; a rebuilt database now matches production on all ten tables' RLS state. |
 | **Two migration files were checked out CRLF, and there was no `.gitattributes`** | `pg_get_functiondef` returns the stored source, so CR bytes from those files landed in stored function bodies — production had **0** CR bytes, a build from the affected checkout had **17**. The **committed** form of all ten files was already LF; only the checkout differed (`core.autocrlf = true` is set globally) | Functionally identical, but it made "reproduce the schema from version control" **checkout-dependent**, and it produced spurious diffs. | ✅ **Fixed 2026-09-14.** Added `.gitattributes` with `*.sql text eol=lf` (overrides `core.autocrlf`) and re-checked out the two files. **No content rewrite was needed** — the index was already LF. A rebuild now reports **0 CR bytes in all 7 stored functions**. ROADMAP_V3 R-16. |
+| **⚠️ `artwork_images` was missing from the backup set** | `v3.0.0` created `public.artwork_images` (D3/Q16) and it immediately held **168 rows**, but `scripts/lib/restorePlan.ts` did not list it. A restore from a dump would have produced a catalog whose **murals had lost their cover ordering** — and `RESTORE_ORDER` is what both dump writers iterate, so the rows were not merely unrestorable, they were **absent from the dump**. | ✅ **Fixed 2026-09-15.** Added to `TABLES` (composite PK `artwork_slug, media_public_id`), `RESTORE_ORDER` (after both parents — it FKs to `artworks(slug)` *and* `media_assets(public_id)`) and `CATALOG_TABLES`, with ordering assertions in `src/test/restorePlan.test.ts`. A dump now covers **9 tables**. ⚠️ **Found by reading the dump's own table list**, not by a test — nothing asserts that the dump set matches the live schema. That is the real gap. |
+| **⚠️ 10 `media_assets` rows point at an `artwork_slug` that does not exist** | `media_assets.artwork_slug` has **no foreign key** (unlike `artwork_images.artwork_slug`), so a dangling reference is representable and silent. The rows are near-misses, not noise: `wisdom-cofee` → `wisdom-coffee`, `the-cats-of-the-colloseum` → `the-cats-of-the-colosseum`, and `kelzon-5` / `the-martian-2` / `regador-5` against `kelzon-v` / `the-martian-ii` / `regador-v`. One more (`2010`) had been baked into the *previous committed* asset registry as a key. | ⬜ **OPEN — recorded, not remediated.** Adjudicating which near-miss is correct is an owner decision, and the archive covers the mural side only. **Do not "fix" this by guessing.** A future migration could add the FK once the rows are resolved, but that FK would have blocked the current state, so it is a follow-up, not a cleanup. |
+| **⚠️ `run-migrations.ts` could silently target production from a "scratch" command** | `.env` sets the production `VRCL_SUPA_POSTGRES_PRISMA_URL`, which the runner consulted **first**, while `dotenv` fills in any variable the shell had not exported. The documented scratch command exports only `VRCL_SUPA_POSTGRES_URL`, so it was **applying migrations to production** while the operator believed they were rehearsing locally — R-07's exact nightmare. | ✅ **Fixed 2026-09-15.** An operator-exported variable now outranks the `.env` one (`pickConnectionString()` in `scripts/lib/pgTarget.ts`, unit-tested in `src/test/pgTarget.test.ts`). Proven: only `VRCL_SUPA_POSTGRES_URL` → `127.0.0.1 (local)`; only `PRISMA_URL` → local; no override → `⚠ REMOTE` (unchanged). ⚠️ **The same pattern remains in the other `scripts/` CLIs that read a connection string** — they should adopt the helper. |
 
 ---
 
@@ -371,7 +374,7 @@ ledgers, and they disagree:**
 | `supabase_migrations.schema_migrations` | **the Supabase CLI** — `supabase db push` / `migration up` | **1** |
 
 `supabase db push` and `supabase migration up` consult the *CLI's* ledger, so they would see eight
-of this repo's nine migrations as unapplied and attempt to re-run them against production. That is
+of this repo's migrations as unapplied and attempt to re-run them against production. That is
 precisely the ledger-drift failure mode recorded in `AGENTS.md` §5, which had to be reconciled once
 already.
 
@@ -399,7 +402,7 @@ filename**, and it requires `<14-digit timestamp>_name.sql`. Every file in this 
 `2026_…`, so the CLI parses each one as version `2026` and the second one collides on the primary
 key. The filenames are *correct* for this project (the repo runner keys on the full filename and
 sorts lexicographically — see `src/test/migrationSafety.test.ts`) and must **not** be renamed:
-renaming them would make all nine look unapplied to `public.schema_migrations`.
+renaming them would make every migration look unapplied to `public.schema_migrations`.
 
 **Resolution (applied).** `supabase/config.toml` sets:
 
@@ -428,9 +431,17 @@ VRCL_SUPA_POSTGRES_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres'
   npx tsx scripts/run-migrations.ts
 ```
 
-That single command is also the **empirical test of ADR 0001 Phase A**: if the nine migrations
+That single command is also the **empirical test of ADR 0001 Phase A**: if the migrations
 reproduce the live schema, the "schema is reproducible from version control" claim holds. Compare
 the result against a `supabase db dump` schema dump to prove it.
 
 The default credentials above are the CLI's own well-known local defaults — they are not secrets
 and they never leave `127.0.0.1`.
+
+> ⚠️ **Read the `Target:` line the runner prints before you trust this.** Until 2026-09-15 that
+> command was **silently applying migrations to production**: `.env` supplies the production
+> `VRCL_SUPA_POSTGRES_PRISMA_URL`, which the runner consulted *first*, and `dotenv` fills in any
+> variable the shell had not exported — so exporting only `VRCL_SUPA_POSTGRES_URL` lost. Fixed via
+> `pickConnectionString()` in `scripts/lib/pgTarget.ts`; see §6 for the full entry. **The lesson
+> generalises:** a connection-string override that "looks right" is not evidence that it took, and
+> the only honest check is the target the tool reports.

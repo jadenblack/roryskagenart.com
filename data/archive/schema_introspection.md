@@ -2,11 +2,12 @@
 
 - Database: `postgres`
 - Connected as: `postgres`
-- Generated: 2026-09-15T19:15:08.029Z
+- Generated: 2026-09-15T20:45:25.530Z
 - Server: PostgreSQL 17.6 on x86_64-pc-linux-gnu
 
 ## Tables
 
+- `artwork_images`
 - `artwork_terms`
 - `artworks`
 - `inquiries`
@@ -19,6 +20,15 @@
 
 ## Columns
 
+
+### `artwork_images`
+
+| column | type | null | default |
+| :--- | :--- | :--- | :--- |
+| `artwork_slug` | text | NO |  |
+| `media_public_id` | text | NO |  |
+| `position` | integer | NO | `0` |
+| `created_at` | timestamp with time zone | NO | `now()` |
 
 ### `artwork_terms`
 
@@ -53,6 +63,10 @@
 | `created_at` | timestamp with time zone | YES | `now()` |
 | `updated_at` | timestamp with time zone | YES | `now()` |
 | `draft` | boolean | NO | `false` |
+| `kind` | text | YES |  |
+| `source_site` | text | YES |  |
+| `source_url_path` | text | YES |  |
+| `source_archive_path` | text | YES |  |
 
 ### `inquiries`
 
@@ -144,9 +158,14 @@
 
 ## Constraints (PK / FK / UNIQUE / CHECK)
 
+- `artwork_images` **FK** `artwork_images_artwork_slug_fkey`: FOREIGN KEY (artwork_slug) REFERENCES artworks(slug) ON UPDATE CASCADE ON DELETE CASCADE
+- `artwork_images` **FK** `artwork_images_media_public_id_fkey`: FOREIGN KEY (media_public_id) REFERENCES media_assets(public_id) ON UPDATE CASCADE ON DELETE CASCADE
+- `artwork_images` **PK** `artwork_images_pkey`: PRIMARY KEY (artwork_slug, media_public_id)
+- `artwork_images` **CHECK** `artwork_images_position_check`: CHECK (("position" >= 0))
 - `artwork_terms` **FK** `artwork_terms_artwork_id_fkey`: FOREIGN KEY (artwork_id) REFERENCES artworks(id) ON DELETE CASCADE
 - `artwork_terms` **PK** `artwork_terms_pkey`: PRIMARY KEY (artwork_id, term_id)
 - `artwork_terms` **FK** `artwork_terms_term_id_fkey`: FOREIGN KEY (term_id) REFERENCES taxonomies(id) ON DELETE CASCADE
+- `artworks` **CHECK** `artworks_kind_check`: CHECK (((kind IS NULL) OR (kind = ANY (ARRAY['painting'::text, 'mural'::text, 'other'::text]))))
 - `artworks` **PK** `artworks_pkey`: PRIMARY KEY (id)
 - `artworks` **UNIQUE** `artworks_slug_key`: UNIQUE (slug)
 - `inquiries` **PK** `inquiries_pkey`: PRIMARY KEY (id)
@@ -160,17 +179,21 @@
 - `settings` **PK** `settings_pkey`: PRIMARY KEY (key)
 - `settings` **FK** `settings_updated_by_fkey`: FOREIGN KEY (updated_by) REFERENCES profiles(id) ON DELETE SET NULL
 - `taxonomies` **PK** `taxonomies_pkey`: PRIMARY KEY (id)
-- `taxonomies` **CHECK** `taxonomies_type_check`: CHECK ((type = ANY (ARRAY['series'::text, 'tag'::text, 'medium'::text, 'location'::text])))
+- `taxonomies` **CHECK** `taxonomies_type_check`: CHECK ((type = ANY (ARRAY['series'::text, 'tag'::text, 'medium'::text, 'location'::text, 'project_type'::text, 'curation'::text])))
 - `taxonomies` **UNIQUE** `taxonomies_type_slug_key`: UNIQUE (type, slug)
 
 ## Indexes
 
+- `artwork_images`: CREATE INDEX artwork_images_artwork_position_idx ON public.artwork_images USING btree (artwork_slug, "position")
+- `artwork_images`: CREATE INDEX artwork_images_media_idx ON public.artwork_images USING btree (media_public_id)
+- `artwork_images`: CREATE UNIQUE INDEX artwork_images_pkey ON public.artwork_images USING btree (artwork_slug, media_public_id)
 - `artwork_terms`: CREATE UNIQUE INDEX artwork_terms_pkey ON public.artwork_terms USING btree (artwork_id, term_id)
 - `artwork_terms`: CREATE INDEX artwork_terms_term_idx ON public.artwork_terms USING btree (term_id)
 - `artworks`: CREATE UNIQUE INDEX artworks_pkey ON public.artworks USING btree (id)
 - `artworks`: CREATE UNIQUE INDEX artworks_slug_key ON public.artworks USING btree (slug)
 - `artworks`: CREATE INDEX idx_artworks_drafts ON public.artworks USING btree (updated_at DESC) WHERE (draft = true)
 - `artworks`: CREATE INDEX idx_artworks_hero ON public.artworks USING btree (hero_slider)
+- `artworks`: CREATE INDEX idx_artworks_kind ON public.artworks USING btree (kind)
 - `artworks`: CREATE INDEX idx_artworks_published ON public.artworks USING btree (updated_at DESC) WHERE ((draft = false) AND (trashed = false))
 - `artworks`: CREATE INDEX idx_artworks_series ON public.artworks USING btree (gallery_series)
 - `artworks`: CREATE INDEX idx_artworks_slug ON public.artworks USING btree (slug)
@@ -361,6 +384,7 @@ $function$
 
 | table | rls_enabled | forced |
 | :--- | :--- | :--- |
+| `artwork_images` | true | false |
 | `artwork_terms` | true | false |
 | `artworks` | true | false |
 | `inquiries` | true | false |
@@ -373,6 +397,13 @@ $function$
 
 ## Policies
 
+
+- `artwork_images` **Admins manage artwork_images** (ALL) roles={authenticated}
+  - USING: `is_admin_or_editor()`
+  - WITH CHECK: `is_admin_or_editor()`
+
+- `artwork_images` **Public read artwork_images** (SELECT) roles={public}
+  - USING: `true`
 
 - `artwork_terms` **Admins manage artwork_terms** (ALL) roles={authenticated}
   - USING: `(EXISTS ( SELECT 1
@@ -461,15 +492,16 @@ $function$
 
 | table | rows |
 | :--- | ---: |
-| `artwork_terms` | 0 |
-| `artworks` | 138 |
+| `artwork_images` | 168 |
+| `artwork_terms` | 142 |
+| `artworks` | 205 |
 | `inquiries` | 1 |
-| `media_assets` | 152 |
+| `media_assets` | 320 |
 | `pages` | 4 |
 | `profiles` | 4 |
-| `schema_migrations` | 12 |
+| `schema_migrations` | 15 |
 | `settings` | 5 |
-| `taxonomies` | 3 |
+| `taxonomies` | 13 |
 
 ## Applied migrations (public.schema_migrations)
 
@@ -484,4 +516,7 @@ $function$
 - `2026_09_14_v2_12_1_staff_scoped_policies.sql` — 2026-09-14T17:55:07.989Z
 - `2026_09_14_v2_12_artworks_public_select_excludes_drafts.sql` — 2026-09-14T17:27:29.096Z
 - `2026_09_14_v2_13_1_inquiry_email_status.sql` — 2026-09-14T21:01:03.608Z
+- `2026_09_15_v3_phase4_schema_extension.sql` — 2026-09-15T20:01:39.468Z
+- `2026_09_15_v3_phase4_wayback_backfill.sql` — 2026-09-15T20:01:40.146Z
+- `2026_09_15_v3_phase4_year_correction.sql` — 2026-09-15T20:44:50.784Z
 - `2026_09_v3_media_assets_extend.sql` — 2026-09-14T05:45:27.652Z

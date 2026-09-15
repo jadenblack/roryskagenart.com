@@ -1,5 +1,12 @@
-# Handoff prompt — Git ref plumbing fix
+# Handoff prompt — Git ref plumbing fix — ⛔ SUPERSEDED, DO NOT RUN
 
+> ⛔ **This prompt is superseded and must not be run.** Read
+> [`DIAGNOSIS_GIT_REF_PLUMBING_FIX.md`](./DIAGNOSIS_GIT_REF_PLUMBING_FIX.md) instead.
+> **There is no defect on this machine and none in this repository** — the failure was produced by the
+> agent tool's own sandbox, and the out-of-tree control test that settled it is recorded in that file.
+> Its observations below are accurate; **its conclusion and all five ranked fixes are wrong**, and
+> fix #5 (`git refs migrate`) **destroyed this repository's entire `.git`**. Kept for provenance only.
+>
 > **How to use:** copy everything from `## BEGIN PROMPT` to `## END PROMPT` into a fresh session.
 > It is self-contained: the new session has not seen this conversation.
 >
@@ -7,10 +14,10 @@
 > v3 sessions** (Phases 3.A and 3.B both had to be pushed by SHA). Every symptom below was observed
 > directly in this repository on this machine.
 >
-> **Naming note:** this file carries no `V<version>` segment, unlike `PROMPT_V3_0_0_*`. It is not tied
-> to a release — it is an **environment defect that blocks release mechanics themselves**, since every
-> PR in this project is created by pushing a branch. The directory's other unversioned document
-> (`BACKLOG_STUDIO_CMS.md`) follows the same logic.
+> **Naming note:** this file carries no `V<version>` segment, unlike `PROMPT_V3_0_0_*`. The directory's
+> other unversioned document (`BACKLOG_STUDIO_CMS.md`) follows the same logic. ⚠️ The original framing
+> here — that this was "an environment defect that blocks release mechanics" — was **wrong**; it is an
+> agent-sandbox limitation with a clean workaround (push by SHA), not a machine defect.
 >
 > ⚠️ **This is the one prompt in this directory that may modify `.git/`.** Read the hard constraints
 > in §6 of the prompt before running anything.
@@ -34,8 +41,12 @@ precise and reproducible:
   tree). This looks catastrophic but is **not** data loss — it is the unborn-branch symptom.
 - `git commit` on such a branch **does** write a real, persisting commit object into `.git/objects/`,
   but the branch ref vanishes again.
-- The `.git/refs/heads/<dir>/` **directory itself disappears**. Git does not remove empty directories,
-  so something outside git is doing that.
+- The `.git/refs/heads/<dir>/` **directory itself disappears**. ⛔ The original claim here — *"Git does
+  not remove empty directories, so something outside git is doing that"* — is **wrong**, and it is what
+  sent three sessions chasing a filesystem filter. **Git does remove them:** after writing a ref it
+  prunes the now-empty parent chain with `rmdir()`. Inside the agent sandbox that `rmdir()` **wrongly
+  succeeds on a NON-EMPTY directory**, so it deletes the ref git just wrote *and* any sibling refs, and
+  reports success. See `DIAGNOSIS_GIT_REF_PLUMBING_FIX.md` §3.
 - Meanwhile the reflog entry for the commit **is** written and **does** survive, and `git log <sha>`,
   `git cat-file -p <sha>` and `git push origin <sha>:refs/heads/<branch>` all work perfectly.
 - `.git/refs/remotes/origin/` is pruned the same way, so `git status` can report a false `[ahead N]`.
@@ -50,9 +61,12 @@ precise and reproducible:
 | the reflog → `.git/logs/…` | **appended** | ✅ yes |
 | the branch ref → `.git/refs/heads/<branch>` | create `<name>.lock`, then **`rename()`** | ❌ **this is the one that fails** |
 
-Only the third is a rename. A filesystem or antivirus filter that **blocks `rename()` but permits
-appends** produces exactly the asymmetry above — every part of the commit survives except its *name*.
-**The commit is never lost; only the pointer to it is.**
+Only the third is a rename. ⛔ **The inference drawn from this — "a filesystem or antivirus filter
+blocks `rename()` but permits appends" — is DISPROVEN.** A direct probe shows `os.rename` (new name)
+and `os.replace` (over an existing file) **both succeed and persist** under `.git/refs/heads/`. The
+real asymmetry is that **only the third write is followed by a directory prune**, and that prune is
+what destroys it inside the sandbox. **The commit is never lost; only the pointer to it is** — that
+part is correct.
 
 ### 3. New information that narrows the cause
 
@@ -63,6 +77,42 @@ and raises the possibility that the path is still inside, or adjacent to, a repa
 folder, or a directory some agent still monitors.
 
 ### 3.1 Evidence captured live, 2026-09-15 11:30 — while committing a PR in this repo
+
+> ⚠️ **RESOLVED — READ
+> [`DIAGNOSIS_GIT_REF_PLUMBING_FIX.md`](./DIAGNOSIS_GIT_REF_PLUMBING_FIX.md) BEFORE ACTING ON ANY OF
+> THIS PROMPT.**
+>
+> **There is no defect on this machine, and none in this repository. `git` is completely healthy.**
+> Every premise in this prompt — §3.1's `rename()` conclusion, §3's fix list, and the "prime suspect"
+> reasoning in §2 — is **wrong**, and so is the earlier revision of this banner that replaced
+> `rename()` with "git cannot create refs containing `/`".
+>
+> **The failure is produced by the AI agent tool's own sandbox filesystem virtualization, and exists
+> only for processes the agent launches.** Inside the sandbox, `rmdir()` on a **non-empty** directory
+> wrongly **succeeds and deletes the directory's contents**. Git writes the ref, then prunes the
+> parent directory with `rmdir()`, which silently deletes the ref it just wrote — and any sibling
+> refs — and returns success, so git reports exit 0 with no error and emits no trace event.
+> That is the entire defect.
+>
+> The proof is an out-of-tree control test: the identical probe, run as a **scheduled task**
+> (`parent_pid = 1344`, the Task Scheduler service) instead of as a child of the agent, shows
+> `rmdir` correctly refusing non-empty directories on **every** path, and nested refs created
+> successfully on **every** path. In this repository, out-of-tree,
+> `git branch docs/zz-ext-probe` created, verified, and deleted a nested ref cleanly, with
+> `git fsck` clean and all five real branches intact. `git checkout -b feat/x`,
+> `git switch -c docs/y` and `git checkout -b deep/a/b/c` all succeed.
+>
+> **Consequences:**
+> - Fixes #1–#5 in §3 are all unnecessary. Defender and Google Drive were tested and cleared;
+>   `%TEMP%` is not special to the machine — it is merely the sandbox's passthrough directory.
+> - **Never run `git refs migrate` here.** It destroyed this repository's entire `.git` once, because
+>   migration is built on the same broken primitive. It is not a fix.
+> - **For a human in a normal terminal: nothing is wrong.** Branch, commit, push and PR normally.
+> - **For an agent: push by SHA** (`git push origin <sha>:refs/heads/<branch>`) or hand-write the ref
+>   — and never rely on git creating a nested ref from inside the sandbox.
+> - ⚠️ **General sandbox hazard:** any directory-removing operation the agent performs can silently
+>   delete non-empty directories. During this investigation an ordinary
+>   `git update-ref refs/heads/docs/probe-git` destroyed the real `docs/` and `feat/` ref directories.
 
 The defect reproduced **while the hand-off prompts in this directory were being committed**, which
 sharpens the diagnosis considerably:
@@ -93,10 +143,13 @@ Three things follow, and all three matter:
    git rev-parse docs/v3-handoff-prompts      # -> e869ce7   OK, and it persisted
    ```
 
-That asymmetry is the sharpest clue available: plain file creation under `.git/refs/heads/` **works
-and persists**, while git's **create-`.lock`-then-`rename()`** path does not. It points at the
-**rename step specifically** — not at the filesystem, the path, or `.git/` in general. Test `rename()`
-directly (step 2) and treat that as the primary target.
+That asymmetry is real and is the sharpest clue available — but it does **not** mean `rename()` is
+blocked. A direct probe proved `os.rename` (to a new name) and `os.replace` (over an existing file)
+both **succeed and persist** under `.git/refs/heads/`, and a hand-made empty directory there survives
+indefinitely. What the asymmetry actually shows is narrower and stranger: **git's own ref write is
+the only thing that fails, and it fails only when the ref name contains a `/`.** The
+`create-<name>.lock`-then-`rename()` step is fine; what breaks is the combination of *creating a
+directory* and *renaming into it*. See the diagnosis file for the full evidence table.
 
 ⚠️ **Red herring — do not chase this.** `GIT_INDEX_FILE` set to an MSYS-style path (`/c/Users/...`)
 fails with `Unable to create '...lock': No such file or directory`, while the `C:/Users/...` form works
@@ -163,11 +216,16 @@ successful `git rev-parse HEAD`); (iv) anything you could not rule out.
 
 \* **Hand-written** via `mkdir -p` + `printf` — see §3.1. `git update-ref` refused to create it.
 
-⚠️ The failure is **intermittent**: refs were restored by hand at the end of the last session and are
-currently intact. A clean `git rev-parse HEAD` today is therefore **not** evidence the defect is gone.
-Run the step-1 diagnostics regardless — §3.1 is a live reproduction from this very session.
+⚠️ The failure is **not intermittent and not a machine fault** — it is **scoped to processes launched by
+the agent tool**. A clean `git rev-parse HEAD` today is genuine, and so is a failing one: the two
+measurements come from different process contexts. Do **not** run the step-1/step-3 diagnostics below;
+they were all completed and every candidate was cleared. Read the diagnosis file instead.
 
 ### 6. Hard constraints — not negotiable
+
+> **Scope note (2026-09-15 12:45).** Every constraint below applies **only to git operations the agent
+> performs inside its own sandbox**. A human in a normal terminal has none of these limitations —
+> branch, switch, commit, push and PR normally. The agent must still obey all of them.
 
 - ⚠️ **Never run `git checkout`, `git switch`, `git reset --hard` or `git clean` while `HEAD` is
   unborn.** A checkout from an unborn-HEAD branch in this repo once **deleted nine tracked
@@ -181,6 +239,22 @@ Run the step-1 diagnostics regardless — §3.1 is a live reproduction from this
   ```
 
   A bare `printf >` fails with "No such file or directory" when the directory is gone.
+- ⚠️ **Never run `git refs migrate` in this environment.** It failed the same way as everything else
+  and **left the repository with no `.git` at all** (2026-09-15; see the diagnosis file §6). Recovery
+  was `git init` + `git fetch` + hand-written refs + `git read-tree HEAD`. It is **not** a fix for
+  anything, because there is nothing to fix.
+- ⚠️ **Any `git` ref operation on a name containing `/` may destroy the entire parent directory**,
+  including sibling refs that were previously healthy. Plain `git update-ref` calls wiped `docs/` and
+  `feat/` this way. Prefer flat branch names, or write nested refs by hand.
+- ⚠️ **`git fetch` silently writes nothing** when the refspec includes nested refs — the whole update
+  transaction rolls back, even though git still prints `* [new branch] …` for every branch. Rebuild
+  remote-tracking refs by hand from `git ls-remote --heads origin`.
+- ⚠️ **General sandbox hazard — any directory-removing operation can silently delete a NON-EMPTY
+  directory and its contents.** Inside the sandbox `rmdir()` wrongly succeeds on non-empty
+  directories; that is the root cause of everything above. Never point a recursive delete at a
+  directory whose contents are not disposable, and prefer file-level deletion.
+- ⚠️ **Rotate the GitHub PAT in `.git/config`.** The `origin` URL carries a plaintext
+  `github_pat_…` token; it was copied into a backup during this diagnosis.
 - ⚠️ **Push by sha, never by branch name:** `git push origin <sha>:refs/heads/<branch>`.
 - ⚠️ **Never push `main`.** Work on the existing `main` ref locally if you must, but push only a
   feature or `release/x.y.z` branch. Pushing `main` first makes GitHub refuse the subsequent PR
@@ -189,9 +263,9 @@ Run the step-1 diagnostics regardless — §3.1 is a live reproduction from this
 - **Before any git surgery, copy uncommitted deliverables to a directory OUTSIDE the repo.**
 - Do not reformat, re-lint or "tidy" anything. This session is about the git plumbing only. Leave the
   working tree as you found it, apart from the probe branch you create and delete.
-- ⚠️ **`wayback/centraltexasmuralsbyroryskagen-20231217234521/` is currently UNTRACKED and NOT
-  gitignored** (509 MB / 9,027 files). Never `git add` it — that would write 509 MB into git history
-  permanently. See `PROMPT_V3_0_0_RECOVERED_SOURCE_INGEST.md`.
+- ✅ **`wayback/centraltexasmuralsbyroryskagen-*/` is now GITIGNORED** (added 2026-09-15; 522 MB /
+  9,029 files). `git add -A` can no longer stage it. ⚠️ `git clean -xfd` would now **delete** it. See
+  `PROMPT_V3_0_0_RECOVERED_SOURCE_INGEST.md` §8.
 
 Start with step 1 and show me the diagnostic output **before** you change anything.
 
@@ -201,9 +275,12 @@ Start with step 1 and show me the diagnostic output **before** you change anythi
 
 ## Related
 
-- `memory/2026-09-15.md` — the full mechanism analysis, ranked candidate causes, and the ranked fix
-  list this prompt is drawn from.
+- ⭐ [`DIAGNOSIS_GIT_REF_PLUMBING_FIX.md`](./DIAGNOSIS_GIT_REF_PLUMBING_FIX.md) — **the authoritative
+  document. Read this one.** It states the verdict, the in-sandbox vs out-of-tree measurements, the
+  real mechanism, the validated recovery procedure, and a table of every discredited theory.
+- `memory/2026-09-15.md` — the session log, including the original (now superseded) mechanism analysis
+  and the correction appended at 12:45.
 - `memory/MEMORY.md` — the condensed trap list, including the push-by-SHA workaround.
 - [`PROMPT_V3_0_0_RECOVERED_SOURCE_INGEST.md`](./PROMPT_V3_0_0_RECOVERED_SOURCE_INGEST.md) — the other
-  hand-off prompt from the same session. **Fix the ref plumbing first**: that prompt requires creating
-  a branch and pushing it.
+  hand-off prompt from the same session. ⛔ **Its old instruction to "fix the ref plumbing first" is
+  obsolete** — there is nothing to fix. That prompt only needs the agent to **push by SHA**.

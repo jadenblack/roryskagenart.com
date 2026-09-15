@@ -151,13 +151,22 @@ npx tsx scripts/restore-catalog.ts --from data/backups/<ts> \
   --db-url 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' --apply
 ```
 
+> ⚠️ **That env override is load-bearing, and it used to be silently ignored.** `.env` sets the
+> **production** `VRCL_SUPA_POSTGRES_PRISMA_URL`, which `run-migrations.ts` consulted *first*, while
+> `dotenv` fills in any variable the shell had **not** exported — so exporting only
+> `VRCL_SUPA_POSTGRES_URL` applied migrations to **production** while the operator believed they were
+> rehearsing locally (R-07's exact nightmare). Fixed 2026-09-15: an operator-exported variable now
+> outranks the `.env` one — `pickConnectionString()` in `scripts/lib/pgTarget.ts`, unit-tested. The
+> same pattern still exists in the other `scripts/` CLIs that read a connection string.
+> **Always read the `Target:` line the runner prints before trusting a run.**
+
 ⚠️ **`supabase/config.toml` sets `[db.migrations] enabled = false` and `[db.seed] enabled = false`.
 Do not re-enable them.** The CLI derives a migration's ledger `version` from the *leading digits* of
 the filename and requires `<14-digit timestamp>_name.sql`, so every file here (`2026_09_01_…`,
 `2026_09_12_…`) collapses to version `2026` and `supabase start` dies with
 `duplicate key value violates unique constraint "schema_migrations_pkey"`. **Do not rename the
 migration files to satisfy the CLI** — the repo runner keys on the full filename, and renaming would
-make all nine look unapplied. This is the two-ledger hazard in §5, confirmed empirically; see
+make every migration look unapplied. This is the two-ledger hazard in §5, confirmed empirically; see
 runbook §7a/§7b.
 
 Docker Desktop installs to a **per-user** path that is not on `PATH`:
@@ -167,11 +176,31 @@ Docker Desktop installs to a **per-user** path that is not on `PATH`:
 
 ---
 
-## 5. Database schema (after all 9 migrations)
+## 5. Database schema (after all 15 migrations)
 
 Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwork_terms`,
-`settings`, `media_assets`.
+`settings`, `media_assets`, `artwork_images`.
 
+> ✅ **`v3.0.0` (Phase 4) added the mural dimension — 3 migrations, applied 2026-09-15.**
+> `2026_09_15_v3_phase4_schema_extension.sql` adds `artworks.kind` (`painting` | `mural` | `other`),
+> the three source-provenance columns (`source_site`, `source_url_path`, `source_archive_path`),
+> widens `taxonomies_type_check` to admit `project_type` and `curation`, and creates
+> **`public.artwork_images (artwork_slug, media_public_id, position)`** with FKs to `artworks(slug)`
+> and `media_assets(public_id)` (both `ON UPDATE CASCADE`), RLS enabled, a public-read policy and an
+> `is_admin_or_editor()` write policy. Then the promoted Wayback backfill (67 INSERTs, 118
+> fill-only-empty UPDATEs), then `2026_09_15_v3_phase4_year_correction.sql` (the D4 overwrite of 2
+> mural years). **Live result: 10 tables, 15 recorded migrations** — see
+> [`data/archive/schema_introspection.md`](data/archive/schema_introspection.md).
+>
+> ⚠️ **`media_assets.artwork_slug` has NO foreign key** — unlike `artwork_images.artwork_slug`. That
+> is why nothing ever caught **10 rows pointing at a slug no artwork has** (`wisdom-cofee` vs
+> `wisdom-coffee`, `kelzon-5` vs `kelzon-v`, …). Recorded, not remediated: adjudicating which
+> near-miss is correct is an owner decision.
+>
+> ⚠️ **`artwork_images` is part of the backup/restore set** (`scripts/lib/restorePlan.ts`). It was
+> briefly *not* — the only recovery path would have restored a catalog whose murals had lost their
+> cover ordering. A dump now covers **9 tables**.
+>
 > ✅ **The schema is now reproducible from version control.** The four core domain tables
 > (`artworks`, `media_assets`, `pages`, `inquiries`) were created directly in the Supabase project
 > and were never captured by a migration. `supabase/migrations/2026_09_01_baseline_core_tables.sql`

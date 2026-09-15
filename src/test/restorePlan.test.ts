@@ -120,8 +120,20 @@ describe('table metadata locks down the live schema', () => {
     // artwork_terms FKs to both artworks and taxonomies.
     expect(at('artworks')).toBeLessThan(at('artwork_terms'));
     expect(at('taxonomies')).toBeLessThan(at('artwork_terms'));
+    // artwork_images FKs to both artworks(slug) and media_assets(public_id) — two parents, so it
+    // is the easiest table in the catalog to restore in the wrong order.
+    expect(at('artworks')).toBeLessThan(at('artwork_images'));
+    expect(at('media_assets')).toBeLessThan(at('artwork_images'));
     // settings.updated_by FKs to profiles.
     expect(at('profiles')).toBeLessThan(at('settings'));
+  });
+
+  it('treats artwork_images as catalog content, not environment state', () => {
+    // It is the D3/Q16 join: without it a mural's images 2..N are unreachable, so a restore that
+    // skipped it would silently lose the cover ordering for 61 artworks.
+    expect(TABLES.artwork_images.conflictTarget).toEqual(['artwork_slug', 'media_public_id']);
+    expect(CATALOG_TABLES).toContain('artwork_images');
+    expect(ENVIRONMENT_TABLES).not.toContain('artwork_images');
   });
 });
 

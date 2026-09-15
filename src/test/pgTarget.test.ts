@@ -21,7 +21,9 @@ import { describe, expect, it } from 'vitest';
 import {
   TargetSafetyError,
   classifyTarget,
+  connectionVarsSetByOperator,
   describeTarget,
+  pickConnectionString,
   resolvePoolTarget,
   stripQueryParams,
 } from '../../scripts/lib/pgTarget';
@@ -137,5 +139,67 @@ describe('describeTarget', () => {
   it('reports rather than guesses when it cannot parse the string', () => {
     expect(describeTarget('')).toBe('(unknown)');
     expect(describeTarget('not a url')).toBe('(unparseable connection string)');
+  });
+});
+
+/**
+ * The `.env`-outranks-the-operator trap, measured 2026-09-15.
+ *
+ * `.env` defines the production `VRCL_SUPA_POSTGRES_PRISMA_URL`, and that name is consulted first.
+ * `dotenv` fills in any variable the operator did not export — so a scratch command that exported
+ * only `VRCL_SUPA_POSTGRES_URL` was silently outranked, and `run-migrations.ts` wrote to
+ * production while the operator believed it was rehearsing locally.
+ */
+describe('pickConnectionString', () => {
+  const ENV_AFTER_DOTENV = {
+    // What `.env` contributes — the production database.
+    VRCL_SUPA_POSTGRES_PRISMA_URL: 'postgresql://postgres:pw@aws-0-us-east-1.pooler.supabase.com:6543/postgres',
+    // What the operator exported for a scratch run.
+    VRCL_SUPA_POSTGRES_URL: LOCAL,
+  };
+
+  it('lets the operator-exported variable win, even when a higher-priority name is present', () => {
+    // The operator exported only the second name. Before the fix this returned the production URL.
+    expect(pickConnectionString(ENV_AFTER_DOTENV, ['VRCL_SUPA_POSTGRES_URL'])).toBe(LOCAL);
+  });
+
+  it('keeps the historical order when the operator exported nothing', () => {
+    expect(pickConnectionString(ENV_AFTER_DOTENV, [])).toBe(ENV_AFTER_DOTENV.VRCL_SUPA_POSTGRES_PRISMA_URL);
+  });
+
+  it('prefers PRISMA_URL when the operator exported both', () => {
+    const picked = pickConnectionString(ENV_AFTER_DOTENV, [
+      'VRCL_SUPA_POSTGRES_PRISMA_URL',
+      'VRCL_SUPA_POSTGRES_URL',
+    ]);
+    expect(picked).toBe(ENV_AFTER_DOTENV.VRCL_SUPA_POSTGRES_PRISMA_URL);
+  });
+
+  it('falls through an operator variable that is set but empty', () => {
+    // An exported-but-empty variable must not shadow a usable one.
+    const env = { ...ENV_AFTER_DOTENV, VRCL_SUPA_POSTGRES_URL: '' };
+    expect(pickConnectionString(env, ['VRCL_SUPA_POSTGRES_URL'])).toBe(
+      ENV_AFTER_DOTENV.VRCL_SUPA_POSTGRES_PRISMA_URL
+    );
+  });
+
+  it('returns an empty string when nothing is set, so resolvePoolTarget can refuse', () => {
+    expect(pickConnectionString({}, [])).toBe('');
+    expect(() => resolvePoolTarget(pickConnectionString({}, []))).toThrow(TargetSafetyError);
+  });
+
+  it('honours the legacy POSTGRES_URL only as a last resort', () => {
+    expect(pickConnectionString({ POSTGRES_URL: LOCAL }, [])).toBe(LOCAL);
+    expect(pickConnectionString({ POSTGRES_URL: LOCAL, ...ENV_AFTER_DOTENV }, [])).toBe(
+      ENV_AFTER_DOTENV.VRCL_SUPA_POSTGRES_PRISMA_URL
+    );
+  });
+
+  it('connectionVarsSetByOperator reports only what is actually present', () => {
+    expect(connectionVarsSetByOperator({})).toEqual([]);
+    expect(connectionVarsSetByOperator(ENV_AFTER_DOTENV)).toEqual([
+      'VRCL_SUPA_POSTGRES_PRISMA_URL',
+      'VRCL_SUPA_POSTGRES_URL',
+    ]);
   });
 });

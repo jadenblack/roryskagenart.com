@@ -44,6 +44,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mural image** (they are derived from a committed immutable archive and can be re-rendered
   byte-identically). No bucket versioning, no second vendor.
 
+- **Phase 4 — the load. The two archived predecessor sites are now in the catalog.** This is the
+  first and only release that writes to Supabase, and the least reversible thing in the v3 program
+  (**R-07**). Taken together, the four steps moved the database from **307 rows to 862**:
+
+  | table | before | after |
+  | :--- | ---: | ---: |
+  | `artworks` | 138 | **205** |
+  | `taxonomies` | 3 | **13** |
+  | `artwork_terms` | 0 | **142** |
+  | `media_assets` | 152 | **320** |
+  | `artwork_images` | *(did not exist)* | **168** |
+
+  - **Step 1 — the artwork rows.** 67 INSERTs (60 murals from the recovered WordPress export, 7
+    paintings from the scrape) plus the 2 PRD_V3 §2 merges landing as `UPDATE`s on the live rows
+    (`austin-postcard-mural` → `austin-postcard`, `marcia-ball-cd-cover` → `marcia-ball`), never as
+    duplicate INSERTs. **Every one of the 60 new murals lands `draft = true AND enabled = false`**,
+    so the load cannot publish anything the artist has not reviewed; the only anon-visible murals
+    are the 2 that were already live.
+  - **Step 2 — media registration.** 168 `media_assets` rows upserted, 0 failed, **no `original.*`
+    object written** (Q4), 504 Storage objects. Registration writes `artwork_slug` only for a
+    *trusted* match (`exact-slug` / `divergence-map` / `known-dedupe` — 3 of 168); the other 165
+    register **unlinked on purpose**, because the artworks they belong to did not exist yet.
+  - **Step 3 — linkage, and the `artwork_images` join (D3 / Q16).** 165 rows linked and **168 join
+    rows** written, so every image of a multi-image mural is now addressable and its cover is
+    explicit. 38 of 63 recovered artworks carry more than one image and the largest carries 21 — a
+    single `image_url` column could not express them. The step **refuses rather than repairs**: an
+    unknown artwork slug, a manifest id with no media row, or a row already linked to a *different*
+    artwork aborts the run, because silently re-pointing one would move a photograph off a live
+    artwork with nothing in the UI to say so. Verified afterwards: 168/168 manifest ids linked, 168
+    join rows over exactly 61 artworks, **0 duplicate pairs, 0 orphans**, and a re-run plans **0**
+    links.
+  - **Step 4 — taxonomies and `artwork_terms` (D5 / Q6, R-09).** The 10 categories the export
+    defines are filed as **two dimensions**, not one: 8 `project_type` (interior, business,
+    exterior, restaurant, event, retail, signage, museum) and 2 `curation` (featured, home), so a
+    mural filed under `interior` and `featured` is not put in two contradictory buckets. 142
+    `artwork_terms` rows across 62 artworks. ⚠️ `artwork_terms` had been empty since the baseline,
+    so this was the **first time the many-to-many path has ever run** — which is why the plan is a
+    pure, tested module rather than inline SQL.
+  - **D4 / Q18 — the year overwrite.** `artworks.year` held the hardcoded `'2024'` that
+    `POST /api/artworks` defaults to, so the archive's `post_date` is authoritative for the mural
+    rows and the correction is an **overwrite**, not a fill-only-empty pass. Shipped as its own
+    reviewed migration with its own verified dump: `austin-postcard` `2024 → 2011`,
+    `marcia-ball` `2024 → 2015`. Verified: **62 records, 62 agree with the archive, 0 disagree.**
+  - **`artwork_images` is now part of the backup and restore set.** It was created by the Phase 4
+    schema extension and immediately held 168 rows, but `scripts/lib/restorePlan.ts` did not list it
+    — so the only recovery path (R-07: Free tier, no PITR, the repo dump *is* the backup) would have
+    restored a catalog whose murals had lost their cover ordering. Found by reading the dump's own
+    table list, not by a test. A dump now covers **9 tables**.
+
 ### Changed
 
 - **Legacy `#/artwork/<slug>` links keep resolving.** A hash URL is not sent to the server, so the
@@ -53,6 +102,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Navbar`'s Dashboard link** wrote `#/admin` directly, which a stale `/artwork/<slug>` path would
   shadow; it now routes through the navigation callback like every other link.
 - **"Copy share link"** on the artwork dossier emits the canonical path instead of a fragment.
+- **An artwork's registry cover is now the *authored* one, not an alphabetical accident.**
+  `scripts/generate-asset-registry.ts` built its key map by iterating `media_assets`
+  `ORDER BY public_id` and letting the first row claim an `artwork_slug` key — so a mural's cover was
+  "whichever of its images sorts first". It now orders by `artwork_images.position = 0` first, so the
+  cover is the one the archive says it is. Regenerated: **457 → 1002 keys**, and the diff is exactly
+  the **2 merge pairs** (`austin-postcard`, `marcia-ball`) taking their recovered-export cover.
+- **`run-migrations.ts` now lets the operator's own choice win over `.env`.** `.env` sets the
+  production `VRCL_SUPA_POSTGRES_PRISMA_URL` and that name is consulted *first*, while `dotenv`
+  fills in any variable the operator did not export — so the runbook's documented scratch command,
+  which exports only `VRCL_SUPA_POSTGRES_URL`, was **silently applying migrations to production**
+  while the operator believed they were rehearsing locally (R-07's exact nightmare). An
+  operator-exported variable now outranks the `.env` one; with nothing exported, behaviour is
+  unchanged. Proven all three ways: `only VRCL_SUPA_POSTGRES_URL → 127.0.0.1 (local)`,
+  `only PRISMA_URL → 127.0.0.1 (local)`, `no override → ⚠ REMOTE`.
 
 ### Fixed
 
@@ -65,6 +128,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   runbook §6. It is deliberately **not** bundled into the v3.0.0 load: it rewrites 604 live objects,
   and spending a second bulk media rewrite in the same window as the largest one is precisely what
   the S1 ordering note warns against.
+- **R-18 — `generate-asset-registry.ts` was silently first-wins.** A `public_id` equal to an existing
+  artwork's slug **takes that artwork's registry key away**, and the live artwork then renders
+  somebody else's photograph with no error anywhere. `findRegistryCollisions()` guarded the *write*
+  of a new id, but nothing guarded *regeneration*. The generator now reports every key claimed by two
+  **different artworks** and **refuses to write** while any exist (two images of the *same* artwork
+  claiming that artwork's key is expected — the cover wins by construction). Measured against the
+  live 320-row key space: **0 collisions.**
+- **⚠️ 10 `media_assets` rows point at an `artwork_slug` that does not exist.** `media_assets` has
+  **no foreign key** on `artwork_slug` (unlike `artwork_images`, which has one), so nothing ever
+  caught it. They are near-misses rather than noise: `wisdom-cofee` → `wisdom-coffee`,
+  `the-cats-of-the-colloseum` → `the-cats-of-the-colosseum`, and `kelzon-5` / `the-martian-2` /
+  `regador-5` against `kelzon-v` / `the-martian-ii` / `regador-v` (roman-numeral vs digit). One more,
+  `2010`, was baked into the *previous* committed registry as a key. **Recorded, not remediated**:
+  adjudicating which near-miss is correct is an owner decision, and the archive does not cover the
+  fine-art side. Also see the orphan note below.
+- **136 artworks still carry the hardcoded `'2024'` year** — 116 paintings and 20 rows with
+  `kind IS NULL`. D4's overwrite is scoped to the **mural** rows because the recovered archive is a
+  mural source only; it carries no year for the fine-art side, and guessing would replace one wrong
+  value with another. Recorded for a follow-up with a real data source.
+- **`waybackLink.test.ts` asserted `missingMedia` in manifest order.** The plan reports it *sorted*,
+  and lexicographically `'three'` precedes `'two'` (`h` < `w`). The test was wrong, not the code;
+  corrected with the reason recorded so it cannot be "fixed" back.
 
 ---
 

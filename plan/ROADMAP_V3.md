@@ -507,40 +507,53 @@ unlinked (the 165 belong to artworks that do not exist yet — unlinked ≠ brok
 **This is the highest-consequence write in the project's history.** Every control in §6 exists to
 make it reversible.
 
-**Scope, in order**
+**Scope, in order** — ✅ **executed 2026-09-15**; outcomes in brackets.
 
-1. **Confirm every Phase 0, 1, 2 and 3 exit criterion is met.** This is the gate, not a formality.
-2. **Apply the additive schema extension** from Phase 3's gap list, through the runner, as its own
-   migration that sorts after the baseline. Expected content: `kind` (`painting` | `mural` |
-   `other`), source-provenance columns (`source_site`, `source_url_path`, `source_archive_path`), and
-   whatever R-18's multi-image decision requires.
-3. **Prove the restore on a scratch database**, then **take a fresh dump** of production.
-4. **Media:** run `scripts/wayback-register.ts` (Phase 3.B) against the staged manifest, then
-   regenerate `src/data/assetRegistry.ts`. **Land the registry regeneration as its own commit** — it
-   is a generated multi-thousand-line file and it will otherwise bury the review.
-5. **The staged, idempotent backfill** — media, then artworks, then `taxonomies` /
-   `artwork_terms`. `INSERT … ON CONFLICT (slug) DO NOTHING` for NEW rows as `draft = true`;
-   `UPDATE … WHERE col IS NULL OR col = ''` for EXISTS rows. Never overwrite authored content.
-6. **Prove idempotency** — re-run the migration; it must mutate nothing.
-7. **Re-introspect and diff** against the pre-write report.
-8. **S1 — delete the 151 `original.*` masters**, **last** (see §4.1.3), after every mural rendition
-   is verified present and the object listing is captured.
+1. ✅ **Confirm every Phase 0, 1, 2 and 3 exit criterion is met.** This is the gate, not a formality.
+   [Phase 2 was found **not started**, which made it a hard blocker; it was shipped first
+   (`feat/v3-phase-2-addressability`), then the load ran. Phase 0's remainder closed the same day.]
+2. ✅ **Apply the additive schema extension** through the runner, as its own migration sorting after
+   the baseline. [`2026_09_15_v3_phase4_schema_extension.sql`: `artworks.kind`, the three
+   source-provenance columns, and `public.artwork_images (artwork_slug, media_public_id, position)`
+   with both FKs, RLS and two policies — R-18's multi-image decision.]
+3. ✅ **Prove the restore on a scratch database**, then **take a fresh dump** of production.
+   [Pre-write dump `data/backups/2026-09-15T20-01-19-582Z`; post-write `…T21-11-28-099Z`.]
+4. ✅ **Media:** `scripts/wayback-register.ts` against the staged manifest, then regenerate
+   `src/data/assetRegistry.ts`. [168 upserted, 0 failed, **no `original.*`**. Registry 457 → 1002 keys.]
+5. ✅ **The staged, idempotent backfill** — artworks, then `artwork_terms`. [67 INSERTs (60 mural +
+   7 painting) as `draft = true`; the 2 merges as `UPDATE`s; 142 `artwork_terms`.]
+6. ✅ **Prove idempotency** — re-run the migration; it must mutate nothing. [Re-executed all three
+   Phase 4 migration *files* on the scratch DB, bypassing the ledger, and compared md5 checksums of
+   five tables: **identical**.]
+7. ✅ **Re-introspect and diff** against the pre-write report. [`schema_introspection.md` regenerated:
+   10 tables, 15 recorded migrations.]
+8. ⏸️ **S1 — delete the 151 `original.*` masters**, **last** (see §4.1.3). [**Deferred by owner
+   decision** ("Defer S1"). It remains the only irreversible step in the program, and nothing else in
+   Phase 4 depends on it.]
 
 **Exit criteria** (`PRD_V3` §5, sharpened)
 
-- [ ] Re-running the migration mutates nothing.
-- [ ] **Fine-art rows are untouched**, demonstrated by diffing the pre-write dump against a
+- [x] Re-running the migration mutates nothing.
+- [x] **Fine-art rows are untouched**, demonstrated by diffing the pre-write dump against a
       post-write dump — with any deliberate fill-only-empty fills enumerated individually.
+      [`artworks` 138 → 205 (+67 −0); **136 rows differ only by the 4 new schema columns**; **2 rows
+      carry a substantive change, both mural merge targets, `year` only**; **substantive changes on
+      fine-art rows: 0**.]
 - [ ] Every mural row is `draft = true` **and** `enabled = false`.
-- [ ] An anonymous `GET /api/artworks` excludes them, **and** a direct anon PostgREST read of
-      `artworks` excludes them (the v2.12.0 policy).
-- [ ] Every mural image has a `media_assets` row; the asset registry is regenerated and the app builds.
-- [ ] **No `original.*` object was created by the ingest.**
+      [⚠️ **60 of 62.** The 2 exceptions are the merge targets (`austin-postcard`, `marcia-ball`),
+      which were already live; demoting them would unpublish live content. This criterion was written
+      for a load of all-new rows and is not applicable to a merge.]
+- [x] An anonymous `GET /api/artworks` excludes them, **and** a direct anon PostgREST read of
+      `artworks` excludes them (the v2.12.0 policy). [Verified with the **anon key**: 138 rows
+      visible (116 painting, 20 kind-null, **2 mural**); `?draft=true` → 0; a loaded draft by name → 0.]
+- [x] Every mural image has a `media_assets` row; the asset registry is regenerated and the app builds.
+      [168/168 linked, 168 join rows; `npm run build` → 138 prerendered pages / 138 sitemap entries.]
+- [x] **No `original.*` object was created by the ingest.**
 - [ ] S1 complete: 605 → 454 objects (+ new mural renditions), verifier reports 0 missing,
-      0 size mismatches, 0 unexpected orphans.
-- [ ] `npm run lint` clean; suite green.
-- [ ] The introspection diff is reviewed and attached to the PR.
-- [ ] The PR description carries the runbook §5 pre-migration checklist, including the dump path.
+      0 size mismatches, 0 unexpected orphans. [⏸️ **Deferred** — see scope item 8.]
+- [x] `npm run lint` clean; suite green. [717 tests / 43 files.]
+- [x] The introspection diff is reviewed and attached to the PR.
+- [x] The PR description carries the runbook §5 pre-migration checklist, including the dump path.
 
 **Dependencies (hard blockers):** Phase 0 verified (incl. the Blob restore proof) · Phase 2 shipped ·
 Phase 3's gap list clean and COLLISIONs adjudicated · 3.B's render stage complete.
