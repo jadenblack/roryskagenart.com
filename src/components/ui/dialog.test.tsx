@@ -115,3 +115,79 @@ describe('<Dialog/> fixed contracts', () => {
     expect(screen.getByRole('heading', { name: 'Test dialog' })).toBeInTheDocument();
   });
 });
+
+/**
+ * Header/body alignment (v2.16.0).
+ *
+ * `DialogHeader` bleeds out to the dialog's edges and then re-pads itself, so it has to read the
+ * same padding the content uses. It used to hard-code `-m-6 px-6 pt-6` against the content's `p-6`;
+ * any dialog that changed its own padding (the inquiry modal's `sm:p-8`) therefore left its title
+ * sitting at a different inset from the fields below it. Both now read `--dialog-pad`.
+ */
+describe('dialog spacing contract', () => {
+  const contentEl = () => document.querySelector('[data-slot="dialog-content"]') as HTMLElement;
+  const headerEl = () => document.querySelector('[data-slot="dialog-header"]') as HTMLElement;
+
+  it('content publishes its padding as --dialog-pad and pads itself from it', () => {
+    render(<Harness />);
+    const cls = contentEl().className;
+    expect(cls).toContain('[--dialog-pad:1.5rem]');
+    expect(cls).toContain('p-[var(--dialog-pad)]');
+    // The hard-coded `p-6` is gone: padding has exactly one source.
+    expect(cls).not.toMatch(/(^|\s)p-6(\s|$)/);
+  });
+
+  it('header derives every inset from --dialog-pad, so it can never drift from the body', () => {
+    render(<Harness />);
+    const cls = headerEl().className;
+    expect(cls).toContain('px-[var(--dialog-pad)]');
+    expect(cls).toContain('pt-[var(--dialog-pad)]');
+    expect(cls).toContain('mt-[calc(var(--dialog-pad)*-1)]');
+    expect(cls).toContain('mx-[calc(var(--dialog-pad)*-1)]');
+    // No hard-coded inset is left to contradict the variable.
+    expect(cls).not.toMatch(/(^|\s)-m-6(\s|$)/);
+    expect(cls).not.toMatch(/(^|\s)px-6(\s|$)/);
+  });
+
+  it('bottom rhythm totals one --dialog-pad instead of stacking pb-4 on top of the grid gap', () => {
+    render(<Harness />);
+    const cls = headerEl().className;
+    // 0.75rem of padding + (gap 1rem − 0.25rem of negative margin) = 1.5rem, matching every other
+    // gap in the dialog. Previously pb-4 + gap-4 put 2rem below the header against 1.5rem above it.
+    expect(cls).toContain('pb-3');
+    expect(cls).toContain('-mb-1');
+    expect(cls).not.toMatch(/(^|\s)pb-4(\s|$)/);
+  });
+
+  it('a call site can override the padding and the header follows it', () => {
+    render(
+      <Dialog open>
+        <DialogContent className="sm:[--dialog-pad:2rem]">
+          <DialogHeader>
+            <DialogTitle>Wide dialog</DialogTitle>
+          </DialogHeader>
+          <p>body</p>
+        </DialogContent>
+      </Dialog>
+    );
+    // The override is a variable, not a competing `p-*` utility — so the base padding is intact
+    // and only the value it resolves to changes.
+    const cls = contentEl().className;
+    expect(cls).toContain('sm:[--dialog-pad:2rem]');
+    expect(cls).toContain('p-[var(--dialog-pad)]');
+  });
+
+  it('still lets a call site drop the padding entirely (edge-to-edge layouts)', () => {
+    render(
+      <Dialog open>
+        <DialogContent className="p-0">
+          <DialogTitle>Flush dialog</DialogTitle>
+          <p>body</p>
+        </DialogContent>
+      </Dialog>
+    );
+    const cls = contentEl().className;
+    expect(cls).toContain('p-0');
+    expect(cls).not.toContain('p-[var(--dialog-pad)]');
+  });
+});

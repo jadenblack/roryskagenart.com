@@ -25,26 +25,26 @@ import path from 'path';
 import fs from 'fs';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Pool } from 'pg';
-import sharp from 'sharp';
+import {
+  RENDITION_NAMES,
+  RENDITIONS,
+  renderRenditions,
+  renditionObjectPath,
+  type RenditionName,
+} from '../server/lib/imageRenditions';
 
 dotenv.config();
 
 // ---------------------------------------------------------------------------
-// Config (rendition contract from PRD §3.1 — the single place sizes live)
+// Config (rendition contract from PRD §3.1 — the single place sizes lives in
+// server/lib/imageRenditions.ts, shared with the studio upload route)
 // ---------------------------------------------------------------------------
 
 const BUCKET_NAME = 'artwork-images';
 const MANIFEST_PATH = path.resolve('data/archive/all_cloudinary_assets.json');
 const VERIFIED_POSTS_PATH = path.resolve('data/archive/verified_posts_full.json');
 
-export const RENDITIONS = {
-  thumb: { width: 640, quality: 80 },
-  hero: { width: 1280, quality: 82 },
-  full: { width: 2048, quality: 85 }, // never upscaled (withoutEnlargement)
-} as const;
-
-type RenditionName = keyof typeof RENDITIONS;
-const RENDITION_NAMES = Object.keys(RENDITIONS) as RenditionName[];
+export { RENDITIONS };
 
 // ---------------------------------------------------------------------------
 // CLI flags
@@ -156,47 +156,6 @@ async function fetchWithRetry(url: string, attempt = 1): Promise<Buffer> {
     await new Promise((r) => setTimeout(r, 800 * attempt));
     return fetchWithRetry(url, attempt + 1);
   }
-}
-
-interface RenditionBuffers {
-  thumb: Buffer;
-  hero: Buffer;
-  full: Buffer;
-  lqip: string; // data URI
-}
-
-/** Render the four rendition artifacts from an original image buffer (PRD §3.1). */
-export async function renderRenditions(original: Buffer): Promise<RenditionBuffers> {
-  const base = sharp(original, { failOn: 'none' }).rotate(); // honor EXIF
-  const meta = await base.metadata();
-
-  const renderOne = async (name: RenditionName): Promise<Buffer> => {
-    const { width, quality } = RENDITIONS[name];
-    return base
-      .clone()
-      .resize({ width, withoutEnlargement: true })
-      .webp({ quality })
-      .toBuffer();
-  };
-
-  const [thumb, hero, full] = await Promise.all([
-    renderOne('thumb'),
-    renderOne('hero'),
-    renderOne('full'),
-  ]);
-
-  const lqipBuf = await base
-    .clone()
-    .resize({ width: 20 })
-    .webp({ quality: 40 })
-    .toBuffer();
-
-  return {
-    thumb,
-    hero,
-    full,
-    lqip: `data:image/webp;base64,${lqipBuf.toString('base64')}`,
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -328,8 +287,8 @@ async function migrateAsset(asset: ManifestAsset, slugLink: string | null): Prom
       original = await fetchWithRetry(asset.url);
     }
 
-    // 2. Render renditions.
-    const rends = await renderRenditions(original);
+    // 2. Render renditions (shared encoder — same ladder the upload route uses).
+    const rendered = await renderRenditions(original, pid);
 
     // 3. Upload originals + renditions (x-upsert so re-runs overwrite cleanly).
     const uploadOne = async (p: string, body: Buffer | string, contentType: string) => {
@@ -341,36 +300,19 @@ async function migrateAsset(asset: ManifestAsset, slugLink: string | null): Prom
 
     await uploadOne(storagePath(pid, 'original', ext), original, `image/${ext === 'jpg' ? 'jpeg' : ext}`);
     for (const name of RENDITION_NAMES) {
-      await uploadOne(storagePath(pid, name, 'webp'), rends[name], 'image/webp');
+      await uploadOne(renditionObjectPath(pid, name), rendered.buffers[name], 'image/webp');
     }
 
-    // 4. Upsert registry row.
-    const meta = await sharp(original, { failOn: 'none' }).metadata();
-    const renditionsMeta = Object.fromEntries(
-      RENDITION_NAMES.map((name) => [
-        name,
-        {
-          path: storagePath(pid, name, 'webp'),
-          width: Math.min(RENDITIONS[name].width, meta.width ?? RENDITIONS[name].width),
-          height: Math.round(
-            (Math.min(RENDITIONS[name].width, meta.width ?? RENDITIONS[name].width) /
-              (meta.width ?? RENDITIONS[name].width)) *
-              (meta.height ?? 0)
-          ),
-          bytes: rends[name].length,
-        },
-      ])
-    ) as Record<RenditionName, { path: string; width: number; height: number; bytes: number }>;
-
+    // 4. Upsert registry row. Dimensions are measured from the decoded source by the encoder.
     await upsertRegistryRow({
       publicId: pid,
       format: ext,
       originalBytes: original.length,
-      width: meta.width ?? asset.width,
-      height: meta.height ?? asset.height,
+      width: rendered.width,
+      height: rendered.height,
       slug: slugLink,
-      lqip: rends.lqip,
-      renditions: renditionsMeta,
+      lqip: rendered.lqip,
+      renditions: rendered.renditions,
     });
 
     return { publicId: pid, status: 'migrated' };
