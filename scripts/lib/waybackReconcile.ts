@@ -80,6 +80,15 @@ export interface MediaResolution {
   matchedPublicId?: string;
   /** Set when `action === 'needs_upload'`. */
   archivePath?: string;
+  /**
+   * Set when `action === 'unavailable'`, to distinguish the two very different reasons.
+   *
+   * `cdn-only` — the image only ever lived on the Jetpack CDN; Wayback never had a copy.
+   * `missing-from-archive` — the page referenced a site-local path, but the file was not captured.
+   * Both are unrecoverable from this archive, but only the second one is a *surprise*, and it is
+   * the one that would otherwise be reported as work to do.
+   */
+  reason?: 'cdn-only' | 'missing-from-archive';
 }
 
 export interface ReconciledRecord {
@@ -208,6 +217,21 @@ function buildIndexes(
   return { bySlug, byAlnum, byTitle: [...artworks], byMediaBasename, byImageBasename };
 }
 
+/**
+ * Decide what has to happen to one image.
+ *
+ * ⚠️ **Order is load-bearing: the registry is consulted BEFORE the filesystem.**
+ *
+ * The question this answers is "does this image need an upload?" — and a registry hit settles it
+ * regardless of what the archive holds. Ten images in this corpus are referenced by a page, absent
+ * from `wayback/`, and *already registered* in `media_assets` (Cloudinary-era assets such as
+ * `normal-gods-copy`): the studio has them, so there is nothing to do. Checking disk presence first
+ * would label all ten `unavailable`, i.e. tell the studio to re-supply images it already owns.
+ *
+ * `presentOnDisk` therefore only ever *downgrades* an image the registry does not know about — it
+ * is the difference between "we must render this file" and "we cannot, the file was never
+ * captured".
+ */
 function resolveMedia(page: ExtractedPage, ix: Indexes): MediaResolution[] {
   return page.images.map((img: ExtractedImage) => {
     if (img.local) {
@@ -220,6 +244,17 @@ function resolveMedia(page: ExtractedPage, ix: Indexes): MediaResolution[] {
           matchedPublicId: 'publicId' in hit ? hit.publicId : hit.slug,
         };
       }
+      // Not registered — so the archive's copy is the only one there is. `local` describes the URL;
+      // `presentOnDisk` describes reality, and Wayback saved the page without necessarily saving
+      // every asset it referenced.
+      if (img.presentOnDisk === false) {
+        return {
+          basename: img.basename,
+          ref: img.ref,
+          action: 'unavailable' as MediaAction,
+          reason: 'missing-from-archive' as const,
+        };
+      }
       return {
         basename: img.basename,
         ref: img.ref,
@@ -227,7 +262,12 @@ function resolveMedia(page: ExtractedPage, ix: Indexes): MediaResolution[] {
         archivePath: img.archivePath,
       };
     }
-    return { basename: img.basename, ref: img.ref, action: 'unavailable' as MediaAction };
+    return {
+      basename: img.basename,
+      ref: img.ref,
+      action: 'unavailable' as MediaAction,
+      reason: 'cdn-only' as const,
+    };
   });
 }
 

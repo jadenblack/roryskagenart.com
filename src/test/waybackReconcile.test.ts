@@ -289,6 +289,73 @@ describe('waybackReconcile — media resolution', () => {
     expect(report.summary.unavailableCount).toBe(1);
     expect(report.summary.withoutImage).toBe(1);
   });
+
+  describe('disk presence — and why the registry is checked first', () => {
+    /** Referenced from a site-local path, but Wayback never captured the file. */
+    const absentImage = (basename: string) => ({ ...localImage(basename), presentOnDisk: false });
+
+    it('reports an unregistered image that is absent from disk as missing-from-archive', () => {
+      const [record] = reconcile(
+        [page({ category: 'x', slugCandidate: 'new-thing', images: [absentImage('brand-new')] })],
+        { artworks: CATALOG, media: MEDIA }
+      ).records;
+      expect(record.media[0]).toMatchObject({
+        action: 'unavailable',
+        reason: 'missing-from-archive',
+      });
+      expect(record.media[0].archivePath).toBeUndefined();
+    });
+
+    it('still reports an image as exists when it is registered but absent from disk', () => {
+      // The regression this pins: ten production images (Cloudinary-era assets such as
+      // `normal-gods-copy`) are referenced by a page, missing from `wayback/`, and already in
+      // `media_assets`. Checking the filesystem first labelled all ten "unrecoverable" — telling
+      // the studio to re-supply images it already owns. A registry hit settles the question.
+      const [record] = reconcile(
+        [page({ category: 'x', slugCandidate: 'jungle-tempo', images: [absentImage('jungletempo')] })],
+        { artworks: CATALOG, media: MEDIA }
+      ).records;
+      expect(record.media[0]).toMatchObject({
+        action: 'exists',
+        matchedPublicId: 'jungle-tempo',
+      });
+      expect(record.media[0].reason).toBeUndefined();
+    });
+
+    it('distinguishes the two reasons an image is unrecoverable', () => {
+      const report = reconcile(
+        [
+          page({
+            category: 'x',
+            slugCandidate: 'new-thing',
+            images: [absentImage('never-captured'), remoteImage('cdn-only')],
+          }),
+        ],
+        { artworks: CATALOG, media: MEDIA }
+      );
+      const [record] = report.records;
+      expect(record.media.find((m) => m.basename === 'never-captured')?.reason).toBe(
+        'missing-from-archive'
+      );
+      expect(record.media.find((m) => m.basename === 'cdn-only')?.reason).toBe('cdn-only');
+      // Both are unrecoverable, but only the first is a surprise worth the studio's attention.
+      expect(report.summary.unavailableCount).toBe(2);
+    });
+
+    it('leaves needs_upload untouched when the file is present on disk', () => {
+      const [record] = reconcile(
+        [
+          page({
+            category: 'x',
+            slugCandidate: 'new-thing',
+            images: [{ ...localImage('brand-new'), presentOnDisk: true }],
+          }),
+        ],
+        { artworks: CATALOG, media: MEDIA }
+      ).records;
+      expect(record.media[0].action).toBe('needs_upload');
+    });
+  });
 });
 
 describe('waybackReconcile — against a real page', () => {

@@ -21,6 +21,7 @@ import { execFileSync } from 'child_process';
 import {
   ARCHIVE_IDS,
   archiveKind,
+  applyDiskPresence,
   extractPage,
   type ArchiveId,
   type ExtractedPage,
@@ -121,8 +122,36 @@ export function waybackDirtyState(): string {
   }
 }
 
+/**
+ * Distinct images across all records that resolved to a given action.
+ *
+ * Distinct by basename, not a raw tally: one photograph can be referenced by several pages (a mural
+ * shot appearing in both `business/` and `featured/`), and every label this feeds says "distinct
+ * images". A tally would inflate the work list the studio reads.
+ */
 function countActions(records: ReconciledRecord[], action: MediaAction): number {
-  return records.reduce((n, r) => n + r.media.filter((m) => m.action === action).length, 0);
+  const seen = new Set<string>();
+  for (const r of records) {
+    for (const m of r.media) if (m.action === action) seen.add(m.basename);
+  }
+  return seen.size;
+}
+
+/**
+ * Distinct images that are unrecoverable *for a specific reason*.
+ *
+ * The two reasons call for different actions by the studio: a CDN-only image never existed in the
+ * archive, while a referenced-but-not-captured one was on the live site and Wayback simply missed
+ * it — the original may well still be in the artist's own files.
+ */
+function countUnavailable(records: ReconciledRecord[], reason: 'cdn-only' | 'missing-from-archive'): number {
+  const seen = new Set<string>();
+  for (const r of records) {
+    for (const m of r.media) {
+      if (m.action === 'unavailable' && m.reason === reason) seen.add(m.basename);
+    }
+  }
+  return seen.size;
 }
 
 /**
@@ -221,7 +250,12 @@ export function renderReport(input: {
   L.push(`| pages with at least one image to upload | ${s.withNeedsUpload} |`);
   L.push(`| distinct local images needing upload | ${s.needsUploadCount} |`);
   L.push(`| distinct images already registered | ${countActions(report.records, 'exists')} |`);
-  L.push(`| distinct images referenced only from the CDN (**unrecoverable**) | ${s.unavailableCount} |`);
+  L.push(
+    `| distinct images referenced only from the CDN — **unrecoverable** | ${countUnavailable(report.records, 'cdn-only')} |`
+  );
+  L.push(
+    `| distinct images referenced but **not captured by the archive** — unrecoverable | ${countUnavailable(report.records, 'missing-from-archive')} |`
+  );
   L.push(`| pages with no usable image at all | ${s.withoutImage} |`);
   L.push('');
 
@@ -322,6 +356,33 @@ export function renderReport(input: {
   }
   L.push('');
 
+  // Reported separately from the CDN-only list because the remedy differs: these files were on the
+  // live site, so the artist may still hold the original. A CDN-only image never existed here.
+  const notCaptured = report.records.flatMap((r) =>
+    r.media
+      .filter((m) => m.action === 'unavailable' && m.reason === 'missing-from-archive')
+      .map((m) => ({ path: `${r.category}/${r.slugCandidate}`, basename: m.basename, ref: m.ref }))
+  );
+  L.push('## 5b. Referenced by the page but NOT captured by the archive');
+  L.push('');
+  if (!notCaptured.length) {
+    L.push('None.');
+  } else {
+    L.push(
+      `${notCaptured.length} image(s). The page points at a site-local \`wp-content/uploads/…\` path, but Wayback saved`,
+      'the page without the asset. **These cannot be rendered or uploaded** — they are listed so the studio can',
+      're-supply the originals rather than wait for an ingest that can never complete.',
+      ''
+    );
+    L.push('| Source page | Image basename | Referenced path |');
+    L.push('| :--- | :--- | :--- |');
+    for (const n of notCaptured.slice(0, 100)) {
+      L.push(`| \`${n.path}\` | \`${n.basename}\` | \`${n.ref.split('?')[0]}\` |`);
+    }
+    if (notCaptured.length > 100) L.push(`| … | ${notCaptured.length - 100} more | |`);
+  }
+  L.push('');
+
   L.push('## 6. Pages with no usable image');
   L.push('');
   const noImage = report.records.filter((r) => !r.media.some((m) => m.action !== 'unavailable'));
@@ -405,7 +466,26 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
     else skipped.push(f.relPath);
   }
 
-  const report = reconcile(pages, {
+  // The extractor classifies `local` from the URL shape alone. Verify against the archive before
+  // anything downstream treats a reference as work to do: a page can cite a `wp-content/uploads/…`
+  // path that Wayback never captured. Without this, 18 of 32 "needs upload" images do not exist.
+  const verified = applyDiskPresence(pages, (archive, archivePath) =>
+    fs.existsSync(path.join(WAYBACK_ROOT, archive, archivePath))
+  ).map((p) => {
+    const absent = p.images.filter((i) => i.local && i.presentOnDisk === false);
+    return absent.length === 0
+      ? p
+      : {
+          ...p,
+          warnings: [
+            ...p.warnings,
+            `references ${absent.length} site-local image(s) the archive does not contain: ` +
+              absent.map((i) => i.basename).join(', '),
+          ],
+        };
+  });
+
+  const report = reconcile(verified, {
     artworks: canonical.artworks.map((a) => ({
       slug: a.slug,
       title: a.title,
@@ -413,7 +493,7 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
     })),
     media: canonical.media,
   });
-  const gaps = buildGapList(report, pages);
+  const gaps = buildGapList(report, verified);
   const dirty = waybackDirtyState();
 
   fs.mkdirSync(outDir, { recursive: true });
@@ -427,7 +507,7 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
         collisionGroups: report.collisionGroups,
         gaps,
         skipped,
-        pages,
+        pages: verified,
         records: report.records,
       },
       null,
@@ -437,7 +517,7 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
   );
   fs.writeFileSync(
     path.join(outDir, OUT_REPORT),
-    renderReport({ canonical, pages, report, gaps, dirty }),
+    renderReport({ canonical, pages: verified, report, gaps, dirty }),
     'utf8'
   );
 
@@ -454,7 +534,11 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
   console.log(`  EXISTS          : ${report.summary.EXISTS}`);
   console.log(`  COLLISION       : ${report.summary.COLLISION}`);
   console.log(`  needs upload    : ${report.summary.needsUploadCount} across ${report.summary.withNeedsUpload} pages`);
-  console.log(`  unrecoverable   : ${report.summary.unavailableCount} (CDN-only, not in the archive)`);
+  console.log(
+    `  unrecoverable   : ${report.summary.unavailableCount} ` +
+      `(${countUnavailable(report.records, 'missing-from-archive')} referenced-but-not-archived, ` +
+      `${countUnavailable(report.records, 'cdn-only')} CDN-only)`
+  );
   console.log(`  no image at all : ${report.summary.withoutImage} pages`);
   console.log(
     `  schema gaps     : ${gaps.filter((g) => g.additive).length} additive ` +

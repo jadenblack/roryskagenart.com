@@ -8,6 +8,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+  applyDiskPresence,
   archiveKind,
   decodeEntities,
   extractCategories,
@@ -23,6 +24,8 @@ import {
   parseAttrs,
   parseRelPath,
   stripSiteSuffix,
+  type ExtractedImage,
+  type ExtractedPage,
 } from '../../scripts/lib/waybackExtract';
 
 /** Murals — Modularity theme: unquoted attributes, `<h2>` title, no images. */
@@ -269,5 +272,70 @@ describe('waybackExtract — extractPage', () => {
   it('maps each archive to the kind the studio uses', () => {
     expect(archiveKind('centraltexasmurals.com-v1')).toBe('mural');
     expect(archiveKind('roryskagen.com-v1')).toBe('fine-art');
+  });
+});
+
+describe('applyDiskPresence', () => {
+  /**
+   * The regression this guards: `extractImages` sets `local` from the URL shape alone, so a
+   * `wp-content/uploads/…` reference reads as "an image we can upload". Measured against the real
+   * archive, 18 of 32 such references have no file — Wayback saved the page but not the asset.
+   * Without this pass the render stage fails on more than half its work.
+   */
+  function pageWithImages(images: Partial<ExtractedImage>[]): ExtractedPage {
+    return {
+      archive: 'roryskagen.com-v1',
+      relPath: 'a/one/index.html',
+      title: 'One',
+      description: '',
+      narrative: '',
+      categories: [],
+      publishedAt: null,
+      modifiedAt: null,
+      year: null,
+      wpPostId: null,
+      warnings: [],
+      images: images.map((i) => ({
+        ref: '../../art/wp-content/uploads/2017/06/x.jpg',
+        local: true,
+        remote: false,
+        archivePath: 'art/wp-content/uploads/2017/06/x.jpg',
+        basename: 'x',
+        ...i,
+      })),
+    } as ExtractedPage;
+  }
+
+  it('stamps presentOnDisk from the injected predicate', () => {
+    const [page] = applyDiskPresence([pageWithImages([{ basename: 'a' }])], () => true);
+    expect(page.images[0].presentOnDisk).toBe(true);
+  });
+
+  it('records absence rather than assuming the reference is usable', () => {
+    const [page] = applyDiskPresence([pageWithImages([{ basename: 'a' }])], () => false);
+    expect(page.images[0].presentOnDisk).toBe(false);
+  });
+
+  it('leaves non-local references unverified', () => {
+    const [page] = applyDiskPresence(
+      [pageWithImages([{ basename: 'cdn', local: false, remote: true, archivePath: undefined }])],
+      () => false
+    );
+    expect(page.images[0].presentOnDisk).toBeUndefined();
+  });
+
+  it('does not mutate the input pages', () => {
+    const original = pageWithImages([{ basename: 'a' }]);
+    applyDiskPresence([original], () => false);
+    expect(original.images[0].presentOnDisk).toBeUndefined();
+  });
+
+  it('passes the archive through so the predicate can resolve per archive', () => {
+    const seen: string[] = [];
+    applyDiskPresence([pageWithImages([{ basename: 'a' }])], (archive, archivePath) => {
+      seen.push(`${archive}|${archivePath}`);
+      return true;
+    });
+    expect(seen).toEqual(['roryskagen.com-v1|art/wp-content/uploads/2017/06/x.jpg']);
   });
 });

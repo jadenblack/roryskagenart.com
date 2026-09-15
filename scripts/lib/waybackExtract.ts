@@ -43,6 +43,16 @@ export interface ExtractedImage {
   archivePath?: string;
   /** Lowercased filename without extension — the join key for image-based matching. */
   basename: string;
+  /**
+   * Whether the archive actually contains this file. `undefined` means "not yet verified".
+   *
+   * ⚠️ `local` is **not** proof the file exists. It is derived from the URL shape alone
+   * (`extractImages` is pure and has no filesystem access), and Wayback saved the *page*, not
+   * necessarily every asset the page referenced. 18 of the 32 images this archive reports as
+   * "needs upload" are referenced but absent from disk — the render stage would fail on them.
+   * `applyDiskPresence()` stamps this field from the real filesystem.
+   */
+  presentOnDisk?: boolean;
 }
 
 export interface ExtractedPage {
@@ -342,6 +352,32 @@ export function extractImages(html: string): ExtractedImage[] {
     });
   }
   return [...found.values()].sort((a, b) => a.basename.localeCompare(b.basename));
+}
+
+/**
+ * Stamp every locally-referenced image with whether the archive actually holds its file.
+ *
+ * `extractImages` decides `local` from the URL shape and nothing else — it is pure, so it cannot
+ * know what is on disk. That is fine as a *classification*, but it is not sufficient to plan an
+ * upload: a `wp-content/uploads/…` reference means the page pointed there, not that Wayback
+ * captured the asset. Measured against this archive, 18 of 32 such references are absent, so a
+ * render stage built on `local` alone fails on more than half its work.
+ *
+ * The predicate is injected rather than imported so this stays pure and offline-testable; the CLI
+ * passes a real `fs.existsSync`. Returns new page objects — callers keep the pre-verification data.
+ */
+export function applyDiskPresence(
+  pages: ExtractedPage[],
+  exists: (archive: string, archivePath: string) => boolean
+): ExtractedPage[] {
+  return pages.map((page) => ({
+    ...page,
+    images: page.images.map((img) =>
+      !img.local || !img.archivePath
+        ? img
+        : { ...img, presentOnDisk: exists(page.archive, img.archivePath) }
+    ),
+  }));
 }
 
 /** Resolve `../../art/wp-content/uploads/…` against the page's own directory. */
