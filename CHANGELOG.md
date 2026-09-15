@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+> **Accumulating for `v3.0.0`.** The roadmap delivers v3.0.0 as a **sequence of PRs** — one per
+> phase — with this section accumulating until the tag is cut on the merge commit that completes
+> Phase 4. See [`plan/ROADMAP_V3.md`](./plan/ROADMAP_V3.md) §3.4.
+
+### Added
+
+- **Phase 2 — addressability. Artworks now have real, crawlable URLs.** Every published artwork is
+  served at `/artwork/<slug>`, prerendered to a static file per artwork at build time by
+  `scripts/prerender-seo.ts`, with its own `<title>`, `<meta name="description">`,
+  `<link rel="canonical">`, `og:*` and `twitter:*` tags **present in the HTML the server returns**
+  rather than injected after hydration. `dist/sitemap.xml` enumerates every published artwork, and
+  `public/robots.txt` now carries the `Sitemap:` line its own comment said to add when real routes
+  shipped. The tags are built from the artwork's own columns — no templated marketing copy is
+  invented for a catalog raisonné entry.
+  - The prerender reads with the **anon key**, so the `artworks` RLS policy
+    (`USING (trashed = false AND draft = false)`) makes publishing a draft *physically impossible*
+    even if the filter were wrong; `selectIndexable()` is the second, testable gate, and it is
+    asserted against fixtures containing both a draft and a trashed row.
+  - A build that reads **zero** artworks, or zero *indexable* artworks, **aborts** — an empty
+    sitemap that ships silently is the exact failure this phase exists to prevent.
+  - A **loopback origin is refused.** `.env.local` sets `APP_URL=http://localhost:3000`, and a build
+    that inherited it would have emitted `http://localhost:3000/artwork/...` as the canonical of
+    every page — telling a crawler the real site is a duplicate of a URL on one laptop. Strictly
+    worse than shipping no canonical, and invisible until search traffic disappeared.
+- **Phase 0 — the object listing.** `verify-media-backup.ts` takes `--out <dir>` and writes
+  `object-listing.json`: every object's path and size plus a sha256 over the canonical
+  `path<TAB>size` lines. A database dump describes Storage objects but does not contain them, so
+  this is the artefact that makes *"what did we actually have?"* answerable. First capture:
+  **605 objects / 76.6 MiB**, sha256 `467757ce1bb1dd19…`, alongside the pre-Phase-4 dump.
+- **The Storage story, written down** (`docs/runbooks/database-backup-restore.md` §2d). Storage is a
+  *recovery-speed* risk, not a survival risk — Q1 says the assets are copies and the artist holds
+  the originals. So: the periodic object listing, plus **`wayback/` as the second copy of every
+  mural image** (they are derived from a committed immutable archive and can be re-rendered
+  byte-identically). No bucket versioning, no second vendor.
+
+### Changed
+
+- **Legacy `#/artwork/<slug>` links keep resolving.** A hash URL is not sent to the server, so the
+  old form cannot be redirected with a server rule; the app rewrites it client-side with
+  `history.replaceState` to the canonical path instead. A gallery's inbound links are its search
+  equity — this is what keeps the release non-breaking (§3.3).
+- **`Navbar`'s Dashboard link** wrote `#/admin` directly, which a stale `/artwork/<slug>` path would
+  shadow; it now routes through the navigation callback like every other link.
+- **"Copy share link"** on the artwork dossier emits the canonical path instead of a fragment.
+
+### Fixed
+
+- **⚠️ 604 of the 605 objects in `artwork-images` are cached for one hour, not a year.** Measured
+  2026-09-15 from `storage.objects.metadata->>'cacheControl'`: 604 carry `max-age=3600`, one carries
+  `max-age=31536000`. New uploads set the immutable year correctly, so this is the **Cloudinary-era
+  migration**, which never set it. With no CDN (Q3), immutable browser caching *is* the egress
+  strategy, and at one hour a returning visitor re-fetches up to ~8 MiB per full catalog browse
+  against a 5 GB/month allowance. **Recorded, not yet remediated** — see `ROADMAP_V3.md` §4 and the
+  runbook §6. It is deliberately **not** bundled into the v3.0.0 load: it rewrites 604 live objects,
+  and spending a second bulk media rewrite in the same window as the largest one is precisely what
+  the S1 ordering note warns against.
+
+---
+
 ## [2.17.0] - 2026-09-15
 
 > **§3.D — the recovered WordPress export, read end to end, plus the duplicate-detection layer the

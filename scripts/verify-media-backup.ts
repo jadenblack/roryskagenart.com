@@ -19,12 +19,16 @@
  *   npx tsx scripts/verify-media-backup.ts              # human-readable summary
  *   npx tsx scripts/verify-media-backup.ts --json       # machine-readable
  *   npx tsx scripts/verify-media-backup.ts --limit 50   # show more problem lines (default 20)
+ *   npx tsx scripts/verify-media-backup.ts --out <dir>  # also write an object listing
  *
  * Exit codes:
  *   0  no problems
  *   1  problems found
  *   2  nothing to check, or the environment/arguments were unusable
  */
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
@@ -113,6 +117,8 @@ async function main(): Promise<void> {
   const asJson = args.includes('--json');
   const limitFlag = args.indexOf('--limit');
   const limit = limitFlag !== -1 && args[limitFlag + 1] ? Number(args[limitFlag + 1]) : 20;
+  const outFlag = args.indexOf('--out');
+  const outDir = outFlag !== -1 && args[outFlag + 1] ? path.resolve(args[outFlag + 1]) : null;
 
   const connectionString = getConnectionString();
   const poolTarget = resolvePoolTarget(connectionString);
@@ -142,6 +148,45 @@ async function main(): Promise<void> {
 
   const report = reconcileMedia(rows, objects);
   const ok = report.blocking === 0;
+
+  /**
+   * Phase 0's last open exit criterion: capture a full object listing alongside a dump.
+   *
+   * Database backups describe Storage objects but do not contain them, so "what did we actually
+   * have?" has no answer from a dump alone. This listing is that answer, and it is the artefact the
+   * S1 deletion decision is checked against (before and after). It is written even when the report
+   * is not OK — a listing of a bucket with a problem is exactly when you most want a copy.
+   *
+   * The sha256 is over the canonical `path\tsize` lines, so two listings can be compared without
+   * diffing JSON, and a truncated or edited file is detectable.
+   */
+  if (outDir) {
+    const listing = {
+      generatedAt: new Date().toISOString(),
+      bucket: BUCKET,
+      ok,
+      count: objects.length,
+      totalBytes: objects.reduce((sum, o) => sum + (o.bytes ?? 0), 0),
+      rows: rows.length,
+      missing: report.missing,
+      unreferenced: report.unreferenced,
+      unreferencedOriginals: report.unreferencedOriginals,
+      objects: [...objects]
+        .map((o) => ({ path: o.path, bytes: o.bytes ?? null }))
+        .sort((a, b) => a.path.localeCompare(b.path)),
+    };
+
+    const canonical = listing.objects.map((o) => `${o.path}\t${o.bytes ?? ''}`).join('\n');
+    const sha256 = crypto.createHash('sha256').update(canonical).digest('hex');
+
+    fs.mkdirSync(outDir, { recursive: true });
+    const outPath = path.join(outDir, 'object-listing.json');
+    fs.writeFileSync(outPath, `${JSON.stringify({ ...listing, sha256 }, null, 2)}\n`, 'utf8');
+
+    console.log('');
+    console.log(`object listing written: ${outPath}`);
+    console.log(`  ${listing.count} objects, ${formatBytes(listing.totalBytes)}, sha256 ${sha256.slice(0, 16)}…`);
+  }
 
   if (asJson) {
     console.log(JSON.stringify({ ok, ...report }, null, 2));
