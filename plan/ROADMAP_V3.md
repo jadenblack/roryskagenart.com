@@ -186,14 +186,26 @@ about proving the off-site copy actually works — not about re-establishing tha
 | 6 | Add a restorable schema dump | ✅ DONE — `schema.sql` + `data.sql` alongside the JSON snapshot. |
 | 7 | Enable local dev so a scratch database exists | ✅ DONE — `config.toml` disables CLI migrations; repo runner owns the schema. |
 | 8 | Empirically verify ADR 0001 Phase A | ✅ DONE — 10/10 applied to a virgin DB, zero structural diff vs production. |
-| 4 | Baseline dump **off this machine** | ✅ DONE and automated — v2.13.0 cron → Vercel Blob, daily, private, `CRON_SECRET`-gated. **Remaining: prove a restore *from Blob* once** (§4.1.1). |
+| 4 | Baseline dump **off this machine** | ✅ DONE, automated, **and now proven restorable** — v2.13.0 cron → Vercel Blob, daily, private, `CRON_SECRET`-gated. A Blob dump was downloaded, checksum-verified and restored into the scratch DB on 2026-09-15 (§4.1.1). |
 | 3 | Decide and document the Storage story | ⬜ **Open — reformulated below.** |
 
-**4.1.1 NEW — Prove the off-site copy restores.** The cron writes the dump to Blob daily, but
-`scripts/verify-offsite-backup.ts` only checks that an object exists at the expected key. **A backup
-that has never been read is a hypothesis.** Before Phase 4: download one Blob dump, run it through
-`scripts/verify-backup.ts`, and restore it into the scratch database. This is the single highest-value
-hour in Phase 0 and it is currently undone.
+**4.1.1 ✅ DONE 2026-09-15 — the off-site copy restores.** *Was:* the cron writes the dump to Blob
+daily, but `scripts/verify-offsite-backup.ts` only checked that an object exists at the expected key,
+and **a backup that has never been read is a hypothesis.** The drill, run end to end:
+
+1. `scripts/verify-offsite-backup.ts` now takes **`--out <dir>`**, which materialises a verified dump
+   on disk. It **refuses to write when verification fails**, so a corrupt off-site copy can never be
+   dressed up as a restorable backup. (Verification alone proves the bytes are intact; only writing
+   them out proves they can be *restored*.)
+2. The dump at `2026-09-15T06-43-29-617Z` was pulled down — **9 objects, 406,899 bytes, 8 tables,
+   307 rows, 12 migrations**, every table matching its manifest sha256.
+3. The scratch DB's catalog tables were emptied, then the **off-site** copy was restored with
+   `scripts/restore-catalog.ts --apply` → **298 inserted, 0 skipped, 0 failed.**
+4. Fidelity was checked field by field → **138/138 artworks match on `slug` + `title` + `year`**, and
+   every table is exact.
+
+The recovery path is therefore no longer a document; it is a procedure that has been executed against
+a copy that lives **off this machine**. That is what makes it the compensating control for Q14.
 
 **4.1.2 Storage story — reformulated by the owner's Q1.** The original question was "bucket
 versioning, or periodic object listing + copy?" The owner's answer (Q1: assets are **copies**, the
@@ -233,7 +245,8 @@ because they are read-only housekeeping that Phase 4's media step touches anyway
 - [x] `scripts/restore-catalog.ts` has restored into a **non-production** database, idempotently.
 - [x] A database can be built from `supabase/migrations/` and it matches production.
 - [x] A copy of the dump exists off this machine — **and is written daily, automatically.**
-- [ ] **A Blob dump has been downloaded, verified and restored into the scratch DB.** *(new, 4.1.1)*
+- [x] **A Blob dump has been downloaded, verified and restored into the scratch DB.** *(4.1.1 — done
+      2026-09-15: 9 objects / 406,899 bytes → 298 inserted, 0 failed; 138/138 artworks field-exact)*
 - [ ] The Storage story is documented as: object listing + Wayback-is-the-second-copy for murals;
       no versioning, no new vendor.
 - [ ] A full object listing of `artwork-images` is captured and stored with a dump.
@@ -585,8 +598,8 @@ re-baseline).
 | **R-11** | **The generated asset registry produces a very large diff** | Review fatigue → a real defect slips through | Regenerate in its own commit, separate from the migration and the code | Open — Phase 4 |
 | **R-12** | **Hash-route SEO** — a sitemap of fragment URLs is worthless | The whole merge lands invisible | Phase 2 ships real paths + crawler-visible tags + sitemap **before** Phase 4; verified by fetching raw HTML. `vercel.json` already passes `sitemap.xml` through | Open — Phase 2 exit |
 | **R-13** | **Two divergent migration ledgers** — the Supabase CLI collapses every `2026_…` filename to version `2026` | `supabase db push` would re-run eight migrations against production | **Never apply schema changes via the Supabase CLI.** `config.toml` disables CLI migrations. **Do not rename migration files** | Permanent |
-| **R-14** | **Free-plan projects pause after 7 days of low activity** | The gallery can go offline; unpausing is a manual dashboard action | A daily keep-alive (the v2.13.0 backup cron happens to touch the DB daily); the durable fix is Pro. **Owner decision — Q14, now the top risk** | Ongoing |
-| **R-15** | **The only backup lives on this machine** | A disk failure destroys the sole recovery path | ✅ **CLOSED — v2.13.0.** Daily Vercel cron → Vercel Blob, private. **Remainder: prove a restore *from Blob* (§4.1.1)** | 🟡 Mostly closed |
+| **R-14** | **Free-plan projects pause after 7 days of low activity** | The gallery can go offline; unpausing is a manual dashboard action | A daily keep-alive (the v2.13.0 backup cron touches the DB daily). **Q14 SETTLED 2026-09-15 — the owner elected to stay on Free**, which makes the roadmap's own fallback condition binding; it is met: keep-alive **plus** the proven Blob restore (§4.1.1). Re-open if a pause is ever observed | 🟡 Accepted — control in place |
+| **R-15** | **The only backup lives on this machine** | A disk failure destroys the sole recovery path | ✅ **CLOSED — v2.13.0; remainder closed 2026-09-15.** Daily Vercel cron → Vercel Blob, private, **and a Blob dump has now been verified *and restored* into the scratch DB** (§4.1.1): 298 rows inserted, 0 failed, 138/138 artworks field-exact | ✅ Closed |
 | **R-16** | **CRLF in two migration files** leaked CR bytes into stored function bodies | "Reproducible from version control" became checkout-dependent | ✅ **CLOSED.** `.gitattributes` pins `*.sql text eol=lf`; rebuild reports 0 CR bytes | ✅ Closed |
 | **R-17** | **NEW — the mural ingest is the first *bulk* media write, and it is not covered by any restore.** 605 existing objects are the Cloudinary migration's output; the mural renditions will be produced by a script that has never run against production | A partial or wrong ingest leaves hundreds of orphaned objects no row references — recreating, at larger scale, the exact problem S1 exists to fix | Two-stage design (3.B): **render to a local staging dir first**, so the expensive, repeatable, credential-free step is provably correct before a single byte reaches Storage; `register` is idempotent and `--dry-run`-able; **no `original.*` is ever written**; capture an object listing before and after | Open — Phase 3 + 4 |
 | **R-18** | **NEW — `generate-asset-registry.ts` is single-image-per-artwork by construction.** It keys the registry by `artwork_slug` **first-wins** (`:98–112`), so when N `media_assets` rows share one `artwork_slug`, only the lowest `public_id` is reachable by slug lookup. `artworks.image_url` is likewise single-valued | Murals need many photos; without a fix, a mural's images 2..N are invisible to the gallery even though their rows and objects exist | Decide the model **before** the Phase 4 schema extension (Q16): an explicit `artwork_images` join with a position, or a cover-asset pointer plus ordering on `media_assets`. Whatever is chosen, the registry generator must stop silently dropping collisions — **first-wins should become an error or an explicit ordered list** | Open — Phase 3 gap list |
@@ -674,7 +687,7 @@ Each is reversible if the owner disagrees.
 | **Q11** | ~~LICENSE: Apache-2.0, or correct the README?~~ | — | ✅ **RETIRED — MIT, v2.15.0.** `LICENSE` is the canonical unmodified text; the scope note lives in `README.md` |
 | **Q12** | **Dependabot `qs`: bump, or dismiss with a reason?** | Phase 1 | Bump if it does not force an Express major; otherwise document the dismissal |
 | **Q13** | ~~Bundle Phase 5 into `v3.0.0`, or ship it as `v3.1.0`?~~ | — | **Now settled by §3.4:** Phase 5 is `v3.1.0`. Retire |
-| **Q14** | **Free tier: keep-alive cron, or upgrade to Pro?** ⬆️ **ESCALATED — now the top risk in the program.** Free means no backups, no PITR, *and* automatic pausing after 7 idle days, so the live gallery can go down on its own. Pro (~$25/mo) removes pausing and adds 7-day daily backups; it does **not** back up Storage objects | R-14, and the whole backup story | **Upgrade to Pro before Phase 4.** The migration is the largest write in the project's history and is currently protected by a JSON file and a Vercel Blob bucket. If Pro is not viable, the minimum is the daily keep-alive plus the proven-Blob-restore from §4.1.1 |
+| **Q14** | **Free tier: keep-alive cron, or upgrade to Pro?** ⬆️ *Was* the top risk in the program. Free means no backups, no PITR, *and* automatic pausing after 7 idle days, so the live gallery can go down on its own. Pro (~$25/mo) removes pausing and adds 7-day daily backups; it does **not** back up Storage objects | R-14, and the whole backup story | ✅ **SETTLED 2026-09-15 — stay on Free.** The owner declined the Pro upgrade, which makes the roadmap's own fallback condition binding: *"the minimum is the daily keep-alive plus the proven-Blob-restore from §4.1.1."* **Both now hold** — the cron touches the DB daily, and the off-site restore has been executed and field-verified (§4.1.1). ⚠️ This is now a **standing precondition for the Phase 4 write**: re-run the restore drill if the backup path changes |
 | **Q15** | **Docker Desktop, or the standalone PostgreSQL client tools?** | Phase 0 items 2, 5, 6 | Moot — Docker Desktop is installed and `supabase start` works. Retire |
 | **Q16** | **NEW — how is a mural's *second* image modelled?** `media_assets.artwork_slug` is already 1:N, but `generate-asset-registry.ts` is first-wins and `artworks.image_url` is single-valued, so images 2..N are currently unreachable | Phase 3 gap list, Phase 4 schema | **An explicit `artwork_images` join (`artwork_slug`, `media_public_id`, `position`)** beats an ordering column on `media_assets`: it makes "which image is the cover" answerable, which the gallery needs regardless. Fall back to a `cover_public_id` + `sort_order` if the schema extension must stay minimal |
 | **Q17** | **NEW — how do mural drafts get reviewed and published?** ~100 rows land `draft = true`; the studio has to work through all of them | Phase 4 → 5 | A review queue in `#/admin` with bulk publish. **Decide before Phase 4**, or the drafts land with no path to publication and the merge delivers nothing visible |

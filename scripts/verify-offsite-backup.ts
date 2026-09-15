@@ -6,6 +6,13 @@
  *   npx tsx scripts/verify-offsite-backup.ts --list          # what is in the store
  *   npx tsx scripts/verify-offsite-backup.ts --stamp <stamp> # one specific dump
  *   npx tsx scripts/verify-offsite-backup.ts --max-age-hours 26 --json
+ *   npx tsx scripts/verify-offsite-backup.ts --out <dir>     # also materialise it on disk
+ *
+ * `--out` is what closes the Phase 0 item in plan/ROADMAP_V3.md §4.1.1 — *"a Blob dump has been
+ * downloaded, verified and restored into the scratch DB"*. Verification alone proves the bytes are
+ * intact; only writing them out proves the off-site copy is actually **restorable**. It refuses to
+ * write when verification fails, so a corrupt dump is never materialised. Nothing is written to
+ * Blob either way.
  *
  * Exit codes: 0 = verified · 1 = problems found · 2 = nothing to check / unusable selection.
  *
@@ -16,6 +23,8 @@
  * ⚠️ `.env.local` also carries VERCEL_OIDC_TOKEN; `@vercel/blob` prefers OIDC and then rejects the
  * development environment, so it is removed below and the token is passed explicitly.
  */
+import fs from 'node:fs';
+import path from 'node:path';
 import dotenv from 'dotenv';
 import { get, list } from '@vercel/blob';
 import { BLOB_PREFIX } from '../server/lib/blobBackup';
@@ -75,6 +84,7 @@ function main(): void {
   const json = flag('--json');
   const listOnly = flag('--list');
   const stamp = value('--stamp');
+  const outDir = value('--out');
   const maxAgeHours = Number(value('--max-age-hours') ?? '0') || 0;
 
   void (async () => {
@@ -121,6 +131,22 @@ function main(): void {
     const manifest = JSON.parse(manifestRaw);
     const problems: VerifyProblem[] = verifyDump(manifest, files);
 
+    // `--out` materialises the dump. Deliberately gated on verification, and refused outright when
+    // it failed: writing a corrupt off-site copy to disk would dress it up as a restorable backup.
+    let written: string | undefined;
+    if (outDir) {
+      if (problems.length > 0) {
+        console.error(`✗ Refusing to write to ${outDir} — verification failed.`);
+        process.exit(1);
+      }
+      written = path.resolve(outDir);
+      for (const [name, content] of files) {
+        const file = path.join(written, name);
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        fs.writeFileSync(file, content, 'utf8');
+      }
+    }
+
     const summary = {
       stamp: target.name,
       createdAt: target.createdAt,
@@ -135,6 +161,8 @@ function main(): void {
       migrations: Array.isArray(manifest?.appliedMigrations) ? manifest.appliedMigrations.length : 0,
       ok: problems.length === 0,
       problems,
+      // Present only with `--out`; the destination the dump was materialised to.
+      ...(written ? { out: written } : {}),
     };
 
     if (json) {
@@ -152,6 +180,7 @@ function main(): void {
         console.log(`  result       FAILED — ${problems.length} problem(s)`);
         for (const p of problems) console.log(`    - ${p.kind}: ${p.detail ?? p.table ?? ''}`);
       }
+      if (written) console.log(`  written to   ${written}  (restore it with scripts/restore-catalog.ts)`);
     }
 
     process.exit(problems.length === 0 ? 0 : 1);
