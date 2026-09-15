@@ -43,7 +43,7 @@ Confirmed in the re-baseline session, not assumed:
 | :--- | :--- |
 | `main` is `9b4eb91`, the merge of PR #22 (v2.16.0 docs follow-up) | `git rev-parse HEAD` |
 | Latest release is **v2.16.0** (`95e3967`) | `git tag -l`, `CHANGELOG.md` |
-| Tags are `v2.0.0`, `v2.9.0`, `v2.10.0`, `v2.11.0`, `v2.12.0`, `v2.12.1`, `v2.13.0`, `v2.14.0`, `v2.15.0`, `v2.16.0` — **there is no `v2.17.0`; the next release is `v3.0.0`** | `git tag -l` |
+| Tags are `v2.0.0`, `v2.9.0`, `v2.10.0`, `v2.11.0`, `v2.12.0`, `v2.12.1`, `v2.13.0`, `v2.14.0`, `v2.15.0`, `v2.16.0`. ⚠️ **Updated 2026-09-15: §3.D ships as `v2.17.0`** (PR #27, a tooling-only MINOR with no schema change and no DB write), **so `v3.0.0` is no longer the next release — it remains the tag cut when Phase 4 lands** | `git tag -l` |
 | **12** migration files; baseline (`2026_09_01_…`) sorts first | `ls supabase/migrations/` |
 | Suite is **419 tests across 33 files**; `npm run lint` (`tsc --noEmit`) clean | `npm test` run 2026-09-15: 33 passed / 419 passed |
 | Catalog: `artworks` = 138 · `media_assets` = 152 · 307 rows total · `artwork_terms` = **0** | `AGENTS.md` §5, `scripts/introspect-schema.ts` |
@@ -323,7 +323,11 @@ That removes one small piece of friction and one class of surprise.
 
 ### Phase 3 — Read-only extraction and reconcile, plus the bulk media path (ADR 0001 Phase B)
 
-Two deliverables. **Neither writes to the database.**
+Three deliverables. **None of them writes to the database.**
+
+> ⚠️ **§3.C below is the ADR 0001 Phase B *exit criteria*, not a third deliverable.** The third
+> is **§3.D**, added 2026-09-15 when the recovered WordPress export superseded the v1 scrape for
+> the mural side.
 
 #### 3.A Extraction + reconcile
 
@@ -389,9 +393,9 @@ unreachable by slug lookup. **See R-18 — this is a Phase 3 gap-list item, not 
 
 #### 3.C Exit criteria (ADR 0001 Phase B gate)
 
-**3.A status: complete (2026-09-15).** Verified by re-running the generator: 197 pages, 0 skipped;
-`npm run lint` clean; **488 tests / 36 files** green. 3.B is not started, so the render-stage
-criteria below remain open.
+**Status: 3.A, 3.B and §3.D are all complete (2026-09-15).** 3.A is verified by re-running the
+generator: 197 pages, 0 skipped. 3.B shipped in **PR #25**; §3.D in **PR #27** (v2.17.0).
+`npm run lint` clean; **612 tests / 39 files** green. Every exit criterion below is met.
 
 - [x] 100% of content pages across both archives are covered; every page with no title or no image is
       listed in the report. → **197 pages, 0 skipped**; 121 no-image pages enumerated in report §6.
@@ -402,10 +406,10 @@ criteria below remain open.
 - [x] The **schema-fit gap list is empty or contains only additive changes.** This is the gate.
       → **G1/G2/G3 additive; gate satisfied.**
 - [x] `wayback/` is byte-identical to its pre-run state (verify with `git status`).
-- [ ] The render stage has produced a manifest covering every `needs_upload` image, **with no
-      `original.*` anywhere in it.** *(3.B — not started)*
-- [ ] `scripts/wayback-render.ts` and `scripts/wayback-register.ts --dry-run` both run clean.
-      *(3.B — not started)*
+- [x] The render stage has produced a manifest covering every `needs_upload` image, **with no
+      `original.*` anywhere in it.** *(3.B — done, PR #25)*
+- [x] `scripts/wayback-render.ts` and `scripts/wayback-register.ts --dry-run` both run clean.
+      *(3.B — done, PR #25; re-run 2026-09-15: 0 collisions in 152 registry rows)*
 - [x] **Zero database writes.**
 
 **Two defects found while staging the backfill (2026-09-15), both handled rather than papered over:**
@@ -424,6 +428,46 @@ criteria below remain open.
    **Owner decision required** — see §9 Q18.
 
 **Dependencies:** none. Runs in parallel with Phases 0, 1 and 2 — read-only by construction.
+
+---
+
+#### 3.D The recovered WordPress export (new 2026-09-15 — supersedes the v1 scrape for murals)
+
+The source is `wayback/centraltexasmuralsbyroryskagen-20231217234521/` — a **WP Migrate 2.6.9 export
+of the live WordPress 6.4.2 site, not a scrape**: 63 authored mural posts and ~350 originals, against
+the v1 scrape's 61 pages carrying 7 images. It **supersedes `centraltexasmurals.com-v1` for the mural
+side** — same 61 artworks, **+1 record** (`capstar-mural`), and **15× the media** (7 images → 168).
+
+**Measured output** (`scripts/wayback-recovered-extract.ts`, re-derived 2026-09-15): 62 published
+posts → **60 NEW + 2 EXISTS, 0 COLLISION**; **168 images across 61 artworks**; the two `PRD_V3` §2
+pairs merged by `applyDedupeMerges()`; **4 further candidates held as a post-ingest review queue, not
+a write gate** (owner Q5, 2026-09-15). The scrape extraction is therefore **non-authoritative for
+murals** — it still records both §2 pairs as `NEW`, i.e. 2 duplicate INSERTs.
+
+**Five defects found and fixed while building it.** All five are defects of the *shared* matcher and
+render path; the recovered path is the one that applies every fix:
+
+1. **`wayback-render.ts` recomputed the media plan instead of reusing the embedded one**, losing
+   `existingMediaByArtwork` and planning a `public_id` a **live** row already held (**R-18**).
+2. **`reconcile()`'s `shared-image` rule trusted an unverifiable `media_assets.artwork_slug`.**
+3. **`byImageBasename` was first-wins over a key that is not unique** — 7 basenames cover 46
+   artworks, and `r.jpg` alone is the `image_url` of 27.
+4. **`post_name` is percent-encoded**: read raw, `motorcycle-mural-%e2%80%94-california-dreamin` and
+   the scrape's `motorcycle-mural-—-california-dreamin` read as "one lost, one added".
+5. **`buildMediaPlan` counted only the siblings it was planning**, producing 2 `public_id` collisions.
+
+**Live-database pre-flight** (`wayback-register.ts`, plan-only): **168 `public_id`s checked, 0
+collisions in 152 registry rows**; 504 objects to upload; 168 `media_assets` rows, 3 linked and 165
+unlinked (the 165 belong to artworks that do not exist yet — unlinked ≠ broken).
+
+**Exit criteria:**
+
+- [x] The recovered corpus is extracted and classified, with `0 COLLISION`.
+- [x] The known-duplicate set is **blocked from insert**, and `applyDedupeMerges()` rewrites each
+      record to `EXISTS` with match kind `known-dedupe` — **asserted by test**, not a report line.
+- [x] `findRegistryCollisions()` is empty against the **live** registry, not a snapshot.
+- [x] Re-running the extract reproduces the artifacts (diff is exactly one `generatedAt` line).
+- [x] **Zero database writes.**
 
 ---
 
