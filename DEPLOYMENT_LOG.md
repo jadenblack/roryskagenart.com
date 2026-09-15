@@ -24,7 +24,17 @@ This document tracks all production and preview deployments for **`roryskagenart
 
 | Date (UTC) | Version | Deployment URL | Status | Build Time | Target | Associated Commits / Milestone |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **2026-09-15** | **v2.16.0** | [`roryskagen-3opl3rped-ventureio.vercel.app`](https://roryskagen-3opl3rped-ventureio.vercel.app) | `● Ready` | n/a | Production | `95e3967`: PR #21 — **media upload ladder** (`POST /api/media/upload` now renders thumb/hero/full + lqip) and **dialog header spacing** (`--dialog-pad`) **(Current Active)** |
+| **2026-09-15** | post-v2.17.0 | [`roryskagen-mflxjjduk-ventureio.vercel.app`](https://roryskagen-mflxjjduk-ventureio.vercel.app) | `● Ready` | n/a | Production | `4946546`: PR #28 — records the **proven off-site restore** in `ROADMAP_V3.md` §4.1.1 (a Blob dump was verified *and restored* into the scratch DB: 298 rows inserted, 0 failed, 138/138 artworks field-exact), settles **Q14 on Free**, records the five Phase 4 gating decisions in the brief, and adds `--out` to `scripts/verify-offsite-backup.ts`. Docs + one dev script — **no runtime change** **(Current Active)** |
+| 2026-09-15 | post-v2.17.0-preview | [`roryskagen-kuopzva2c-ventureio.vercel.app`](https://roryskagen-kuopzva2c-ventureio.vercel.app) | `● Ready` | n/a | Preview | `480713a`: `docs/v3-phase0-proven-restore` preview (PR #28) |
+| **2026-09-15** | **v2.17.0** | [`roryskagen-8nfr20e5h-ventureio.vercel.app`](https://roryskagen-8nfr20e5h-ventureio.vercel.app) | `● Ready` | n/a | Production | `d078f0a`: PR #27 — **§3.D recovered-source ingest** (`release/v2.17.0`). Offline only: no schema change, **no database write and no upload**. Annotated tag `v2.17.0` points at this commit |
+| 2026-09-15 | v2.17.0-stack ⚠️ | [`roryskagen-1hlmxv2zy-ventureio.vercel.app`](https://roryskagen-1hlmxv2zy-ventureio.vercel.app) | `● Ready` | n/a | Production | `d23feb0` → `ec1d12b` → `af481e1` → `f8ac24d`: **PRs #26, #24, #23 and #25 merged in a 90-second burst**, each triggering its own production deploy. Only the last (`f8ac24d`, PR #25) was live for the ~31 s before `d078f0a`. `af481e1` (PR #23) reports `inactive` — superseded within a second. All four are docs/infra commits with **no runtime change** |
+| 2026-09-15 | v2.17.0-preview | [`roryskagen-fxvci04lf-ventureio.vercel.app`](https://roryskagen-fxvci04lf-ventureio.vercel.app) | `● Ready` | n/a | Preview | `ff4a21a`: `release/v2.17.0` preview (PR #27) |
+| 2026-09-15 | v2.17.0-preview | [`roryskagen-ds00jjfdj-ventureio.vercel.app`](https://roryskagen-ds00jjfdj-ventureio.vercel.app) | `● Ready` | n/a | Preview | `05472dd`: `docs/v3-handoff-prompts` preview (PR #26) |
+| 2026-09-15 | v2.17.0-preview | [`roryskagen-k9mi5utv6-ventureio.vercel.app`](https://roryskagen-k9mi5utv6-ventureio.vercel.app) | `● Ready` | n/a | Preview | `e8cad05`: `docs/v3-roadmap-rebaseline` preview (PR #23) |
+| 2026-09-15 | v2.17.0-preview | [`roryskagen-bb12dc4wb-ventureio.vercel.app`](https://roryskagen-bb12dc4wb-ventureio.vercel.app) | `● Ready` | n/a | Preview | `8895914`: `feat/v3-phase-3b-media-path` preview (PR #25) |
+| 2026-09-15 | v2.17.0-preview | [`roryskagen-imz50tmv4-ventureio.vercel.app`](https://roryskagen-imz50tmv4-ventureio.vercel.app) | `● Ready` | n/a | Preview | `2748aed`: `feat/v3-phase-3a-extraction` preview (PR #24) |
+| 2026-09-15 | post-v2.16.0 | [`roryskagen-rlm0sbuc7-ventureio.vercel.app`](https://roryskagen-rlm0sbuc7-ventureio.vercel.app) | `● Ready` | n/a | Production | `9b4eb91`: PR #22 — deployment-log reconciliation for v2.16.0 (docs-only; no release cut) |
+| **2026-09-15** | **v2.16.0** | [`roryskagen-3opl3rped-ventureio.vercel.app`](https://roryskagen-3opl3rped-ventureio.vercel.app) | `● Ready` | n/a | Production | `95e3967`: PR #21 — **media upload ladder** (`POST /api/media/upload` now renders thumb/hero/full + lqip) and **dialog header spacing** (`--dialog-pad`) |
 | 2026-09-15 | v2.16.0-preview | [`roryskagen-80qokoqnh-ventureio.vercel.app`](https://roryskagen-80qokoqnh-ventureio.vercel.app) | `● Ready` | n/a | Preview | `cdf5ce6`: `release/v2.16.0` preview (PR #21) |
 | 2026-09-15 | post-v2.15.0 | [`roryskagen-j9ads6rw4-ventureio.vercel.app`](https://roryskagen-j9ads6rw4-ventureio.vercel.app) | `● Ready` | n/a | Production | `28fa775`: PR #20 — canonical (unmodified) MIT `LICENSE` text, `DEPLOYMENT_LOG` reconciliation for v2.15.0 |
 | 2026-09-15 | post-v2.15.0-preview | [`roryskagen-magujvk3w-ventureio.vercel.app`](https://roryskagen-magujvk3w-ventureio.vercel.app) | `● Ready` | n/a | Preview | `fabc546`: `docs/deployment-log-v2.15.0` preview (PR #20) |
@@ -137,6 +147,13 @@ This document tracks all production and preview deployments for **`roryskagenart
      provides no platform backups at all (`v2.13.0`).
    - Storage is **reconciled**: `scripts/verify-media-backup.ts` compares `media_assets` against the
      `artwork-images` bucket in both directions, since database backups hold no object data.
+   - The off-site copy is **proven restorable, not merely present**: `scripts/verify-offsite-backup.ts`
+     gained `--out <dir>`, which materialises a checksum-verified Blob dump on disk (and refuses to
+     write when verification fails). The dump at `2026-09-15T06-43-29-617Z` was then restored into an
+     emptied scratch database — **298 rows inserted, 0 skipped, 0 failed**, with **138/138 artworks
+     matching on `slug` + `title` + `year`**. With the owner's **Q14** decision to remain on Free,
+     this drill *is* the compensating control for having no platform backups at all
+     (`v2.17.0` follow-up, PR #28).
 
 ---
 
@@ -156,3 +173,23 @@ let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{
 ```
 
 Do **not** invent a row. Every URL, commit and build time here came from the Vercel API.
+
+**Preferred when no Vercel token is configured — GitHub's Deployments API.** Vercel reports each
+deployment to GitHub, so the URL, target, state and commit SHA are all available through `gh`, with
+no token beyond the repo PAT. This is how the `v2.16.0`–`v2.17.0` rows were reconciled:
+
+```bash
+gh api "repos/jadenblack/roryskagenart.com/deployments?per_page=22" \
+  --jq '.[] | "\(.id) \(.created_at) \(.environment) \(.sha[0:7])"' |
+while read id created env sha; do
+  url=$(gh api "repos/jadenblack/roryskagenart.com/deployments/$id/statuses" \
+        --jq '.[0].environment_url // "-"')
+  echo "$created  $env  $sha  $url"
+done
+```
+
+⚠️ `environment_url` is what you want, **not** the `url` on the deployment object (that is an API
+self-link). ⚠️ A deployment's state can be `inactive` when a later deploy superseded it within the
+same second — record it as-is rather than omitting the row, because a missing production deploy is
+indistinguishable from a deploy that never happened. ⚠️ Resolve an unfamiliar merge SHA with
+`gh api repos/jadenblack/roryskagenart.com/commits/<sha> --jq '.commit.message'` before describing it.
