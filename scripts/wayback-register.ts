@@ -25,6 +25,7 @@
  *   npx tsx scripts/wayback-register.ts --apply               # upload + upsert
  *   npx tsx scripts/wayback-register.ts --apply --only <publicId>
  *   npx tsx scripts/wayback-register.ts --apply --force       # re-upload unchanged entries
+ *   npx tsx scripts/wayback-register.ts --staging <dir>       # register a second source (§3.D)
  */
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -48,14 +49,28 @@ import {
 
 dotenv.config();
 
-const STAGING_ROOT = path.resolve('data/staging/wayback-media');
-const MANIFEST_PATH = path.join(STAGING_ROOT, 'manifest.json');
+const DEFAULT_STAGING_ROOT = path.resolve('data/staging/wayback-media');
+
+/**
+ * Overridable so a **second source** can be registered without touching this file's logic.
+ *
+ * §3.D's recovered export renders into its own staging root (`--staging` on `wayback-render.ts`),
+ * because rendering both sources into one root would overwrite the scrape's manifest and this stage
+ * would then upload the wrong set. The manifest format is identical, so only the path differs.
+ *
+ * ⚠️ **The write gate is unchanged: still `--apply`.** Nothing here makes registering easier to do
+ * by accident — it only makes it possible to do at all for the second source.
+ */
+let STAGING_ROOT = DEFAULT_STAGING_ROOT;
+let MANIFEST_PATH = path.join(STAGING_ROOT, 'manifest.json');
 
 interface Args {
   apply: boolean;
   force: boolean;
   only?: string;
   limit?: number;
+  /** Staging root to read the render manifest from. Defaults to the scrape's. */
+  staging?: string;
 }
 
 /**
@@ -73,6 +88,7 @@ export function parseArgs(argv: string[]): Args {
       case '--force': args.force = true; break;
       case '--only': args.only = argv[++i]; break;
       case '--limit': args.limit = parseInt(argv[++i], 10); break;
+      case '--staging': args.staging = argv[++i]; break;
       default: break;
     }
   }
@@ -129,6 +145,11 @@ export function valuesFor(
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
+
+  if (args.staging) {
+    STAGING_ROOT = path.resolve(args.staging);
+    MANIFEST_PATH = path.join(STAGING_ROOT, 'manifest.json');
+  }
 
   if (!fs.existsSync(MANIFEST_PATH)) {
     throw new Error(

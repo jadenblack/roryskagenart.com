@@ -7,6 +7,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.17.0] - 2026-09-15
+
+> **§3.D — the recovered WordPress export, read end to end, plus the duplicate-detection layer the
+> "no duplicates" requirement needs.** No schema change, no vendor, **no database write and no
+> upload**: this release is the offline, inspectable half of the v3 mural ingest. Everything it
+> produces is an artifact under `data/archive/`, and the one script that can touch Supabase
+> (`wayback-register.ts`) still refuses to write without `--apply`.
+>
+> The source is `wayback/centraltexasmuralsbyroryskagen-20231217234521/` — a **WP Migrate 2.6.9
+> export of the live WordPress 6.4.2 site, not a scrape**. It supersedes
+> `centraltexasmurals.com-v1` for the mural side: same 61 artworks, **+1 record** (`capstar-mural`),
+> and **15× the media** (7 images → 168). See
+> [`plan/RECON_V3_0_0_RECOVERED_SOURCE.md`](../plan/RECON_V3_0_0_RECOVERED_SOURCE.md).
+
+### Fixed
+
+- **`wayback-render.ts` recomputed the media plan instead of reusing the one it was given**, and the
+  two stages therefore disagreed about a `public_id`. `buildMediaPlan` needs more than the reconciled
+  records: `existingMediaByArtwork` (how many media rows an artwork already owns) decides whether an
+  image gets `public_id = <slug>` or the suffixed `{slug}--{basename}` form. Rebuilding the plan from
+  `records` alone silently *loses* that input, so an image landing on an artwork that already has
+  media was planned as the bare slug — **the `public_id` its live row holds**. Measured:
+  `business/marcia-ball-cd-cover` merges into live `marcia-ball`, so its image must be
+  `marcia-ball--f-e1423423465404`; the renderer said plain `marcia-ball` and marked it `linkable`.
+  Because `generate-asset-registry.ts` indexes **first-wins**, writing that would have taken a live
+  artwork's registry key and made it render somebody else's photograph (**R-18**).
+  `wayback-register.ts`'s live pre-flight caught it and refused — the guard working exactly as
+  designed — but the correct plan already existed and the render stage was throwing it away. The
+  renderer now prefers `extraction.mediaPlan`, falling back to recomputation only for sources that
+  carry none.
+- **`reconcile()`'s `shared-image` rule trusted `media_assets.artwork_slug`.** It matched
+  `business/magazine-illustration-for-life-and-letters` to live `the-end-of-austin` at **confidence
+  0.9** purely because a `media_assets` row declaring `public_id='b'` names that artwork — and **no
+  artwork references `b.jpg`**. The declaration is unverifiable, so the rule now uses only the
+  artwork's own `image_url`. Cost of the fix: **zero**; the scrape produced no such matches.
+- **`byImageBasename` was indexed first-wins over a key that is not unique.** `artworks.image_url` is
+  a filename reference, not an identity: **7 basenames cover 46 artworks**, and `r.jpg` alone is the
+  `image_url` of **27**. A source image named `r` therefore matched whichever artwork came first in
+  the snapshot — a deterministic wrong merge, invisible in a diff. The index is now built
+  **unique-only**, so an ambiguous key matches nothing rather than matching the wrong thing.
+- **`post_name` is percent-encoded, and reading it raw would have duplicated an artwork.**
+  `motorcycle-mural-%e2%80%94-california-dreamin` decodes to exactly the scrape's
+  `motorcycle-mural-—-california-dreamin`. Left encoded, the diff reports "one lost, one added" and a
+  path-keyed merge creates a second record. No similarity measure can catch it — the strings are not
+  *similar*, they are *identical modulo encoding*. `decodePostSlug()` now applies at both read sites.
+- **`buildMediaPlan` counted only the siblings it was planning.** A single new image on an artwork
+  that already had media was planned as `public_id = <slug>` — the key its existing row holds. This
+  produced **2 R-18 collisions** on the recovered run; both are gone now that live media counts.
+- **`tsconfig.json` had no `include`/`exclude`, so `npm run lint` failed outright.** `tsc --noEmit`
+  was type-checking the gitignored export's **5,831 bundled WordPress plugin files** — ignore files
+  do not affect compilers. Fixed with an `exclude`, which *overrides* the default, so `node_modules`
+  and `dist` had to be re-listed.
+
+### Added
+
+- **`scripts/lib/wordpressDump.ts`** — a token-level reader for a real MariaDB dump (13.8 MB parsed
+  in 77 ms, single pass). It **discards** insignificant whitespace between tokens rather than
+  accumulating it; the first pass accumulated it, so `post_type` read as `' attachment'` and every
+  attachment was filtered out of the corpus — a silent, total data loss. Pinned twice by test.
+- **`scripts/lib/waybackRecovered.ts`** — extraction for the export, plus `toExtractedPages()`, the
+  seam that lets the **unchanged** reconciler consume a second source. Also `lowestTermIdCategory()`,
+  the WordPress permalink rule that reconstructs `category/slug` for a dump that stores no URL — it
+  reproduces the scrape's path prefix for **60 of 60** shared posts, which is the only reason the two
+  sources can be diffed row for row.
+- **`scripts/lib/waybackDedupe.ts`** — duplicate detection over six independent signals
+  (`known-pair`, `alias-match`, `near-miss`, `intra-source`, `shared-image`, `slug-clash`), and
+  `applyDedupeMerges()`, which feeds the verdict back. ⚠️ Without that second function the detection
+  is **inert**: the fuzzy matcher scores both PRD_V3 §2 dedupe pairs **below** its own 0.85 gate
+  (0.833 and 0.710; **no** mural post scores ≥ 0.85), so both would classify NEW and insert two
+  duplicate artworks (**R-01**).
+- **`scripts/wayback-recovered-extract.ts`** — the read-only CLI that emits the diff report, the
+  extraction JSON and the duplicate queue. `--extraction` / `--staging` were added to
+  `wayback-render.ts` and `wayback-register.ts` so a second source flows through both unchanged;
+  defaults are unchanged, so every existing invocation behaves exactly as before.
+- **`applyBasenameFallback()` / `buildBasenameIndex()`** — recovery for an image whose declared upload
+  path is wrong while its bytes are present. WordPress records the upload **month**, but
+  `post_content` keeps the path written when the post was last edited, so the two diverge permanently
+  across a month boundary. Exactly one reference is affected
+  (`2010/03/good_morning_mural.jpg` → `_/2010/04/…`), and recovering it takes
+  `unavailableCount` **1 → 0**. Candidates are a **list**, on purpose: two files sharing a basename
+  is a real ambiguity, and it is **reported, never resolved**.
+- **89 tests** (523 → **612**, across 37 → 39 files): `src/test/waybackRecovered.test.ts` and
+  `src/test/waybackDedupe.test.ts`, including a regression block that pins the embedded-plan fix.
+
+### Verified
+
+- **Rendered:** 168 of 168 images, **0 failed**, 504 objects, **no `original.*`** (24 MB staging).
+- **Register pre-flight:** 168 of 168 entries, **0 collisions in 152 registry rows**.
+- **No-op proof:** after the library changes, re-running the existing scrape pipeline reproduced its
+  artifacts with a diff of **exactly one line** (a timestamp) — the strongest available evidence that
+  a shared-code change did not alter a live result.
+- **Owner decision (Q5):** the duplicate review band is a **post-ingest cleanup list, not a write
+  gate**. Possible duplicates are inserted as separate artworks and adjudicated by the artist in the
+  studio dashboard; only the two *certain* PRD_V3 §2 pairs are merged, because inserting those is
+  precisely the duplicate the requirement forbids.
+
+---
+
 ## [2.16.0] - 2026-09-15
 
 > **The media upload ladder, plus a dialog spacing fix.** No schema change, no new vendor, no CDN.

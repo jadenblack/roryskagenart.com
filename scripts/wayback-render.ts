@@ -20,6 +20,7 @@
  *
  * Usage:
  *   npx tsx scripts/wayback-render.ts [--dry-run] [--force] [--only <publicId>] [--limit N]
+ *   npx tsx scripts/wayback-render.ts --extraction <path> --staging <dir>   # second source (§3.D)
  */
 import { createHash } from 'crypto';
 import fs from 'fs';
@@ -32,6 +33,7 @@ import {
 } from '../server/lib/imageRenditions';
 import {
   buildMediaPlan,
+  type MediaPlan,
   type MediaPlanSkip,
   type RenderManifest,
   type RenderManifestEntry,
@@ -40,9 +42,23 @@ import type { ArchiveId } from './lib/waybackExtract';
 import type { ReconciledRecord } from './lib/waybackReconcile';
 
 const WAYBACK_ROOT = path.resolve('wayback');
-const EXTRACTION_PATH = path.resolve('data/archive/wayback_extraction.json');
-const STAGING_ROOT = path.resolve('data/staging/wayback-media');
-const MANIFEST_PATH = path.join(STAGING_ROOT, 'manifest.json');
+const DEFAULT_EXTRACTION_PATH = path.resolve('data/archive/wayback_extraction.json');
+const DEFAULT_STAGING_ROOT = path.resolve('data/staging/wayback-media');
+
+/**
+ * Overridable so a **second source** can flow through this stage unchanged.
+ *
+ * `wayback_extraction.json` is the scrape's output; §3.D's recovered export writes
+ * `wayback_recovered_extraction.json` in the same `{ generatedAt, records }` shape, precisely so
+ * this renderer and `wayback-register.ts` need no logic change to accept it. Only the paths differ,
+ * and they must differ: rendering both sources into one staging root would overwrite the scrape's
+ * manifest, and the register stage would then upload the wrong set.
+ *
+ * Defaults are unchanged, so every existing invocation behaves exactly as before.
+ */
+let EXTRACTION_PATH = DEFAULT_EXTRACTION_PATH;
+let STAGING_ROOT = DEFAULT_STAGING_ROOT;
+let MANIFEST_PATH = path.join(STAGING_ROOT, 'manifest.json');
 
 export function sha256(buf: Buffer): string {
   return createHash('sha256').update(buf).digest('hex');
@@ -88,6 +104,16 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
   const limitIdx = argv.indexOf('--limit');
   const limit = limitIdx >= 0 ? parseInt(argv[limitIdx + 1], 10) : undefined;
 
+  // Path overrides for a second source (see the module-level comment). Resolved before the
+  // existence check so a bad path fails with the path the caller actually passed.
+  const extractionIdx = argv.indexOf('--extraction');
+  if (extractionIdx >= 0) EXTRACTION_PATH = path.resolve(argv[extractionIdx + 1]);
+  const stagingIdx = argv.indexOf('--staging');
+  if (stagingIdx >= 0) {
+    STAGING_ROOT = path.resolve(argv[stagingIdx + 1]);
+    MANIFEST_PATH = path.join(STAGING_ROOT, 'manifest.json');
+  }
+
   if (!fs.existsSync(EXTRACTION_PATH)) {
     throw new Error(
       `Extraction not found: ${EXTRACTION_PATH}\nRun: npx tsx scripts/wayback-extract.ts`
@@ -96,9 +122,29 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
   const extraction = JSON.parse(fs.readFileSync(EXTRACTION_PATH, 'utf8')) as {
     generatedAt: string;
     records: ReconciledRecord[];
+    /** Present when the extraction was produced by a CLI that also planned its media. */
+    mediaPlan?: MediaPlan;
   };
 
-  const plan = buildMediaPlan(extraction.records);
+  /**
+   * ⚠️ **PREFER THE EMBEDDED PLAN. Recomputing it here is what let two stages disagree.**
+   *
+   * `buildMediaPlan` needs more than the reconciled records: `existingMediaByArtwork` (how many
+   * media rows each artwork already owns) decides whether an image gets `public_id = <slug>` or the
+   * suffixed `{slug}--{basename}` form. Rebuilding the plan from `records` alone therefore silently
+   * *loses* that input.
+   *
+   * Measured consequence: `business/marcia-ball-cd-cover` merged into live `marcia-ball`, which
+   * already has media, so its image must be `marcia-ball--f-e1423423465404`. The extracted plan says
+   * that; this stage's recomputation said plain `marcia-ball` and marked it `linkable` — i.e. it
+   * would have written `artwork_slug='marcia-ball'` and taken the live artwork's registry key
+   * (**R-18**). `wayback-register.ts`'s pre-flight caught it against the live database and refused,
+   * which is the guard working — but the correct plan existed and this stage threw it away.
+   *
+   * Falling back to `buildMediaPlan` keeps the scrape's extraction working unchanged (it carries no
+   * `mediaPlan` key).
+   */
+  const plan: MediaPlan = extraction.mediaPlan ?? buildMediaPlan(extraction.records);
   let items = plan.items;
   if (only) items = items.filter((i) => i.publicId === only);
   if (limit && limit > 0) items = items.slice(0, limit);

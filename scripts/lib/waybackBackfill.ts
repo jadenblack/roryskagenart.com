@@ -104,11 +104,16 @@ export const ARCHIVE_KIND: Record<string, ArtworkKind> = {
  * Match kinds trusted enough to act on without a human.
  *
  * `exact-slug` is a string equality against a live slug. `divergence-map` is hand-seeded from
- * `PRD_V3` §2 — a human already decided it. `fuzzy-title` is a similarity score and is NOT here:
- * at Dice 0.875 "two different paintings with similar names" and "the same painting" are
- * indistinguishable, and acting on it would fill the wrong row's empty fields.
+ * `PRD_V3` §2 — a human already decided it. `known-dedupe` is the same kind of knowledge arriving
+ * by the other route: PRD_V3 §2 *names* the duplicate pair, and `waybackDedupe.ts` applies it
+ * explicitly because both pairs score below the fuzzy gate (0.833 / 0.710) and the matcher
+ * therefore cannot see them. `fuzzy-title` is a similarity score and is NOT here: at Dice 0.875
+ * "two different paintings with similar names" and "the same painting" are indistinguishable, and
+ * acting on it would fill the wrong row's empty fields.
+ *
+ * ⚠️ DUPLICATED IN `waybackMedia.ts` — the two lists must be changed together.
  */
-export const TRUSTED_MATCH_KINDS = ['exact-slug', 'divergence-map'] as const;
+export const TRUSTED_MATCH_KINDS = ['exact-slug', 'divergence-map', 'known-dedupe'] as const;
 
 export interface InsertRow {
   slug: string;

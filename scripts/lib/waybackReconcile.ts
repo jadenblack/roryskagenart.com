@@ -31,6 +31,16 @@ export type MatchKind =
   | 'normalized-slug'
   | 'fuzzy-title'
   | 'shared-image'
+  /**
+   * Established by PRD_V3 §2 dedupe knowledge rather than by string similarity.
+   *
+   * ⚠️ This member exists because both PRD_V3 §2 pairs score **below** `FUZZY_THRESHOLD`
+   * (0.833 and 0.710), so the matcher cannot reach them and classifies them NEW. Without a way to
+   * record "this pair is known to be one work", the merge has no trustworthy `matchKind`, the
+   * linkage is refused, and the images upload unlinked — or worse, the row is inserted as a
+   * duplicate artwork. `waybackDedupe.ts` supplies the knowledge; this is how it is carried.
+   */
+  | 'known-dedupe'
   | 'none';
 
 /** PRD_V3 §2 — wayback `<category>/<slug>` → canonical DB slug. Seeded by hand, deliberately. */
@@ -192,6 +202,31 @@ function basenameOf(ref: string): string {
   return tail.replace(/\.[a-z0-9]+$/i, '').toLowerCase();
 }
 
+/**
+ * How many artworks point at each `image_url` basename.
+ *
+ * ⚠️ MEASURED OVER THE LIVE CATALOGUE: 7 basenames cover **46 artworks**. `r.jpg` alone is the
+ * `image_url` of **27** artworks; `l.jpg` of 8; `f.jpg` of 3; `d.jpg` and `k.jpg` of 2 each.
+ *
+ * The cause is the WordPress-era single-letter upload names that survived the migration: `r.jpg`
+ * is a placeholder that 27 rows were seeded with, not an image that identifies any one of them.
+ *
+ * This matters because `artworks.image_url` is the only per-artwork image pointer the reconciler
+ * has, and a key that maps to 27 artworks cannot identify one. Indexing it first-wins (which this
+ * did until the recovered-export run exposed it) means a source image named `r` matches whichever
+ * artwork happened to come first in the snapshot — a silent wrong merge, deterministic per run and
+ * therefore invisible in a diff.
+ */
+export function imageBasenameCounts(artworks: CanonicalArtworkRef[]): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const a of artworks) {
+    if (!a.imageUrl) continue;
+    const base = basenameOf(a.imageUrl);
+    if (base) counts.set(base, (counts.get(base) ?? 0) + 1);
+  }
+  return counts;
+}
+
 function buildIndexes(
   artworks: CanonicalArtworkRef[],
   media: CanonicalMediaRef[]
@@ -201,13 +236,16 @@ function buildIndexes(
   const byImageBasename = new Map<string, CanonicalArtworkRef>();
   const byMediaBasename = new Map<string, CanonicalMediaRef>();
 
+  const imageCounts = imageBasenameCounts(artworks);
+
   for (const a of artworks) {
     bySlug.set(a.slug.toLowerCase(), a);
     const key = alnumKey(a.slug);
     byAlnum.set(key, [...(byAlnum.get(key) ?? []), a]);
     if (a.imageUrl) {
       const base = basenameOf(a.imageUrl);
-      if (base && !byImageBasename.has(base)) byImageBasename.set(base, a);
+      // Only unique basenames are usable as identity keys — see `imageBasenameCounts`.
+      if (base && imageCounts.get(base) === 1) byImageBasename.set(base, a);
     }
   }
   for (const m of media) {
@@ -300,15 +338,20 @@ function matchPage(
     }
   }
 
+  /**
+   * ⚠️ Only the artwork's own `image_url` is usable here, and only when it is unique.
+   *
+   * This loop used to also consult `byMediaBasename` and trust that row's `artwork_slug`. The
+   * recovered-export run showed why that is unsound: `business/magazine-illustration-for-life-and-letters`
+   * was matched to live `the-end-of-austin` at **confidence 0.9** purely because it references
+   * `b.jpg`, and a `media_assets` row with `public_id='b'` declares `artwork_slug='the-end-of-austin'`.
+   * **No artwork references `b.jpg`** — the declaration is unverifiable, and `b` is a single-letter
+   * placeholder name of exactly the kind that produced the 27-way `r.jpg` ambiguity above.
+   *
+   * The cost of the stricter rule is measurable and zero: the scrape produced **0** `shared-image`
+   * matches under either version, so nothing is lost, and one false EXISTS is removed.
+   */
   for (const img of page.images) {
-    const byMedia = ix.byMediaBasename.get(img.basename);
-    if (byMedia?.artworkSlug && ix.bySlug.has(byMedia.artworkSlug.toLowerCase())) {
-      return {
-        canonicalSlug: byMedia.artworkSlug,
-        matchKind: 'shared-image',
-        confidence: 0.9,
-      };
-    }
     const byArt = ix.byImageBasename.get(img.basename);
     if (byArt) return { canonicalSlug: byArt.slug, matchKind: 'shared-image', confidence: 0.9 };
   }
