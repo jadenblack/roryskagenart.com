@@ -7,6 +7,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.16.0] - 2026-09-15
+
+> **The media upload ladder, plus a dialog spacing fix.** No schema change, no new vendor, no CDN.
+>
+> Scope is **S2 only** from [`plan/PRD_V2_16_MEDIA_PIPELINE.md`](../plan/PRD_V2_16_MEDIA_PIPELINE.md)
+> — that document's own §9 recommendation. **S1** (deleting the 151 unreferenced `original.*`
+> masters), **S3** (`Cache-Control` audit of the 605 existing objects) and **S5** (measuring egress
+> once) are **deferred to v3.0.0**. S1 is the only irreversible item in the PRD and the bucket is at
+> 7.5 % of the free allowance, so nothing forces it now; S3 and S5 are housekeeping that v3 touches
+> anyway. The PRD's other original items — WebP re-encode, CDN — were **removed outright** by the
+> owner's answers and by its own §2 correction.
+
+### Fixed
+
+- **`POST /api/media/upload` gave admin uploads no thumbnail at all.** The insert was
+  `VALUES ($1, $2, $2, …)`: one storage object, `url` and `thumbnail_url` set to the *same* string,
+  `renditions` and `lqip` left null, and `width`/`height` taken from client form data. Any photo
+  uploaded from the studio was therefore served at full size in the gallery grid, and the asset
+  registry could never see it. One upload now renders `thumb` (640) + `hero` (1280) + `full` (2048)
+  WebP plus a 20 px lqip placeholder, takes its dimensions and format from the **decoded** image
+  rather than from the client, and registers all three in `media_assets.renditions` — so
+  `url !== thumbnail_url` and `scripts/generate-asset-registry.ts` picks the upload up exactly like
+  a migrated asset. The source bytes are deliberately **not** retained (PRD §1 Q4: full resolution
+  is never needed in the studio; print-on-demand will source originals off-studio).
+- **Modal headers could sit at a different inset from the content beneath them.** `DialogHeader` bled
+  out to the dialog edge with `-m-6` and re-padded itself with `px-6 pt-6`, hard-coded against
+  `DialogContent`'s `p-6` — two copies of one number that only agreed while nobody changed either.
+  Any dialog that set its own padding (the inquiry modal's `sm:p-8`) left its title misaligned with
+  the body. Both now read a single `--dialog-pad` custom property, so the header follows whatever
+  padding the call site asks for, and a call site that wants more padding overrides the *variable*
+  rather than competing with `p-*`. The bottom rhythm was also stacking `pb-4` on top of the
+  container's `gap-4` (2rem) against 1.5rem above and beside the header; it is now one
+  `--dialog-pad`, like every other gap in the dialog.
+
+### Added
+
+- **`server/lib/imageRenditions.ts`** — the rendition ladder, extracted from
+  `scripts/migrate-cloudinary-to-supabase.ts` so the Cloudinary migration and the studio upload
+  route share **one** encoder. Two encoders is how the migrated catalog and the studio's own uploads
+  drift apart in quality, dimensions and object layout — and `{public_id}/{thumb,hero,full}.webp` is
+  a contract, because `src/data/assetRegistry.ts` turns those paths into the URLs the public gallery
+  renders. Renditions are never upscaled, so a small source still yields small renditions (which is
+  why 79 of the 151 migrated assets have a `thumb` the same size as their `full`).
+- **`server/lib/mediaUpload.ts`** — upload orchestration with its three side effects (storage upload,
+  public URL, row insert) **injected**. That is what makes "three objects uploaded" and
+  "`url !== thumbnail_url`" assertable offline; the old handler was unreachable to a test because
+  nothing between `multer`, a live Supabase client and a live `pg` pool can be exercised in vitest.
+- 29 tests: `src/test/imageRenditions.test.ts` (real sharp encodes — ladder widths, no upscaling,
+  measured bytes, lqip, undecodable input), `src/test/mediaUpload.test.ts` (fake storage, real
+  renders — object paths, `url !== thumbnail_url`, dimensions from the decoded image, and *nothing
+  written* when the bytes are not an image), and the `dialog spacing contract` block in
+  `src/components/ui/dialog.test.tsx`.
+
+### Changed
+
+- **`sharp` moved from `devDependencies` to `dependencies`.** It was a script-only dependency; the
+  upload route now requires it inside the Vercel serverless function.
+- `scripts/migrate-cloudinary-to-supabase.ts` imports the shared encoder instead of carrying its
+  private copy. Behaviour is unchanged — verified by re-running `--dry-run`, which plans the same
+  `w<=640/1280/2048 webp` objects — and its registry rows now carry dimensions measured from the
+  encoded output rather than a ratio calculation.
+
+### Notes
+
+- Suite: **419 tests / 33 files** (was 390 / 31). `npm run lint`, `npm test` and `npm run smoke`
+  (31/31 endpoints) all green.
+- The upload route was **not** exercised against production: a live test would leave a real
+  `media_assets` row and three objects in the bucket, and this repo has no delete path for storage
+  objects. Behaviour is covered by the offline tests above.
+
+---
+
 ## [2.15.0] - 2026-09-15
 
 > **Close-out release.** No gallery-facing feature and no schema change. Every item is something
