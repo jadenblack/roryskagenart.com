@@ -20,7 +20,7 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/((?!api/|favicon|apple-touch-icon|android-chrome|site[.]webmanifest).*)",
+      "source": "/((?!api/|favicon|apple-touch-icon|android-chrome|site[.]webmanifest|robots[.]txt|sitemap[.]xml).*)",
       "destination": "/index.html"
     }
   ]

@@ -88,7 +88,8 @@ dump as §2 and writes it to Vercel Blob under `catalog-backups/<stamp>/`.
 | :--- | :--- |
 | Route | `server/routes/cronBackup.ts`, mounted at `/api/cron/backup` |
 | Schedule | `43 6 * * *` — daily. **Hobby allows only daily cron jobs** (§2b note below) |
-| Auth | `Authorization: Bearer $CRON_SECRET`. Unset ⇒ the route returns **503** (fails closed) |
+| Auth | `Authorization: Bearer $CRON_SECRET`, a Vercel Secret scoped to **Production only**. Unset ⇒ the route returns **503** (fails closed) — which also means Preview and Development **always** return 503, by design (B7) |
+| Timeout | Hobby caps `maxDuration` at **60 s**; the default without the field is 10 s. `vercel.json` sets exactly **60** — the ceiling, honoured, and not raiseable. A run takes ~1.3 s (B6) |
 | Access | Objects are written `access: 'private'`. **Never change this** — a dump contains `profiles` emails and `inquiries` collector PII |
 | Retention | `keepRecent: 14`, one per month for history, and nothing under 7 days old is ever deleted |
 | Layout | `catalog-backups/<stamp>/manifest.json` + one `<table>.json` per table |
@@ -129,6 +130,21 @@ curl -H "Authorization: Bearer $CRON_SECRET" https://roryskagenart.com/api/cron/
 > **Hobby cron jobs may only run once per day** and scheduling precision is per-hour: a job written
 > as `43 6 * * *` fires somewhere in the following hour, not on the dot. Do not add a second cron
 > job or an hourly expression; the deployment will fail.
+>
+> **B6 — `maxDuration` (verified 2026-09-15).** Hobby caps a function at **60 s**; the default when
+> the field is absent is **10 s**. `vercel.json` sets `functions["api/index.js"].maxDuration = 60`,
+> which is exactly the ceiling — so the setting is honoured and cannot be raised (a larger value is
+> rejected at deploy time, it does not silently clamp). Measured runtime is **~1.3 s** against 138
+> artworks / 307 rows, so the leftover headroom is ~45×. Treat 60 s as a hard wall: if the catalog
+> ever grows past it, the fix is to split or stream the dump, not to raise the number.
+>
+> **B7 — `CRON_SECRET` is Production-only (verified 2026-09-15, `vercel env ls`).** The variable
+> exists in **Production** and nowhere else, so `/api/cron/backup` returns **503** on Preview and
+> Development deployments. That is intended, not a bug: the route fails closed, and a preview
+> deployment has no reason to write into the off-site store — every dump it wrote would consume the
+> same 1 GB Hobby Blob allowance as the real nightly. Confirmed as the desired behaviour; the
+> secret stays Production-only. Add it to **Preview as well** only if you ever want to trigger a
+> dump from a preview URL; do not add it to Development.
 
 ### 2c. Storage objects are not covered by any database backup
 
@@ -259,6 +275,13 @@ Facts verified against the Supabase documentation, 2026-09-14.
 > foreign-keys to `auth.users(id)`, which is empty in a new project, and `settings.updated_by`
 > foreign-keys to `profiles`. That is why neither is in the default restore set. Recovering studio
 > staff accounts means recreating the auth users first.
+
+> **Removing rows: `scripts/delete-inquiries.ts`.** No route in the server deletes anything, so a
+> test row submitted while proving the mailer could not be removed from `#/admin`. That script is
+> currently the **only** thing in this repo that deletes data, and it is deliberately slow: it is
+> read-only without `--apply`, it prints every row before deleting it, it takes ids only (never a
+> filter), and it re-reads afterwards to report what actually went. **Take a dump first** — that is
+> the entire reason this is reversible (§4a: the row is in `inquiries.json`).
 
 ### 4b. Whole-project restore from a platform backup
 
