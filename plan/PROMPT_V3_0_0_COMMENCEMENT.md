@@ -9,6 +9,16 @@
 >
 > ⚠️ **Read §4 before you trust `plan/ROADMAP_V3.md`.** It is baselined on `v2.11.0`, which is now
 > **six releases stale**, and several of its load-bearing claims are no longer true.
+>
+> ---
+>
+> ✅ **SPENT — `v3.0.0` shipped 2026-09-15.** Do **not** copy this prompt into a new session: the
+> program it commences is complete (`ROADMAP_V3.md` §1; `plan/PROMPT_V3_0_0_PHASE_4.md` is
+> executed). Kept as the record of what the v3 program looked like at the start.
+>
+> ⚠️ **Its Q13 reference below is superseded twice over.** Q13 was answered *"Phase 5 is
+> `v3.1.0`"*, and then on **2026-09-15 the owner reassigned `v3.1.0`–`v3.3.0` to the studio feedback
+> & planning tool and moved Phase 5 to `v3.4.0`** — see `ROADMAP_V3.md` §3.4 and §9 Q13.
 
 ---
 

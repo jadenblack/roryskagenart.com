@@ -9,9 +9,12 @@
 > needs.** §1.1 is the collision, and it is the one thing that must be decided before any of this
 > is built.
 >
-> **⚠️ Owner decision required: Q-A (§9).** This document assumes the tool takes `v3.1.0`–`v3.3.0`
-> and Phase 5 slides to `v3.4.0`. The alternative is written out in §3.5 and is entirely
-> defensible.
+> **✅ Owner decisions recorded 2026-09-15** (§9). **Q-A = A:** this tool takes `v3.1.0`–`v3.3.0`
+> and Phase 5 slides to `v3.4.0` — and the `ROADMAP_V3.md` edits that requires are in this same PR,
+> as §3.5 demanded. **Q-B:** the "development logs" are **`CHANGELOG.md`** and
+> **`DEPLOYMENT_LOG.md`**, shown **as they are changed**. **Q-C:** no public "What's new" page —
+> out of scope entirely, not deferred. Still open: **Q-D** (pre-flight doc repair) and **Q-E**
+> (`viewer` access to the board).
 
 ---
 
@@ -41,7 +44,8 @@ deferred studio-CMS backlog"*. **Decision #6** in that document's §8 repeats it
 closed on exactly that basis. `ROADMAP_V3.md` §4 Phase 5 is headed *"ships in `v3.1.0`"*.
 
 So "the 3.1 release" is not a free number. Three ways out, all written up in §3.5; this document
-recommends the first:
+recommends the first — **and on 2026-09-15 the owner took it (Q-A = A).** The table below is
+therefore the plan, not a proposal, and `ROADMAP_V3.md` carries the matching edit.
 
 | | `v3.1.0` | `v3.2.0` | `v3.3.0` | `v3.4.0` |
 | :--- | :--- | :--- | :--- | :--- |
@@ -155,6 +159,16 @@ and asserts it equals the checked-in artifact. A stale history view therefore ca
 is one command in the release checklist — `npx tsx scripts/generate-release-log.ts` — which sits
 naturally next to the existing `generate-asset-registry.ts` step.
 
+**"Displaying as they are changed" — what the owner asked for, and how this delivers it.** The
+requirement (Q-B, 2026-09-15) is that the two documents are shown *as they change*, not snapshotted
+once. The generated-artifact design satisfies that with a guarantee rather than a hope: the view is
+never hand-maintained, and `releaseLogSync.test.ts` **fails the suite** the moment the artifact and
+`CHANGELOG.md`/`DEPLOYMENT_LOG.md` disagree. So "the view is as current as the last regeneration" is
+enforced by the same gate that blocks a merge — a release that forgot to regenerate cannot ship,
+which is the strongest form of "as they are changed" available without reading the files at runtime.
+The cost is one checklist line per release, and it is stated in the exit criteria (§4) as
+`generate-release-log.ts` then `git diff --exit-code` → no diff.
+
 ### 3.2 D2 — `v3.1.0` has **one** new table
 
 "Nothing complicated, starting simple" means: prove the whole loop with the least schema. So
@@ -210,19 +224,30 @@ so the anon key reads zero rows. The public write reaches the table through `/ap
 endpoint, and RLS is defence in depth.** Corollary, and it belongs in a comment: never add a public
 read of `plan_items`. The table holds public submitters' email addresses.
 
-### 3.5 D5 — Version mapping (the §1.1 decision)
+### 3.5 D5 — Version mapping (the §1.1 decision) — ✅ **DECIDED 2026-09-15: A**
 
-**Recommended (A):** `v3.1.0` Capture · `v3.2.0` Group · `v3.3.0` Close the loop · **Phase 5 →
-`v3.4.0`**. Justification in §1.1.
+**Chosen (A):** `v3.1.0` Capture · `v3.2.0` Group · `v3.3.0` Close the loop · **Phase 5 →
+`v3.4.0`**. Justification in §1.1. The owner took this option on 2026-09-15.
 
-**Alternative (B):** Phase 5 keeps `v3.1.0`; the tool becomes `v3.2.0` → `v3.4.0`. Choose this if
-the mural features and the deferred studio-CMS backlog are genuinely next — in which case "core
-feature set complete by `v3.3.0`" becomes "by `v3.4.0`", and §4's releases slide by one.
+**Not chosen (B):** Phase 5 keeps `v3.1.0`; the tool becomes `v3.2.0` → `v3.4.0`. Kept on the
+record because it was a live alternative and the trade was real — but it is **not** the plan, and
+nothing below assumes it.
 
 **Either way:** `package.json` stays `0.0.0`; versions live in `CHANGELOG.md` and git tags only
-(`ROADMAP_V3.md` §3.5). No tag is moved. If the owner picks A, **`ROADMAP_V3.md` §3.4, §4 Phase 5,
-§5 and decision #6 must be edited in the same PR** that starts the work — otherwise the repo holds
-two contradictory plans, which is the exact failure mode `plan/README.md` was written to prevent.
+(`ROADMAP_V3.md` §3.5). No tag is moved. Because A was chosen, **`ROADMAP_V3.md` §3.4, §4 Phase 5,
+§5, §7 and decision #6 are edited in this same PR** — otherwise the repo holds two contradictory
+plans, which is the exact failure mode `plan/README.md` was written to prevent.
+
+⚠️ **One promise had to be re-homed, and it is recorded rather than quietly dropped.**
+`ROADMAP_V3.md` §3.3 committed to *"raise the default in `v3.1.0` with notice"* for
+`GET /api/artworks` pagination — and `v3.1.0` is now this tool. Verified 2026-09-15:
+`server/routes/artworks.ts` contains **no** `page`/`limit`/`offset` handling (only a `LIMIT 1` on
+the slug lookup), and there is **no** `/api/media/registry` route anywhere in `server/` or `src/`.
+So the opt-in pagination that promise depends on **has not shipped**, and neither has the R-20
+de-bundle it was paired with — both were scheduled for Phase 2, which shipped without them. The
+promise is therefore unfulfilled, not merely re-dated. It now rides with **Phase 5 / R-20**, and it
+is called out in `ROADMAP_V3.md` §3.4 so the reassignment is visible where the promise was made
+rather than only here.
 
 ---
 
@@ -240,7 +265,12 @@ Not an oversight list — a scope fence. Each item is scheduled in `v3.2.0`/`v3.
 - No `plan_releases` table (grouping is a text label).
 - No item detail view, no comments, no audit trail, no attachments.
 - No notification email (the nav badge is the notification).
-- No public "What's new" page.
+- No public "What's new" page — **decided out of scope entirely** (Q-C), not deferred to a later
+  release. It was the one item here that touched the public render path, `seoPlan.ts` /
+  `prerender-seo.ts` and `vercel.json`, and it is now **removed** rather than postponed.
+- No screenshot or file attachments on items or release notes — **backlog, see §8** (owner-raised
+  2026-09-15: *"screenshots would be great for anything that involves UI"*, explicitly parked as a
+  future enhancement).
 - No CSV export, no search, no drag-to-reorder.
 - No publish path for the 60 unpublished murals (see P-02).
 
@@ -436,10 +466,13 @@ The release where the board becomes a real tool rather than a list.
 4. **Item ↔ artwork linking in the UI** — pick an artwork for `source_ref` so a bug report names the
    piece it is about.
 5. **Search, filter, sort, CSV export** of items.
-6. **Public "What's new" page — gated on Q-C.** If yes, budget it properly: a real path needs
-   `scripts/prerender-seo.ts` (which writes `dist/artwork/<slug>/index.html` and is
-   artwork-specific), `scripts/lib/seoPlan.ts` (`selectIndexable` is artwork-shaped), the
-   `vercel.json` catch-all negative lookahead, and a `sitemap.xml` entry. Not a one-line change.
+6. **~~Public "What's new" page~~ — ❌ CUT (Q-C, 2026-09-15).** The owner decided there is no need
+   for public display in this scope, so this is not a `v3.3.0` item and not a later one either. It
+   is kept here, struck rather than deleted, with its cost intact so a future owner can price it
+   instead of re-deriving it: a real public path needs `scripts/prerender-seo.ts` (which writes
+   `dist/artwork/<slug>/index.html` and is artwork-specific), `scripts/lib/seoPlan.ts`
+   (`selectIndexable` is artwork-shaped), the `vercel.json` catch-all negative lookahead, and a
+   `sitemap.xml` entry. Not a one-line change — which is part of why cutting it is the cheap call.
 7. **Optional, only if the board is genuinely in daily use:** item comments, and an
    `plan_item_events` audit trail. **Do not build these speculatively** — they are the classic
    features that get built for a tool nobody uses.
@@ -452,8 +485,8 @@ The complete set, in dependency order. `→` means "cannot start before".
 
 | # | Task | Cap | Release | Blocked by |
 | :--- | :--- | :--- | :--- | :--- |
-| 0 | Decide **Q-A** (version mapping) and, if A, edit `ROADMAP_V3.md` §3.4/§4/§5/#6 | — | pre-flight | owner |
-| 1 | Decide **Q-B** ("development logs" = which documents) and **Q-C** (public changelog page) | — | pre-flight | owner |
+| 0 | ✅ **DONE 2026-09-15 — Q-A = A.** `ROADMAP_V3.md` §3.4/§4/§5/§7/#6 edited in this PR | — | pre-flight | — |
+| 1 | ✅ **DONE 2026-09-15 — Q-B:** `CHANGELOG.md` + `DEPLOYMENT_LOG.md`, shown as they change. **Q-C:** no public page | — | pre-flight | — |
 | 2 | Pre-flight doc repair: `AGENTS.md` header/§6/§8 stale numbers (§9 Q-D) | — | pre-flight | — |
 | 3 | Migration: `plan_items` + RLS + trigger + indexes | C2 | 3.1.0 | 0 |
 | 4 | Add `plan_items` to `restorePlan.ts` (`TABLES`/`RESTORE_ORDER`/`CATALOG_TABLES`) | C2 | 3.1.0 | 3 |
@@ -484,18 +517,18 @@ The complete set, in dependency order. `→` means "cannot start before".
 | 29 | Timeline/roadmap view | C7 | 3.3.0 | 20 |
 | 30 | Item ↔ artwork linking UI | C7 | 3.3.0 | 23 |
 | 31 | Search / filter / sort / CSV export | C6 | 3.3.0 | 23 |
-| 32 | Public "What's new" page | C7 | 3.3.0 | **Q-C**, 28 |
+| 32 | ~~Public "What's new" page~~ — ❌ **CUT by Q-C** (2026-09-15); see §4 `v3.3.0` item 6 | — | — | — |
 | 33 | Comments + `plan_item_events` audit trail — **only if the board is in daily use** | — | 3.3.0 opt | 23 |
+| 34 | **Screenshot attachments for UI-related items** — **backlog, not scheduled** (§8) | — | backlog | — |
 
 ---
 
 ## 6. Sequencing, dependencies, and the critical path
 
 ```
-  Q-A (version mapping) ── BLOCKING ──────────────────────────────┐
-                                                                  │
-  Q-B / Q-C ──────────────────────────────► (only 3.3 task 32)     │
-                                                                  ▼
+  Q-A ✅ = A (2026-09-15) ── CLEARED ──► `ROADMAP_V3.md` §3.4/§4/§5/§7/#6 edited in this same PR
+  Q-B ✅ `CHANGELOG.md` + `DEPLOYMENT_LOG.md`        Q-C ✅ no public page → task 32 cut
+
   3.1.0  schema ──► restorePlan ──► routes ──► UI ──► footer ──► seed ──► release
           │              │             ▲
           │              │        parser + rules (parallel, no deps)
@@ -505,10 +538,12 @@ The complete set, in dependency order. `→` means "cannot start before".
   3.2.0  plan_releases ──► grouping UI ──► detail/triage ──► badge ──► digest
                               └─ BLOCKING: 3.3's assembly needs release_id
 
-  3.3.0  assembly ──► reconciliation ──► (public page, if Q-C = yes)
+  3.3.0  assembly ──► reconciliation ──► timeline / linking / search / export
+                                          (no public page — cut by Q-C)
 ```
 
-**Critical path:** `Q-A → migration → routes → PlanningView/ChangelogView → release`.
+**Critical path:** `migration → routes → PlanningView/ChangelogView → release`. **Q-A is off it** —
+it was the gate, and it is now closed.
 
 **Genuinely parallel, no dependencies:** tasks 5–8 (the parser, the generator, the tests and the
 pure rules) can all be written before the migration exists, because none of them touch the
@@ -517,13 +552,17 @@ testable offline, which is this repo's stated testing posture.
 
 **Hard blockers, stated plainly:**
 
-- **No work before Q-A is answered.** Building this on a version number another document owns is
-  how a repo ends up with two contradictory plans.
+- ~~**No work before Q-A is answered.**~~ ✅ **CLEARED 2026-09-15 (Q-A = A).** Building this on a
+  version number another document owns is how a repo ends up with two contradictory plans — and the
+  remedy was to settle the number and edit the other document in the same PR, which is what
+  happened. The precondition is **met, not waived**: if `ROADMAP_V3.md` and this document ever
+  disagree about a version again, this blocker is back.
 - **No migration merge without task 4** (the backup set). Same PR, not a follow-up.
 - **No `v3.3.0` assembly before `v3.2.0`'s `release_id` exists** — assembly is a group-by-release
   query and has nothing to group by until then.
-- **No public page before Q-C.** It is the only item here that touches the public render path, the
-  sitemap and `vercel.json`, and it is the only one whose cost is not small.
+- ~~**No public page before Q-C.**~~ ✅ **RESOLVED by cutting it.** Q-C = no public display in this
+  scope, so the one item that touched the public render path, the sitemap and `vercel.json` leaves
+  the program entirely rather than waiting on a decision.
 
 ---
 
@@ -531,7 +570,7 @@ testable offline, which is this repo's stated testing posture.
 
 | ID | Risk | Impact | Mitigation | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **P-01** | **The version collision (§1.1)** — `v3.1.0` is already assigned to Phase 5 by `ROADMAP_V3.md` §3.4/#6/Q13 | Two contradictory plans in one repo; a release cut against the wrong scope | **Q-A**, answered before any work. If A: edit `ROADMAP_V3.md` in the same PR | Open — blocking |
+| **P-01** | **The version collision (§1.1)** — `v3.1.0` was already assigned to Phase 5 by `ROADMAP_V3.md` §3.4/#6/Q13 | Two contradictory plans in one repo; a release cut against the wrong scope | ✅ **CLOSED 2026-09-15 — Q-A = A.** Phase 5 → `v3.4.0`, and `ROADMAP_V3.md` §3.4/§4/§5/§7/#6 are edited **in this same PR**, so the two documents agree. Residual: the *unfulfilled* `v3.1.0` pagination promise, re-homed to Phase 5/R-20 rather than dropped (§3.5) | ✅ Closed |
 | **P-02** | **60 murals are live but unpublished** (`draft = true` **and** `enabled = false`; 0 of 60 in the sitemap). Neither release here publishes them, and a planning tool is a very plausible thing to build *instead of* the work | The merged mural content delivers nothing visible, indefinitely | The v3.1 seed (task 15) puts all 60 on the board as review items — that makes the gap *visible and countable* rather than a memory. Publishing them remains a separate, owner-scheduled pass; **do not let this program become the reason it slips** | Open — needs an owner date |
 | **P-03** | **The generated history artifact goes stale** — exactly the failure mode `assetRegistry.ts` has | The studio reads a changelog that is not the changelog | `releaseLogSync.test.ts` regenerates in memory and asserts equality, so staleness **cannot ship**; regeneration joins the release checklist next to `generate-asset-registry.ts` | Mitigated by design |
 | **P-04** | **A public write endpoint is a spam and cost vector.** Backlog §1.3 records that `POST /api/inquiries` has no captcha, honeypot or rate limit, and that each submission spends Resend quota | A second unguarded public endpoint next to a documented defect; a flooded inbox and burnt email quota | Honeypot + per-IP rate limit in v3.1 (task 10), **and fix `/api/inquiries` with the same helper in the same PR**. The `v3.2` digest is batched, never per-row | Open — task 10 |
@@ -541,7 +580,7 @@ testable offline, which is this repo's stated testing posture.
 | **P-08** | **Bundle growth.** `src/data/assetRegistry.ts` is now **1,010,970 bytes (~987 KB)** — up from the ~445 KB recorded in `ROADMAP_V3.md` R-20. The mural load made the site's largest payload problem worse, as R-20 predicted | Adding the changelog to the client bundle would compound a known, un-fixed problem | The history is served from `GET /api/plan/history`, never imported by a component; `AdminApp` stays `React.lazy`-loaded | Mitigated by design — but R-20 itself remains open |
 | **P-09** | **A silent seed backfill.** `ON CONFLICT DO NOTHING` keyed on `source_ref` will skip rows if the natural key is wrong, and report success | 60 items become 12 and nobody notices | The backfill **must print inserted vs skipped**, and the exit criteria assert ~60 rows — the Phase 3 NEW/EXISTS/COLLISION discipline | Open — task 15 |
 | **P-10** | **Two truths for releases** — `plan_releases` (forward) and `CHANGELOG.md` (backward) will disagree | The reconciliation screen exists to surface this; if the sources are merged instead, the release process forks | D1: never write `CHANGELOG.md` from the app; `v3.3` *drafts* and *reconciles*, a human commits. The join is on `version` and stays a join | Mitigated by design |
-| **P-11** | **Building features for a tool nobody uses** — comments, audit trails, drag-reorder, a public page | Effort spent on speculation | Everything past `v3.2.0` task 23 is explicitly optional (task 33) or gated (task 32). **The acceptance test is §0: the studio plans `v3.2.0` on the board `v3.1.0` shipped.** If that does not happen, stop and reassess before `v3.3.0` | Open — deliberate |
+| **P-11** | **Building features for a tool nobody uses** — comments, audit trails, drag-reorder, screenshot attachments, a public page | Effort spent on speculation | Everything past `v3.2.0` task 23 is explicitly optional (task 33), **cut** (task 32, by Q-C) or **parked as backlog** (task 34, screenshots). **The acceptance test is §0: the studio plans `v3.2.0` on the board `v3.1.0` shipped.** If that does not happen, stop and reassess before `v3.3.0` | Open — deliberate |
 
 ---
 
@@ -552,7 +591,8 @@ Carried forward from `ROADMAP_V3.md` §7 and `docs/adr/0001` §5 — these still
 - **`HomeLandingView` decomposition.** 1229 lines, still untouched by any migration path.
 - **Design-system work.** No design tokens, no theming rework.
 - **The studio-CMS backlog** (`BACKLOG_STUDIO_CMS.md`) — revision history, bulk actions, print/PDF,
-  inquiry notes, onboarding help. It was `v3.1.0`-or-later and it now rides with Phase 5.
+  inquiry notes, onboarding help. It was `v3.1.0`-or-later; it now rides with Phase 5 (**`v3.4.0`**,
+  after the 2026-09-15 reassignment — `v3.1.0`–`v3.3.0` are this tool).
 - **No CDN, no new vendor** (Q3) · **no full-resolution handling in the studio, ever** (Q4) ·
   **no re-encode of the existing catalog** · **do not modify `wayback/`**.
 
@@ -562,6 +602,15 @@ New to this document:
 - **Do not write `CHANGELOG.md` from the application.** It is a release artifact. Draft it, reconcile
   it, commit it by hand. D1.
 - **Do not build the comments/audit-trail layer before the board is in daily use.** Task 33.
+- **Do not build screenshot / file attachments yet.** Owner-raised 2026-09-15 — *"screenshots would
+  be great for anything that involves UI"* — and parked in the same breath as a future enhancement,
+  so it is **task 34: backlog, not scheduled**. It is not free when it does come, and the reasons
+  belong here so it is not waved through later: it needs a **storage surface** (a new bucket or
+  prefix — the repo has exactly one, `artwork-images`), an **upload route** carrying the same
+  honeypot / rate-limit / size-cap obligations as task 10, and it **inherits the R-07 / R-17 gap** —
+  Storage objects are in no database dump, and the repo has **no delete path for storage objects**,
+  so an attachment cannot be withdrawn once written. Decide the retention and delete story *before*
+  building the upload button, not after.
 - **Do not apply migrations through the Supabase CLI.** R-13 is permanent: two divergent ledgers, and
   every `2026_…` filename collapses to version `2026`.
 
@@ -571,9 +620,9 @@ New to this document:
 
 | # | Question | Blocks | Recommendation |
 | :--- | :--- | :--- | :--- |
-| **Q-A** | **Version mapping.** `v3.1.0` is already assigned to Phase 5 by `ROADMAP_V3.md` §3.4/#6/Q13. Does this tool take `v3.1.0`–`v3.3.0` and push Phase 5 to `v3.4.0` (**A**), or does Phase 5 keep `v3.1.0` and the tool become `v3.2.0`–`v3.4.0` (**B**)? | **Everything** | **A** (§1.1, §3.5). Nothing has shipped against `v3.1.0`, the tool is small and isolated, and it is the cheapest honest answer to Q17 |
-| **Q-B** | **What are the "development logs"?** This document assumes `DEPLOYMENT_LOG.md` (deployment history) + `plan/README.md` (the spec index: what was planned, executed, superseded). Candidates the owner may also mean: `plan/ROADMAP_V3.md` phase status, and the agent session logs in `.workbuddy-ai/memory/*.md` | Task 5's parser scope, task 11's view | `DEPLOYMENT_LOG.md` + `plan/README.md`. The `.workbuddy-ai/memory` logs are agent working memory, not studio-facing, and including them would put internal session notes in the admin UI |
-| **Q-C** | **Should there be a public "What's new" page?** It is the natural counterpart to a public feedback door — visitors can see what their suggestions produced — but it is the one item here that touches the public render path, `seoPlan.ts`/`prerender-seo.ts` and `vercel.json` | Task 32 | **Yes, but in `v3.3.0`, not before** — and only after the reconciliation view proves the changelog data is clean enough to publish |
+| **Q-A** | **Version mapping.** ~~Does this tool take `v3.1.0`–`v3.3.0` and push Phase 5 to `v3.4.0` (**A**), or does Phase 5 keep `v3.1.0` and the tool become `v3.2.0`–`v3.4.0` (**B**)?~~ | ~~Everything~~ | ✅ **ANSWERED 2026-09-15 — A.** The tool takes `v3.1.0`–`v3.3.0`; **Phase 5 → `v3.4.0`**. `ROADMAP_V3.md` §3.4/§4/§5/§7/#6 edited **in this same PR**. Nothing had shipped against `v3.1.0` (no tag, no CHANGELOG section, no branch), so the renumber is legitimate — and no tag was moved. Residual: the unfulfilled `v3.1.0` pagination promise, re-homed in §3.5 |
+| **Q-B** | **What are the "development logs"?** ~~This document assumes `DEPLOYMENT_LOG.md` + `plan/README.md`…~~ | Task 5's parser scope, task 11's view | ✅ **ANSWERED 2026-09-15 — `CHANGELOG.md` + `DEPLOYMENT_LOG.md`**, displayed **as they are changed**. ⚠️ This document's earlier guess of `plan/README.md` was **wrong** and is corrected here: the spec index is a *planning* artifact, not a log. Parser scope (task 5) therefore reads **exactly two files**. `.workbuddy-ai/memory/*.md` stay out — internal agent working memory, not studio-facing |
+| **Q-C** | **Should there be a public "What's new" page?** | ~~Task 32~~ | ✅ **ANSWERED 2026-09-15 — NO.** *"No need for public display in this scope."* **Not deferred — cut:** task 32 is removed, §4's `v3.3.0` item 6 is struck, and §6's blocker is resolved. This was the program's only public-render-path item, so the whole program now touches no public route, no sitemap and no `vercel.json` |
 | **Q-D** | **Should the pre-flight doc repair be in scope?** `AGENTS.md` is stale in at least four verified places: its header says *"Verified against: release `v2.13.0`"* while `v3.0.0` shipped; §6 says *"13 idempotent SQL migrations"* against 15 files on disk; §8 says *"Suite as of `v2.14.0`: 390 tests across 31 files"* against 43 test files now; and `ROADMAP_V3.md` R-20's *"~445 KB"* for `assetRegistry.ts` is now ~987 KB | Nothing — it is hygiene | **Yes, as task 2.** `ROADMAP_V3.md` R-21 names documentation drift as a permanent risk with *"a demonstrated half-life of about one release"*; this is that risk, live |
 | **Q-E** | **Should a `viewer` see the Planning board?** §3.4 says no (read is editor+, matching RLS exactly). The cost is that a read-only account can file a bug but not watch it | Task 13, task 23 | **No, keep it editor+.** The board holds public submitters' emails, and RLS/API parity is worth more than viewer visibility |
 
@@ -606,7 +655,9 @@ Restated because this program spans three releases and the process is the part t
 
 | Claim | Evidence |
 | :--- | :--- |
-| `v3.1.0` is already assigned to Phase 5 | `plan/ROADMAP_V3.md` §3.4 table; §4 "Phase 5 … ships in `v3.1.0`"; §8 decision #6; §9 Q13 |
+| `v3.1.0` **was** assigned to Phase 5 before 2026-09-15 | `plan/ROADMAP_V3.md` §3.4 table; §4 "Phase 5 … ships in `v3.1.0`"; §8 decision #6; §9 Q13 — all four now read `v3.4.0`, edited in this PR |
+| The `v3.1.0` pagination promise is **unfulfilled**, not merely re-dated | `plan/ROADMAP_V3.md` §3.3 — *"raise the default in `v3.1.0` with notice"*; `server/routes/artworks.ts` has no `page`/`limit`/`offset` (only `LIMIT 1` on the slug lookup, `:67`); no `/api/media/registry` route in `server/` or `src/` — so R-20's de-bundle is unshipped too, though both were scheduled for Phase 2 |
+| The repo has no delete path for Storage objects | `AGENTS.md` §4 / `v2.16.0` notes — *"this repo has no delete path for storage objects"*; relevant to task 34 (screenshots) |
 | 60 murals are unpublished and absent from the sitemap | `DEPLOYMENT_LOG.md` v3.0.0 row — *"0 of the 60 new mural slugs appear in the live sitemap (138 `<loc>`)"* |
 | Q17 (mural draft review) is still open | `plan/ROADMAP_V3.md` §9 Q17 |
 | `ADMIN_NAV` carries `minRole` and a badge hook | `src/components/admin/AdminLayout.tsx:31–69` (`AdminNavItem`, `ADMIN_NAV`), `:96–97` (`badgeFor`) |
@@ -634,8 +685,8 @@ Restated because this program spans three releases and the process is the part t
 
 | Document | Change | When |
 | :--- | :--- | :--- |
-| `plan/README.md` | Add this document's row; flip its status as each release ships | now (row) / each release |
-| `plan/ROADMAP_V3.md` | §3.4, §4 Phase 5, §5, §8 #6 — Phase 5 → `v3.4.0`, **only if Q-A = A** | pre-flight, task 0 |
+| `plan/README.md` | ✅ Row added and its status updated to record the task 0/1 decisions; flip again as each release ships | ✅ done / each release |
+| `plan/ROADMAP_V3.md` | ✅ **DONE** — §3.4 phase table + version-mapping table, §4 Phase 5 heading, §5, §7 studio-CMS backlog line, §8 decision #6, §9 Q13: Phase 5 → `v3.4.0`, plus the re-homed pagination promise | ✅ done — task 0 |
 | `AGENTS.md` header | *"Verified against"* → the release this work starts from | pre-flight, task 2 |
 | `AGENTS.md` §5 | `plan_items` (+ `plan_releases` in 3.2); row counts | 3.1.0 / 3.2.0 |
 | `AGENTS.md` §6 | New files: `server/routes/plan.ts`, `server/lib/planRules.ts`, `scripts/lib/releaseLog.ts`, `scripts/generate-release-log.ts`, the two admin views; migration count 15 → 16 | 3.1.0 |
