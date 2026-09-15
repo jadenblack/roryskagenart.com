@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.15.0] - 2026-09-15
+
+> **Close-out release.** No gallery-facing feature and no schema change. Every item is something
+> the v2.13.0/v2.14.0 review passes left open: two documentation gaps on the backup cron, two
+> files a public site is expected to have, and the housekeeping backlog.
+>
+> ⚠️ **This is not the `v2.15.0` described in `plan/PROMPT_V2_15_0_STORAGE_CDN.md`.** The storage
+> and CDN hardening work (WebP re-encode, real rendition ladder, dropping the 151 unreferenced
+> `original.*` masters, Cloudflare in front of Supabase Storage) is **deferred and unscheduled** —
+> it was deliberately descoped by the owner to keep this release small. The version number is spent;
+> that work will need `v2.16.0`. See `plan/README.md`.
+
+### Added
+
+- **`public/robots.txt`.** The site had no crawl policy at all. It allows the app shell and
+  disallows `/api/`. **No `Sitemap:` line on purpose**: the gallery is hash-routed
+  (`#/artwork/<slug>`), so individual artworks have no addressable URL for a crawler — a sitemap
+  would list one URL and tell Google nothing. Per-artwork routes and a real `sitemap.xml` remain a
+  v3.0.0 prerequisite.
+- **`LICENSE` (MIT).** GitHub was reporting "no license", which blocks reuse and some corporate
+  review. `README.md` previously *claimed* Apache-2.0 with no file present; the claim is now
+  corrected to match. The license text carries an explicit scope note: it covers the **application
+  code only** — the artwork and imagery remain © Rory Skagen, all rights reserved.
+- **`scripts/delete-inquiries.ts`.** `#/admin → Inquiries` can only close an inquiry; there is no
+  DELETE route anywhere in the server, so test rows were undeletable. This is the supported way to
+  remove one. It is **read-only by default** — it resolves and prints every row before touching it,
+  refuses anything that is not a UUID, deletes only the ids named, and re-reads afterwards to report
+  what actually went. See `docs/runbooks/database-backup-restore.md` §4a for the rollback, which
+  works because any dump's `inquiries.json` holds the full row.
+
+### Fixed
+
+- **The SPA catch-all rewrite swallowed `robots.txt`.** `vercel.json` rewrites every non-API path to
+  `/index.html`, so a static file only survives if it is named in the negative lookahead. `robots`
+  and `sitemap` are now excluded — the latter so that adding `sitemap.xml` in v3 does not need a
+  config change to work.
+- **The off-site backup verifier could not show which database a dump came from.**
+  `scripts/verify-offsite-backup.ts` now prints `manifest.target` in both its human and `--json`
+  output, so the A3 fix is checkable with the command that is already documented instead of needing
+  a throwaway script.
+- **`README.md` was stale in two places**: it claimed Apache-2.0 (now MIT, see above) and advertised
+  the current release as `v2.9.0`.
+
+### Changed
+
+- **Deleted the two test inquiry rows from production** (`689daeb5-…` "Delivery Test (delete me)",
+  `ea8c6344-…` "Persistence Test (delete me)"), both created while proving the mailer in v2.14.0. A
+  verified dump was taken first: `data/backups/2026-09-15T00-31-27-111Z` (8 tables, 309 rows,
+  self-verified). `public.inquiries` now holds 1 row.
+
+### Documentation
+
+- **B6 — the Hobby `maxDuration` ceiling is now recorded.** Hobby caps a function at 60 s (default
+  10 s); `vercel.json` sets exactly 60, so the value is honoured and cannot be raised. Measured
+  runtime is ~1.3 s, leaving ~45× headroom. Documented in
+  `docs/runbooks/database-backup-restore.md` §2b. No code change.
+- **B7 — `CRON_SECRET` scope confirmed and documented.** Verified via `vercel env ls`: the variable
+  is a Secret in **Production only**, so `/api/cron/backup` returns **503** on Preview and
+  Development deployments. That is intended — the route fails closed, and a preview deployment has
+  no reason to consume the same 1 GB Hobby Blob allowance as the real nightly. Left as-is and
+  written down, along with the one-line change to make if a preview URL ever needs to trigger it.
+
+---
+
 ## [2.14.0] - 2026-09-14
 
 > **Email reliability and backup follow-through.** One new additive migration
