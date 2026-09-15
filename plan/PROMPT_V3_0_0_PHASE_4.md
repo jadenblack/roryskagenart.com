@@ -169,17 +169,29 @@ re-checks collisions against the live registry first.
 
 ---
 
-## 8. Release plumbing — a known blocker
+## 8. Release plumbing
 
-⚠️ **The GitHub token cannot write.** As of 2026-09-15 the fine-grained PAT in `.env.local`
-(`GITHUB_TOKEN`) returns **403 `Resource not accessible by personal token`** on any content write:
-it can read the repo and list PRs, but it cannot push or create refs. The in-app GitHub connector
-also reports **`unauthorized`** despite showing as connected.
+✅ **Working as of 2026-09-15.** `.env.local` holds `GITHUB_TOKEN` — a **classic** PAT (`ghp_`), which
+pushes and opens PRs.
 
-**Fix before shipping anything:** grant the PAT **Contents: Read and write** and **Pull requests:
-Read and write**, and/or re-authorize the connector. The credential is no longer embedded in
-`.git/config` (it was stripped this session — that plaintext token was the known defect), so git now
-authenticates through `gh` as a credential helper.
+⚠️ **A fine-grained PAT with read-only *contents* looks healthy and is not.** `ls-remote`, `gh api`
+GETs and `gh pr list` all succeed, while every content write returns
+**403 `Resource not accessible by personal token`**. If that happens, the PAT needs **Contents: Read
+and write** (+ **Pull requests: Read and write**).
+⚠️ **`gh api /repos/<owner>/<repo> --jq .permissions` is a trap** — it reports the **user's** role
+(`push: true`), *not* the token's grants, so it happily says "push: true" for a token that cannot
+push. **The only honest test is a real write.**
+
+`gh` is **not** persistently authenticated — pass the token per command:
+
+```bash
+export GH_TOKEN="$(grep -E '^GITHUB_TOKEN=' .env.local | head -1 | cut -d= -f2- | tr -d '\r')"
+```
+
+The credential is **no longer embedded in `.git/config`** (stripped 2026-09-15 — that plaintext PAT
+was itself a known defect); git authenticates through `gh` as a credential helper.
+⚠️ The **in-app GitHub connector reports `unauthorized`** while the session context says
+"connected" — do not trust the status, call it.
 
 ---
 
