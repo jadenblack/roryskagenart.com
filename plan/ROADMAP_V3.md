@@ -94,7 +94,7 @@ this roadmap argues for, and both are *prerequisites*, not scope creep.
 | **2** | Addressability — real paths, per-artwork SEO, sitemap | No | *new — prerequisite* | `v3.0.0` |
 | **3** | Read-only extraction + reconcile, plus the bulk media path | **No** | **Phase B** | `v3.0.0` |
 | **4** | The load | **Yes — the highest-consequence write in the project's history** | **Phase C** | `v3.0.0` |
-| **5** | Mural-aware features & refactors | Yes (content edits) | **Phase D** | `v3.1.0` |
+| **5** | Mural-aware features & refactors | Yes (content edits) | **Phase D** | `v3.4.0` |
 
 > **Changed from the original roadmap.** Phases 0–3 were to ship in `v2.12.0` and Phase 4 in
 > `v3.0.0`. Those version numbers no longer exist. The release boundary is now **inside** `v3.0.0`:
@@ -131,7 +131,7 @@ candidates, and **both are avoidable**:
 | Candidate | Breaking? | Verdict |
 | :--- | :--- | :--- |
 | **Phase 2 — the public URL surface changes.** Today every artwork is `roryskagenart.com/#/artwork/<slug>`; a fragment is not a distinct document to a crawler. Phase 2 introduces `/artwork/<slug>` as the canonical, crawlable URL. | **Only if we break the legacy links.** A gallery's inbound links *are* its search equity. | **Ship permanent redirects from the legacy hash URLs.** Then this is backwards compatible and SemVer-minor. **Recommended.** |
-| **Phase 2 — `GET /api/artworks` becomes paginated.** Today it returns all 138 rows (165 KB) with no `Cache-Control`. Capping the default page size changes the response for any client that assumes a complete list. | **Yes, literally.** SemVer §8. | **Ship pagination behind an opt-in `?page=`/`?limit=` with an unchanged default**, then raise the default in `v3.1.0` with notice. De-bundle `assetRegistry.ts` in the same release — that is the real payload win and it is invisible to the API contract. |
+| **Phase 2 — `GET /api/artworks` becomes paginated.** Today it returns all 138 rows (165 KB) with no `Cache-Control`. Capping the default page size changes the response for any client that assumes a complete list. | **Yes, literally.** SemVer §8. | **Ship pagination behind an opt-in `?page=`/`?limit=` with an unchanged default**, then raise the default in a later minor with notice — ⚠️ **not `v3.1.0`, which is now the studio feedback & planning tool; see §3.4's reassignment note.** Verified 2026-09-15: neither the opt-in pagination nor the R-20 de-bundle shipped in Phase 2, so this promise is **unfulfilled and re-homed**, not merely re-dated. De-bundle `assetRegistry.ts` in the same release — that is the real payload win and it is invisible to the API contract. |
 
 **Conclusion: there is no SemVer-justified major in this program, and we should not manufacture one.**
 The alternative — shipping Phase 2 *without* legacy redirects to "earn" a textbook major — spends
@@ -142,7 +142,25 @@ real SEO equity to buy a version number. **Still recommended against.**
 | Release | Bump | Contents | The bump is correct because |
 | :--- | :--- | :--- | :--- |
 | **`v3.0.0`** | **major** *(milestone)* | Phase 0 remainder · Phase 1 remainder · **Phase 2 (addressability)** · Phase 3 (= ADR Phase B) + the bulk media path · **Phase 4 (= ADR Phase C, the load)** | **Honest position: this is a milestone major.** Every item is additive, read-only, or a data load behind `draft = true`, and the one interface change (real paths) is made non-breaking by permanent redirects. It is labelled `3.0.0` because it is the client-facing deliverable the studio engaged for: the point at which the site stops being a fine-art gallery and becomes a mural **and** fine-art practice. **The CHANGELOG entry will say this explicitly.** |
-| **`v3.1.0`** | minor | Phase 5 (= ADR Phase D, mural-aware features) + the deferred studio-CMS backlog | Additive features, driven by real data. |
+| **`v3.1.0`** | minor | **The studio feedback & planning tool — *Capture*** ([`ROADMAP_V3_1_TO_V3_3_FEEDBACK_AND_PLANNING.md`](./ROADMAP_V3_1_TO_V3_3_FEEDBACK_AND_PLANNING.md)): the changelog + deployment-log view, CRUD of ideas/features/bugs/tasks, and the public + staff intake doors | Additive: one new table (`plan_items`), no existing table, no artwork route and no public render path touched. |
+| **`v3.2.0`** | minor | The same tool — ***Group***: `plan_releases`, grouping, triage, unread badge, batched digest | Additive, with a reviewable backfill from the `v3.1.0` free-text label column. |
+| **`v3.3.0`** | minor | The same tool — ***Close the loop***: release-notes assembly and reconciliation against `CHANGELOG.md` | Additive; it **drafts** a changelog section for a human and never writes the file. |
+| **`v3.4.0`** | minor | **Phase 5** (= ADR Phase D, mural-aware features) + the deferred studio-CMS backlog | Additive features, driven by real data. |
+
+> ⚠️ **Reassigned 2026-09-15 (owner decision Q-A).** `v3.1.0` was Phase 5 in the previous revision
+> of this table. The owner chose to ship the **studio feedback & planning tool** first, as
+> `v3.1.0`–`v3.3.0`, and slide **Phase 5 to `v3.4.0`**. This is legitimate because **nothing had
+> shipped against `v3.1.0`** — no tag, no CHANGELOG section, no branch — and **no tag was moved**
+> (§3.5). Phase 5 is unchanged in substance: it is still gated on Phase 4's data, and it now ships
+> *after* the review workflow it needs already exists.
+>
+> ⚠️ **Two promises moved with it, and one of them was already broken.** §3.3's *"raise the
+> [pagination] default in `v3.1.0`"* and R-20's `assetRegistry.ts` de-bundle were both scheduled for
+> **Phase 2**, which shipped without either — verified 2026-09-15: `server/routes/artworks.ts`
+> contains no `page`/`limit`/`offset`, and no `/api/media/registry` route exists in `server/` or
+> `src/`. They now ride with **Phase 5**, which is where the de-bundle belongs anyway (§3.3 pairs
+> the two deliberately). Do not let this renumbering become the reason they are forgotten a second
+> time.
 
 **v3.0.0 ships as a sequence of PRs, not one.** Each phase is its own PR (or small set) against
 `main`, merged when `mergeStateStatus` is `CLEAN`, with `[Unreleased]` accumulating in
@@ -155,7 +173,9 @@ separately* — without needing three version numbers to do it.
 - **Split the load out:** `v3.0.0` = Phases 0–3 (foundation), `v3.1.0` = Phase 4 (the load),
   `v3.2.0` = Phase 5. *Pros:* the largest release in the project's history gets its own tag and its
   own rollback window. *Cons:* a `v3.0.0` that merges nothing contradicts the engagement, and
-  "v3" stops meaning "the merge".
+  "v3" stops meaning "the merge". *(Historical record of a rejected option — and now doubly
+  superseded, since these numbers were never used and `v3.1.0`–`v3.3.0` were later reassigned to the
+  studio feedback & planning tool. Do not read it as current.)*
 - **Purist SemVer:** renumber everything `v2.17.0` → `v2.18.0` → `v2.19.0`. *Rejected:* the owner
   has already named the deliverable v3.0.0, and the milestone is real regardless of SemVer.
 
@@ -560,16 +580,27 @@ Phase 3's gap list clean and COLLISIONs adjudicated · 3.B's render stage comple
 
 ---
 
-### Phase 5 — Mural-aware features and refactors (ADR 0001 Phase D; ships in `v3.1.0`)
+### Phase 5 — Mural-aware features and refactors (ADR 0001 Phase D; ships in `v3.4.0`)
 
 **Scope.** Mural-specific facets (project type, client, commissioning context), a mural view or
 filter, and the review-and-publish workflow for the loaded drafts — all **driven by the real data**,
 which is precisely why ADR 0001 sequenced it last.
 
+**Inherited 2026-09-15** (see §3.4): the **`GET /api/artworks` pagination default raise** (§3.3) and
+the **R-20 `assetRegistry.ts` de-bundle**. Both were scheduled for Phase 2 and shipped in neither
+Phase 2 nor any release since — the pagination was even *dated* to `v3.1.0`, which is now the studio
+feedback & planning tool. They belong together (§3.3 pairs them on purpose: the de-bundle is the real
+payload win and it is invisible to the API contract), and Phase 5 is the release that makes the
+catalog grow again, so it is the honest place for them.
+
 **Exit criteria**
 
 - [ ] Each feature is justified by the loaded data, not by speculation.
 - [ ] Every loaded draft has an explicit publish/keep-draft decision, or a documented batch policy.
+- [ ] **The re-homed `v3.1.0` pagination promise is discharged** — an opt-in `?page=`/`?limit=` with
+      an unchanged default, **or** a written decision that it is no longer wanted.
+- [ ] **R-20 is closed or explicitly re-scoped** — `assetRegistry.ts` is no longer shipped to every
+      visitor in the bundle.
 - [ ] `npm run lint` clean; suite green.
 
 **Dependencies:** Phase 4 complete. Cannot begin earlier — this is the whole point of the ADR's
@@ -649,11 +680,12 @@ ADR 0001 §5 explicitly defers these, and **this roadmap keeps that boundary**:
 - **Design-system work.** No design tokens, no component-library consolidation, no theming rework.
 - **Feature scaffolding not touched by the migration path.**
 
-And from `BACKLOG_STUDIO_CMS.md`, these are `v3.1.0`-or-later:
+And from `BACKLOG_STUDIO_CMS.md`, these are `v3.4.0`-or-later — they ride with Phase 5, because the
+`v3.1.0` they were originally dated to is now the studio feedback & planning tool (§3.4):
 
 - Per-artwork revision history / undo (§1.2).
 - Bulk catalog actions (§3.2) — the mural load doubles the catalog, so this gets *more* valuable;
-  that is an argument for `v3.1.0`, not for pulling it forward.
+  that is an argument for shipping it with Phase 5, not for pulling it forward.
 - Print stylesheet / PDF catalogue (§3.3).
 - Inquiry notes, owner, follow-up filter (§4.1).
 - Onboarding help and dashboard checklist (§4.2).
@@ -683,7 +715,10 @@ Each is reversible if the owner disagrees.
 4. **The backfill SQL is staged outside `supabase/migrations/`** until the Phase 4 PR, because the
    runner applies every file in that directory (deviation from `PRD_V3` §3 Step 4c).
 5. **The cheap wins land via `metadata`** — no migration, and before the mural rows arrive.
-6. **Phase 5 ships separately from Phase 4** (`v3.1.0`).
+6. **Phase 5 ships separately from Phase 4** — now **`v3.4.0`**, not `v3.1.0`. ⚠️ **Reassigned
+   2026-09-15 (owner decision Q-A):** `v3.1.0`–`v3.3.0` went to the **studio feedback & planning
+   tool** and Phase 5 slid one minor. Nothing had shipped against `v3.1.0` — no tag, no CHANGELOG
+   section, no branch — and **no tag was moved** (§3.4, §3.5).
 7. **`v3.0.0` is recorded as a milestone major, with the SemVer caveat stated in the CHANGELOG** —
    rather than manufacturing a breaking change to justify it (§3.4).
 8. **The taxonomy / `artwork_terms` path is treated as new, untested code** (R-09).
@@ -717,7 +752,7 @@ Each is reversible if the owner disagrees.
 | **Q10** | **Who adjudicates the COLLISION class?** | Phase 3 → 4 | The studio, with the report as the worksheet |
 | **Q11** | ~~LICENSE: Apache-2.0, or correct the README?~~ | — | ✅ **RETIRED — MIT, v2.15.0.** `LICENSE` is the canonical unmodified text; the scope note lives in `README.md` |
 | **Q12** | **Dependabot `qs`: bump, or dismiss with a reason?** | Phase 1 | Bump if it does not force an Express major; otherwise document the dismissal |
-| **Q13** | ~~Bundle Phase 5 into `v3.0.0`, or ship it as `v3.1.0`?~~ | — | **Now settled by §3.4:** Phase 5 is `v3.1.0`. Retire |
+| **Q13** | ~~Bundle Phase 5 into `v3.0.0`, or ship it as `v3.1.0`?~~ | — | ✅ **RETIRED — but its answer has since been superseded, and the trail is kept.** §3.4 settled it as *"Phase 5 is `v3.1.0`"*; on **2026-09-15 the owner reassigned `v3.1.0`–`v3.3.0` to the studio feedback & planning tool and moved Phase 5 to `v3.4.0`** (§3.4). The decision this question actually asked — *Phase 5 ships separately from Phase 4* — still stands; only the number changed. Recorded rather than silently rewritten |
 | **Q14** | **Free tier: keep-alive cron, or upgrade to Pro?** ⬆️ *Was* the top risk in the program. Free means no backups, no PITR, *and* automatic pausing after 7 idle days, so the live gallery can go down on its own. Pro (~$25/mo) removes pausing and adds 7-day daily backups; it does **not** back up Storage objects | R-14, and the whole backup story | ✅ **SETTLED 2026-09-15 — stay on Free.** The owner declined the Pro upgrade, which makes the roadmap's own fallback condition binding: *"the minimum is the daily keep-alive plus the proven-Blob-restore from §4.1.1."* **Both now hold** — the cron touches the DB daily, and the off-site restore has been executed and field-verified (§4.1.1). ⚠️ This is now a **standing precondition for the Phase 4 write**: re-run the restore drill if the backup path changes |
 | **Q15** | **Docker Desktop, or the standalone PostgreSQL client tools?** | Phase 0 items 2, 5, 6 | Moot — Docker Desktop is installed and `supabase start` works. Retire |
 | **Q16** | **NEW — how is a mural's *second* image modelled?** `media_assets.artwork_slug` is already 1:N, but `generate-asset-registry.ts` is first-wins and `artworks.image_url` is single-valued, so images 2..N are currently unreachable | Phase 3 gap list, Phase 4 schema | **An explicit `artwork_images` join (`artwork_slug`, `media_public_id`, `position`)** beats an ordering column on `media_assets`: it makes "which image is the cover" answerable, which the gallery needs regardless. Fall back to a `cover_public_id` + `sort_order` if the schema extension must stay minimal |
