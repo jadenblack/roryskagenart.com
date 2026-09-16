@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.2.0] - 2026-09-16
+
+> **"Group" — the board becomes a real tool rather than a list.** The second release of the studio
+> feedback & planning program. Releases become first-class, the board can be read grouped by them,
+> a single item can be opened and triaged, the nav shows what is waiting, and new public
+> submissions reach the studio in one batched email instead of one message each. Two migrations
+> (both additive and idempotent), applied 2026-09-16.
+
+### Added
+
+- **Releases are now a real entity.** New table `public.plan_releases` (`version text UNIQUE`,
+  `status ∈ planned|in_progress|shipped|cancelled`, `target_date`, `shipped_at`, `notes`) with RLS
+  and one `is_admin_or_editor()` policy, plus `plan_items.release_id → plan_releases(id)`,
+  **nullable and `ON DELETE SET NULL`** — deleting a release ungroups its items rather than
+  deleting the studio's thinking with it. `GET`/`POST`/`PATCH`/`DELETE /api/plan/releases`, all
+  `requireAuth` + `editor`.
+  - ⚠️ **`shipped_at` is derived, never accepted from a request body.** Moving *to* `shipped`
+    records it and keeps an existing one, so correcting a release's title cannot backdate it;
+    moving *away* clears it, because "cancelled" and "shipped on the 12th" cannot both be true.
+  - A duplicate `version` is a **409**, not a 500: `version` is the join key to the history.
+- **The board can be read grouped by release.** A Flat / By-release toggle over the same rows.
+  Every release gets a section including the empty ones, and there is always a *not filed under a
+  release* bucket. Moving an item PATCHes `release_id` **by uuid** — never by version, because two
+  releases can legitimately share a label across a rename.
+- **The item drawer.** One item in full: triage (status/priority/kind), a one-step **promote** for
+  a public suggestion (`suggestion` → `feature`/`bug`/`task`, with `source` staying `'public'`),
+  and its provenance.
+- **An unread badge on the Planning nav item.** Counts public submissions still `new`, fetched by
+  the shell rather than by the page it points at — so it is correct before you visit it.
+- **A batched email digest.** `GET /api/cron/plan-digest` (Vercel Cron, daily) sends **one** Resend
+  message covering every unreported public submission. Rows are marked `notified_at` **only after
+  a successful send**, so a failed run retries rather than losing submissions, and an item is never
+  reported twice. Batched rather than per-row because a public endpoint that sends mail is a way to
+  spend the studio's Resend quota.
+- **History ↔ plan cross-link.** A release row now shows the CHANGELOG section that shares its
+  version, joined on `normalizeVersion()` — the two sides disagree on punctuation (`## [3.2.0]` vs
+  `v3.2.0`) and nothing enforces agreement, so joining the raw strings would report every release
+  as undocumented. A **shipped** release with no CHANGELOG entry is flagged.
+
+### Changed
+
+- The cron secret check moved to `server/lib/cronAuth.ts`, shared by both scheduled routes. A
+  secret check copied twice is a secret check that drifts, and the difference is usually the one
+  that fails open. `src/test/bundleSafety.test.ts` now holds **both** routes to importing it.
+
+### Notes
+
+- ⚠️ **The drawer's `source_ref` link is read-only, and that is a deliberate deviation from the
+  plan.** The roadmap asked for an editable link field; `buildPlanItemPatch` refuses the column
+  because provenance is not an editable field, and it doubles as the item's idempotency key. The
+  deviation is recorded in the roadmap and asserted by a test so it cannot be "fixed" silently.
+- ⚠️ **The releases backfill ran as a genuine no-op** — `plan_items` was empty. It was then
+  rehearsed against the live schema inside a rolled-back transaction: duplicate labels collapsed,
+  untrimmed labels matched, non-version labels (`backlog`) became releases, `NULL`/blank were
+  skipped, and a second run created no duplicates. It runs **once**, so an item filed *after* this
+  release with a `target_release` label lands in the unfiled bucket showing its label.
+- `plan_items.target_release` is **kept**. Dropping a column in the same migration that introduces
+  its replacement removes the only way to audit the backfill afterwards.
+
+---
+
 ## [3.1.0] - 2026-09-15
 
 > **"Capture" — the studio feedback & planning board.** The first release of the studio feedback &

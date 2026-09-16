@@ -21,6 +21,85 @@ export type { ReleaseLog };
 export const RELEASE_LOG: ReleaseLog = {
   "changelog": [
     {
+      "version": "3.2.0",
+      "date": "2026-09-16",
+      "summary": "\"Group\" — the board becomes a real tool rather than a list. The second release of the studio feedback & planning program. Releases become first-class, the board can be read grouped by them, a single item can be opened and triaged, the nav shows what is waiting, and new public submissions reach the studio in one batched email instead of one message each. Two migrations (both additive and idempotent), applied 2026-09-16.",
+      "sections": [
+        {
+          "heading": "Added",
+          "category": "Added",
+          "entries": [
+            {
+              "text": "Releases are now a real entity. New table public.plan_releases (version text UNIQUE, status ∈ planned|in_progress|shipped|cancelled, target_date, shipped_at, notes) with RLS and one is_admin_or_editor() policy, plus plan_items.release_id → plan_releases(id), nullable and ON DELETE SET NULL — deleting a release ungroups its items rather than deleting the studio's thinking with it. GET/POST/PATCH/DELETE /api/plan/releases, all requireAuth + editor. records it and keeps an existing one, so correcting a release's title cannot backdate it; moving away clears it, because \"cancelled\" and \"shipped on the 12th\" cannot both be true.",
+              "details": [
+                "⚠️ shipped_at is derived, never accepted from a request body. Moving to shipped",
+                "A duplicate version is a 409, not a 500: version is the join key to the history."
+              ],
+              "raw": "**Releases are now a real entity.** New table `public.plan_releases` (`version text UNIQUE`,\n  `status ∈ planned|in_progress|shipped|cancelled`, `target_date`, `shipped_at`, `notes`) with RLS\n  and one `is_admin_or_editor()` policy, plus `plan_items.release_id → plan_releases(id)`,\n  **nullable and `ON DELETE SET NULL`** — deleting a release ungroups its items rather than\n  deleting the studio's thinking with it. `GET`/`POST`/`PATCH`/`DELETE /api/plan/releases`, all\n  `requireAuth` + `editor`.\n  - ⚠️ **`shipped_at` is derived, never accepted from a request body.** Moving *to* `shipped`\n    records it and keeps an existing one, so correcting a release's title cannot backdate it;\n    moving *away* clears it, because \"cancelled\" and \"shipped on the 12th\" cannot both be true.\n  - A duplicate `version` is a **409**, not a 500: `version` is the join key to the history."
+            },
+            {
+              "text": "The board can be read grouped by release. A Flat / By-release toggle over the same rows. Every release gets a section including the empty ones, and there is always a not filed under a release bucket. Moving an item PATCHes release_id by uuid — never by version, because two releases can legitimately share a label across a rename.",
+              "details": [],
+              "raw": "**The board can be read grouped by release.** A Flat / By-release toggle over the same rows.\n  Every release gets a section including the empty ones, and there is always a *not filed under a\n  release* bucket. Moving an item PATCHes `release_id` **by uuid** — never by version, because two\n  releases can legitimately share a label across a rename."
+            },
+            {
+              "text": "The item drawer. One item in full: triage (status/priority/kind), a one-step promote for a public suggestion (suggestion → feature/bug/task, with source staying 'public'), and its provenance.",
+              "details": [],
+              "raw": "**The item drawer.** One item in full: triage (status/priority/kind), a one-step **promote** for\n  a public suggestion (`suggestion` → `feature`/`bug`/`task`, with `source` staying `'public'`),\n  and its provenance."
+            },
+            {
+              "text": "An unread badge on the Planning nav item. Counts public submissions still new, fetched by the shell rather than by the page it points at — so it is correct before you visit it.",
+              "details": [],
+              "raw": "**An unread badge on the Planning nav item.** Counts public submissions still `new`, fetched by\n  the shell rather than by the page it points at — so it is correct before you visit it."
+            },
+            {
+              "text": "A batched email digest. GET /api/cron/plan-digest (Vercel Cron, daily) sends one Resend message covering every unreported public submission. Rows are marked notified_at only after a successful send, so a failed run retries rather than losing submissions, and an item is never reported twice. Batched rather than per-row because a public endpoint that sends mail is a way to spend the studio's Resend quota.",
+              "details": [],
+              "raw": "**A batched email digest.** `GET /api/cron/plan-digest` (Vercel Cron, daily) sends **one** Resend\n  message covering every unreported public submission. Rows are marked `notified_at` **only after\n  a successful send**, so a failed run retries rather than losing submissions, and an item is never\n  reported twice. Batched rather than per-row because a public endpoint that sends mail is a way to\n  spend the studio's Resend quota."
+            },
+            {
+              "text": "History ↔ plan cross-link. A release row now shows the CHANGELOG section that shares its version, joined on normalizeVersion() — the two sides disagree on punctuation (## [3.2.0] vs v3.2.0) and nothing enforces agreement, so joining the raw strings would report every release as undocumented. A shipped release with no CHANGELOG entry is flagged.",
+              "details": [],
+              "raw": "**History ↔ plan cross-link.** A release row now shows the CHANGELOG section that shares its\n  version, joined on `normalizeVersion()` — the two sides disagree on punctuation (`## [3.2.0]` vs\n  `v3.2.0`) and nothing enforces agreement, so joining the raw strings would report every release\n  as undocumented. A **shipped** release with no CHANGELOG entry is flagged."
+            }
+          ]
+        },
+        {
+          "heading": "Changed",
+          "category": "Changed",
+          "entries": [
+            {
+              "text": "The cron secret check moved to server/lib/cronAuth.ts, shared by both scheduled routes. A secret check copied twice is a secret check that drifts, and the difference is usually the one that fails open. src/test/bundleSafety.test.ts now holds both routes to importing it.",
+              "details": [],
+              "raw": "The cron secret check moved to `server/lib/cronAuth.ts`, shared by both scheduled routes. A\n  secret check copied twice is a secret check that drifts, and the difference is usually the one\n  that fails open. `src/test/bundleSafety.test.ts` now holds **both** routes to importing it."
+            }
+          ]
+        },
+        {
+          "heading": "Notes",
+          "category": "Notes",
+          "entries": [
+            {
+              "text": "⚠️ The drawer's source_ref link is read-only, and that is a deliberate deviation from the plan. The roadmap asked for an editable link field; buildPlanItemPatch refuses the column because provenance is not an editable field, and it doubles as the item's idempotency key. The deviation is recorded in the roadmap and asserted by a test so it cannot be \"fixed\" silently.",
+              "details": [],
+              "raw": "⚠️ **The drawer's `source_ref` link is read-only, and that is a deliberate deviation from the\n  plan.** The roadmap asked for an editable link field; `buildPlanItemPatch` refuses the column\n  because provenance is not an editable field, and it doubles as the item's idempotency key. The\n  deviation is recorded in the roadmap and asserted by a test so it cannot be \"fixed\" silently."
+            },
+            {
+              "text": "⚠️ The releases backfill ran as a genuine no-op — plan_items was empty. It was then rehearsed against the live schema inside a rolled-back transaction: duplicate labels collapsed, untrimmed labels matched, non-version labels (backlog) became releases, NULL/blank were skipped, and a second run created no duplicates. It runs once, so an item filed after this release with a target_release label lands in the unfiled bucket showing its label.",
+              "details": [],
+              "raw": "⚠️ **The releases backfill ran as a genuine no-op** — `plan_items` was empty. It was then\n  rehearsed against the live schema inside a rolled-back transaction: duplicate labels collapsed,\n  untrimmed labels matched, non-version labels (`backlog`) became releases, `NULL`/blank were\n  skipped, and a second run created no duplicates. It runs **once**, so an item filed *after* this\n  release with a `target_release` label lands in the unfiled bucket showing its label."
+            },
+            {
+              "text": "plan_items.target_release is kept. Dropping a column in the same migration that introduces its replacement removes the only way to audit the backfill afterwards.",
+              "details": [],
+              "raw": "`plan_items.target_release` is **kept**. Dropping a column in the same migration that introduces\n  its replacement removes the only way to audit the backfill afterwards."
+            }
+          ]
+        }
+      ],
+      "unreleased": false
+    },
+    {
       "version": "3.1.0",
       "date": "2026-09-15",
       "summary": "\"Capture\" — the studio feedback & planning board. The first release of the studio feedback & planning program (plan/ROADMAP_V3_1_TO_V3_3_FEEDBACK_AND_PLANNING.md), which takes v3.1.0–v3.3.0 and moves Phase 5 to v3.4.0. ⚠️ The version and the date were set in the release PR, not after it. The v3.0.0 section below shipped still headed [Unreleased], so the generated history screen rendered the entire v3 program as unreleased — a defect found only by building the thing that reads these documents back (see Fixed, below).",
@@ -2587,7 +2666,7 @@ export const RELEASE_LOG: ReleaseLog = {
     }
   ],
   "diagnostics": {
-    "releases": 21,
+    "releases": 22,
     "deploymentRows": 83,
     "warnings": []
   }

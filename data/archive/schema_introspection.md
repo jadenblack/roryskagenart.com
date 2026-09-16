@@ -2,7 +2,7 @@
 
 - Database: `postgres`
 - Connected as: `postgres`
-- Generated: 2026-09-16T01:13:40.051Z
+- Generated: 2026-09-16T15:43:13.200Z
 - Server: PostgreSQL 17.6 on x86_64-pc-linux-gnu
 
 ## Tables
@@ -14,6 +14,7 @@
 - `media_assets`
 - `pages`
 - `plan_items`
+- `plan_releases`
 - `profiles`
 - `schema_migrations`
 - `settings`
@@ -136,6 +137,22 @@
 | `page_url` | text | YES |  |
 | `created_at` | timestamp with time zone | NO | `now()` |
 | `updated_at` | timestamp with time zone | NO | `now()` |
+| `release_id` | uuid | YES |  |
+| `notified_at` | timestamp with time zone | YES |  |
+
+### `plan_releases`
+
+| column | type | null | default |
+| :--- | :--- | :--- | :--- |
+| `id` | uuid | NO | `gen_random_uuid()` |
+| `version` | text | NO |  |
+| `title` | text | YES |  |
+| `status` | text | NO | `'planned'::text` |
+| `target_date` | date | YES |  |
+| `shipped_at` | timestamp with time zone | YES |  |
+| `notes` | text | YES |  |
+| `created_at` | timestamp with time zone | NO | `now()` |
+| `updated_at` | timestamp with time zone | NO | `now()` |
 
 ### `profiles`
 
@@ -197,8 +214,12 @@
 - `plan_items` **CHECK** `plan_items_kind_check`: CHECK ((kind = ANY (ARRAY['idea'::text, 'feature'::text, 'bug'::text, 'task'::text, 'suggestion'::text])))
 - `plan_items` **PK** `plan_items_pkey`: PRIMARY KEY (id)
 - `plan_items` **CHECK** `plan_items_priority_check`: CHECK (((priority IS NULL) OR (priority = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text]))))
+- `plan_items` **FK** `plan_items_release_id_fkey`: FOREIGN KEY (release_id) REFERENCES plan_releases(id) ON DELETE SET NULL
 - `plan_items` **CHECK** `plan_items_source_check`: CHECK ((source = ANY (ARRAY['studio'::text, 'public'::text])))
 - `plan_items` **CHECK** `plan_items_status_check`: CHECK ((status = ANY (ARRAY['new'::text, 'accepted'::text, 'planned'::text, 'in_progress'::text, 'done'::text, 'declined'::text])))
+- `plan_releases` **PK** `plan_releases_pkey`: PRIMARY KEY (id)
+- `plan_releases` **CHECK** `plan_releases_status_check`: CHECK ((status = ANY (ARRAY['planned'::text, 'in_progress'::text, 'shipped'::text, 'cancelled'::text])))
+- `plan_releases` **UNIQUE** `plan_releases_version_key`: UNIQUE (version)
 - `profiles` **FK** `profiles_id_fkey`: FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
 - `profiles` **PK** `profiles_pkey`: PRIMARY KEY (id)
 - `profiles` **CHECK** `profiles_role_check`: CHECK ((role = ANY (ARRAY['admin'::text, 'editor'::text, 'viewer'::text])))
@@ -232,10 +253,14 @@
 - `media_assets`: CREATE UNIQUE INDEX media_assets_pkey ON public.media_assets USING btree (id)
 - `media_assets`: CREATE UNIQUE INDEX media_assets_public_id_key ON public.media_assets USING btree (public_id)
 - `pages`: CREATE UNIQUE INDEX pages_pkey ON public.pages USING btree (slug)
+- `plan_items`: CREATE INDEX plan_items_digest_pending_idx ON public.plan_items USING btree (created_at) WHERE ((source = 'public'::text) AND (notified_at IS NULL))
 - `plan_items`: CREATE UNIQUE INDEX plan_items_pkey ON public.plan_items USING btree (id)
+- `plan_items`: CREATE INDEX plan_items_release_id_idx ON public.plan_items USING btree (release_id) WHERE (release_id IS NOT NULL)
 - `plan_items`: CREATE INDEX plan_items_release_idx ON public.plan_items USING btree (target_release) WHERE (target_release IS NOT NULL)
 - `plan_items`: CREATE UNIQUE INDEX plan_items_source_ref_key ON public.plan_items USING btree (source_ref) WHERE (source_ref IS NOT NULL)
 - `plan_items`: CREATE INDEX plan_items_status_idx ON public.plan_items USING btree (status, created_at DESC)
+- `plan_releases`: CREATE UNIQUE INDEX plan_releases_pkey ON public.plan_releases USING btree (id)
+- `plan_releases`: CREATE UNIQUE INDEX plan_releases_version_key ON public.plan_releases USING btree (version)
 - `profiles`: CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)
 - `schema_migrations`: CREATE UNIQUE INDEX schema_migrations_pkey ON public.schema_migrations USING btree (filename)
 - `settings`: CREATE UNIQUE INDEX settings_pkey ON public.settings USING btree (key)
@@ -264,6 +289,10 @@
 - `plan_items` `trg_plan_items_touch`:
   ```sql
   CREATE TRIGGER trg_plan_items_touch BEFORE UPDATE ON public.plan_items FOR EACH ROW EXECUTE FUNCTION plan_items_touch_updated_at()
+  ```
+- `plan_releases` `trg_plan_releases_touch`:
+  ```sql
+  CREATE TRIGGER trg_plan_releases_touch BEFORE UPDATE ON public.plan_releases FOR EACH ROW EXECUTE FUNCTION plan_releases_touch_updated_at()
   ```
 - `profiles` `trg_profiles_touch`:
   ```sql
@@ -415,6 +444,21 @@ $function$
 
 ```
 
+#### `plan_releases_touch_updated_at`
+
+```sql
+CREATE OR REPLACE FUNCTION public.plan_releases_touch_updated_at()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END;
+$function$
+
+```
+
 #### `profiles_touch_updated_at`
 
 ```sql
@@ -441,6 +485,7 @@ $function$
 | `media_assets` | true | false |
 | `pages` | true | false |
 | `plan_items` | true | false |
+| `plan_releases` | true | false |
 | `profiles` | true | false |
 | `schema_migrations` | true | false |
 | `settings` | true | false |
@@ -515,6 +560,10 @@ $function$
   - USING: `is_admin_or_editor()`
   - WITH CHECK: `is_admin_or_editor()`
 
+- `plan_releases` **Admins manage plan_releases** (ALL) roles={authenticated}
+  - USING: `is_admin_or_editor()`
+  - WITH CHECK: `is_admin_or_editor()`
+
 - `profiles` **profiles_select_admin** (SELECT) roles={public}
   - USING: `is_admin()`
 
@@ -554,8 +603,9 @@ $function$
 | `media_assets` | 320 |
 | `pages` | 4 |
 | `plan_items` | 0 |
-| `profiles` | 4 |
-| `schema_migrations` | 16 |
+| `plan_releases` | 0 |
+| `profiles` | 5 |
+| `schema_migrations` | 18 |
 | `settings` | 5 |
 | `taxonomies` | 13 |
 
@@ -576,4 +626,6 @@ $function$
 - `2026_09_15_v3_phase4_schema_extension.sql` — 2026-09-15T20:01:39.468Z
 - `2026_09_15_v3_phase4_wayback_backfill.sql` — 2026-09-15T20:01:40.146Z
 - `2026_09_15_v3_phase4_year_correction.sql` — 2026-09-15T20:44:50.784Z
+- `2026_09_16_v3_2_plan_items_notified_at.sql` — 2026-09-16T11:39:32.010Z
+- `2026_09_16_v3_2_plan_releases.sql` — 2026-09-16T11:39:02.760Z
 - `2026_09_v3_media_assets_extend.sql` — 2026-09-14T05:45:27.652Z

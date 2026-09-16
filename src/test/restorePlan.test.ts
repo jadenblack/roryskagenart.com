@@ -279,3 +279,58 @@ describe('against a real dump (skipped when none exists)', () => {
     expect(rowsSeen).toBeGreaterThan(0);
   });
 });
+
+/**
+ * Backup-set completeness — the R-07 guard, and the guard for the outage it caused in reverse.
+ *
+ * Both directions failed in this repo within two days of each other, so both are locked down:
+ *
+ *   - R-07: `artwork_images` was in NO backup set until v3.0.0, so the dump looked complete while
+ *     the murals' cover ordering was unrestorable. The rule was "check restorePlan the same day a
+ *     migration creates a table" — a rule with no test behind it, one forgotten edit from recurring.
+ *   - 2026-09-16: `plan_items` was added to `RESTORE_ORDER` and merged BEFORE its migration was
+ *     applied. `scripts/backup-catalog.ts` and `server/lib/catalogDump.ts` both walk `RESTORE_ORDER`,
+ *     so the CLI dump and the Vercel cron both threw `relation "public.plan_items" does not exist`
+ *     until the migration ran — and the CLI left a 9-of-10-table dump with no manifest behind.
+ */
+describe('backup-set completeness (R-07 and its mirror image)', () => {
+  const MIGRATIONS_DIR = path.resolve(process.cwd(), 'supabase', 'migrations');
+
+  /** Every table any migration creates, with the file that creates it. */
+  function createdTables(): { table: string; file: string }[] {
+    const out: { table: string; file: string }[] = [];
+    const files = fs
+      .readdirSync(MIGRATIONS_DIR)
+      .filter((f) => f.endsWith('.sql'))
+      .sort();
+    for (const file of files) {
+      const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), 'utf8');
+      const re = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?([a-z_][a-z0-9_]*)/gi;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(sql)) !== null) out.push({ table: m[1], file });
+    }
+    return out;
+  }
+
+  it('backs up every table a migration creates', () => {
+    const missing = createdTables()
+      .filter(({ table }) => !RESTORE_ORDER.includes(table))
+      .map(({ table, file }) => `${table} (created by ${file})`);
+    expect(missing).toEqual([]);
+  });
+
+  it('dumps no table that no migration creates', () => {
+    // A table here whose migration is committed but not yet applied takes the whole dump down,
+    // because both dump paths walk RESTORE_ORDER unconditionally.
+    const created = new Set(createdTables().map((x) => x.table));
+    expect(RESTORE_ORDER.filter((t) => !created.has(t))).toEqual([]);
+  });
+
+  it('gives every dumped table a conflict target', () => {
+    for (const name of RESTORE_ORDER) {
+      const spec = TABLES[name];
+      expect(spec, `${name} is in RESTORE_ORDER but has no TABLES entry`).toBeDefined();
+      expect(spec!.conflictTarget.length).toBeGreaterThan(0);
+    }
+  });
+});

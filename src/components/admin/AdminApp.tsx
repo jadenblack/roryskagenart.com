@@ -18,6 +18,7 @@ import { useAuth } from '../../context/AuthContext';
 import { GalleryAppEngineInstance } from '../../engine/galleryStateEngine';
 import { api } from '../../lib/adminApi';
 import { parseAdminPath } from '../../lib/adminRoute';
+import type { PlanBoardSummary } from '../../lib/planTypes';
 import { UserRole } from '../../types';
 
 interface AdminAppProps {
@@ -31,6 +32,15 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingArtwork, setEditingArtwork] = useState<string | null>(null);
   const [newInquiryCount, setNewInquiryCount] = useState(0);
+  /**
+   * Public planning submissions nobody has read yet — the Planning nav badge.
+   *
+   * `v3.2.0` item 5. Fetched here rather than pushed up by `PlanningView`, because a badge that
+   * only populates once you have opened the page it points at is a badge that tells you nothing.
+   * (The inquiries badge has exactly that weakness: `InquiriesView` reports its own count, so it
+   * reads 0 until you visit Inquiries. Not repeated here.)
+   */
+  const [planTriageCount, setPlanTriageCount] = useState(0);
   const [flash, setFlash] = useState<string | null>(null);
 
   const engineVersion = useMemo(
@@ -81,6 +91,27 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
     setEditDialogOpen(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editSlug, subPath, artworks]);
+
+  // The Planning badge. `?limit=1` — one row is enough, the summary is a separate aggregate and
+  // does not shrink with the page. Re-runs on `path` so triaging on the board clears the badge
+  // on the way out, and swallowed on failure: a badge is never worth an error screen.
+  useEffect(() => {
+    if (!canManageCatalog || !isAuthenticated) {
+      setPlanTriageCount(0);
+      return;
+    }
+    let cancelled = false;
+    api<{ summary?: PlanBoardSummary }>('/api/plan/items?limit=1')
+      .then((data) => {
+        if (!cancelled) setPlanTriageCount(Number(data?.summary?.awaitingTriage ?? 0));
+      })
+      .catch(() => {
+        if (!cancelled) setPlanTriageCount(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [canManageCatalog, isAuthenticated, path]);
 
   const showLogin = !isLoading && !isAuthenticated;
 
@@ -317,6 +348,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
         currentPath={normalizedPath}
         onNavigate={onNavigate}
         inquiryCount={newInquiryCount}
+        planTriageCount={planTriageCount}
         trashedCount={trashedCount}
       >
         {renderView()}

@@ -148,6 +148,11 @@ const REQUIRED: readonly string[] = [
   // route going missing is the single highest-impact 404 this guard can catch.
   'GET /api/cron/backup',
 
+  // Added in v3.2.0. The batched planning digest is the only route that mails the studio on a
+  // schedule; if it quietly stops being mounted, public feedback stops reaching anyone and
+  // nothing else in the suite would notice.
+  'GET /api/cron/plan-digest',
+
   // Added in v3.1.0 — the studio feedback & planning board. Six endpoints, two doors:
   // `/feedback` is public and `/items` is editor+ (see server/routes/plan.ts). All six are
   // listed, not just the ones with interesting guards, because a route nobody lists is a route
@@ -158,6 +163,10 @@ const REQUIRED: readonly string[] = [
   'POST /api/plan/items',
   'PATCH /api/plan/items/:id',
   'DELETE /api/plan/items/:id',
+  'GET /api/plan/releases',
+  'POST /api/plan/releases',
+  'PATCH /api/plan/releases/:id',
+  'DELETE /api/plan/releases/:id',
 ];
 
 const missing = REQUIRED.filter((route) => !registered.includes(route));
@@ -232,6 +241,14 @@ const PROBES: readonly Probe[] = [
       'caller could download the whole database — treat that as a failure.',
   },
   {
+    method: 'GET',
+    path: '/api/cron/plan-digest',
+    expect: [401, 503],
+    because:
+      '401 when CRON_SECRET is set, 503 when it is not. A 200 here would mean an unauthenticated ' +
+      'caller could trigger mail to the studio — treat that as a failure.',
+  },
+  {
     method: 'POST',
     path: '/api/email/webhook',
     expect: [401],
@@ -297,6 +314,40 @@ const PROBES: readonly Probe[] = [
     path: '/api/plan/items/00000000-0000-0000-0000-000000000000',
     expect: [401],
     because: 'requireAuth first, so a probe can never delete anything',
+  },
+  {
+    method: 'GET',
+    path: '/api/plan/releases',
+    expect: [401],
+    because: 'releases are studio-only — not readable by the public, and not by a viewer',
+  },
+  {
+    method: 'POST',
+    path: '/api/plan/releases',
+    expect: [401],
+    because: 'creating a release is an editor action; shipped_at is derived server-side, never sent',
+    init: {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ version: 'v9.9.9', title: 'smoke' }),
+    },
+  },
+  {
+    method: 'PATCH',
+    path: '/api/plan/releases/00000000-0000-0000-0000-000000000000',
+    expect: [401],
+    because: 'requireAuth runs before the release is read, so the ship transition is unreachable',
+    init: {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status: 'shipped' }),
+    },
+  },
+  {
+    method: 'DELETE',
+    path: '/api/plan/releases/00000000-0000-0000-0000-000000000000',
+    expect: [401],
+    because: 'deleting a release ungroups its items (ON DELETE SET NULL) — a probe must not try',
   },
   {
     method: 'POST',

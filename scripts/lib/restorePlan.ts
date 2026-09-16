@@ -53,6 +53,9 @@ export const TABLES: Record<string, TableSpec> = {
   artwork_images: { name: 'artwork_images', conflictTarget: ['artwork_slug', 'media_public_id'] },
   pages: { name: 'pages', conflictTarget: ['slug'] },
   inquiries: { name: 'inquiries', conflictTarget: ['id'] },
+  // v3.2.0 Group — releases become first-class. Inserted before `plan_items`, which FKs to it via
+  // `release_id`.
+  plan_releases: { name: 'plan_releases', conflictTarget: ['id'] },
   // v3.1.0 — the studio feedback & planning board. Registered here in the SAME PR that created it,
   // which is the whole point of R-07: `artwork_images` was in NO backup set until v3.0.0, so the
   // dump looked complete while the murals' cover ordering was unrestorable. A table created by a
@@ -71,6 +74,7 @@ export const TABLES: Record<string, TableSpec> = {
  *   artwork_images.artwork_slug     → artworks(slug)
  *   artwork_images.media_public_id  → media_assets(public_id)
  *   plan_items.author_id            → profiles(id)   (v3.1.0; nullable, ON DELETE SET NULL)
+ *   plan_items.release_id           → plan_releases(id)  (v3.2.0; nullable, ON DELETE SET NULL)
  *
  * CAVEAT: `profiles` references `auth.users`, which exists in Supabase but is **empty** in a
  * fresh local project. Restoring `profiles` there fails unless the matching auth users exist
@@ -92,6 +96,7 @@ export const RESTORE_ORDER: string[] = [
   'artwork_images',
   'pages',
   'inquiries',
+  'plan_releases',
   'plan_items',
 ];
 
@@ -111,6 +116,10 @@ export const CATALOG_TABLES: string[] = [
   'artwork_images',
   'pages',
   'inquiries',
+  // v3.2.0. Same reasoning as `plan_items` below, and stronger: `plan_items.release_id` FKs to
+  // `plan_releases(id)`, so a catalog restore that omitted it would fail the foreign key on every
+  // grouped item. Studio content, not environment state.
+  'plan_releases',
   // v3.1.0. Included deliberately, against the `settings` precedent (a profiles-FK table that is
   // excluded): the board is studio *content*, not environment state, and the alternative is a
   // planning history that only comes back with `--all` — which is the failure P-06 describes.
