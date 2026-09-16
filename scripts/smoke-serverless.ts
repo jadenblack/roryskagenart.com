@@ -158,6 +158,10 @@ const REQUIRED: readonly string[] = [
   'POST /api/plan/items',
   'PATCH /api/plan/items/:id',
   'DELETE /api/plan/items/:id',
+  'GET /api/plan/releases',
+  'POST /api/plan/releases',
+  'PATCH /api/plan/releases/:id',
+  'DELETE /api/plan/releases/:id',
 ];
 
 const missing = REQUIRED.filter((route) => !registered.includes(route));
@@ -297,6 +301,40 @@ const PROBES: readonly Probe[] = [
     path: '/api/plan/items/00000000-0000-0000-0000-000000000000',
     expect: [401],
     because: 'requireAuth first, so a probe can never delete anything',
+  },
+  {
+    method: 'GET',
+    path: '/api/plan/releases',
+    expect: [401],
+    because: 'releases are studio-only — not readable by the public, and not by a viewer',
+  },
+  {
+    method: 'POST',
+    path: '/api/plan/releases',
+    expect: [401],
+    because: 'creating a release is an editor action; shipped_at is derived server-side, never sent',
+    init: {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ version: 'v9.9.9', title: 'smoke' }),
+    },
+  },
+  {
+    method: 'PATCH',
+    path: '/api/plan/releases/00000000-0000-0000-0000-000000000000',
+    expect: [401],
+    because: 'requireAuth runs before the release is read, so the ship transition is unreachable',
+    init: {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status: 'shipped' }),
+    },
+  },
+  {
+    method: 'DELETE',
+    path: '/api/plan/releases/00000000-0000-0000-0000-000000000000',
+    expect: [401],
+    because: 'deleting a release ungroups its items (ON DELETE SET NULL) — a probe must not try',
   },
   {
     method: 'POST',

@@ -5,6 +5,8 @@ import {
   buildListFilters,
   buildPlanItemInput,
   buildPlanItemPatch,
+  buildPlanReleaseInput,
+  buildPlanReleasePatch,
   isPlanKind,
   isPlanPriority,
   isPlanStatus,
@@ -472,5 +474,106 @@ describe('guards and small readers', () => {
     expect(readPageUrl('https://a.example/x')).toBe('https://a.example/x');
     expect(readPageUrl('ftp://a.example')).toBeNull();
     expect(readPageUrl(42)).toBeNull();
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * Releases (v3.2.0 Group)                                            *
+ * ------------------------------------------------------------------ */
+
+const NOW = '2026-09-16T00:00:00.000Z';
+
+describe('buildPlanReleaseInput', () => {
+  it('requires a version', () => {
+    // `version` is the join key to the derived release history, so a release without one
+    // would be invisible to the only view that joins them.
+    expect(buildPlanReleaseInput({ title: 'no version' }).error).toBe('A version is required.');
+  });
+
+  it('defaults to planned, with no ship date', () => {
+    const result = buildPlanReleaseInput({ version: 'v3.3.0' });
+    expect(result.error).toBeUndefined();
+    expect(result.value).toMatchObject({
+      version: 'v3.3.0',
+      status: 'planned',
+      shipped_at: null,
+    });
+  });
+
+  it('derives shipped_at, and ignores one the client tried to send', () => {
+    const result = buildPlanReleaseInput(
+      { version: 'v3.2.0', status: 'shipped', shipped_at: '1999-01-01T00:00:00.000Z' },
+      { now: NOW },
+    );
+    expect(result.error).toBeUndefined();
+    expect(result.value!.shipped_at).toBe(NOW);
+  });
+
+  it('refuses an item status — the two lifecycles are deliberately separate', () => {
+    const result = buildPlanReleaseInput({ version: 'v3.3.0', status: 'done' });
+    expect(result.error).toContain('Status must be one of');
+  });
+
+  it('rejects a day that does not exist', () => {
+    // The regex alone would accept this; the round-trip through Date is what catches it.
+    expect(buildPlanReleaseInput({ version: 'v3.3.0', target_date: '2026-02-31' }).error).toBe(
+      'Target date is not a real date.',
+    );
+  });
+
+  it('accepts a real date and keeps it verbatim', () => {
+    const result = buildPlanReleaseInput({ version: 'v3.3.0', target_date: '2026-12-01' });
+    expect(result.error).toBeUndefined();
+    expect(result.value!.target_date).toBe('2026-12-01');
+  });
+});
+
+describe('buildPlanReleasePatch — the ship transition', () => {
+  const PLANNED = { status: 'planned' as const, shipped_at: null };
+
+  it('records shipped_at when a release ships', () => {
+    const result = buildPlanReleasePatch({ status: 'shipped' }, { current: PLANNED, now: NOW });
+    expect(result.error).toBeUndefined();
+    expect(result.value!.status).toBe('shipped');
+    expect(result.value!.shipped_at).toBe(NOW);
+  });
+
+  it('keeps an existing ship date, so a title fix cannot backdate a release', () => {
+    const result = buildPlanReleasePatch(
+      { title: 'Renamed' },
+      { current: { status: 'shipped', shipped_at: '2026-01-01T00:00:00.000Z' }, now: NOW },
+    );
+    expect(result.error).toBeUndefined();
+    // Not merely unchanged — absent from the patch, so it is never written at all.
+    expect(result.value!.shipped_at).toBeUndefined();
+  });
+
+  it('clears shipped_at when a release is un-shipped', () => {
+    const result = buildPlanReleasePatch(
+      { status: 'cancelled' },
+      { current: { status: 'shipped', shipped_at: '2026-01-01T00:00:00.000Z' }, now: NOW },
+    );
+    expect(result.error).toBeUndefined();
+    expect(result.value!.shipped_at).toBeNull();
+  });
+
+  it('refuses an empty patch instead of writing nothing', () => {
+    // Two distinct messages, matching `buildPlanItemPatch`: a non-object body is "no fields",
+    // while an object carrying none of the patchable keys is "no updatable fields".
+    expect(buildPlanReleasePatch(null, { current: PLANNED }).error).toBe('No fields provided.');
+    expect(buildPlanReleasePatch({}, { current: PLANNED }).error).toBe(
+      'No updatable fields provided.',
+    );
+    // A status equal to the current one is dropped, not written — so it must not churn
+    // `updated_at`, and a patch containing only it is correctly reported as empty.
+    expect(buildPlanReleasePatch({ status: 'planned' }, { current: PLANNED }).error).toBe(
+      'No updatable fields provided.',
+    );
+  });
+
+  it('rejects an impossible month', () => {
+    expect(buildPlanReleasePatch({ target_date: '2026-13-01' }, { current: PLANNED }).error).toBe(
+      'Target date is not a real date.',
+    );
   });
 });

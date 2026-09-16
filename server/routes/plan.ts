@@ -2,7 +2,7 @@
  * The studio feedback & planning board — the API for capability C1 (history), C2 (capture),
  * C4 (triage) and C5 (status) of `plan/ROADMAP_V3_1_TO_V3_3_FEEDBACK_AND_PLANNING.md`.
  *
- * SIX ENDPOINTS, TWO DOORS, AND WHY THE GUARDS ARE NOT UNIFORM:
+ * TEN ENDPOINTS, TWO DOORS, AND WHY THE GUARDS ARE NOT UNIFORM:
  *
  *   GET    /api/plan/history        requireAuth                  the derived release history
  *   POST   /api/plan/feedback       public + honeypot + limit    the anonymous door
@@ -10,6 +10,10 @@
  *   GET    /api/plan/items          requireAuth + editor
  *   PATCH  /api/plan/items/:id      requireAuth + editor
  *   DELETE /api/plan/items/:id      requireAuth + editor
+ *   GET    /api/plan/releases       requireAuth + editor          v3.2.0 Group
+ *   POST   /api/plan/releases       requireAuth + editor
+ *   PATCH  /api/plan/releases/:id   requireAuth + editor
+ *   DELETE /api/plan/releases/:id   requireAuth + editor
  *
  * `planRouter.use(...)` is therefore deliberately **absent**: a router-wide guard would
  * either close the public door or open the board, and §3.4 requires them to differ. The
@@ -27,11 +31,15 @@ import {
   buildListFilters,
   buildPlanItemInput,
   buildPlanItemPatch,
+  buildPlanReleaseInput,
+  buildPlanReleasePatch,
   isUuid,
   PATCH_COLUMNS,
   PLAN_STATUSES,
+  RELEASE_PATCH_COLUMNS,
   type PlanItemInput,
   type PlanStatus,
+  type ReleaseStatus,
 } from "../lib/planRules";
 import { PUBLIC_WRITE_LIMITS, clientIp, honeypotGate, rateLimit } from "../lib/requestGuards";
 import { RELEASE_LOG } from "../../src/data/releaseLog.generated";
@@ -298,6 +306,169 @@ planRouter.delete("/items/:id", requireAuth, requireRole("editor"), async (req, 
   } catch (err: any) {
     console.error("[plan] delete failed:", err?.message ?? err);
     return res.status(500).json({ error: err.message || "Failed to delete the item." });
+  }
+});
+
+/* ------------------------------------------------------------------ *
+ * C3 — releases (v3.2.0 Group)                                        *
+ * ------------------------------------------------------------------ */
+
+/**
+ * The columns every release read and write returns. Hard-coded, like `ITEM_COLUMNS`, for
+ * the same reason: nothing derived from a request reaches a SQL string in this file.
+ */
+const RELEASE_COLUMNS = `id, version, title, status, target_date, shipped_at, notes,
+       created_at, updated_at`;
+
+/**
+ * The releases, each with the number of items filed against it.
+ *
+ * Ordered by lifecycle first (in progress, then planned, then shipped) and by `created_at`
+ * within that — **not** by `version`, because a text sort of version strings is not semver:
+ * `'v3.10.0' < 'v3.2.0'` is true as text and wrong as a release order. Sorting on a date is
+ * honest about what it actually knows.
+ */
+planRouter.get("/releases", requireAuth, requireRole("editor"), async (_req, res) => {
+  try {
+    const releases = await query(
+      `SELECT ${RELEASE_COLUMNS},
+              (SELECT count(*)::int FROM public.plan_items i WHERE i.release_id = r.id) AS item_count
+         FROM public.plan_releases r
+        ORDER BY CASE r.status
+                   WHEN 'in_progress' THEN 0
+                   WHEN 'planned' THEN 1
+                   WHEN 'shipped' THEN 2
+                   ELSE 3
+                 END,
+                 r.created_at DESC`
+    );
+    return res.json({ success: true, releases: releases.rows });
+  } catch (err: any) {
+    console.error("[plan] releases query failed:", err?.message ?? err);
+    return res.status(500).json({ error: err.message || "Failed to load the releases." });
+  }
+});
+
+/**
+ * Create a release.
+ *
+ * `shipped_at` is not accepted from the body — `buildPlanReleaseInput` derives it from the
+ * status. A duplicate `version` is a **409**, not a 500: the caller can act on it.
+ */
+planRouter.post("/releases", requireAuth, requireRole("editor"), async (req, res) => {
+  const parsed = buildPlanReleaseInput(req.body);
+  if (parsed.error) {
+    return res.status(400).json({ error: parsed.error });
+  }
+
+  try {
+    const created = await query(
+      `INSERT INTO public.plan_releases (version, title, status, target_date, shipped_at, notes)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING ${RELEASE_COLUMNS}`,
+      [
+        parsed.value.version,
+        parsed.value.title,
+        parsed.value.status,
+        parsed.value.target_date,
+        parsed.value.shipped_at,
+        parsed.value.notes,
+      ]
+    );
+    return res.status(201).json({ success: true, release: created.rows[0] });
+  } catch (err: any) {
+    // 23505 = unique_violation. `version` is UNIQUE and is the join key to the history, so
+    // a second row with the same one would silently split a release in two.
+    if (err?.code === "23505") {
+      return res.status(409).json({ error: "A release with that version already exists." });
+    }
+    console.error("[plan] release create failed:", err?.message ?? err);
+    return res.status(500).json({ error: err.message || "Failed to create the release." });
+  }
+});
+
+/**
+ * Update a release — including the "ship it" transition.
+ *
+ * The row is read first, as with items, so the status change is judged against the current
+ * status *and* the current `shipped_at`: keeping an existing ship date is what stops a
+ * title correction from backdating a release.
+ */
+planRouter.patch("/releases/:id", requireAuth, requireRole("editor"), async (req, res) => {
+  const { id } = req.params;
+  if (!isUuid(id)) {
+    return res.status(400).json({ error: "That is not a valid release id." });
+  }
+
+  try {
+    const existing = await query<{ status: ReleaseStatus; shipped_at: string | null }>(
+      `SELECT status, shipped_at FROM public.plan_releases WHERE id = $1`,
+      [id]
+    );
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: "Release not found." });
+    }
+
+    const parsed = buildPlanReleasePatch(req.body, { current: existing.rows[0] });
+    if (parsed.error) {
+      return res.status(400).json({ error: parsed.error });
+    }
+    const patch = parsed.value;
+
+    const sets: string[] = [];
+    const params: unknown[] = [];
+    for (const [key, column] of Object.entries(RELEASE_PATCH_COLUMNS)) {
+      if (Object.prototype.hasOwnProperty.call(patch, key)) {
+        params.push((patch as Record<string, unknown>)[key]);
+        sets.push(`${column} = $${params.length}`);
+      }
+    }
+    params.push(id);
+
+    const updated = await query(
+      `UPDATE public.plan_releases
+          SET ${sets.join(", ")}
+        WHERE id = $${params.length}
+        RETURNING ${RELEASE_COLUMNS}`,
+      params
+    );
+
+    // `updated_at` is not in the SET clause: `trg_plan_releases_touch` maintains it.
+    return res.json({ success: true, release: updated.rows[0] });
+  } catch (err: any) {
+    if (err?.code === "23505") {
+      return res.status(409).json({ error: "A release with that version already exists." });
+    }
+    console.error("[plan] release update failed:", err?.message ?? err);
+    return res.status(400).json({ error: err.message || "Failed to update the release." });
+  }
+});
+
+/**
+ * Remove a release.
+ *
+ * Items survive it: `plan_items.release_id` is `ON DELETE SET NULL`, so deleting a release
+ * ungroups its items rather than deleting them. That is the whole reason the FK is not
+ * `CASCADE` — a label going away must never take the studio's thinking with it.
+ */
+planRouter.delete("/releases/:id", requireAuth, requireRole("editor"), async (req, res) => {
+  const { id } = req.params;
+  if (!isUuid(id)) {
+    return res.status(400).json({ error: "That is not a valid release id." });
+  }
+
+  try {
+    const deleted = await query<{ id: string }>(
+      `DELETE FROM public.plan_releases WHERE id = $1 RETURNING id`,
+      [id]
+    );
+    if (deleted.rows.length === 0) {
+      return res.status(404).json({ error: "Release not found." });
+    }
+    return res.json({ success: true, deleted: deleted.rows[0].id });
+  } catch (err: any) {
+    console.error("[plan] release delete failed:", err?.message ?? err);
+    return res.status(500).json({ error: err.message || "Failed to delete the release." });
   }
 });
 

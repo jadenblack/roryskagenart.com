@@ -39,6 +39,35 @@ export type PlanPriority = (typeof PLAN_PRIORITIES)[number];
 export const PLAN_SOURCES = ['studio', 'public'] as const;
 export type PlanSource = (typeof PLAN_SOURCES)[number];
 
+/**
+ * The lifecycle of a **release**, which is deliberately not the lifecycle of an item.
+ *
+ * An item is `done` when its work is finished; a release is `shipped` when the release went
+ * out. Sharing one enum would either make `done` mean two different things or force a label
+ * like "done (shipped)", so they stay separate and are joined by
+ * `plan_items.release_id → plan_releases.id`.
+ */
+export const RELEASE_STATUSES = ['planned', 'in_progress', 'shipped', 'cancelled'] as const;
+export type ReleaseStatus = (typeof RELEASE_STATUSES)[number];
+
+export const RELEASE_STATUS_LABELS: Record<ReleaseStatus, string> = {
+  planned: 'Planned',
+  in_progress: 'In progress',
+  shipped: 'Shipped',
+  cancelled: 'Cancelled',
+};
+
+/**
+ * Whether a status means "this release went out".
+ *
+ * One function, because `shipped_at` is written from it and the two must not drift: a
+ * release whose status says `shipped` while `shipped_at` is NULL is a release the studio
+ * cannot give a date for, which is the one question a release row exists to answer.
+ */
+export function isShippedStatus(status: ReleaseStatus): boolean {
+  return status === 'shipped';
+}
+
 export const KIND_LABELS: Record<PlanKind, string> = {
   idea: 'Idea',
   feature: 'Feature request',
@@ -110,4 +139,6 @@ export const PLAN_LIMITS = {
   pageUrl: 500,
   /** Matches `profiles.full_name`'s practical length; `author_name` is denormalised. */
   name: 120,
+  /** Release notes. Long enough for a paragraph per release, short enough to render inline. */
+  notes: 4000,
 } as const;
