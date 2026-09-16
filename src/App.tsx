@@ -25,7 +25,7 @@ const AdminApp = React.lazy(() =>
 );
 
 export default function App() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, authHandoff } = useAuth();
   const [engineVersion, setEngineVersion] = useState(0);
   const [route, setRoute] = useState<string>('home');
   const [selectedArtworkSlug, setSelectedArtworkSlug] = useState<string | null>(null);
@@ -131,6 +131,16 @@ export default function App() {
       window.removeEventListener('popstate', handleHashChange);
     };
   }, []);
+
+  // Auto-navigate to admin when arriving from an invite / password-reset email.
+  // Supabase redirects to the bare origin (hash-routing safety), so the user
+  // lands on the public site. This sends them to #/admin where PasswordSetupView
+  // is rendered while the session from the emailed token is still live.
+  useEffect(() => {
+    if (authHandoff && route !== 'admin') {
+      window.location.hash = '#/admin';
+    }
+  }, [authHandoff, route]);
 
   // Sync route changes to the address bar
   const navigateTo = (newRoute: string, param?: string) => {
