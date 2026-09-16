@@ -1,4 +1,5 @@
 import express from "express";
+import type { NextFunction, Request, Response } from "express";
 import path from "path";
 import dotenv from "dotenv";
 import { checkDbHealth, query } from "./src/server/db";
@@ -12,12 +13,42 @@ import { settingsRouter } from "./server/routes/settings";
 import { mediaRouter } from "./server/routes/media";
 import { inquiriesRouter } from "./server/routes/inquiries";
 import { adminUsersRouter } from "./server/routes/adminUsers";
+import { planRouter } from "./server/routes/plan";
 import { cronRouter } from "./server/routes/cronBackup";
 
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
+
+/**
+ * The public write doors take a small body and nothing else.
+ *
+ * ⚠️ These are mounted **before** the global 50 MB parsers, and the order is the whole
+ * point: body-parser sets `req._body` once it has parsed, so the first parser to run wins
+ * and the global ones then skip the request. Mounted the other way round, a public
+ * endpoint would buffer a 50 MB payload before any guard could look at it — a
+ * one-request denial of service on routes that are otherwise rate limited and
+ * honeypotted.
+ *
+ * Both parsers are scoped, not just the JSON one: `Content-Type: application/x-www-form-
+ * urlencoded` is a different parser and would otherwise reach the global 50 MB limit
+ * through the same door.
+ *
+ * 64 KB is roughly seven times the largest legitimate feedback body (an 8,000-character
+ * description plus a title, an address and a URL) and far more than any inquiry.
+ *
+ * An oversized body is refused by body-parser's own error, which Express renders as a
+ * plain 413 — there is no custom error handler in this app, and adding one to improve the
+ * copy on a route a real user cannot reach is not worth the surface.
+ */
+const publicWriteParsers = [
+  express.json({ limit: "64kb" }),
+  express.urlencoded({ extended: true, limit: "64kb" }),
+];
+for (const path of ["/api/inquiries", "/api/plan/feedback", "/api/plan/items"]) {
+  app.use(path, publicWriteParsers);
+}
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
@@ -144,9 +175,35 @@ app.use("/api/settings", settingsRouter);
 app.use("/api/media", mediaRouter);
 app.use("/api/inquiries", inquiriesRouter);
 app.use("/api/admin/users", adminUsersRouter);
+// Guards are per-route, not router-wide: `/api/plan/feedback` is public while the board
+// itself is editor+. See the header of server/routes/plan.ts.
+app.use("/api/plan", planRouter);
 // Guarded by CRON_SECRET (see server/routes/cronBackup.ts). Not behind requireAuth: Vercel Cron
 // cannot present a Supabase session, and the shared secret is the stronger gate for a machine caller.
 app.use("/api/cron", cronRouter);
+
+/**
+ * Body-parser failures, answered in the API's own language.
+ *
+ * `express.json`/`express.urlencoded` throw before any route runs, so without this they fall
+ * through to Express's default handler, which answers **HTML** — including a stack trace when
+ * `NODE_ENV` is not `production`, as it is not under `npm run smoke`. A JSON API that answers
+ * HTML on its two client-reachable errors is a client that has to guess.
+ *
+ * ⚠️ Deliberately narrow. Only `entity.too.large` and `entity.parse.failed` are claimed —
+ * the 64 KB cap on the public write doors (see above) and a malformed JSON body. Everything
+ * else is forwarded unchanged, so this cannot become a place where real errors get swallowed
+ * and a 500 quietly reads as a 400.
+ */
+app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+  if (err?.type === "entity.too.large") {
+    return res.status(413).json({ error: "That request body is too large." });
+  }
+  if (err?.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "That request body is not valid JSON." });
+  }
+  return next(err);
+});
 
 // -------------------------------------------------------------
 // Vite Dev Server & Static Asset Serving

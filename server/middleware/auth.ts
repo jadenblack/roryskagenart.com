@@ -6,6 +6,15 @@ export interface CmsUser {
   email: string;
   role: "admin" | "editor" | "viewer";
   isActive: boolean;
+  /**
+   * `profiles.full_name`, when the profile has one.
+   *
+   * The profile query below already selected this column and threw it away. v3.1.0 needs
+   * it because `plan_items.author_name` is denormalised on purpose — an item stays
+   * attributable after the profile is gone — and an author name that is null for every
+   * staff-filed item would make the column decorative.
+   */
+  name: string | null;
 }
 
 declare global {
@@ -32,6 +41,7 @@ export async function resolveCmsUser(req: Request): Promise<CmsUser | null> {
     const sbUser = data.user;
     let role: CmsUser["role"] = "viewer";
     let isActive = true;
+    let name: string | null = null;
 
     try {
       const profileRes = await query<{ role: string; is_active: boolean; full_name: string | null }>(
@@ -42,6 +52,8 @@ export async function resolveCmsUser(req: Request): Promise<CmsUser | null> {
         const r = String(profileRes.rows[0].role);
         role = r === "admin" || r === "editor" ? r : "viewer";
         isActive = profileRes.rows[0].is_active !== false;
+        const fullName = profileRes.rows[0].full_name;
+        name = typeof fullName === "string" && fullName.trim().length > 0 ? fullName.trim() : null;
       } else {
         const metaRole = (sbUser.app_metadata?.role || sbUser.user_metadata?.role) as string | undefined;
         role = metaRole === "admin" || metaRole === "editor" ? metaRole : "viewer";
@@ -56,6 +68,7 @@ export async function resolveCmsUser(req: Request): Promise<CmsUser | null> {
       email: sbUser.email || "",
       role,
       isActive,
+      name,
     };
   } catch {
     return null;

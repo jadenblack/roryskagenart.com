@@ -26,10 +26,27 @@ const SHARED_SCRIPT_MODULES = [
   'scripts/lib/backupManifest.ts',
   'scripts/lib/restorePlan.ts',
   'scripts/lib/pgTarget.ts',
+  // Added in v3.1.0. `src/data/releaseLog.generated.ts` names its payload's type from here, and
+  // that artifact is bundled into the serverless function through `server/routes/plan.ts`. The
+  // import is type-only today, so nothing of this module reaches the bundle — but "type-only" is
+  // exactly the kind of assertion that rots into a value import, so it is allow-listed and checked
+  // rather than assumed.
+  'scripts/lib/releaseLog.ts',
 ];
 
 /** Runtime modules that reach into `scripts/lib/` — the ones this guard protects. */
-const RUNTIME_MODULES = ['server/lib/catalogDump.ts', 'server/lib/blobBackup.ts', 'server/routes/cronBackup.ts'];
+const RUNTIME_MODULES = [
+  'server/lib/catalogDump.ts',
+  'server/lib/blobBackup.ts',
+  'server/routes/cronBackup.ts',
+  // Added in v3.1.0 — the release history. The chain is
+  // `server/routes/plan.ts` → `src/data/releaseLog.generated.ts` → `scripts/lib/releaseLog.ts`
+  // (type only), so both links are listed. A `ChangelogView` that fetched this over HTTP is what
+  // keeps the ~220 KB artifact out of the *client* bundle; this guard is what keeps the parser's
+  // dependencies out of the serverless one.
+  'server/routes/plan.ts',
+  'src/data/releaseLog.generated.ts',
+];
 
 /**
  * Anything here turns a pure helper into a bundle-time liability:

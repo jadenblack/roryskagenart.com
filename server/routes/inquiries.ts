@@ -1,7 +1,9 @@
 import { Router } from "express";
+import type { Request, Response } from "express";
 import { query } from "../../src/server/db";
 import { requireAuth, requireRole } from "../middleware/auth";
 import { classifyInquiryOutcome } from "../lib/emailRouting";
+import { PUBLIC_WRITE_LIMITS, honeypotGate, rateLimit } from "../lib/requestGuards";
 import {
   sendInquiryNotificationToStudio,
   sendInquiryConfirmationToCollector,
@@ -9,8 +11,22 @@ import {
 
 export const inquiriesRouter = Router();
 
-// Public inquiry submission + Resend Email Dispatch
-inquiriesRouter.post("/", async (req, res) => {
+/**
+ * Public inquiry submission + Resend Email Dispatch.
+ *
+ * ⚠️ THIS ROUTE WAS UNGUARDED UNTIL v3.1.0, AND IT IS THE PROJECT'S OLDEST PUBLIC WRITE.
+ * `plan/BACKLOG_STUDIO_CMS.md` §1.3 recorded it: no captcha, no honeypot, no rate limit —
+ * and every accepted submission spends **two** Resend sends and lands in the studio's
+ * inbox. v3.1.0 adds a second public write (`POST /api/plan/feedback`); rather than ship
+ * the second one unguarded next to the first, both now use the shared helper in
+ * `server/lib/requestGuards.ts`.
+ *
+ * The honeypot answers **201 with a plausible success**, so a bot that fills it learns
+ * nothing about which field to leave alone. Both clients — `src/components/ContactView.tsx`
+ * and `src/components/InquiryModal.tsx` — read only `success` from this response, so a
+ * human who somehow trips it sees the ordinary thank-you screen.
+ */
+async function submitInquiry(req: Request, res: Response) {
   try {
     const { name, email, phone, artwork_slug, artwork_title, inquiry_type, message } = req.body || {};
     if (!name || !email || !message) {
@@ -104,7 +120,17 @@ inquiriesRouter.post("/", async (req, res) => {
     console.error("Save inquiry error:", err);
     return res.status(500).json({ error: err.message || "Failed to save inquiry" });
   }
-});
+}
+
+// The honeypot runs first because it is free, then the rate limit, then the work. Order
+// matters: a tripped honeypot must not consume the caller's budget, or a false positive
+// would throttle a real collector for the next fifteen minutes.
+inquiriesRouter.post(
+  "/",
+  honeypotGate(),
+  rateLimit({ rule: PUBLIC_WRITE_LIMITS.inquiries }),
+  submitInquiry
+);
 
 // Admin list of inquiries
 inquiriesRouter.get("/", requireAuth, requireRole("editor"), async (req, res) => {

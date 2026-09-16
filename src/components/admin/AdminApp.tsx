@@ -12,6 +12,8 @@ import { TaxonomiesAdminView } from './TaxonomiesAdminView';
 import { SettingsAdminView } from './SettingsAdminView';
 import { DesignAdminView } from './DesignAdminView';
 import { MediaAdminView } from './MediaAdminView';
+import { ChangelogView } from './ChangelogView';
+import { PlanningView } from './PlanningView';
 import { useAuth } from '../../context/AuthContext';
 import { GalleryAppEngineInstance } from '../../engine/galleryStateEngine';
 import { api } from '../../lib/adminApi';
@@ -277,6 +279,13 @@ export const AdminApp: React.FC<AdminAppProps> = ({ path, onNavigate }) => {
         return role === 'admin' ? <SettingsAdminView /> : <Forbidden required="administrator" />;
       case 'design':
         return canEdit ? <DesignAdminView /> : <Forbidden required="editor" />;
+      // v3.1.0. Changelog is readable by every role (`GET /api/plan/history` is `requireAuth`
+      // only); Planning is editor+ (`requireRole('editor')` on every read and write of the board).
+      // Both cases mirror ADMIN_NAV's minRole, which src/test/adminNavGuard.test.ts asserts.
+      case 'changelog':
+        return <ChangelogView />;
+      case 'planning':
+        return canEdit ? <PlanningView /> : <Forbidden required="editor" />;
       case 'trash':
         return canEdit ? (
           <CatalogView

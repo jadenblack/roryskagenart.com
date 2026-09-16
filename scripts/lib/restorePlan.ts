@@ -53,6 +53,13 @@ export const TABLES: Record<string, TableSpec> = {
   artwork_images: { name: 'artwork_images', conflictTarget: ['artwork_slug', 'media_public_id'] },
   pages: { name: 'pages', conflictTarget: ['slug'] },
   inquiries: { name: 'inquiries', conflictTarget: ['id'] },
+  // v3.1.0 — the studio feedback & planning board. Registered here in the SAME PR that created it,
+  // which is the whole point of R-07: `artwork_images` was in NO backup set until v3.0.0, so the
+  // dump looked complete while the murals' cover ordering was unrestorable. A table created by a
+  // migration is not backed up until someone adds it by hand — `TABLES` + `RESTORE_ORDER` is what
+  // makes it dumped, because both `scripts/backup-catalog.ts` and `server/lib/catalogDump.ts` walk
+  // `RESTORE_ORDER`.
+  plan_items: { name: 'plan_items', conflictTarget: ['id'] },
 };
 
 /**
@@ -63,10 +70,17 @@ export const TABLES: Record<string, TableSpec> = {
  *   artwork_terms.term_id    → taxonomies(id)
  *   artwork_images.artwork_slug     → artworks(slug)
  *   artwork_images.media_public_id  → media_assets(public_id)
+ *   plan_items.author_id            → profiles(id)   (v3.1.0; nullable, ON DELETE SET NULL)
  *
  * CAVEAT: `profiles` references `auth.users`, which exists in Supabase but is **empty** in a
  * fresh local project. Restoring `profiles` there fails unless the matching auth users exist
  * first. That is why the catalog tables are the default set — see `CATALOG_TABLES`.
+ *
+ * ⚠️ SECOND CAVEAT, new in v3.1.0: `plan_items.author_id` inherits the same problem one step
+ * removed. A restore into a database with no matching `profiles` rows reports a foreign-key failure
+ * for every item that a staff member authored — items filed anonymously or by the seed backfill
+ * carry a NULL `author_id` and restore cleanly. `author_name` / `author_email` are denormalised on
+ * the table precisely so an item stays attributable when the profile does not come back.
  */
 export const RESTORE_ORDER: string[] = [
   'profiles',
@@ -78,6 +92,7 @@ export const RESTORE_ORDER: string[] = [
   'artwork_images',
   'pages',
   'inquiries',
+  'plan_items',
 ];
 
 /**
@@ -96,6 +111,13 @@ export const CATALOG_TABLES: string[] = [
   'artwork_images',
   'pages',
   'inquiries',
+  // v3.1.0. Included deliberately, against the `settings` precedent (a profiles-FK table that is
+  // excluded): the board is studio *content*, not environment state, and the alternative is a
+  // planning history that only comes back with `--all` — which is the failure P-06 describes.
+  // The trade is explicit: on a scratch database with no `profiles`, rows with a non-null
+  // `author_id` fail their foreign key and are reported in the run's `failed` count. See the
+  // second caveat on `RESTORE_ORDER` above.
+  'plan_items',
 ];
 
 /** Environment/auth state — opt in explicitly with `--all`. */
