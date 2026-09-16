@@ -90,6 +90,8 @@ interface AdminLayoutProps {
   onNavigate: (path: string) => void;
   /** New inquiries count for badge */
   inquiryCount?: number;
+  /** Planning items awaiting triage — public submissions nobody has read (v3.2.0). */
+  planTriageCount?: number;
   trashedCount?: number;
   children: React.ReactNode;
 }
@@ -98,6 +100,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   currentPath,
   onNavigate,
   inquiryCount = 0,
+  planTriageCount = 0,
   trashedCount = 0,
   children,
 }) => {
@@ -109,8 +112,20 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const role: UserRole = user?.role || 'viewer';
   const visibleNav = ADMIN_NAV.filter((item) => !item.minRole || roleAtLeast(role, item.minRole));
 
-  const badgeFor = (route: string) =>
-    route === '/admin/inquiries' ? inquiryCount : route === '/admin/trash' ? trashedCount : undefined;
+  /**
+   * Which nav row carries a count, and what it counts.
+   *
+   * One lookup keyed on the route, because `ADMIN_NAV` is a flat list and a badge is a property
+   * of a destination. ⚠️ `planning` is gated `minRole: 'editor'`, so a viewer never reaches the
+   * branch — but the count is fetched only for editors anyway (see `AdminApp`), because the
+   * endpoint would answer 403.
+   */
+  const badgeFor = (route: string) => {
+    if (route === '/admin/inquiries') return inquiryCount;
+    if (route === '/admin/trash') return trashedCount;
+    if (route === '/admin/planning') return planTriageCount;
+    return undefined;
+  };
 
   const sidebar = (
     <aside

@@ -440,11 +440,28 @@ The release where the board becomes a real tool rather than a list.
 3. **Grouping UI** — the board grouped by release with a move control; the flat list stays.
 4. **Item detail drawer** — triage actions (status/priority/kind), the promote action
    (a `suggestion` → `feature`/`task` in one step), and a link field bound to `source_ref`.
+   ⚠️ **DEVIATION (2026-09-16): the link is rendered read-only, not editable.** The server
+   refuses to patch `source_ref`, and says why in `buildPlanItemPatch` — it excludes
+   `source`, `source_ref` and `author_*` because *provenance is not an editable field*, and
+   `buildPlanItemInput` sets `source_ref` to `null` on every insert because it doubles as the
+   idempotency key behind a partial unique index. Making it editable is a change to that rule
+   and its stated reason, not a gap in the UI. The drawer shows the value and explains why
+   there is nothing to type; `src/test/planningBoard.test.tsx` asserts the deviation so it
+   cannot be "fixed" silently later. **An owner who wants an editable link must decide it
+   deliberately** — the cheap version is a separate `link_url` column that carries no
+   provenance meaning.
 5. **Unread badge** — `badgeCount` on the Planning nav item for `status = 'new'`; `AdminLayout`
    already renders it.
 6. **Notification email** — a **batched** Resend digest to `ADMIN_EMAIL` for new public submissions,
    rendered from `server/emailTemplates.ts`. Batched, not per-row: a public endpoint that sends mail
    is a way to spend the studio's Resend quota (P-04).
+   ✅ **Built 2026-09-16 as `GET /api/cron/plan-digest`** (Vercel Cron, daily), not as a hook on
+   the intake door — mail belongs off an anonymous request path, where a provider timeout
+   becomes a slow form and a provider error has nobody to report to. The digest reports
+   `source='public' AND status='new' AND notified_at IS NULL` and marks rows **only after a
+   successful send**, so a failed run retries instead of losing submissions. `notified_at`
+   (`2026_09_16_v3_2_plan_items_notified_at.sql`) is why it never re-sends the same item —
+   selecting on `status='new'` alone would repeat until the studio stopped reading it.
 7. **Cross-link history ↔ plan** — a release row shows its matching historical CHANGELOG section,
    joined on `version`. First place the two sources meet, and it stays a *join*, not a merge (D1).
 8. Tests: `planRules` transitions, the releases backfill (fixtures incl. a `target_release` that

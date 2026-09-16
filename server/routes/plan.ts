@@ -53,7 +53,7 @@ export const planRouter = Router();
  * request ever reaches a SQL string in this file — the one place that builds a statement
  * dynamically is the PATCH, and it iterates the hard-coded `PATCH_COLUMNS` map.
  */
-const ITEM_COLUMNS = `id, kind, title, body, status, priority, target_release,
+const ITEM_COLUMNS = `id, kind, title, body, status, priority, target_release, release_id,
        source, source_ref, author_id, author_name, author_email, page_url,
        created_at, updated_at`;
 
@@ -172,6 +172,10 @@ planRouter.post(
  *
  *   * `items`    — the filtered list;
  *   * `releases` — `SELECT DISTINCT target_release`, the autocomplete's source;
+ *   * `planReleases` — the v3.2.0 release **entities**, so the board can group by `release_id`
+ *                  without a second round trip. Its own key on purpose: `releases` above is a
+ *                  `string[]` and the shipped v3.1.0 UI reads it by that name, so reusing the
+ *                  key for objects would break it silently at runtime, not at compile time.
  *   * `summary`  — status/source counts, which the dashboard card needs ("open items",
  *                  "awaiting triage") and the board header shows for free.
  */
@@ -201,6 +205,18 @@ planRouter.get("/items", requireAuth, requireRole("editor"), async (req, res) =>
         ORDER BY target_release`
     );
 
+    const planReleases = await query(
+      `SELECT id, version, title, status
+         FROM public.plan_releases
+        ORDER BY CASE status
+                   WHEN 'in_progress' THEN 0
+                   WHEN 'planned' THEN 1
+                   WHEN 'shipped' THEN 2
+                   ELSE 3
+                 END,
+                 created_at DESC`
+    );
+
     const counts = await query<{ status: string; source: string; count: number }>(
       `SELECT status, source, count(*)::int AS count
          FROM public.plan_items
@@ -211,6 +227,7 @@ planRouter.get("/items", requireAuth, requireRole("editor"), async (req, res) =>
       success: true,
       items: items.rows,
       releases: releases.rows.map((row) => row.target_release),
+      planReleases: planReleases.rows,
       summary: summarise(counts.rows),
     });
   } catch (err: any) {

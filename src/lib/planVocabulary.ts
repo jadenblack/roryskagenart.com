@@ -68,6 +68,24 @@ export function isShippedStatus(status: ReleaseStatus): boolean {
   return status === 'shipped';
 }
 
+/**
+ * Reduce a version label to the comparison form, so a plan release can be joined to the
+ * historical CHANGELOG block that documents it.
+ *
+ * This exists because the two sides are punctuated differently and nothing else enforces
+ * agreement: `CHANGELOG.md` heads its blocks `## [3.2.0]`, while `plan_releases.version` is
+ * free text the studio types — the `v3.1.0` board it grew out of held `v3.2.0`, `backlog` and
+ * `someday` in one column. Joining the raw strings would match nothing and look identical to
+ * "this release was never documented", which is precisely the wrong answer to show the studio.
+ *
+ * Minimal on purpose: strip a leading `v`, trim, lowercase. It does **not** pad `3.2` to
+ * `3.2.0`, because guessing which of the two the studio meant is worse than failing to match.
+ */
+export function normalizeVersion(value: string | null | undefined): string {
+  if (typeof value !== 'string') return '';
+  return value.trim().replace(/^[vV]\s*/, '').toLowerCase();
+}
+
 export const KIND_LABELS: Record<PlanKind, string> = {
   idea: 'Idea',
   feature: 'Feature request',

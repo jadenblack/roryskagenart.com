@@ -577,3 +577,37 @@ describe('buildPlanReleasePatch — the ship transition', () => {
     );
   });
 });
+
+describe('buildPlanItemPatch — release_id (v3.2.0 grouping)', () => {
+  const CURRENT = { status: 'new' as PlanStatus };
+  const UUID = '22222222-2222-2222-2222-222222222222';
+  const REJECT = 'Release must be a release id, or null to ungroup this item.';
+
+  it('files an item into a release by id', () => {
+    const result = buildPlanItemPatch({ release_id: UUID }, { current: CURRENT });
+    expect(result.error).toBeUndefined();
+    expect(result.value!.release_id).toBe(UUID);
+  });
+
+  it('treats an explicit null and an empty string as ungrouping, not as a rejection', () => {
+    // `<select>` has no null, so "no release" arrives as ''. Refusing it would make the
+    // board's own "ungroup" control unrepresentable from a form.
+    expect(buildPlanItemPatch({ release_id: null }, { current: CURRENT }).value!.release_id).toBeNull();
+    expect(buildPlanItemPatch({ release_id: '' }, { current: CURRENT }).value!.release_id).toBeNull();
+  });
+
+  it('refuses a version string — grouping is by id, never by label', () => {
+    // A version lookup would break the moment two releases share a label across a rename.
+    expect(buildPlanItemPatch({ release_id: 'v3.2.0' }, { current: CURRENT }).error).toBe(REJECT);
+  });
+
+  it('refuses a malformed uuid', () => {
+    expect(buildPlanItemPatch({ release_id: 'nope' }, { current: CURRENT }).error).toBe(REJECT);
+  });
+
+  it('leaves release_id out of a patch that never mentioned it', () => {
+    // Absent, not null: a triage PATCH must not silently ungroup an item.
+    const result = buildPlanItemPatch({ title: 'Renamed' }, { current: CURRENT });
+    expect(result.value!.release_id).toBeUndefined();
+  });
+});

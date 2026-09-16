@@ -148,6 +148,11 @@ const REQUIRED: readonly string[] = [
   // route going missing is the single highest-impact 404 this guard can catch.
   'GET /api/cron/backup',
 
+  // Added in v3.2.0. The batched planning digest is the only route that mails the studio on a
+  // schedule; if it quietly stops being mounted, public feedback stops reaching anyone and
+  // nothing else in the suite would notice.
+  'GET /api/cron/plan-digest',
+
   // Added in v3.1.0 — the studio feedback & planning board. Six endpoints, two doors:
   // `/feedback` is public and `/items` is editor+ (see server/routes/plan.ts). All six are
   // listed, not just the ones with interesting guards, because a route nobody lists is a route
@@ -234,6 +239,14 @@ const PROBES: readonly Probe[] = [
     because:
       '401 when CRON_SECRET is set, 503 when it is not. A 200 here would mean an unauthenticated ' +
       'caller could download the whole database — treat that as a failure.',
+  },
+  {
+    method: 'GET',
+    path: '/api/cron/plan-digest',
+    expect: [401, 503],
+    because:
+      '401 when CRON_SECRET is set, 503 when it is not. A 200 here would mean an unauthenticated ' +
+      'caller could trigger mail to the studio — treat that as a failure.',
   },
   {
     method: 'POST',

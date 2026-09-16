@@ -387,6 +387,14 @@ export interface PlanItemPatch {
   status?: PlanStatus;
   priority?: PlanPriority | null;
   target_release?: string | null;
+  /**
+   * Which release an item belongs to. `null` means ungrouped.
+   *
+   * A plain uuid string, never a version: the client is handed the release rows (which carry
+   * `version`) and sends back the `id` it was given. Taking a version here would make the
+   * route a lookup-by-label, and two releases can legitimately share a label across a rename.
+   */
+  release_id?: string | null;
 }
 
 export interface PatchContext {
@@ -478,6 +486,22 @@ export function buildPlanItemPatch(body: unknown, ctx: PatchContext): BuildOutco
     patch.target_release = release.value;
   }
 
+  if ('release_id' in raw) {
+    // Three accepted shapes and one error: a uuid (file it), an explicit null or empty string
+    // (ungroup it), or a rejection. An empty string is treated as null rather than refused so a
+    // form's "no release" option round-trips — `<select>` has no null.
+    const requested = raw.release_id;
+    if (requested === null || requested === undefined) {
+      patch.release_id = null;
+    } else if (typeof requested === 'string' && requested.trim() === '') {
+      patch.release_id = null;
+    } else if (typeof requested === 'string' && isUuid(requested.trim())) {
+      patch.release_id = requested.trim();
+    } else {
+      return { error: 'Release must be a release id, or null to ungroup this item.' };
+    }
+  }
+
   if (Object.keys(patch).length === 0) {
     return { error: 'No updatable fields provided.' };
   }
@@ -497,6 +521,7 @@ export const PATCH_COLUMNS: Record<keyof PlanItemPatch, string> = {
   status: 'status',
   priority: 'priority',
   target_release: 'target_release',
+  release_id: 'release_id',
 };
 
 /* ------------------------------------------------------------------ *
