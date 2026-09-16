@@ -33,12 +33,16 @@ import {
   STAFF_KINDS,
   STATUS_LABELS,
   KIND_LABELS,
+  RELEASE_STATUSES,
+  RELEASE_STATUS_LABELS,
   canTransitionStatus,
+  isShippedStatus,
   nextStatuses,
   type PlanKind,
   type PlanPriority,
   type PlanSource,
   type PlanStatus,
+  type ReleaseStatus,
   type StaffKind,
 } from '../../src/lib/planVocabulary';
 import { normalizeEmail } from './userAdmin';
@@ -56,10 +60,13 @@ export {
   STAFF_KINDS,
   STATUS_LABELS,
   KIND_LABELS,
+  RELEASE_STATUSES,
+  RELEASE_STATUS_LABELS,
   canTransitionStatus,
+  isShippedStatus,
   nextStatuses,
 };
-export type { PlanKind, PlanPriority, PlanSource, PlanStatus, StaffKind };
+export type { PlanKind, PlanPriority, PlanSource, PlanStatus, ReleaseStatus, StaffKind };
 
 /* ------------------------------------------------------------------ *
  * Guards                                                              *
@@ -79,6 +86,10 @@ export function isPlanStatus(value: unknown): value is PlanStatus {
 
 export function isPlanPriority(value: unknown): value is PlanPriority {
   return typeof value === 'string' && (PLAN_PRIORITIES as readonly string[]).includes(value);
+}
+
+export function isReleaseStatus(value: unknown): value is ReleaseStatus {
+  return typeof value === 'string' && (RELEASE_STATUSES as readonly string[]).includes(value);
 }
 
 /** Cheap shape check, so a malformed id is a 400 instead of a Postgres cast error. */
@@ -376,6 +387,14 @@ export interface PlanItemPatch {
   status?: PlanStatus;
   priority?: PlanPriority | null;
   target_release?: string | null;
+  /**
+   * Which release an item belongs to. `null` means ungrouped.
+   *
+   * A plain uuid string, never a version: the client is handed the release rows (which carry
+   * `version`) and sends back the `id` it was given. Taking a version here would make the
+   * route a lookup-by-label, and two releases can legitimately share a label across a rename.
+   */
+  release_id?: string | null;
 }
 
 export interface PatchContext {
@@ -467,6 +486,22 @@ export function buildPlanItemPatch(body: unknown, ctx: PatchContext): BuildOutco
     patch.target_release = release.value;
   }
 
+  if ('release_id' in raw) {
+    // Three accepted shapes and one error: a uuid (file it), an explicit null or empty string
+    // (ungroup it), or a rejection. An empty string is treated as null rather than refused so a
+    // form's "no release" option round-trips — `<select>` has no null.
+    const requested = raw.release_id;
+    if (requested === null || requested === undefined) {
+      patch.release_id = null;
+    } else if (typeof requested === 'string' && requested.trim() === '') {
+      patch.release_id = null;
+    } else if (typeof requested === 'string' && isUuid(requested.trim())) {
+      patch.release_id = requested.trim();
+    } else {
+      return { error: 'Release must be a release id, or null to ungroup this item.' };
+    }
+  }
+
   if (Object.keys(patch).length === 0) {
     return { error: 'No updatable fields provided.' };
   }
@@ -486,4 +521,189 @@ export const PATCH_COLUMNS: Record<keyof PlanItemPatch, string> = {
   status: 'status',
   priority: 'priority',
   target_release: 'target_release',
+  release_id: 'release_id',
+};
+
+/* ------------------------------------------------------------------ *
+ * Releases (v3.2.0 — Group)                                          *
+ * ------------------------------------------------------------------ */
+
+/**
+ * Read a `YYYY-MM-DD` date.
+ *
+ * The regex is not enough on its own — it accepts `2026-02-31`, and so does Postgres on some
+ * `DateStyle` settings. Round-tripping through `Date` and comparing the formatted result back
+ * is what actually rejects a day that does not exist.
+ */
+function readDate(value: unknown, label: string): BuildOutcome<string | null> {
+  if (value === undefined || value === null || String(value).trim() === '') return { value: null };
+  if (typeof value !== 'string') return { error: `${label} must be a date.` };
+  const trimmed = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return { error: `${label} must be YYYY-MM-DD.` };
+  const parsed = new Date(`${trimmed}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== trimmed) {
+    return { error: `${label} is not a real date.` };
+  }
+  return { value: trimmed };
+}
+
+/** A `plan_releases` row ready to INSERT. */
+export interface PlanReleaseInput {
+  version: string;
+  title: string | null;
+  status: ReleaseStatus;
+  target_date: string | null;
+  notes: string | null;
+  shipped_at: string | null;
+}
+
+/**
+ * Validate a create request for a release.
+ *
+ * `version` is required: it is the join key to the derived release history, so a release
+ * without one cannot be cross-linked and would be invisible to the one view that joins them.
+ */
+export function buildPlanReleaseInput(
+  body: unknown,
+  ctx: { now?: string } = {},
+): BuildOutcome<PlanReleaseInput> {
+  const raw = (
+    body && typeof body === 'object' && !Array.isArray(body) ? body : {}
+  ) as Record<string, unknown>;
+
+  const version = readText(raw.version, PLAN_LIMITS.release, 'Version');
+  if (version.error) return { error: version.error };
+  if (!version.value) return { error: 'A version is required.' };
+
+  const title = readText(raw.title, PLAN_LIMITS.title, 'Title');
+  if (title.error) return { error: title.error };
+
+  const notes = readText(raw.notes, PLAN_LIMITS.notes, 'Notes');
+  if (notes.error) return { error: notes.error };
+
+  const target = readDate(raw.target_date, 'Target date');
+  if (target.error) return { error: target.error };
+
+  let status: ReleaseStatus = 'planned';
+  const requested = typeof raw.status === 'string' ? raw.status.trim().toLowerCase() : '';
+  if (requested) {
+    if (!isReleaseStatus(requested)) {
+      return { error: `Status must be one of: ${RELEASE_STATUSES.join(', ')}.` };
+    }
+    status = requested;
+  }
+
+  return {
+    value: {
+      version: version.value,
+      title: title.value,
+      status,
+      target_date: target.value,
+      notes: notes.value,
+      // Derived, never accepted from the client: a caller must not be able to create a
+      // release that claims a ship date it never had.
+      shipped_at: isShippedStatus(status) ? ctx.now ?? new Date().toISOString() : null,
+    },
+  };
+}
+
+export interface PlanReleasePatch {
+  version?: string;
+  title?: string | null;
+  status?: ReleaseStatus;
+  target_date?: string | null;
+  notes?: string | null;
+  /** Written by the rule when the status moved. Never settable from the request body. */
+  shipped_at?: string | null;
+}
+
+export interface ReleasePatchContext {
+  current: { status: ReleaseStatus; shipped_at: string | null };
+  /** Injectable so the derived `shipped_at` is testable offline. */
+  now?: string;
+}
+
+/**
+ * Validate a PATCH for a release.
+ *
+ * `shipped_at` is **not** a patchable field — it is derived from the status, in both
+ * directions:
+ *
+ *   - moving *to* `shipped` records the timestamp, and keeps an existing one, so correcting
+ *     a release's title does not backdate it;
+ *   - moving *away* from `shipped` clears it, because a release whose status says
+ *     `cancelled` while still carrying a ship date is a contradiction the studio would have
+ *     to resolve by hand.
+ *
+ * Taking it from the body instead would let a client mark a release shipped with whatever
+ * date it liked, which is the same class of bug as an item choosing its own `source`.
+ */
+export function buildPlanReleasePatch(
+  body: unknown,
+  ctx: ReleasePatchContext,
+): BuildOutcome<PlanReleasePatch> {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return { error: 'No fields provided.' };
+  }
+  const raw = body as Record<string, unknown>;
+  const patch: PlanReleasePatch = {};
+
+  if ('version' in raw) {
+    const version = readText(raw.version, PLAN_LIMITS.release, 'Version');
+    if (version.error) return { error: version.error };
+    if (!version.value) return { error: 'A version is required.' };
+    patch.version = version.value;
+  }
+
+  if ('title' in raw) {
+    const title = readText(raw.title, PLAN_LIMITS.title, 'Title');
+    if (title.error) return { error: title.error };
+    patch.title = title.value;
+  }
+
+  if ('notes' in raw) {
+    const notes = readText(raw.notes, PLAN_LIMITS.notes, 'Notes');
+    if (notes.error) return { error: notes.error };
+    patch.notes = notes.value;
+  }
+
+  if ('target_date' in raw) {
+    const target = readDate(raw.target_date, 'Target date');
+    if (target.error) return { error: target.error };
+    patch.target_date = target.value;
+  }
+
+  if ('status' in raw) {
+    const requested = typeof raw.status === 'string' ? raw.status.trim().toLowerCase() : '';
+    if (!isReleaseStatus(requested)) {
+      return { error: `Status must be one of: ${RELEASE_STATUSES.join(', ')}.` };
+    }
+    if (requested !== ctx.current.status) {
+      patch.status = requested;
+      if (isShippedStatus(requested)) {
+        patch.shipped_at = ctx.current.shipped_at ?? ctx.now ?? new Date().toISOString();
+      } else if (ctx.current.shipped_at) {
+        patch.shipped_at = null;
+      }
+    }
+  }
+
+  if (Object.keys(patch).length === 0) {
+    return { error: 'No updatable fields provided.' };
+  }
+
+  return { value: patch };
+}
+
+/**
+ * The column each patchable release key writes to — a hard-coded map, for the same reason as
+ * `PATCH_COLUMNS`: the route interpolates these strings into the `SET` clause.
+ */
+export const RELEASE_PATCH_COLUMNS: Record<keyof PlanReleasePatch, string> = {
+  version: 'version',
+  title: 'title',
+  status: 'status',
+  target_date: 'target_date',
+  notes: 'notes',
+  shipped_at: 'shipped_at',
 };

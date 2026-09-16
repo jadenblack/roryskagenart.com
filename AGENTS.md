@@ -178,10 +178,10 @@ Docker Desktop installs to a **per-user** path that is not on `PATH`:
 
 ---
 
-## 5. Database schema (after all 16 migrations)
+## 5. Database schema (after all 18 migrations)
 
 Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwork_terms`,
-`settings`, `media_assets`, `artwork_images`, `plan_items`.
+`settings`, `media_assets`, `artwork_images`, `plan_items`, `plan_releases`.
 
 > ✅ **`v3.0.0` (Phase 4) added the mural dimension — 3 migrations, applied 2026-09-15.**
 > `2026_09_15_v3_phase4_schema_extension.sql` adds `artworks.kind` (`painting` | `mural` | `other`),
@@ -201,7 +201,26 @@ Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwor
 > `source_ref` (unique, used by the mural seed as `artwork:<slug>`), and nullable `author_id` →
 > `profiles(id)` `ON DELETE SET NULL`. RLS is enabled with **exactly one policy**
 > (`Admins manage plan_items`, `FOR ALL TO authenticated`) — the anon key sees zero rows, which is
-> the boundary the API relies on. **Live result now: 11 tables, 16 recorded migrations.**
+> the boundary the API relies on. **Live result then: 11 tables, 16 recorded migrations.**
+>
+> ✅ **`v3.2.0` added `public.plan_releases` and the grouping/digest columns — 2 migrations,
+> applied 2026-09-16.** `2026_09_16_v3_2_plan_releases.sql` creates the release entity
+> (`version text UNIQUE`, `status ∈ planned|in_progress|shipped|cancelled`, `target_date`,
+> `shipped_at`, `notes`) with RLS and the same `is_admin_or_editor()` policy, adds
+> `plan_items.release_id → plan_releases(id)` **nullable, `ON DELETE SET NULL`**, and backfills it
+> from `target_release` (which is **kept** so the backfill stays auditable — see the trap below).
+> `2026_09_16_v3_2_plan_items_notified_at.sql` adds `plan_items.notified_at`, the batched digest's
+> memory of what it has already mailed. **Live result now: 12 tables, 18 recorded migrations**, and
+> a verified dump covers **11 tables** (everything but `profiles` and `schema_migrations`).
+>
+> ⚠️ **The backfill was a genuine no-op on apply — and was then rehearsed.** `plan_items` was
+> empty, so it inserted 0 releases. That is not evidence it works, so the two statements were run
+> against the live schema inside a `BEGIN … ROLLBACK` with fixtures: two items sharing `v3.2.0`
+> collapsed to one release and both were filed; `  v3.3.0  ` was trimmed and matched; `backlog`
+> became a release on purpose; `NULL` and blank labels were skipped; a second run created no
+> duplicates; and the rollback left 0 rows. ⚠️ It runs **once** — an item created *after* the
+> migration with a `target_release` label gets **no** `release_id`, so it lands in the board's
+> unfiled bucket showing its label. That is the intended v3.2.0 behaviour, not a bug.
 >
 > ⚠️ **The board's identity fields are never read from a request body.** `server/lib/planRules.ts`
 > derives `source` / `source_ref` / `author_id` / `status` / `priority` from *which door* the request
@@ -210,8 +229,10 @@ Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwor
 > `src/test/planRules.test.ts` and was rehearsed against a live table before shipping.
 >
 > ⚠️ **`plan_items` must stay in the backup set.** It is registered in `scripts/lib/restorePlan.ts`
-> (`TABLES`, `RESTORE_ORDER`, `CATALOG_TABLES`) — a dump covers **10 tables**. This is R-07: a table
+> (`TABLES`, `RESTORE_ORDER`, `CATALOG_TABLES`) — a dump covers **11 tables**. This is R-07: a table
 > absent from `RESTORE_ORDER` is not dumped at all, and the dump still looks complete.
+> `plan_releases` was added to `CATALOG_TABLES` with it, because `plan_items.release_id` FKs to it
+> and a catalog restore that omitted it would fail that FK on every grouped item.
 >
 > ⚠️ **`media_assets.artwork_slug` has NO foreign key** — unlike `artwork_images.artwork_slug`. That
 > is why nothing ever caught **10 rows pointing at a slug no artwork has** (`wisdom-cofee` vs

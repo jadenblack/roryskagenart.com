@@ -9,8 +9,11 @@ import {
   renderInviteEmail,
   renderPasswordResetEmail,
   renderTestEmail,
+  renderPlanDigestEmail,
   resolveSiteUrl,
 } from './emailTemplates';
+import { planDigestSubject } from './lib/planDigest';
+import type { PlanDigestItem } from './emailTemplates';
 
 let resendClient: Resend | null = null;
 
@@ -284,6 +287,35 @@ export async function sendEmailChangedEmail(params: {
       name: params.name,
       previousEmail: params.previousEmail,
       changedBy: params.changedBy,
+    }),
+  });
+}
+
+/**
+ * The batched planning digest — one email for every unreported public submission.
+ *
+ * `v3.2.0` item 6. Called only by the scheduled route, never from the public intake door: mail
+ * belongs off the request path, both because a provider timeout must not slow an anonymous
+ * submitter and because P-04 is precisely about a public endpoint that sends mail.
+ *
+ * `total` is passed separately from `items.length` so the subject and the "showing N of M" line
+ * stay honest when the batch is larger than one email renders.
+ */
+export async function sendPlanDigestEmail(params: {
+  items: PlanDigestItem[];
+  total: number;
+}): Promise<SendResult> {
+  const { items, total } = params;
+  const siteUrl = resolveSiteUrl();
+  const recipients = resolveStudioRecipients();
+
+  return deliver({
+    to: recipients,
+    subject: planDigestSubject(total),
+    html: renderPlanDigestEmail({
+      items,
+      total,
+      boardUrl: `${siteUrl}/#/admin/planning`,
     }),
   });
 }

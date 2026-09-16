@@ -105,11 +105,20 @@ describe('bundle safety', () => {
     expect(source('server/routes/cronBackup.ts')).toMatch(/access:\s*'private'/);
   });
 
-  it('the cron route fails closed when the secret is absent', () => {
-    const code = source('server/routes/cronBackup.ts');
-    expect(code).toContain('CRON_SECRET');
-    // Both gates must refuse: no secret configured, and a secret that does not match.
-    expect(code).toMatch(/status:\s*503/);
-    expect(code).toMatch(/status:\s*401/);
+  it('every cron route fails closed when the secret is absent', () => {
+    // The gate is shared (`server/lib/cronAuth.ts`) rather than copied per route — a secret
+    // check written twice is a secret check that drifts, and the difference is usually the one
+    // that fails open. So the refusal is asserted once against the gate, and each route is then
+    // held to importing it rather than hand-rolling its own.
+    const gate = source('server/lib/cronAuth.ts');
+    expect(gate).toContain('CRON_SECRET');
+    // Both refusals: no secret configured, and a secret that does not match.
+    expect(gate).toMatch(/status:\s*503/);
+    expect(gate).toMatch(/status:\s*401/);
+
+    const cronRoutes = ['server/routes/cronBackup.ts', 'server/routes/cronPlanDigest.ts'];
+    for (const route of cronRoutes) {
+      expect(source(route), `${route} must gate on the shared secret`).toContain('cronAuthorized');
+    }
   });
 });

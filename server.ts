@@ -15,6 +15,7 @@ import { inquiriesRouter } from "./server/routes/inquiries";
 import { adminUsersRouter } from "./server/routes/adminUsers";
 import { planRouter } from "./server/routes/plan";
 import { cronRouter } from "./server/routes/cronBackup";
+import { planDigestRouter } from "./server/routes/cronPlanDigest";
 
 dotenv.config();
 
@@ -178,9 +179,10 @@ app.use("/api/admin/users", adminUsersRouter);
 // Guards are per-route, not router-wide: `/api/plan/feedback` is public while the board
 // itself is editor+. See the header of server/routes/plan.ts.
 app.use("/api/plan", planRouter);
-// Guarded by CRON_SECRET (see server/routes/cronBackup.ts). Not behind requireAuth: Vercel Cron
+// Guarded by CRON_SECRET (see server/lib/cronAuth.ts). Not behind requireAuth: Vercel Cron
 // cannot present a Supabase session, and the shared secret is the stronger gate for a machine caller.
 app.use("/api/cron", cronRouter);
+app.use("/api/cron", planDigestRouter);
 
 /**
  * Body-parser failures, answered in the API's own language.

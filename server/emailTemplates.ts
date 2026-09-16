@@ -307,6 +307,108 @@ export function renderEmailChangedEmail(ctx: {
   });
 }
 
+/**
+ * One item in the batched planning digest.
+ *
+ * Deliberately a narrow projection, not a `plan_items` row: this is an outbound email, and a
+ * template that takes a whole row will eventually render a column that should never have left
+ * the database.
+ */
+export interface PlanDigestItem {
+  title: string;
+  body: string | null;
+  author_name: string | null;
+  author_email: string | null;
+  page_url: string | null;
+  created_at: string;
+}
+
+/**
+ * The batched studio digest — one email for every unreported public submission.
+ *
+ * Item 6 of `v3.2.0`, and the reason it is batched is P-04: a public endpoint that sends mail
+ * per submission is a way to spend the studio's Resend quota. So this renders *many* items in
+ * *one* message, and `server/routes/cronPlanDigest.ts` is the only caller.
+ *
+ * ⚠️ EVERY INTERPOLATED VALUE IS ESCAPED. These strings were typed by a member of the public
+ * into an anonymous form. `body` is truncated in the digest rather than omitted because a
+ * one-line summary is what makes the email worth opening — but it is still untrusted input
+ * entering HTML.
+ *
+ * ⚠️ WHEN `count` EXCEEDS THE RENDERED ITEMS, THE EMAIL SAYS SO. A digest that silently shows
+ * the first ten of forty reads as "that is all of them", which is the one thing a digest must
+ * never imply.
+ */
+export function renderPlanDigestEmail(ctx: {
+  items: PlanDigestItem[];
+  /** How many items are waiting in total, which may exceed `items.length`. */
+  total: number;
+  boardUrl: string;
+}): string {
+  const { items, total, boardUrl } = ctx;
+  const shown = items.length;
+  const remaining = Math.max(0, total - shown);
+
+  const excerpt = (value: string | null): string => {
+    const text = String(value ?? '').replace(/\s+/g, ' ').trim();
+    if (!text) return '';
+    return text.length > 220 ? `${text.slice(0, 219)}…` : text;
+  };
+
+  const rows = items
+    .map(
+      (item, index) => `
+        <tr>
+          <td style="padding:${index === 0 ? '0' : '16px'} 0 ${index === items.length - 1 ? '0' : '16px'};border-bottom:${
+            index === items.length - 1 ? '0' : `1px solid ${BRAND.line}`
+          };">
+            <div style="font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:${
+              BRAND.muted
+            };margin-bottom:5px;">
+              ${escapeHtml(item.created_at ? new Date(item.created_at).toISOString().slice(0, 10) : '')}${
+                item.page_url ? ` · ${escapeHtml(item.page_url)}` : ''
+              }
+            </div>
+            <div style="font-size:15px;font-weight:600;color:${BRAND.ink};margin-bottom:4px;">${escapeHtml(
+              item.title,
+            )}</div>
+            ${excerpt(item.body) ? `<div style="font-size:14px;line-height:1.6;color:${BRAND.body};">${escapeHtml(excerpt(item.body))}</div>` : ''}
+            ${
+              item.author_email
+                ? `<div style="margin-top:6px;font-size:13px;color:${BRAND.body};"><a href="mailto:${escapeHtml(
+                    item.author_email,
+                  )}" style="color:#0066cc;text-decoration:none;">${escapeHtml(item.author_email)}</a>${
+                    item.author_name ? ` · ${escapeHtml(item.author_name)}` : ''
+                  }</div>`
+                : ''
+            }
+          </td>
+        </tr>`,
+    )
+    .join('');
+
+  return renderBrandedEmail({
+    heading: `${total} new submission${total === 1 ? '' : 's'} on the planning board`,
+    eyebrow: 'Studio planning digest',
+    intro:
+      total === 1
+        ? 'One piece of feedback arrived from the public and is waiting to be read.'
+        : `${total} pieces of feedback arrived from the public and are waiting to be read.`,
+    bodyHtml: `
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+        ${rows}
+      </table>
+      ${
+        remaining > 0
+          ? `<p style="margin:18px 0 0;font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.7;color:${BRAND.muted};">Showing ${shown} of ${total}. The rest are on the board.</p>`
+          : ''
+      }`,
+    cta: { label: 'Open the planning board', url: boardUrl },
+    ctaFallbackNote: 'Button not working? Copy and paste this link into your browser:',
+    note: 'Each submission is reported once. Triaging it on the board is what stops it appearing again — this digest does not repeat items it has already sent.',
+  });
+}
+
 /** Delivery self-test. */
 export function renderTestEmail(ctx: { domain: string; fromAddress: string }): string {
   return renderBrandedEmail({

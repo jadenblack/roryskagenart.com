@@ -21,11 +21,11 @@
  *      must never be readable from an HTTP response.
  */
 import { Router } from 'express';
-import { timingSafeEqual } from 'crypto';
 import { del, list, put } from '@vercel/blob';
 import { getCleanConnectionString, query } from '../../src/server/db';
 import { describeTarget } from '../../scripts/lib/pgTarget';
 import { buildCatalogDump } from '../lib/catalogDump';
+import { cronAuthorized } from '../lib/cronAuth';
 import {
   BLOB_PREFIX,
   DEFAULT_RETENTION,
@@ -40,22 +40,6 @@ import {
 } from '../lib/blobBackup';
 
 const router = Router();
-
-/** Fail-closed check of the shared secret Vercel Cron presents. */
-function authorized(req: { get(name: string): string | undefined }): { ok: boolean; status?: number; error?: string } {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return { ok: false, status: 503, error: 'CRON_SECRET is not configured; the backup endpoint is disabled.' };
-  }
-
-  const provided = Buffer.from(req.get('authorization') ?? '');
-  const expected = Buffer.from(`Bearer ${secret}`);
-  // Length first, because timingSafeEqual throws on a length mismatch.
-  if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) {
-    return { ok: false, status: 401, error: 'Unauthorized.' };
-  }
-  return { ok: true };
-}
 
 /**
  * Every object under the backup prefix.
@@ -79,7 +63,7 @@ async function listAll(): Promise<BlobRef[]> {
 }
 
 router.get('/backup', async (req, res) => {
-  const auth = authorized(req);
+  const auth = cronAuthorized(req);
   if (!auth.ok) {
     return res.status(auth.status).json({ success: false, error: auth.error });
   }
