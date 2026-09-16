@@ -271,14 +271,18 @@ Key facts:
   **do not remove that filter**, and do not add a direct client-side Supabase read of `artworks`.
   Tightening the policy is a tracked follow-up (see `CHANGELOG.md`, v2.10.0).
 
-**Live row counts** (verified by introspection, 2026-09-14):
-`artworks` = 138 · `media_assets` = 152 · `pages` = 4 · `inquiries` = 1 · `settings` = 5 ·
-`profiles` = 3 · `taxonomies` = 3 · `artwork_terms` = **0**.
-`src/data/assetRegistry.ts` currently exposes **457 registry keys** for those assets.
+**Live row counts** (verified by introspection, 2026-09-16):
+`artworks` = 205 · `artwork_images` = 168 · `artwork_terms` = 142 · `media_assets` = 320 ·
+`taxonomies` = 13 · `pages` = 4 · `settings` = 5 · `profiles` = 4 · `inquiries` = 1 ·
+`plan_items` = 0 · `schema_migrations` = 16.
+`src/data/assetRegistry.ts` currently exposes **457 registry keys** — 1,002 top-level entries holding
+1,943 key strings, **457 distinct** after de-duplication. The number to quote is **457**; the other
+two are recorded so the next person can re-derive it instead of guessing which count "keys" meant.
 
-⚠️ `artwork_terms` is **empty** — the taxonomy rows exist but nothing is linked to them, so the
-M2M filter path is currently unexercised. Re-verify any of these with
-`npx tsx scripts/introspect-schema.ts` before relying on them.
+⚠️ These move with every load — re-derive them with `npx tsx scripts/introspect-schema.ts` before
+relying on them. `artwork_terms` was **empty** when this section was first written (the taxonomy rows
+existed but nothing was linked, so the M2M filter path was unexercised); `v3.0.0` Phase 4 populated
+it and it is 142 rows now, so that path **is** exercised.
 
 ---
 
@@ -428,9 +432,14 @@ re-exports it; never re-declare a role list.
   `bareOrigin()` (`src/lib/authRedirect.ts`) or `buildAuthRedirect()` (`server/lib/userAdmin.ts`), and
   keep `src/lib/authRedirect.ts` as the **first** import in `src/main.tsx`.
 - **`tsc --noEmit` must stay clean** (`npm run lint`); `npm test` (vitest) is offline/zero-token.
-  Suite as of `v3.1.0`: **813 tests across 47 files**.
+  Suite as of `v3.1.0`: **828 tests across 48 files**.
   ⚠️ **vitest transpiles without typechecking** — a type error in `scripts/` or `server/` passes the
   test run and is caught only by `npm run lint`. Run both.
+  ⚠️ **There is no CI test job.** The repo has no `.github/workflows/` at all — the five PR checks are
+  Vercel ×2, Socket ×2 and Debricked, and none of them runs the suite. A red test does **not** block
+  a merge, so running both is a purely local obligation. Proven 2026-09-16: PR #37 merged while
+  `src/test/releaseLogSync.test.ts` was failing (`src/data/releaseLog.generated.ts` had gone stale
+  after a `DEPLOYMENT_LOG.md` edit) and every check still read `pass`.
   ⚠️ The count is stale the moment it is written. Re-derive it rather than trusting it:
   `npx vitest run --reporter=dot 2>&1 | tail -5` (and `ls src/**/*.test.* | wc -l` for the file count).
 - **A new public write door must reuse `server/lib/requestGuards.ts`.** Every unauthenticated `POST`

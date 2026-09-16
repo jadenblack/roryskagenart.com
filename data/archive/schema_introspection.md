@@ -2,7 +2,7 @@
 
 - Database: `postgres`
 - Connected as: `postgres`
-- Generated: 2026-09-15T20:45:25.530Z
+- Generated: 2026-09-16T01:13:40.051Z
 - Server: PostgreSQL 17.6 on x86_64-pc-linux-gnu
 
 ## Tables
@@ -13,6 +13,7 @@
 - `inquiries`
 - `media_assets`
 - `pages`
+- `plan_items`
 - `profiles`
 - `schema_migrations`
 - `settings`
@@ -116,6 +117,26 @@
 | `content` | text | NO |  |
 | `updated_at` | timestamp with time zone | YES | `now()` |
 
+### `plan_items`
+
+| column | type | null | default |
+| :--- | :--- | :--- | :--- |
+| `id` | uuid | NO | `gen_random_uuid()` |
+| `kind` | text | NO |  |
+| `title` | text | NO |  |
+| `body` | text | YES |  |
+| `status` | text | NO | `'new'::text` |
+| `priority` | text | YES |  |
+| `target_release` | text | YES |  |
+| `source` | text | NO | `'studio'::text` |
+| `source_ref` | text | YES |  |
+| `author_id` | uuid | YES |  |
+| `author_name` | text | YES |  |
+| `author_email` | text | YES |  |
+| `page_url` | text | YES |  |
+| `created_at` | timestamp with time zone | NO | `now()` |
+| `updated_at` | timestamp with time zone | NO | `now()` |
+
 ### `profiles`
 
 | column | type | null | default |
@@ -172,6 +193,12 @@
 - `media_assets` **PK** `media_assets_pkey`: PRIMARY KEY (id)
 - `media_assets` **UNIQUE** `media_assets_public_id_key`: UNIQUE (public_id)
 - `pages` **PK** `pages_pkey`: PRIMARY KEY (slug)
+- `plan_items` **FK** `plan_items_author_id_fkey`: FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE SET NULL
+- `plan_items` **CHECK** `plan_items_kind_check`: CHECK ((kind = ANY (ARRAY['idea'::text, 'feature'::text, 'bug'::text, 'task'::text, 'suggestion'::text])))
+- `plan_items` **PK** `plan_items_pkey`: PRIMARY KEY (id)
+- `plan_items` **CHECK** `plan_items_priority_check`: CHECK (((priority IS NULL) OR (priority = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text]))))
+- `plan_items` **CHECK** `plan_items_source_check`: CHECK ((source = ANY (ARRAY['studio'::text, 'public'::text])))
+- `plan_items` **CHECK** `plan_items_status_check`: CHECK ((status = ANY (ARRAY['new'::text, 'accepted'::text, 'planned'::text, 'in_progress'::text, 'done'::text, 'declined'::text])))
 - `profiles` **FK** `profiles_id_fkey`: FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
 - `profiles` **PK** `profiles_pkey`: PRIMARY KEY (id)
 - `profiles` **CHECK** `profiles_role_check`: CHECK ((role = ANY (ARRAY['admin'::text, 'editor'::text, 'viewer'::text])))
@@ -205,6 +232,10 @@
 - `media_assets`: CREATE UNIQUE INDEX media_assets_pkey ON public.media_assets USING btree (id)
 - `media_assets`: CREATE UNIQUE INDEX media_assets_public_id_key ON public.media_assets USING btree (public_id)
 - `pages`: CREATE UNIQUE INDEX pages_pkey ON public.pages USING btree (slug)
+- `plan_items`: CREATE UNIQUE INDEX plan_items_pkey ON public.plan_items USING btree (id)
+- `plan_items`: CREATE INDEX plan_items_release_idx ON public.plan_items USING btree (target_release) WHERE (target_release IS NOT NULL)
+- `plan_items`: CREATE UNIQUE INDEX plan_items_source_ref_key ON public.plan_items USING btree (source_ref) WHERE (source_ref IS NOT NULL)
+- `plan_items`: CREATE INDEX plan_items_status_idx ON public.plan_items USING btree (status, created_at DESC)
 - `profiles`: CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)
 - `schema_migrations`: CREATE UNIQUE INDEX schema_migrations_pkey ON public.schema_migrations USING btree (filename)
 - `settings`: CREATE UNIQUE INDEX settings_pkey ON public.settings USING btree (key)
@@ -229,6 +260,10 @@
 - `media_assets` `trg_media_assets_touch`:
   ```sql
   CREATE TRIGGER trg_media_assets_touch BEFORE UPDATE ON public.media_assets FOR EACH ROW EXECUTE FUNCTION media_assets_touch_updated_at()
+  ```
+- `plan_items` `trg_plan_items_touch`:
+  ```sql
+  CREATE TRIGGER trg_plan_items_touch BEFORE UPDATE ON public.plan_items FOR EACH ROW EXECUTE FUNCTION plan_items_touch_updated_at()
   ```
 - `profiles` `trg_profiles_touch`:
   ```sql
@@ -365,6 +400,21 @@ $function$
 
 ```
 
+#### `plan_items_touch_updated_at`
+
+```sql
+CREATE OR REPLACE FUNCTION public.plan_items_touch_updated_at()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END;
+$function$
+
+```
+
 #### `profiles_touch_updated_at`
 
 ```sql
@@ -390,6 +440,7 @@ $function$
 | `inquiries` | true | false |
 | `media_assets` | true | false |
 | `pages` | true | false |
+| `plan_items` | true | false |
 | `profiles` | true | false |
 | `schema_migrations` | true | false |
 | `settings` | true | false |
@@ -460,6 +511,10 @@ $function$
   - USING: `true`
   - WITH CHECK: `true`
 
+- `plan_items` **Admins manage plan_items** (ALL) roles={authenticated}
+  - USING: `is_admin_or_editor()`
+  - WITH CHECK: `is_admin_or_editor()`
+
 - `profiles` **profiles_select_admin** (SELECT) roles={public}
   - USING: `is_admin()`
 
@@ -498,8 +553,9 @@ $function$
 | `inquiries` | 1 |
 | `media_assets` | 320 |
 | `pages` | 4 |
+| `plan_items` | 0 |
 | `profiles` | 4 |
-| `schema_migrations` | 15 |
+| `schema_migrations` | 16 |
 | `settings` | 5 |
 | `taxonomies` | 13 |
 
@@ -516,6 +572,7 @@ $function$
 - `2026_09_14_v2_12_1_staff_scoped_policies.sql` — 2026-09-14T17:55:07.989Z
 - `2026_09_14_v2_12_artworks_public_select_excludes_drafts.sql` — 2026-09-14T17:27:29.096Z
 - `2026_09_14_v2_13_1_inquiry_email_status.sql` — 2026-09-14T21:01:03.608Z
+- `2026_09_15_v3_1_plan_items.sql` — 2026-09-16T01:01:00.414Z
 - `2026_09_15_v3_phase4_schema_extension.sql` — 2026-09-15T20:01:39.468Z
 - `2026_09_15_v3_phase4_wayback_backfill.sql` — 2026-09-15T20:01:40.146Z
 - `2026_09_15_v3_phase4_year_correction.sql` — 2026-09-15T20:44:50.784Z

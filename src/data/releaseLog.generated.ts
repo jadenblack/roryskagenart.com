@@ -1756,13 +1756,73 @@ export const RELEASE_LOG: ReleaseLog = {
   ],
   "deployments": [
     {
+      "date": "2026-09-16",
+      "version": "post-v3.1.0",
+      "url": "https://roryskagen-rago55952-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Production",
+      "commits": "39db3e37: PR #37 — deployment-log reconciliation for v3.1.0, including the two production deploys that had shipped with no row at all (42942d8b, eac45a5c). Docs-only; no release cut",
+      "flagged": false
+    },
+    {
+      "date": "2026-09-16",
+      "version": "post-v3.1.0-preview",
+      "url": "https://roryskagen-bdjas6058-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Preview",
+      "commits": "1911d17: docs/deployment-log-v3.1.0 preview (PR #37)",
+      "flagged": false
+    },
+    {
+      "date": "2026-09-16",
+      "version": "v3.1.0",
+      "url": "https://roryskagen-h6hw785vd-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Production",
+      "commits": "0ab5c5b0: PR #36 — the studio feedback & planning board, Capture (release/v3.1.0). Adds public.plan_items (15 columns, 4 CHECK constraints, 3 indexes, RLS with one is_admin_or_editor() policy and no public policy — the table holds public submitters' email addresses) and server/routes/plan.ts: six endpoints behind two doors — POST /api/plan/feedback is public and server-forced to kind='suggestion' / source='public' / status='new', while POST /api/plan/items sits behind requireAuth and takes author_id from the session. A viewer can file but cannot read the board: GET/PATCH/DELETE /api/plan/items* require editor (open question Q-E). Also: admin Planning + Changelog views (the latter generated from CHANGELOG.md + DEPLOYMENT_LOG.md), a footer feedback modal, honeypot + rate-limit guards shared with the inquiry route, and plan_items added to scripts/lib/restorePlan.ts in the same change. The migration was applied after the merge — public.plan_items exists, schema_migrations 15 → 16. ⚠️ Between the merge and the migration the off-site backup was broken: server/lib/catalogDump.ts shares RESTORE_ORDER with scripts/backup-catalog.ts, so both threw relation \"public.plan_items\" does not exist; a partial dump (9 of 10 tables, no manifest) was written at 00:59:45Z and is quarantined under data/backups/ as ...-FAILED-no-manifest. Post-migration backup: 10 tables, 862 rows, 16 recorded migrations, format v2, sha256 verified. Annotated tag v3.1.0 points at this commit (Current Active)",
+      "flagged": true
+    },
+    {
+      "date": "2026-09-16",
+      "version": "v3.1.0-preview",
+      "url": "https://roryskagen-haqtecemf-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Preview",
+      "commits": "0a6cbae7: release/v3.1.0 preview (PR #36)",
+      "flagged": false
+    },
+    {
+      "date": "2026-09-16",
+      "version": "post-v3.0.0",
+      "url": "https://roryskagen-b1yaiomkr-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Production",
+      "commits": "42942d8b: PR #35 — the v3.1.0–v3.3.0 feedback & planning roadmap, the ROADMAP_V3.md renumber (Phase 5 → v3.4.0), and the two unshipped Phase 2 promises (GET /api/artworks pagination, the R-20 assetRegistry.ts de-bundle) re-homed to Phase 5 with exit criteria. Docs-only; no release cut. Reconciled late — this deploy had no row until the v3.1.0 reconciliation",
+      "flagged": false
+    },
+    {
+      "date": "2026-09-15",
+      "version": "post-v3.0.0",
+      "url": "https://roryskagen-jmb7duit7-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Production",
+      "commits": "eac45a5c: PR #34 — re-verify the Cache-Control finding after the v3.0.0 load (604/1109, correcting plan/README.md's stale 604/605). Docs-only; no release cut. Reconciled late — this deploy had no row until the v3.1.0 reconciliation",
+      "flagged": false
+    },
+    {
       "date": "2026-09-15",
       "version": "v3.0.0",
       "url": "https://roryskagen-eveke8i3u-ventureio.vercel.app",
       "status": "● Ready",
       "buildTime": "n/a",
       "target": "Production",
-      "commits": "dc4be84: PR #32 — Phase 4, the load (release/v3.0.0), the only v3 release that writes production data. Merges the two archived predecessor sites into the catalog: artworks 138 → 205 (+67, −0: 62 mural, 123 painting, 20 kind-null), artwork_images 0 → 168, artwork_terms 0 → 142, taxonomies 3 → 13, media_assets 152 → 320, recorded migrations 12 → 15. 60 of the 62 murals land draft = true AND enabled = false — confirmed against production: 0 of the 60 new mural slugs appear in the live sitemap (138 <loc>), while the 2 merge targets stay published. D4/Q18 corrects the stored '2024' placeholder on those two targets (austin-postcard → 2011, marcia-ball → 2015; the live page title now reads Austin Postcard (2011)). Also fixed R-07 — artwork_images was in no backup set, so the only recovery path would have restored a catalog whose murals had lost their cover ordering — and a run-migrations.ts trap where .env's production connection string outranked an operator's scratch override. Annotated tag v3.0.0 points at this commit (Current Active)",
+      "commits": "dc4be84: PR #32 — Phase 4, the load (release/v3.0.0), the only v3 release that writes production data. Merges the two archived predecessor sites into the catalog: artworks 138 → 205 (+67, −0: 62 mural, 123 painting, 20 kind-null), artwork_images 0 → 168, artwork_terms 0 → 142, taxonomies 3 → 13, media_assets 152 → 320, recorded migrations 12 → 15. 60 of the 62 murals land draft = true AND enabled = false — confirmed against production: 0 of the 60 new mural slugs appear in the live sitemap (138 <loc>), while the 2 merge targets stay published. D4/Q18 corrects the stored '2024' placeholder on those two targets (austin-postcard → 2011, marcia-ball → 2015; the live page title now reads Austin Postcard (2011)). Also fixed R-07 — artwork_images was in no backup set, so the only recovery path would have restored a catalog whose murals had lost their cover ordering — and a run-migrations.ts trap where .env's production connection string outranked an operator's scratch override. Annotated tag v3.0.0 points at this commit",
       "flagged": false
     },
     {
@@ -2528,7 +2588,7 @@ export const RELEASE_LOG: ReleaseLog = {
   ],
   "diagnostics": {
     "releases": 21,
-    "deploymentRows": 77,
+    "deploymentRows": 83,
     "warnings": []
   }
 };
