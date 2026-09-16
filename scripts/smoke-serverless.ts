@@ -147,6 +147,17 @@ const REQUIRED: readonly string[] = [
   // Added in v2.13.0. The scheduled off-site backup is the project's only recovery path, so its
   // route going missing is the single highest-impact 404 this guard can catch.
   'GET /api/cron/backup',
+
+  // Added in v3.1.0 — the studio feedback & planning board. Six endpoints, two doors:
+  // `/feedback` is public and `/items` is editor+ (see server/routes/plan.ts). All six are
+  // listed, not just the ones with interesting guards, because a route nobody lists is a route
+  // nobody notices is missing.
+  'GET /api/plan/history',
+  'POST /api/plan/feedback',
+  'GET /api/plan/items',
+  'POST /api/plan/items',
+  'PATCH /api/plan/items/:id',
+  'DELETE /api/plan/items/:id',
 ];
 
 const missing = REQUIRED.filter((route) => !registered.includes(route));
@@ -234,6 +245,98 @@ const PROBES: readonly Probe[] = [
         'svix-signature': 'v1,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
       },
       body: JSON.stringify({ type: 'email.delivered', data: { email_id: 'smoke' } }),
+    },
+  },
+
+  /* ---------------------------------------------------------------- *
+   * v3.1.0 — the planning board                                      *
+   * ---------------------------------------------------------------- *
+   *
+   * ⚠️ EVERY probe below is deliberately **database-free**. This file loads `.env`, so a
+   * request that reached the INSERT would write a real row into the real board. Each probe is
+   * stopped by a guard before any query runs, and the two public-door probes are the two ways
+   * a submission is legitimately refused or dropped.
+   */
+
+  {
+    method: 'GET',
+    path: '/api/plan/history',
+    expect: [401],
+    because: 'requireAuth with no token — the release history is not anonymous',
+  },
+  {
+    method: 'GET',
+    path: '/api/plan/items',
+    expect: [401],
+    because: 'requireAuth is per-route on this router; an unauthenticated read must not reach the board',
+  },
+  {
+    method: 'POST',
+    path: '/api/plan/items',
+    expect: [401],
+    because: 'the staff door needs a session — source and author_id come from it, never the body',
+    init: {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ kind: 'bug', title: 'smoke', source: 'studio' }),
+    },
+  },
+  {
+    method: 'PATCH',
+    path: '/api/plan/items/00000000-0000-0000-0000-000000000000',
+    expect: [401],
+    because: 'requireAuth runs before the id is even looked at',
+    init: {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status: 'done' }),
+    },
+  },
+  {
+    method: 'DELETE',
+    path: '/api/plan/items/00000000-0000-0000-0000-000000000000',
+    expect: [401],
+    because: 'requireAuth first, so a probe can never delete anything',
+  },
+  {
+    method: 'POST',
+    path: '/api/plan/feedback',
+    expect: [400],
+    because:
+      'the public door is mounted and validates: an empty body is refused by buildPlanItemInput ' +
+      'before any query runs, so this proves reachability without writing a row',
+    init: {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({}),
+    },
+  },
+  {
+    method: 'POST',
+    path: '/api/plan/feedback',
+    expect: [201],
+    because:
+      'the honeypot: a filled `company_website` is answered with a plausible success and nothing ' +
+      'is stored. A 400 here would mean the gate is gone and a bot would be told which field to skip',
+    init: {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ title: 'smoke', company_website: 'https://spam.example' }),
+    },
+    check: (body) => (body?.success === true ? null : `body.success is ${JSON.stringify(body?.success)}`),
+  },
+  {
+    method: 'POST',
+    path: '/api/plan/feedback',
+    expect: [413],
+    because:
+      'the 64 KB scoped body parser is mounted BEFORE the global 50 MB one. If the parsers are ever ' +
+      'reordered this becomes a 400 (the body was buffered and then rejected by the length cap), ' +
+      'which is the regression this probe exists to catch',
+    init: {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ title: 'smoke', body: 'x'.repeat(70000) }),
     },
   },
 ];

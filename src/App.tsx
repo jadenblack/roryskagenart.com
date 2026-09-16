@@ -14,6 +14,7 @@ import { AuthGateView } from './components/AuthGateView';
 import { GalleryGrid } from './components/GalleryGrid';
 import { ArtworkFocusView } from './components/ArtworkFocusView';
 import { PagesView } from './components/PagesView';
+import { FeedbackModal, type FeedbackMode } from './components/FeedbackModal';
 import { useAuth } from './context/AuthContext';
 import { buildEditPath } from './lib/adminRoute';
 import { artworkPath, parseArtworkPath, parseLegacyArtworkHash, resolvePathArtwork } from './lib/artworkRoute';
@@ -30,6 +31,15 @@ export default function App() {
   const [selectedArtworkSlug, setSelectedArtworkSlug] = useState<string | null>(null);
   const [selectedPageSlug, setSelectedPageSlug] = useState<string>('about');
   const [adminPath, setAdminPath] = useState<string>('/admin');
+
+  /**
+   * Which intake door the footer opened, if any.
+   *
+   * One modal serves all three (§3.3): `feedback` posts to the public `/api/plan/feedback`,
+   * `feature` and `bug` post to `/api/plan/items` with the session attached. The footer only
+   * offers the last two to a signed-in visitor, because that endpoint requires one.
+   */
+  const [feedbackMode, setFeedbackMode] = useState<FeedbackMode | null>(null);
 
   // Subscribe to engine state updates
   useEffect(() => {
@@ -467,6 +477,40 @@ export default function App() {
             <div>
               &copy; {new Date().getFullYear()} Rory Skagen Studio. All rights reserved. Austin, Texas.
             </div>
+
+            {/* The intake doors for the studio's planning board (v3.1.0).
+                "Feedback & Suggestions" is public — it posts to POST /api/plan/feedback, which
+                needs no session. The other two post to POST /api/plan/items, which requires one,
+                so they render only for a signed-in visitor. A *viewer* sees them too: §3.4 of the
+                plan is explicit that anyone may knock and only editors triage. */}
+            <div className="flex items-center gap-4 font-mono">
+              <button
+                onClick={() => setFeedbackMode('feedback')}
+                className="hover:text-foreground transition-colors cursor-pointer"
+                title="Send the studio a suggestion"
+              >
+                Feedback &amp; Suggestions
+              </button>
+              {isAuthenticated && (
+                <>
+                  <button
+                    onClick={() => setFeedbackMode('feature')}
+                    className="hover:text-foreground transition-colors cursor-pointer"
+                    title="Request a feature for the studio tools"
+                  >
+                    Request a Feature
+                  </button>
+                  <button
+                    onClick={() => setFeedbackMode('bug')}
+                    className="hover:text-foreground transition-colors cursor-pointer"
+                    title="Report something that is broken"
+                  >
+                    Report a Bug
+                  </button>
+                </>
+              )}
+            </div>
+
             <div className="flex items-center gap-4 font-mono">
               <span>Austin, TX 78704</span>
               <span>•</span>
@@ -488,6 +532,12 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      <FeedbackModal
+        open={feedbackMode !== null}
+        mode={feedbackMode ?? 'feedback'}
+        onClose={() => setFeedbackMode(null)}
+      />
 
 
     </div>

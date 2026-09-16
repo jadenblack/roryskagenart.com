@@ -37,18 +37,31 @@ every update, with a "Restore this version" action and a per-artwork history lis
 rolling window removes almost all fear of editing.
 
 ### 1.3 The public inquiry form has no spam protection
-`POST /api/inquiries` has no captcha, honeypot, or rate limiting (verified — no matches for
-`captcha|honeypot|rateLimit|throttle` anywhere in `server/` or `src/`). Each submission sends email
-through Resend, so the form is a direct path to a flooded inbox and to burning email quota.
+✅ **DELIVERED in `v3.1.0` (2026-09-15).** `POST /api/inquiries` now runs
+`honeypotGate()` + `rateLimit({ rule: PUBLIC_WRITE_LIMITS.inquiries })` — 5 submissions per 30
+minutes per IP, against a route that sends **two** Resend emails per hit. The honeypot field is
+`company_website` (not `website`, which autofill would fill in and silently drop a real inquiry) and
+the shared vocabulary lives in `src/lib/antiSpam.ts` so the form's render and the server's read
+cannot drift. ⚠️ A tripped honeypot answers **201 with a plausible success**, never 400 — a bot
+learns nothing. The guards were extracted into `server/lib/requestGuards.ts` (24 tests) precisely so
+the *next* public door reuses them instead of inventing its own.
 
-*Implement:* a hidden honeypot field plus a per-IP rate limit on the route, and consider a
-challenge only if abuse actually appears. Cheap, and it protects a paid resource.
+*Original entry, kept for provenance:* `POST /api/inquiries` had no captcha, honeypot, or rate
+limiting. Each submission sends email through Resend, so the form was a direct path to a flooded
+inbox and to burning email quota. ⚠️ **`v3.1.0` proved this was the repo's only unguarded public
+write by making it the second one's prerequisite** — the planning tool's feedback door would
+otherwise have shipped beside an unprotected twin.
 
 ### 1.4 Confirm the backup tier, or the safety net may not exist
-`docs/runbooks/database-backup-restore.md` records that automatic daily backups are a
-**Pro/Team/Enterprise** feature and that **this project's tier is unverified**. Supabase database
-backups also **exclude Storage objects**, so a restore would not bring back deleted
-`artwork-images` files.
+✅ **RESOLVED — tier confirmed as Free (Q14, 2026-09-15), and the gap it exposed was closed in
+`v2.13.0`.** The owner's decision was *stay on Free*, which makes the **Vercel Cron → Vercel Blob**
+daily dump (`GET /api/cron/backup`, retention 14 recent + one per month) the project's only backup
+rather than a belt-and-braces extra. That dump is verified end-to-end: manifest format v2 with a
+sha256 per table, a self-verifying writer, and `scripts/verify-backup.ts` to re-check it.
+⚠️ **Storage objects are still outside it** — `scripts/verify-media-backup.ts` *detects* a
+rows ↔ objects mismatch (152 rows ↔ 605 objects, clean against production) but detection is not a
+copy, so the 76.6 MiB bucket remains the one unrecoverable surface. See
+`docs/runbooks/database-backup-restore.md` §6.
 
 *Implement:* check the project's plan. If it is Free, schedule `scripts/backup-catalog.ts` (it is
 already SELECT-only and writes to the gitignored `data/backups/`) to run on a schedule somewhere
@@ -143,8 +156,8 @@ support questions.
 
 | # | Item | Effort | Why now |
 | :--- | :--- | :--- | :--- |
-| 1 | Verify backup tier / schedule exports (§1.4) | Low | Decides whether anything else is recoverable |
-| 2 | Spam protection on inquiries (§1.3) | Low | Protects a paid resource |
+| 1 | ✅ Verify backup tier / schedule exports (§1.4) | Low | Decides whether anything else is recoverable — **done: Free confirmed, cron dump live (`v2.13.0`)** |
+| 2 | ✅ Spam protection on inquiries (§1.3) | Low | Protects a paid resource — **delivered in `v3.1.0`** |
 | 3 | Manual catalog + hero ordering (§1.1) | Low–Med | Most-felt daily annoyance |
 | 4 | Alt text field (§3.1) | Low | Accessibility + free SEO content |
 | 5 | Artwork revision history (§1.2) | Med | Removes the fear of editing |

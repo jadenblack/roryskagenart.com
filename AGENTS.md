@@ -4,9 +4,11 @@
 > repo. Read this **first** — it supersedes the historical specs in `/plan`, which contain
 > stale assumptions from earlier Cloudinary-era work.
 >
-> **Verified against:** release `v2.13.0` (2026-09-14). The schema section was re-verified by live
-> introspection — see `data/archive/schema_introspection.md`. `v2.13.0` was a backup-durability
-> release with **no schema change**, so the schema facts below still carry the `v2.10.0` verification.
+> **Verified against:** release `v3.1.0` (2026-09-15), the studio feedback & planning tool. The
+> schema section was re-verified by live introspection — see `data/archive/schema_introspection.md`.
+> `v3.1.0` added exactly one table (`plan_items`) and one migration, so everything else below still
+> carries the `v3.0.0` / `v2.10.0` verification. ⚠️ This header was stale for three releases
+> (`v2.14.0`–`v3.0.0`); it is now part of the release checklist — see §8.
 
 ---
 
@@ -176,10 +178,10 @@ Docker Desktop installs to a **per-user** path that is not on `PATH`:
 
 ---
 
-## 5. Database schema (after all 15 migrations)
+## 5. Database schema (after all 16 migrations)
 
 Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwork_terms`,
-`settings`, `media_assets`, `artwork_images`.
+`settings`, `media_assets`, `artwork_images`, `plan_items`.
 
 > ✅ **`v3.0.0` (Phase 4) added the mural dimension — 3 migrations, applied 2026-09-15.**
 > `2026_09_15_v3_phase4_schema_extension.sql` adds `artworks.kind` (`painting` | `mural` | `other`),
@@ -189,8 +191,27 @@ Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwor
 > and `media_assets(public_id)` (both `ON UPDATE CASCADE`), RLS enabled, a public-read policy and an
 > `is_admin_or_editor()` write policy. Then the promoted Wayback backfill (67 INSERTs, 118
 > fill-only-empty UPDATEs), then `2026_09_15_v3_phase4_year_correction.sql` (the D4 overwrite of 2
-> mural years). **Live result: 10 tables, 15 recorded migrations** — see
+> mural years). **Live result at that point: 10 tables, 15 recorded migrations** — see
 > [`data/archive/schema_introspection.md`](data/archive/schema_introspection.md).
+>
+> ✅ **`v3.1.0` added `public.plan_items` — 1 migration, applied 2026-09-15.**
+> `2026_09_15_v3_1_plan_items.sql` creates the studio planning board: `kind` (`idea` | `feature` |
+> `bug` | `task` | `suggestion`), `status` (6-state machine), `priority`, `target_release` (free
+> text, not an FK — `v3.2.0` introduces `plan_releases`), `source` (`public` | `studio`),
+> `source_ref` (unique, used by the mural seed as `artwork:<slug>`), and nullable `author_id` →
+> `profiles(id)` `ON DELETE SET NULL`. RLS is enabled with **exactly one policy**
+> (`Admins manage plan_items`, `FOR ALL TO authenticated`) — the anon key sees zero rows, which is
+> the boundary the API relies on. **Live result now: 11 tables, 16 recorded migrations.**
+>
+> ⚠️ **The board's identity fields are never read from a request body.** `server/lib/planRules.ts`
+> derives `source` / `source_ref` / `author_id` / `status` / `priority` from *which door* the request
+> arrived at, not from the payload — so a public submission that posts `source: 'studio'` or
+> `author_id: <someone>` is stored as an anonymous `suggestion`. That asymmetry is asserted in
+> `src/test/planRules.test.ts` and was rehearsed against a live table before shipping.
+>
+> ⚠️ **`plan_items` must stay in the backup set.** It is registered in `scripts/lib/restorePlan.ts`
+> (`TABLES`, `RESTORE_ORDER`, `CATALOG_TABLES`) — a dump covers **10 tables**. This is R-07: a table
+> absent from `RESTORE_ORDER` is not dumped at all, and the dump still looks complete.
 >
 > ⚠️ **`media_assets.artwork_slug` has NO foreign key** — unlike `artwork_images.artwork_slug`. That
 > is why nothing ever caught **10 rows pointing at a slug no artwork has** (`wisdom-cofee` vs
@@ -199,7 +220,7 @@ Core tables: `artworks`, `pages`, `inquiries`, `profiles`, `taxonomies`, `artwor
 >
 > ⚠️ **`artwork_images` is part of the backup/restore set** (`scripts/lib/restorePlan.ts`). It was
 > briefly *not* — the only recovery path would have restored a catalog whose murals had lost their
-> cover ordering. A dump now covers **9 tables**.
+> cover ordering. At `v3.0.0` a dump covered **9 tables**; with `plan_items` it covers **10**.
 >
 > ✅ **The schema is now reproducible from version control.** The four core domain tables
 > (`artworks`, `media_assets`, `pages`, `inquiries`) were created directly in the Supabase project
@@ -267,26 +288,38 @@ M2M filter path is currently unexercised. Re-verify any of these with
 ├── server.ts               # slim Express entrypoint (mounts routers, exports app)
 ├── server/
 │   ├── middleware/auth.ts  # resolveCmsUser / requireAuth / requireRole
-│   ├── routes/*.ts         # artworks, pages, taxonomies, settings, media, inquiries, adminUsers
+│   ├── routes/*.ts         # artworks, pages, taxonomies, settings, media, inquiries, adminUsers, plan
 │   ├── lib/userAdmin.ts    # pure user-admin rules: state, patches, lockout guards (unit-tested)
+│   ├── lib/planRules.ts    # pure planning-board rules: the two-door asymmetry, the patch
+│   │                       #   allow-list, status transitions, filter parsing (unit-tested)
+│   ├── lib/requestGuards.ts # shared public-write abuse controls — honeypot + in-process rate
+│   │                       #   limit; used by POST /api/inquiries AND POST /api/plan/feedback
 │   ├── emailTemplates.ts   # the branded email shell + BRAND identity (single source of email look)
 │   └── emailService.ts     # Resend integration (inquiries, invites, resets, notices)
 ├── api/                    # Vercel serverless entry (CommonJS — see api/package.json)
 ├── src/
 │   ├── components/         # public views + admin/ CMS + ui/ primitives (+ co-located .test.tsx)
 │   ├── engine/             # galleryStateEngine.ts (DB-backed reactive store)
-│   ├── data/               # assetRegistry.ts (generated), assetResolver.ts, registries
+│   ├── data/               # assetRegistry.ts (generated), releaseLog.generated.ts (generated),
+│   │                       # assetResolver.ts, registries
 │   ├── lib/                # supabase.ts, adminApi.ts, markdown.ts,
-│   │                       # roles.ts (shared role vocabulary), authRedirect.ts (auth hand-off),
+│   │                       # roles.ts (shared role vocabulary), planVocabulary.ts (shared
+│   │                       #   planning vocabulary + status transitions), antiSpam.ts (the
+│   │                       #   honeypot field, shared by server read and form render),
+│   │                       # authRedirect.ts (auth hand-off),
 │   │                       # adminRoute.ts (hash-route parse), narrative.ts (record → parts),
 │   │                       # dimensions.ts (free-text size → inches)
 │   └── server/db.ts        # pg Pool + Supabase admin client
-├── supabase/migrations/    # 13 idempotent SQL migrations (the baseline sorts first)
+├── supabase/migrations/    # 16 idempotent SQL migrations (the baseline sorts first)
 ├── supabase/email-templates/  # generated Supabase Auth mailer templates + manifest.json
 ├── scripts/                # run-migrations, introspect-schema, backup-catalog, verify-backup,
 │   │                       # verify-media-backup (--out writes an object listing),
 │   │                       # restore-catalog, generate-asset-registry,
 │   │                       # generate-auth-email-templates,
+│   │                       # generate-release-log (parses CHANGELOG.md + DEPLOYMENT_LOG.md →
+│   │                       #   src/data/releaseLog.generated.ts; deterministic, no timestamp),
+│   │                       # seed-plan-board (idempotent: one review task per unpublished mural,
+│   │                       #   keyed source_ref = 'artwork:<slug>'; --dry-run supported),
 │   │                       # prerender-seo (Phase 2: per-artwork HTML + sitemap.xml into dist/,
 │   │                       #   runs between `vite build` and the esbuild step — see package.json
 │   │                       #   AND vercel.json, which are two separate strings that must agree)
@@ -294,9 +327,11 @@ M2M filter path is currently unexercised. Re-verify any of these with
 │                           # restorePlan (restore safety), backupManifest (v2 manifest +
 │                           # verification + retention), dumpDir (dump I/O edge),
 │                           # mediaReconcile (rows ↔ Storage), pgTarget (TLS rule),
+│                           # releaseLog (the CHANGELOG/DEPLOYMENT_LOG parser),
 │                           # seoPlan (Phase 2: which rows are indexable, canonical/og tags,
 │                           #   sitemap XML, and the loopback-origin refusal)
-├── src/test/               # vitest suites (incl. migrationSafety + migrationPlan + userAdmin)
+├── src/test/               # vitest suites (incl. migrationSafety + migrationPlan + userAdmin +
+│                           #   planRules + requestGuards + adminNavGuard + releaseLog)
 ├── data/archive/           # historical manifests + live schema introspection (provenance)
 ├── data/backups/           # gitignored logical dumps (see docs/runbooks/)
 ├── wayback/                # archived predecessor sites (v3 migration source — see §7)
@@ -336,13 +371,28 @@ re-exports it; never re-declare a role list.
 
 | Role | Rank | Can |
 | :--- | :--- | :--- |
-| `viewer` | 0 | Read-only: dashboard, catalog, pages |
-| `editor` | 1 | + catalog writes, pages, media, inquiries, taxonomies, design, trash |
+| `viewer` | 0 | Read-only: dashboard, catalog, pages, changelog |
+| `editor` | 1 | + catalog writes, pages, media, inquiries, taxonomies, design, trash, planning |
 | `admin` | 2 | + Users and Settings (full control) |
+
+**The `minRole` ↔ guard matrix** (every row is asserted by `src/test/adminNavGuard.test.ts`):
+
+| Nav item (`ADMIN_NAV`) | `minRole` | Server guard | Endpoint |
+| :--- | :--- | :--- | :--- |
+| Dashboard, Catalog, Pages | — (all roles) | `requireAuth` / public read | — |
+| **Changelog** | — (all roles) | `requireAuth` | `GET /api/plan/history` |
+| Media, Inquiries, Taxonomies, Design, Trash | `editor` | `requireRole("editor")` | their own routes |
+| **Planning** | `editor` | `requireAuth, requireRole("editor")` | `GET/PATCH/DELETE /api/plan/items` |
+| Users, Settings | `admin` | `requireRole("admin")` | their own routes |
 
 - **A `minRole` on a nav item must match the server guard on the matching API route.** Otherwise a
   Viewer is offered a menu item that answers `403` — the exact defect `v2.11.0` fixed for Inquiries
-  and Media. `ADMIN_NAV` in `src/components/admin/AdminLayout.tsx` carries the mapping as a comment.
+  and Media. `ADMIN_NAV` in `src/components/admin/AdminLayout.tsx` carries the mapping as a comment,
+  and `src/test/adminNavGuard.test.ts` reads that list and `AdminApp`'s route switch **out of source**
+  and fails when either direction of the relationship breaks. Two doors on one resource is legal
+  *only* when the guards differ deliberately — `POST /api/plan/feedback` is public (with honeypot and
+  rate limit) while `POST /api/plan/items` is `requireAuth`; that is why `server/routes/plan.ts` has
+  **no** router-wide guard.
 - **Gate at both ends.** Route-level `requireAuth, requireRole(...)` on the server, plus a `Forbidden`
   panel and disabled controls in the UI. Server is the authority; the UI only avoids dead ends.
 - **Never let the studio lock itself out.** `decideMutation()` in `server/lib/userAdmin.ts` refuses
@@ -378,9 +428,25 @@ re-exports it; never re-declare a role list.
   `bareOrigin()` (`src/lib/authRedirect.ts`) or `buildAuthRedirect()` (`server/lib/userAdmin.ts`), and
   keep `src/lib/authRedirect.ts` as the **first** import in `src/main.tsx`.
 - **`tsc --noEmit` must stay clean** (`npm run lint`); `npm test` (vitest) is offline/zero-token.
-  Suite as of `v2.14.0`: **390 tests across 31 files**.
+  Suite as of `v3.1.0`: **813 tests across 47 files**.
   ⚠️ **vitest transpiles without typechecking** — a type error in `scripts/` or `server/` passes the
   test run and is caught only by `npm run lint`. Run both.
+  ⚠️ The count is stale the moment it is written. Re-derive it rather than trusting it:
+  `npx vitest run --reporter=dot 2>&1 | tail -5` (and `ls src/**/*.test.* | wc -l` for the file count).
+- **A new public write door must reuse `server/lib/requestGuards.ts`.** Every unauthenticated `POST`
+  gets `honeypotGate()` + `rateLimit({ rule: PUBLIC_WRITE_LIMITS.<name> })`, and its budget must be
+  *tighter* than any cheaper door's — `POST /api/inquiries` (which sends two Resend emails per hit) is
+  the tightest at 5/30 min, not the loosest. The honeypot answers **201 with a plausible success**,
+  never 400, so a bot learns nothing. An in-process `Map` is **not** a security boundary on Vercel —
+  it is a speed bump; do not describe it as more.
+- **A public write's identity fields come from the door, never the body.** `server/lib/planRules.ts`
+  is the model: `source`, `source_ref`, `author_id`, `status` and `priority` are derived from *which
+  endpoint* the request hit. A rule that reads them from the payload is a privilege-escalation bug,
+  and the test that catches it belongs in the pure-rule suite, not in an integration test.
+- **Generated artifacts must be reproducible.** `src/data/assetRegistry.ts` and
+  `src/data/releaseLog.generated.ts` are emitted by `scripts/generate-*.ts` with an AUTO-GENERATED
+  banner and **no timestamp**, so `git diff --exit-code` after a re-run is a real staleness check.
+  Never hand-edit one; never add a timestamp to one.
 - Verify a claim against the code before documenting it. Stale docs were this repo's largest
   liability before `v2.9.0`.
 
@@ -398,7 +464,19 @@ re-exports it; never re-declare a role list.
   the user asked to **keep `release/v2.11.0`** (tip `467bd14`, fully merged). Check before pruning.
 - **Update `DEPLOYMENT_LOG.md`** for every release — it is one row per notable deployment and it
   drifted three releases behind once already. The query to rebuild it from real data is in that file.
+- **A release is not finished until the docs it invalidated are fixed.** The checklist, all four of
+  which have been skipped at least once: (1) the `AGENTS.md` **header** `Verified against:` line — it
+  read `v2.13.0` through three releases; (2) §5's migration count and §6's file map; (3) §8's suite
+  count, which is stale the moment it is written; (4) **regenerate the derived artifacts**
+  (`npx tsx scripts/generate-release-log.ts`) after the `CHANGELOG.md` edit, because the history
+  screen renders the generated file, not the Markdown — a missed regeneration shows the *previous*
+  release's notes, and a `[Unreleased]` heading left on a shipped section renders the whole release
+  as unreleased. Both defects happened in `v3.1.0` and were found only by reading the screen back.
 - `gh` is not authenticated in this shell and is not on the Bash `PATH`; call it by absolute path
-  (`"/c/Program Files/GitHub CLI/gh.exe"`) with `GH_TOKEN` derived from the `origin` remote URL.
-  Prefix git network commands with `GIT_TERMINAL_PROMPT=0 git -c credential.helper=` (a credential
-  manager otherwise hangs them), and see the memory notes for this environment's ref-file quirk.
+  (`"/c/Program Files/GitHub CLI/gh.exe"`). ⚠️ The token is **no longer in the `origin` URL** — it was
+  stripped on 2026-09-15. Borrow the one Git Credential Manager already holds instead:
+  `TOKEN=$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill | sed -n 's/^password=//p')`
+  then `export GH_TOKEN="$TOKEN"`. Verify with a real write, not a read: a fine-grained PAT can read
+  (`ls-remote`, `gh pr list`) and still return `403 Resource not accessible by personal access token`
+  on every push. See the memory notes for this environment's ref-file quirk — ⚠️ **read
+  `GIT_REF_SANDBOX_HAZARD.md` before the session's first ref or checkout operation.**

@@ -7,11 +7,110 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [3.1.0] - 2026-09-15
 
-> **Accumulating for `v3.0.0`.** The roadmap delivers v3.0.0 as a **sequence of PRs** — one per
-> phase — with this section accumulating until the tag is cut on the merge commit that completes
-> Phase 4. See [`plan/ROADMAP_V3.md`](./plan/ROADMAP_V3.md) §3.4.
+> **"Capture" — the studio feedback & planning board.** The first release of the studio feedback &
+> planning program (`plan/ROADMAP_V3_1_TO_V3_3_FEEDBACK_AND_PLANNING.md`), which takes
+> `v3.1.0`–`v3.3.0` and moves Phase 5 to `v3.4.0`. ⚠️ **The version and the date were set in the
+> release PR, not after it.** The `v3.0.0` section below shipped still headed `[Unreleased]`, so the
+> generated history screen rendered the entire v3 program as unreleased — a defect found only by
+> building the thing that reads these documents back (see *Fixed*, below).
+
+### Added
+
+- **The studio feedback & planning board.** An admin menu for the studio to plan *itself*: file
+  ideas, feature requests, bugs and tasks, triage them, and group them by a release label. New
+  table `public.plan_items` (15 columns, 4 CHECK constraints, 3 indexes, RLS with one
+  `is_admin_or_editor()` policy and **no public policy at all** — the table holds public
+  submitters' email addresses), and a new `server/routes/plan.ts` with six endpoints behind two
+  deliberately different doors:
+  - `POST /api/plan/feedback` — **public**, no session. Accepts a title, a body and an optional
+    email; the server forces `kind = 'suggestion'`, `source = 'public'` and `status = 'new'`.
+  - `POST /api/plan/items` — `requireAuth`, any role. Accepts a staff `kind`; the server forces
+    `source = 'studio'` and takes `author_id` from the session.
+  - `GET`/`PATCH`/`DELETE /api/plan/items` and `GET /api/plan/history` — `requireAuth`, and
+    `requireRole('editor')` for everything that touches the board.
+
+  ⚠️ **`source`, `source_ref` and `author_id` are never read from a request body.** A caller that
+  posts `{"source":"studio","kind":"bug","status":"done","source_ref":"artwork:hijack"}` to the
+  public door still stores a `suggestion` from the public, with no author and no link. That rule is
+  enforced in `server/lib/planRules.ts` and asserted against a live database, not just in a unit test.
+- **The Changelog screen — the project's history, derived rather than authored.** `CHANGELOG.md` and
+  `DEPLOYMENT_LOG.md` are parsed at build time by a new pure `scripts/lib/releaseLog.ts` into
+  `src/data/releaseLog.generated.ts` (21 releases, 77 deployment rows, 224 entries, 0 parse
+  warnings), served by
+  `GET /api/plan/history` and rendered read-only at `#/admin/changelog`. Readable by **every** role.
+  - The artifact is **deterministic — no timestamp** — so `npx tsx scripts/generate-release-log.ts &&
+    git diff --exit-code` is a real staleness check, and `src/test/releaseLogSync.test.ts` **fails
+    the suite** the moment the artifact and the two documents disagree. That is what makes "displayed
+    as they change" a guarantee rather than a hope: a release that forgot to regenerate cannot merge.
+  - It is served over HTTP rather than parsed in the browser, so the ~220 KB of history never enters
+    the client bundle — the payload problem R-20 already recorded for `assetRegistry.ts`.
+- **Two intake doors in the public footer.** *Feedback & Suggestions* for every visitor (it posts to
+  the public endpoint), and *Request a Feature* / *Report a Bug* for signed-in users. One modal
+  (`src/components/FeedbackModal.tsx`) serves all three. A `viewer` may file but cannot read the
+  board — anyone may knock, only editors triage.
+- **A Planning card on the studio dashboard** (open items, in progress, awaiting triage), shown only
+  where the board is readable.
+- **The board ships with 62 items on it.** `scripts/seed-plan-board.ts` files one review task per
+  unpublished mural — `artworks.kind = 'mural' AND draft = true` — keyed on
+  `source_ref = 'artwork:<slug>'` so re-running inserts nothing. It **prints NEW / EXISTS / COLLISION
+  counts** rather than relying on a silent `ON CONFLICT DO NOTHING`, because a silent conflict hides a
+  wrong natural key. This is also the cheapest possible answer to Q17 ("how do the 60 unpublished
+  murals get reviewed?"): a board that is empty is a board nobody opens.
+
+### Changed
+
+- **`POST /api/inquiries` is now guarded — it was the project's only public write, and it was
+  unguarded.** `plan/BACKLOG_STUDIO_CMS.md` §1.3 recorded no captcha, no honeypot and no rate limit,
+  while every accepted submission spends **two** Resend sends and lands in the studio's inbox. Rather
+  than ship a second public endpoint next to a documented defect, both now use a shared helper
+  (`server/lib/requestGuards.ts`): a hidden `company_website` honeypot and a sliding-window per-IP
+  limit (5 per 30 min for inquiries, 20 per hour for feedback, keyed by account for the staff door).
+  A tripped honeypot answers **201 with a plausible success** so a bot learns nothing.
+- **The public write doors are capped at 64 KB.** A scoped body parser is mounted *before* the global
+  50 MB one for `/api/inquiries`, `/api/plan/feedback` and `/api/plan/items`, so an oversized payload
+  is refused before it is buffered. Both the JSON and the form-encoded parser are scoped — one
+  without the other is a door left open.
+- **`CmsUser` now carries the profile's name.** `resolveCmsUser` already selected `full_name` and
+  threw it away; `plan_items.author_name` is denormalised on purpose, and a column that is null for
+  every staff-filed item would be decorative.
+- **The documentation this release invalidated was repaired in the same PR** (task 2 / Q-D):
+  `AGENTS.md` header, §5 (16 migrations, `plan_items`, row counts), §6 (the new files, 13 → 16
+  migrations) and §8 (the `minRole` ↔ guard matrix, the suite count);
+  `docs/runbooks/database-backup-restore.md` (the `plan_items` restore-set row and §7's two ledger
+  counts); `plan/README.md`; and `plan/BACKLOG_STUDIO_CMS.md` §1.3/§1.4. §8 also gained a **release
+  checklist**, because three of its four items had been skipped at least once — the `AGENTS.md`
+  header read `v2.13.0` through three releases, and the derived artifacts were regenerated *after*
+  the release that needed them.
+
+### Fixed
+
+- **The `v3.0.0` CHANGELOG section was never closed.** It was still headed `[Unreleased]` with a
+  blockquote reading *"Accumulating for `v3.0.0`"* — a month after the tag was cut — so the generated
+  history screen rendered the entire v3 program as *unreleased*. Closed as `[3.0.0] - 2026-09-15`,
+  pinned to the tag (`v3.0.0` → `dc4be84`) and the deployment row that records it. Found by building
+  the history view, which is the first thing in this repository that reads these documents back.
+
+### Security
+
+- **`plan_items` has no public read policy, and must never gain one.** It stores the email addresses
+  of anonymous members of the public. Proven rather than asserted: an anon PostgREST read of the
+  table returns **zero rows** while 62 rows exist behind RLS, with an anon read of `artworks` as the
+  positive control.
+- **Body-parser failures are answered in JSON.** `entity.too.large` → 413 and `entity.parse.failed` →
+  400, narrowly scoped so nothing else is swallowed.
+
+## [3.0.0] - 2026-09-15
+
+> **The v3 program, complete.** Delivered as a sequence of PRs — one per phase — with this section
+> accumulating until the tag was cut on the merge commit that completed Phase 4. Annotated tag
+> `v3.0.0` → `dc4be84`; the deployment row is in `DEPLOYMENT_LOG.md`. The objective was to **merge
+> the two archived predecessor websites** (mural projects + fine art) into this app's Supabase
+> catalog, and to do it without losing a row.
+>
+> ⚠️ **This section is the v3.0.0 record and is closed.** The blockquote that stood here until
+> 2026-09-15 still read *"Accumulating for `v3.0.0`"*; the release had already shipped.
 
 ### Added
 

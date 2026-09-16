@@ -487,24 +487,24 @@ The complete set, in dependency order. `→` means "cannot start before".
 | :--- | :--- | :--- | :--- | :--- |
 | 0 | ✅ **DONE 2026-09-15 — Q-A = A.** `ROADMAP_V3.md` §3.4/§4/§5/§7/#6 edited in this PR | — | pre-flight | — |
 | 1 | ✅ **DONE 2026-09-15 — Q-B:** `CHANGELOG.md` + `DEPLOYMENT_LOG.md`, shown as they change. **Q-C:** no public page | — | pre-flight | — |
-| 2 | Pre-flight doc repair: `AGENTS.md` header/§6/§8 stale numbers (§9 Q-D) | — | pre-flight | — |
-| 3 | Migration: `plan_items` + RLS + trigger + indexes | C2 | 3.1.0 | 0 |
-| 4 | Add `plan_items` to `restorePlan.ts` (`TABLES`/`RESTORE_ORDER`/`CATALOG_TABLES`) | C2 | 3.1.0 | 3 |
-| 5 | `scripts/lib/releaseLog.ts` pure parser | C1 | 3.1.0 | — |
-| 6 | `scripts/generate-release-log.ts` → `releaseLog.generated.ts` | C1 | 3.1.0 | 5 |
-| 7 | `releaseLog` parser + sync tests | C1 | 3.1.0 | 5, 6 |
-| 8 | `server/lib/planRules.ts` (pure rules + validation) | C2 | 3.1.0 | — |
-| 9 | `server/routes/plan.ts` + mount in `server.ts` | C1–C5 | 3.1.0 | 3, 5, 8 |
-| 10 | Honeypot + rate-limit helper; apply to the new endpoint **and** `POST /api/inquiries` | C4 | 3.1.0 | 9 |
-| 11 | `ChangelogView.tsx` | C1 | 3.1.0 | 9 |
-| 12 | `PlanningView.tsx` (list, filters, dialog, delete) | C2, C3 | 3.1.0 | 9 |
-| 13 | `ADMIN_NAV` entries + `AdminApp` route cases, `minRole` per §3.4 | C1–C3 | 3.1.0 | 11, 12 |
-| 14 | `FeedbackModal.tsx` + three footer links in `App.tsx` | C4, C5 | 3.1.0 | 9 |
-| 15 | Seed backfill: one review item per unpublished mural, with inserted/skipped counts | C2 | 3.1.0 | 3 |
-| 16 | `DashboardHome` planning card | C2 | 3.1.0 | 12 |
-| 17 | `smoke-serverless.ts` expected-endpoint table | — | 3.1.0 | 9 |
-| 18 | Tests: nav↔guard parity, route guards, modal, views | — | 3.1.0 | 13, 14 |
-| 19 | Release: backup → scratch rehearsal → PR → gates → tag merge commit → `DEPLOYMENT_LOG` | — | 3.1.0 | all |
+| 2 | ✅ **DONE 2026-09-15 — Q-D answered yes.** `AGENTS.md` header (`v2.13.0` → `v3.1.0`), §5 (16 migrations, `plan_items`, row counts), §6 (the new files, 13 → 16 migrations), §8 (the `minRole` ↔ guard matrix, **813/47**), plus `docs/runbooks/database-backup-restore.md` (the ledger counts and the `plan_items` restore-set row) and `plan/README.md`'s `604/605` → `604 of 1109` | — | pre-flight | — |
+| 3 | ✅ **DONE 2026-09-15** — `2026_09_15_v3_1_plan_items.sql`. Rehearsed twice on the scratch DB (applied, then "Nothing to do"); live read-back: RLS on, **exactly one policy**, 15 columns, 4 indexes, 1 trigger, 4 CHECKs | C2 | 3.1.0 | 0 |
+| 4 | ✅ **DONE 2026-09-15** — `TABLES` + `RESTORE_ORDER` (after `profiles`) + `CATALOG_TABLES`; a dump now covers **10 tables** | C2 | 3.1.0 | 3 |
+| 5 | ✅ **DONE 2026-09-15** — `scripts/lib/releaseLog.ts`, pure and offline (23 tests) | C1 | 3.1.0 | — |
+| 6 | ✅ **DONE 2026-09-15** — `scripts/generate-release-log.ts` → `src/data/releaseLog.generated.ts`; 21 releases / 77 deployment rows / 68 sections / 224 entries, **0 warnings**, byte-identical on re-run | C1 | 3.1.0 | 5 |
+| 7 | ✅ **DONE 2026-09-15** — `releaseLog.test.ts` (23) + `releaseLogSync.test.ts` (3), the latter a real staleness gate on the committed artifact | C1 | 3.1.0 | 5, 6 |
+| 8 | ✅ **DONE 2026-09-15** — `server/lib/planRules.ts`: the two-door asymmetry, the `PATCH_COLUMNS` allow-list, transitions, filters (49 tests) | C2 | 3.1.0 | — |
+| 9 | ✅ **DONE 2026-09-15** — `server/routes/plan.ts` (6 endpoints, **no router-wide guard** — the guards differ by design), mounted in `server.ts` with scoped 64 KB parsers and a narrow body-parser error handler | C1–C5 | 3.1.0 | 3, 5, 8 |
+| 10 | ✅ **DONE 2026-09-15** — `server/lib/requestGuards.ts` (24 tests), applied to the new endpoint **and** `POST /api/inquiries`, which was the repo's only unguarded public write | C4 | 3.1.0 | 9 |
+| 11 | ✅ **DONE 2026-09-15** — `ChangelogView.tsx`, reading the generated artifact so a parser change fails `npm run lint` | C1 | 3.1.0 | 9 |
+| 12 | ✅ **DONE 2026-09-15** — `PlanningView.tsx`: stats, 3 filters, table, create/edit dialog, delete confirm, `<datalist>` release picker | C2, C3 | 3.1.0 | 9 |
+| 13 | ✅ **DONE 2026-09-15** — two `ADMIN_NAV` rows + two `AdminApp` cases, `minRole` per §3.4; parity asserted by `src/test/adminNavGuard.test.ts` (9 tests, **proven able to fail**) | C1–C3 | 3.1.0 | 11, 12 |
+| 14 | ✅ **DONE 2026-09-15** — `FeedbackModal.tsx` (3 modes) + three footer links in `App.tsx` (the two staff ones behind `isAuthenticated`) | C4, C5 | 3.1.0 | 9 |
+| 15 | ✅ **DONE 2026-09-15** — `scripts/seed-plan-board.ts`, `--dry-run` supported, classification done in JS (not by trusting `ON CONFLICT`): **62 murals → 62 NEW → 62 inserted**, then **0 NEW / 62 EXISTS / 0 inserted** | C2 | 3.1.0 | 3 |
+| 16 | ✅ **DONE 2026-09-15** — `DashboardHome` planning card (`?limit=1`: the query runs, the payload is one row) | C2 | 3.1.0 | 12 |
+| 17 | ✅ **DONE 2026-09-15** — 6 rows in `REQUIRED` + 8 DB-free probes (four 401s, 400, 201 honeypot, **413 for a 70 KB body** — which pins the parser-ordering decision) | — | 3.1.0 | 9 |
+| 18 | ✅ **DONE 2026-09-15** — `planRules` (49) + `requestGuards` (24) + `adminNavGuard` (9); **813 tests / 47 files**, up from 717/43 | — | 3.1.0 | 13, 14 |
+| 19 | 🚧 **IN FLIGHT** — scratch rehearsal ✅, backup pending, PR pending, gates pending, tag pending, `DEPLOYMENT_LOG` pending (its own post-merge docs PR) | — | 3.1.0 | all |
 | 20 | Migration: `plan_releases` + `plan_items.release_id` + backfill | C3 | 3.2.0 | 19 |
 | 21 | Releases view (CRUD, `shipped_at`) | C3 | 3.2.0 | 20 |
 | 22 | Board grouping by release + move control | C3 | 3.2.0 | 20 |
@@ -623,7 +623,7 @@ New to this document:
 | **Q-A** | **Version mapping.** ~~Does this tool take `v3.1.0`–`v3.3.0` and push Phase 5 to `v3.4.0` (**A**), or does Phase 5 keep `v3.1.0` and the tool become `v3.2.0`–`v3.4.0` (**B**)?~~ | ~~Everything~~ | ✅ **ANSWERED 2026-09-15 — A.** The tool takes `v3.1.0`–`v3.3.0`; **Phase 5 → `v3.4.0`**. `ROADMAP_V3.md` §3.4/§4/§5/§7/#6 edited **in this same PR**. Nothing had shipped against `v3.1.0` (no tag, no CHANGELOG section, no branch), so the renumber is legitimate — and no tag was moved. Residual: the unfulfilled `v3.1.0` pagination promise, re-homed in §3.5 |
 | **Q-B** | **What are the "development logs"?** ~~This document assumes `DEPLOYMENT_LOG.md` + `plan/README.md`…~~ | Task 5's parser scope, task 11's view | ✅ **ANSWERED 2026-09-15 — `CHANGELOG.md` + `DEPLOYMENT_LOG.md`**, displayed **as they are changed**. ⚠️ This document's earlier guess of `plan/README.md` was **wrong** and is corrected here: the spec index is a *planning* artifact, not a log. Parser scope (task 5) therefore reads **exactly two files**. `.workbuddy-ai/memory/*.md` stay out — internal agent working memory, not studio-facing |
 | **Q-C** | **Should there be a public "What's new" page?** | ~~Task 32~~ | ✅ **ANSWERED 2026-09-15 — NO.** *"No need for public display in this scope."* **Not deferred — cut:** task 32 is removed, §4's `v3.3.0` item 6 is struck, and §6's blocker is resolved. This was the program's only public-render-path item, so the whole program now touches no public route, no sitemap and no `vercel.json` |
-| **Q-D** | **Should the pre-flight doc repair be in scope?** `AGENTS.md` is stale in at least four verified places: its header says *"Verified against: release `v2.13.0`"* while `v3.0.0` shipped; §6 says *"13 idempotent SQL migrations"* against 15 files on disk; §8 says *"Suite as of `v2.14.0`: 390 tests across 31 files"* against 43 test files now; and `ROADMAP_V3.md` R-20's *"~445 KB"* for `assetRegistry.ts` is now ~987 KB | Nothing — it is hygiene | **Yes, as task 2.** `ROADMAP_V3.md` R-21 names documentation drift as a permanent risk with *"a demonstrated half-life of about one release"*; this is that risk, live |
+| **Q-D** | **Should the pre-flight doc repair be in scope?** `AGENTS.md` is stale in at least four verified places: its header says *"Verified against: release `v2.13.0`"* while `v3.0.0` shipped; §6 says *"13 idempotent SQL migrations"* against 15 files on disk; §8 says *"Suite as of `v2.14.0`: 390 tests across 31 files"* against 43 test files now; and `ROADMAP_V3.md` R-20's *"~445 KB"* for `assetRegistry.ts` is now ~987 KB | Nothing — it is hygiene | ✅ **ANSWERED 2026-09-15 — yes, as task 2**, and executed in this PR. The four cited places were repaired (plus `docs/runbooks/database-backup-restore.md` and `plan/README.md`), and §8 gained the `minRole` ↔ guard matrix plus a release checklist so the header, the counts and the derived artifacts are refreshed *as part of* a release rather than a release later. ⚠️ `ROADMAP_V3.md` R-20's `~445 KB` figure was **not** touched — it is a frozen historical risk statement, and R-20 itself is re-homed to Phase 5 |
 | **Q-E** | **Should a `viewer` see the Planning board?** §3.4 says no (read is editor+, matching RLS exactly). The cost is that a read-only account can file a bug but not watch it | Task 13, task 23 | **No, keep it editor+.** The board holds public submitters' emails, and RLS/API parity is worth more than viewer visibility |
 
 ---
@@ -687,11 +687,11 @@ Restated because this program spans three releases and the process is the part t
 | :--- | :--- | :--- |
 | `plan/README.md` | ✅ Row added and its status updated to record the task 0/1 decisions; flip again as each release ships | ✅ done / each release |
 | `plan/ROADMAP_V3.md` | ✅ **DONE** — §3.4 phase table + version-mapping table, §4 Phase 5 heading, §5, §7 studio-CMS backlog line, §8 decision #6, §9 Q13: Phase 5 → `v3.4.0`, plus the re-homed pagination promise | ✅ done — task 0 |
-| `AGENTS.md` header | *"Verified against"* → the release this work starts from | pre-flight, task 2 |
-| `AGENTS.md` §5 | `plan_items` (+ `plan_releases` in 3.2); row counts | 3.1.0 / 3.2.0 |
-| `AGENTS.md` §6 | New files: `server/routes/plan.ts`, `server/lib/planRules.ts`, `scripts/lib/releaseLog.ts`, `scripts/generate-release-log.ts`, the two admin views; migration count 15 → 16 | 3.1.0 |
-| `AGENTS.md` §8 | The `minRole` ↔ guard table (two new rows); the suite count | 3.1.0 |
-| `docs/runbooks/database-backup-restore.md` | `plan_items` in the restore set and the table order | 3.1.0 |
-| `CHANGELOG.md` | A section per release | each |
-| `DEPLOYMENT_LOG.md` | A row per release, from the Vercel/GitHub Deployments API | each |
-| `plan/BACKLOG_STUDIO_CMS.md` | Mark §1.3 (inquiry spam) delivered, with the commit | 3.1.0, task 10 |
+| `AGENTS.md` header | *"Verified against"* → the release this work starts from | ✅ **done — `v3.1.0`**, plus §8 now carries a release checklist so it stops going stale |
+| `AGENTS.md` §5 | `plan_items` (+ `plan_releases` in 3.2); row counts | ✅ **done for 3.1.0** (11 tables / 16 migrations); `plan_releases` still due in 3.2.0 |
+| `AGENTS.md` §6 | New files: `server/routes/plan.ts`, `server/lib/planRules.ts`, `scripts/lib/releaseLog.ts`, `scripts/generate-release-log.ts`, the two admin views; migration count 15 → 16 | ✅ **done** — also `server/lib/requestGuards.ts`, `src/lib/planVocabulary.ts`, `src/lib/antiSpam.ts`, `scripts/seed-plan-board.ts`, `src/data/releaseLog.generated.ts` |
+| `AGENTS.md` §8 | The `minRole` ↔ guard table (two new rows); the suite count | ✅ **done** — the matrix is now a table, the count reads 813/47, and the public-write + generated-artifact guardrails were added |
+| `docs/runbooks/database-backup-restore.md` | `plan_items` in the restore set and the table order | ✅ **done** — §6 gained the `plan_items` row, and §7's two ledger counts were corrected (9 → 15→16) |
+| `CHANGELOG.md` | A section per release | ✅ **done for 3.1.0**; ⚠️ also closed the `v3.0.0` section, which still read `[Unreleased]` after the tag shipped |
+| `DEPLOYMENT_LOG.md` | A row per release, from the Vercel/GitHub Deployments API | ⬜ **pending** — its own post-merge docs PR, task 19 |
+| `plan/BACKLOG_STUDIO_CMS.md` | Mark §1.3 (inquiry spam) delivered, with the commit | ✅ **done** — §1.3 delivered in `v3.1.0`; §1.4 also corrected (tier confirmed Free) |

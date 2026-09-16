@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Archive,
   FilePen,
+  ListChecks,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -31,6 +32,24 @@ interface InquiriesResponse {
   }>;
 }
 
+/**
+ * The planning board's counts.
+ *
+ * The board endpoint returns the list, the release labels and these counts together, because all
+ * three come from the same page load. The dashboard wants only the counts, so it asks for
+ * `?limit=1` — the query runs, the summary is real, and the payload stays a single row instead of
+ * the whole board.
+ */
+interface PlanSummaryResponse {
+  success: boolean;
+  summary: {
+    total: number;
+    open: number;
+    awaitingTriage: number;
+    byStatus: Record<string, number>;
+  };
+}
+
 interface DashboardHomeProps {
   artworks: ArtworkRecord[];
   catalogCount: number;
@@ -47,6 +66,7 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
 }) => {
   const canEdit = role === 'admin' || role === 'editor';
   const [inquiries, setInquiries] = useState<InquiriesResponse['inquiries']>([]);
+  const [planSummary, setPlanSummary] = useState<PlanSummaryResponse['summary'] | null>(null);
   const [dbStatus, setDbStatus] = useState<{ connected: boolean; version?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -54,13 +74,16 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
     let cancelled = false;
     (async () => {
       setLoading(true);
-      // `/api/inquiries` requires editor+, so do not even ask as a viewer —
-      // an unhandled 403 would surface as a broken card.
-      const [inqRes, dbRes] = await Promise.allSettled([
+      // `/api/inquiries` and `/api/plan/items` both require editor+, so do not even ask as a
+      // viewer — an unhandled 403 would surface as a broken card.
+      const [inqRes, dbRes, planRes] = await Promise.allSettled([
         canEdit
           ? api<InquiriesResponse>('/api/inquiries')
           : Promise.resolve({ inquiries: [] } as InquiriesResponse),
         api<{ connected: boolean; version?: string }>('/api/database/status'),
+        canEdit
+          ? api<PlanSummaryResponse>('/api/plan/items?limit=1')
+          : Promise.resolve(null as PlanSummaryResponse | null),
       ]);
       if (cancelled) return;
       if (inqRes.status === 'fulfilled' && inqRes.value?.inquiries) {
@@ -68,6 +91,9 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
       }
       if (dbRes.status === 'fulfilled') {
         setDbStatus({ connected: !!dbRes.value.connected, version: dbRes.value.version });
+      }
+      if (planRes.status === 'fulfilled' && planRes.value?.summary) {
+        setPlanSummary(planRes.value.summary);
       }
       setLoading(false);
     })();
@@ -196,6 +222,57 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      {/* Planning board (v3.1.0). Editor+ only, matching `requireRole('editor')` on
+          `GET /api/plan/items` — the board holds public submitters' email addresses. */}
+      {canEdit && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <ListChecks className="h-4 w-4" /> Planning
+              </CardTitle>
+              <CardDescription>
+                What the studio has decided to do next, and what the public has asked for.
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => onNavigate('/admin/planning')}>
+              Open board <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <Skeleton className="h-8 w-48" />
+            ) : planSummary ? (
+              <div className="flex flex-wrap items-center gap-6 text-sm">
+                <span>
+                  <span className="text-2xl font-bold">{planSummary.open}</span>{' '}
+                  <span className="text-muted-foreground">open</span>
+                </span>
+                <span>
+                  <span className="text-2xl font-bold">{planSummary.byStatus?.in_progress ?? 0}</span>{' '}
+                  <span className="text-muted-foreground">in progress</span>
+                </span>
+                <span>
+                  <span className="text-2xl font-bold">{planSummary.byStatus?.done ?? 0}</span>{' '}
+                  <span className="text-muted-foreground">done</span>
+                </span>
+                {planSummary.awaitingTriage > 0 && (
+                  <Badge variant="warning">
+                    {planSummary.awaitingTriage} public submission
+                    {planSummary.awaitingTriage === 1 ? '' : 's'} awaiting triage
+                  </Badge>
+                )}
+                <span className="ml-auto text-xs text-muted-foreground">
+                  {planSummary.total} on the board
+                </span>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">The board could not be loaded.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* System health */}
       <Card>

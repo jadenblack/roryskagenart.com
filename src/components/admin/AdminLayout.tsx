@@ -19,6 +19,8 @@ import {
   X,
   Menu,
   FolderOpen,
+  History,
+  ListChecks,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { roleAtLeast } from '../../lib/roles';
@@ -52,8 +54,14 @@ export interface AdminNavItem {
  *   taxonomies     requireRole(editor)  editor
  *   design         local only           editor
  *   trash          catalog mutations    editor
+ *   changelog      requireAuth          (all)
+ *   planning       requireRole(editor)  editor
  *   users          requireRole(admin)   admin
  *   settings       requireRole(admin)   admin
+ *
+ * `src/test/adminNavGuard.test.ts` asserts the two-column relationship above against the actual
+ * route files, so a `minRole` added here without a matching server guard fails the suite rather
+ * than surfacing as a 403 in front of the studio.
  */
 export const ADMIN_NAV: AdminNavItem[] = [
   { route: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -63,6 +71,14 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { route: '/admin/media', label: 'Media', icon: FolderOpen, minRole: 'editor' },
   { route: '/admin/taxonomies', label: 'Taxonomies', icon: Tags, minRole: 'editor' },
   { route: '/admin/design', label: 'Design', icon: Palette, minRole: 'editor' },
+  // v3.1.0. Two items rather than one with tabs: they differ in access level (all roles vs
+  // editor+) and in data source (a generated artifact vs the database), and `ADMIN_NAV` is a flat
+  // list whose badge lookup keys on the route.
+  //
+  // Changelog carries no `minRole` because `GET /api/plan/history` is `requireAuth` only — the
+  // release history is static and already public in the repo's own git history.
+  { route: '/admin/changelog', label: 'Changelog', icon: History },
+  { route: '/admin/planning', label: 'Planning', icon: ListChecks, minRole: 'editor' },
   { route: '/admin/users', label: 'Users', icon: Users, minRole: 'admin' },
   { route: '/admin/settings', label: 'Settings', icon: Settings, minRole: 'admin' },
   { route: '/admin/trash', label: 'Trash', icon: Trash2, minRole: 'editor' },
