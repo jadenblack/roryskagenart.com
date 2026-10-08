@@ -1836,6 +1836,46 @@ export const RELEASE_LOG: ReleaseLog = {
   "deployments": [
     {
       "date": "2026-09-16",
+      "version": "post-v3.2.0",
+      "url": "https://roryskagen-mxvkxg6hy-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Production",
+      "commits": "b6d13cb9: PR #40 — the password-reset / invite landing fix (fix/password-reset-redirect). Supabase redirects an emailed token to the bare origin — the app is a hash-router SPA, so …/#/admin#access_token=… would be unparseable and silently drop the session (src/lib/authRedirect.ts, bareOrigin()). The cost was that a resetting user landed on the public homepage with a live recovery session and no reset screen: PasswordSetupView renders only inside AdminApp, which only renders on #/admin. src/App.tsx now reads authHandoff from useAuth() and, while one is pending, sets window.location.hash = '#/admin' — so the screen is reached without the user having to find the Dashboard link. This commit is main's tip, so it supersedes 8ad53e1e as the Current Active deploy. Annotated tag v3.2.0 does not point here — see the v3.2.0 row below",
+      "flagged": false
+    },
+    {
+      "date": "2026-09-16",
+      "version": "v3.2.0",
+      "url": "https://roryskagen-khzjfstdk-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Production",
+      "commits": "8ad53e1e: PR #39 — Group (release/v3.2.0), the second release of the studio feedback & planning program. Releases become first-class: new table public.plan_releases (version text UNIQUE, `status ∈ planned\\",
+      "flagged": false
+    },
+    {
+      "date": "2026-09-16",
+      "version": "post-v3.2.0-preview",
+      "url": "https://roryskagen-fb63bailz-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Preview",
+      "commits": "e237d4a2: fix/password-reset-redirect preview (PR #40)",
+      "flagged": false
+    },
+    {
+      "date": "2026-09-16",
+      "version": "v3.2.0-preview",
+      "url": "https://roryskagen-dxdu2fdx7-ventureio.vercel.app",
+      "status": "● Ready",
+      "buildTime": "n/a",
+      "target": "Preview",
+      "commits": "49bdbe51: release/v3.2.0 preview (PR #39) — the PR was re-cut onto 8434184f after PR #38 merged, resolving conflicts in four files (AGENTS.md, DEPLOYMENT_LOG.md, data/archive/schema_introspection.md, src/data/releaseLog.generated.ts)",
+      "flagged": false
+    },
+    {
+      "date": "2026-09-16",
       "version": "post-v3.1.0",
       "url": "https://roryskagen-rago55952-ventureio.vercel.app",
       "status": "● Ready",
@@ -1861,7 +1901,7 @@ export const RELEASE_LOG: ReleaseLog = {
       "status": "● Ready",
       "buildTime": "n/a",
       "target": "Production",
-      "commits": "0ab5c5b0: PR #36 — the studio feedback & planning board, Capture (release/v3.1.0). Adds public.plan_items (15 columns, 4 CHECK constraints, 3 indexes, RLS with one is_admin_or_editor() policy and no public policy — the table holds public submitters' email addresses) and server/routes/plan.ts: six endpoints behind two doors — POST /api/plan/feedback is public and server-forced to kind='suggestion' / source='public' / status='new', while POST /api/plan/items sits behind requireAuth and takes author_id from the session. A viewer can file but cannot read the board: GET/PATCH/DELETE /api/plan/items* require editor (open question Q-E). Also: admin Planning + Changelog views (the latter generated from CHANGELOG.md + DEPLOYMENT_LOG.md), a footer feedback modal, honeypot + rate-limit guards shared with the inquiry route, and plan_items added to scripts/lib/restorePlan.ts in the same change. The migration was applied after the merge — public.plan_items exists, schema_migrations 15 → 16. ⚠️ Between the merge and the migration the off-site backup was broken: server/lib/catalogDump.ts shares RESTORE_ORDER with scripts/backup-catalog.ts, so both threw relation \"public.plan_items\" does not exist; a partial dump (9 of 10 tables, no manifest) was written at 00:59:45Z and is quarantined under data/backups/ as ...-FAILED-no-manifest. Post-migration backup: 10 tables, 862 rows, 16 recorded migrations, format v2, sha256 verified. Annotated tag v3.1.0 points at this commit (Current Active)",
+      "commits": "0ab5c5b0: PR #36 — the studio feedback & planning board, Capture (release/v3.1.0). Adds public.plan_items (15 columns, 4 CHECK constraints, 3 indexes, RLS with one is_admin_or_editor() policy and no public policy — the table holds public submitters' email addresses) and server/routes/plan.ts: six endpoints behind two doors — POST /api/plan/feedback is public and server-forced to kind='suggestion' / source='public' / status='new', while POST /api/plan/items sits behind requireAuth and takes author_id from the session. A viewer can file but cannot read the board: GET/PATCH/DELETE /api/plan/items* require editor (open question Q-E). Also: admin Planning + Changelog views (the latter generated from CHANGELOG.md + DEPLOYMENT_LOG.md), a footer feedback modal, honeypot + rate-limit guards shared with the inquiry route, and plan_items added to scripts/lib/restorePlan.ts in the same change. The migration was applied after the merge — public.plan_items exists, schema_migrations 15 → 16. ⚠️ Between the merge and the migration the off-site backup was broken: server/lib/catalogDump.ts shares RESTORE_ORDER with scripts/backup-catalog.ts, so both threw relation \"public.plan_items\" does not exist; a partial dump (9 of 10 tables, no manifest) was written at 00:59:45Z and is quarantined under data/backups/ as ...-FAILED-no-manifest. Post-migration backup: 10 tables, 862 rows, 16 recorded migrations, format v2, sha256 verified. Annotated tag v3.1.0 points at this commit",
       "flagged": true
     },
     {
@@ -2667,7 +2707,7 @@ export const RELEASE_LOG: ReleaseLog = {
   ],
   "diagnostics": {
     "releases": 22,
-    "deploymentRows": 83,
+    "deploymentRows": 87,
     "warnings": []
   }
 };
